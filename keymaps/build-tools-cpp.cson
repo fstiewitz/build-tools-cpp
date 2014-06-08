@@ -1,0 +1,4 @@
+'.workspace':
+  'ctrl-l ctrl-u': 'build-tools-cpp:pre-configure'
+  'ctrl-l ctrl-i': 'build-tools-cpp:configure'
+  'ctrl-l ctrl-o': 'build-tools-cpp:make'

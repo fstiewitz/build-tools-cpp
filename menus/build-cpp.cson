@@ -1,0 +1,14 @@
+'menu': [
+  {
+    'label': 'Packages'
+    'submenu': [
+      'label': 'Build tools C/C++'
+      'submenu': [
+        { 'label': 'Toggle window', 'command': 'build-tools-cpp:toggle' },
+        { 'label': 'Run pre-configure command', 'command': 'build-tools-cpp:pre-configure'}
+        { 'label': 'Run configure command', 'command': 'build-tools-cpp:configure'},
+        { 'label': 'Run build command', 'command': 'build-tools-cpp:make'}
+      ]
+    ]
+  }
+]
