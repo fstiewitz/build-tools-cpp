@@ -67,8 +67,7 @@ class BuildToolsCommandOutput extends View
           editor.setCursorBufferPosition([lineno-1,linecol-1])
 
   finishConsole: ->
-    if atom.config.get('build-tools-cpp.ErrorHighlighting')
-      $(document).find(".filelink").on 'click', @openFile
+    $(document).find(".filelink").on 'click', @openFile
 
   printLine: (message) =>
     @showOutput() if !@lockoutput

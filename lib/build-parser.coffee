@@ -153,6 +153,8 @@ module.exports=
   parseAndPrint: (line,script,printfunc) ->
     if script == 'make'
       stat = @parseGCC line
+    else
+      stat = ''
 
     if stat == '' and script != ''
       @nostatuslines = @nostatuslines + line + "\n"
