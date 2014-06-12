@@ -91,27 +91,36 @@ module.exports =
       parser.clearVars()
       wd = parser.getWD @projdir,cwd_string
       if wd != ''
-        @buildToolsView.show()
-        @buildToolsView.setHeader(cmd.cmd)
-        @buildToolsView.clear()
-        @buildToolsView.unlock()
-        @stepchild = cp.spawn(cmd.cmd, cmd.arg, { cwd: wd, env: cmd.env })
-        @stepchild.on 'error', (error) =>
-          @buildToolsView.setHeaderOnly("#{cmd_string}: received #{error}")
+        if (dependency = parser.hasDependencies wd, cmd.cmd, cmd.arg) is ""
+          @buildToolsView.show()
+          @buildToolsView.setHeader(cmd.cmd)
+          @buildToolsView.clear()
+          @buildToolsView.unlock()
+          @stepchild = cp.spawn(cmd.cmd, cmd.arg, { cwd: wd, env: cmd.env })
+          @stepchild.on 'error', (error) =>
+            @buildToolsView.setHeaderOnly("#{cmd_string}: received #{error}")
+            @buildToolsView.lock()
+            @kill()
+          @stepchild.on 'exit', (exitcode, signal) =>
+            @buildToolsView.setHeader
+            (cmd.cmd + ": finished with exitcode #{exitcode}") if exitcode?
+            @buildToolsView.setHeader
+            (cmd.cmd + ": finished with signal #{signal}") if signal?
+            @buildToolsView.finishConsole()
+            @stepchild = null
+          return cmd
+        else if dependency is undefined
           @buildToolsView.lock()
-          @kill()
-        @stepchild.on 'exit', (exitcode, signal) =>
-          @buildToolsView.setHeader
-          (cmd.cmd + ": finished with exitcode #{exitcode}") if exitcode?
-          @buildToolsView.setHeader
-          (cmd.cmd + ": finished with signal #{signal}") if signal?
-          @buildToolsView.finishConsole()
-          @stepchild = null
-        return cmd
+          @buildToolsView.show()
+          @buildToolsView.setHeaderOnly("Error parsing arguments")
+        else
+          @buildToolsView.lock()
+          @buildToolsView.show()
+          @buildToolsView.setHeaderOnly("Error: File #{dependency} not found")
       else
         @buildToolsView.lock()
         @buildToolsView.show()
-        @buildToolsView.setHeaderOnly("Build folder #{cwd_string} not found")
+        @buildToolsView.setHeaderOnly("Error: Build folder #{cwd_string} not found")
         return
     return
 
