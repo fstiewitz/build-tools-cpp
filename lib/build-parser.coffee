@@ -9,6 +9,64 @@ module.exports=
     else
       return ''
 
+  importantFiles: {
+    "make": "Makefile"
+    "cmake": "CMakeLists.txt"
+    "autoreconf": "configure.ac"
+    "make-option": "-f" #Option to set custom name, here: `make -f some_file`
+    "cmake-folder": "-1" #Argument to set custom file/folder, here: cmake .. ( -1 is last element )
+  }
+
+  # Public: Look for known dependencies before executing a command
+  #
+  # This method is used to look for files which are required to run a command.
+  # Currently known:
+  # * `make` requires `Makefile` or the name given with the `-f`-option
+  # * `cmake` requires `CMakeLists.txt` in folder which is given as the last argument of the call
+  # * `autoreconf` requires `configure.ac`
+  #
+  # build_folder - the {String} folder in which the command is executed
+  # command - the {String} command to execute
+  # args - {String} command line arguments
+  #
+  # Returns `""` if all dependencies are met
+  # Returns `filename` if `filename` is required but does not exist
+  # Returns `undefined` if `args` is wrong ( e.g. `make -f` which requires a path to the correct `Makefile` )
+  hasDependencies: (build_folder, command, args) ->
+    if (defaultFile = @importantFiles[command])?
+      if (option=@importantFiles[command+"-option"])? and (index= ( ->
+        for a,index in args
+          if a.indexOf(option) == 0
+            return index
+        return -1
+        )() ) isnt -1
+        if (filename = args[index].slice(option.length)) isnt ""
+          if fs.existsSync(filename = path.join(build_folder,filename))
+            return ""
+          else
+            return filename
+        else if (filename = args[index+1])?
+            if fs.existsSync(filename = path.join(build_folder,filename))
+              return ""
+            else
+              return filename
+        else
+          return filename
+      else if (bfIndex = @importantFiles[command+"-folder"])? and (f = args.slice(parseInt(bfIndex))[0])?
+        filename = path.join(build_folder,f,defaultFile)
+        if fs.existsSync(filename)
+          return ""
+        else
+          return filename
+      else
+        filename = path.join(build_folder,defaultFile)
+        if fs.existsSync(filename)
+          return ""
+        else
+          return filename
+    else
+      return ""
+
   extInList: (filename) ->
     lstring = atom.config.get('build-tools-cpp.SourceFileExtensions')
     llist = lstring.split(',')
