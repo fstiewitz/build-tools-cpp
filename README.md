@@ -10,7 +10,6 @@ build-tools-cpp
 * Highlights errors and warnings of `gcc` and `g++` ( can be disabled, only works with `gcc`/`g++` v4.8+ )
 * File paths can be opened with left click
 
-
 ## How to
 * Click `ctrl-l ctrl-u` to execute your `Pre-Configure command`
 * Click `ctrl-l ctrl-i` to execute your `Configure command`
@@ -23,3 +22,21 @@ Build folder | `.` | `.` | `build` | `.`
 Build command | `make` | `make` | `make` | `g++ main.cpp -o hello_world`
 Configure command | | `CXXFLAGS="-g -pg" ./configure` | `cmake ..` |
 Pre-Configure command | | `autoreconf -ifv` | |
+
+## Syntax
+Every command line has the following syntax:
+`[Environment variables] Command [Arguments]`
+### Environment variables
+Syntax: `name="content"`
+* No whitespaces between `name`,`=` and `"content"`
+* `""` and `''` are optional
+
+### Command
+Syntax: `[folder]/program`
+* `[folder]` is optional
+* If program is not in `PATH` but in `Build folder` add `.` (e.g. `./configure`)
+* Use `""` and `''` if your path contains whitespaces
+
+### Arguments
+* Arguments have the same syntax as if you write the command in `bash`
+* The last argument of `cmake` has to be the build folder ( e.g. `cmake -Wno-dev ..`, not `cmake .. -Wno-dev`)
