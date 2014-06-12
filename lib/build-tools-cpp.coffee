@@ -81,7 +81,7 @@ module.exports =
         command.arg.push t if t != ''
       else
         cmd_reached = true
-        command.cmd = e
+        command.cmd = parser.removeQuotes e
     return command
 
   spawn: (cmd_string,cwd_string) ->
