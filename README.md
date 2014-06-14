@@ -10,12 +10,12 @@ build-tools-cpp
 * Highlights errors and warnings of `gcc` and `g++`
 * File paths can be opened with left click
 
-<b>Error highlighting may not work with all compilers.<br />
-Error highlighting can be disabled.
+<b>Error highlighting may not work with all compilers, but can be disabled.
 </b>
 
 ## Limitations
 * Error highlighting only works with `gcc` and `g++` v4.8+
+* Error highlighting with `clang`/`clang++` only works properly with `-fno-diagnostics-fixit-info`
 
 ## How to
 * Click `ctrl-l ctrl-u` to execute your `Pre-Configure command`
@@ -45,5 +45,5 @@ Syntax: `[folder]/program`
 * Use `""` and `''` if your path contains whitespaces
 
 ### Arguments
-* Arguments have the same syntax as if you write the command in `bash`
+* Arguments have the same syntax as if you write the command in a terminal
 * The last argument of `cmake` has to be the build folder ( e.g. `cmake -Wno-dev ..`, not `cmake .. -Wno-dev`)
