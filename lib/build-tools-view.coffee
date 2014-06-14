@@ -61,9 +61,9 @@ class BuildToolsCommandOutput extends View
   openFile: (element) ->
     lineno = parseInt($(this).attr('row'))
     linecol= parseInt($(this).attr('col'))
-    if $(this).attr('name') != ''
+    if $(this).attr('name') isnt ''
       atom.workspaceView.open($(this).attr('name')).then (editor) ->
-        if lineno != 0
+        if lineno isnt 0
           editor.setCursorBufferPosition([lineno-1,linecol-1])
 
   finishConsole: ->
