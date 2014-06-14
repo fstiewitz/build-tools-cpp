@@ -67,9 +67,8 @@ module.exports=
     else
       return ""
 
-  extInList: (filename) ->
-    lstring = atom.config.get('build-tools-cpp.SourceFileExtensions')
-    llist = lstring.split(',')
+  extInList: (extlist, filename) ->
+    llist = extlist.split(',')
     for item in llist
       item_unquote = @removeQuotes item
       if item_unquote is filename.substr(filename.length-item_unquote.length)
@@ -90,7 +89,7 @@ module.exports=
       if e isnt ''
         bycolon = e.split(':')
         if bycolon.length > 1
-          if @extInList bycolon[0]
+          if @extInList atom.config.get('build-tools-cpp.SourceFileExtensions'), bycolon[0]
             fp = @getAbsPath bycolon[0]
             if fp isnt ''
               end = line.indexOf(bycolon[0]) + bycolon[0].length - 1

@@ -1,4 +1,4 @@
-{$,Point,View} = require 'atom'
+{$,View} = require 'atom'
 parser = require './build-parser.coffee'
 
 module.exports =
