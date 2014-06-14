@@ -7,8 +7,15 @@ build-tools-cpp
 
 ## Features
 * Tested with Autotools, CMake and custom Makefiles
-* Highlights errors and warnings of `gcc` and `g++` ( can be disabled, only works with `gcc`/`g++` v4.8+ )
+* Highlights errors and warnings of `gcc` and `g++`
 * File paths can be opened with left click
+
+<b>Error highlighting may not work with all compilers.<br />
+Error highlighting can be disabled.
+</b>
+
+## Limitations
+* Error highlighting only works with `gcc` and `g++` v4.8+
 
 ## How to
 * Click `ctrl-l ctrl-u` to execute your `Pre-Configure command`
