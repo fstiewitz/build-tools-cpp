@@ -36,7 +36,7 @@ module.exports=
     if (defaultFile = @importantFiles[command])?
       if (option=@importantFiles[command+"-option"])? and (index= ( ->
         for a,index in args
-          if a.indexOf(option) == 0
+          if a.indexOf(option) is 0
             return index
         return -1
         )() ) isnt -1
@@ -67,25 +67,17 @@ module.exports=
     else
       return ""
 
-  extInList: (filename) ->
-    lstring = atom.config.get('build-tools-cpp.SourceFileExtensions')
-    llist = lstring.split(',')
+  extInList: (extlist, filename) ->
+    llist = extlist.split(',')
     for item in llist
       item_unquote = @removeQuotes item
-      if item_unquote == filename.substr(filename.length-item_unquote.length)
+      if item_unquote is filename.substr(filename.length-item_unquote.length)
         return true
     return false
 
   getAbsPath: (filepath) ->
-    spath = "."
-    i=0
-    fpath = filepath
-    while not fs.isFileSync(fpath)
-      if i>5 then break
-      fpath = path.join(atom.project.getPath(),spath,filepath)
-      spath = path.join(spath,"x")
-      i=i+1
-    return fpath if i<=5
+    fp = path.resolve(atom.project.getPath(),filepath);
+    return fp if fs.existsSync(fp)
     return ''
 
   getFileNames: (line) ->
@@ -94,41 +86,24 @@ module.exports=
     return filenames if byspace.length <= 1
     new_start = 0
     for e,index in byspace
-      if e != ''
+      if e isnt ''
         bycolon = e.split(':')
         if bycolon.length > 1
-          if @extInList bycolon[0]
+          if @extInList atom.config.get('build-tools-cpp.SourceFileExtensions'), bycolon[0]
             fp = @getAbsPath bycolon[0]
-            if fp != ''
-              if bycolon.length == 1 or bycolon[1] == '' #filename.cpp
-                end = line.indexOf(bycolon[0]) + bycolon[0].length - 1
-                row = 0
-                col = 0
-              else if bycolon.length == 2
-                if isNaN(new Number(bycolon[1])) or bycolon[2] == ''
-                  end = line.indexOf(bycolon[0]) + bycolon[0].length - 1
-                  row = 0
-                  col = 0
-                else #filename.cpp:10
-                  end = line.indexOf(bycolon[0]) + e.length - 1
-                  row = bycolon[1]
-                  col = 1
-              else if bycolon.length >= 3
-                if isNaN(new Number(bycolon[1])) #filename.cpp:something:abc
-                  end = line.indexOf(bycolon[0]) + bycolon[0].length - 1
-                  row = 0
-                  col = 0
+            if fp isnt ''
+              end = line.indexOf(bycolon[0]) + bycolon[0].length - 1
+              row = 0
+              col = 0
+              validRow = /^[\d]+$/.test(bycolon[1])
+              validCol = /^[\d]+$/.test(bycolon[2])
+              if validRow
+                row = bycolon[1]
+                if validCol
+                  col = bycolon[2]
+                  end = line.indexOf(bycolon[0]) + (bycolon[0]+bycolon[1]+bycolon[2]).length + 1
                 else
-                  if isNaN(new Number(bycolon[2])) #filename.cpp:10:something
-                    end = line.indexOf(bycolon[0]) + \
-                    (bycolon[0]+bycolon[1]).length
-                    row = bycolon[1]
-                    col = 1
-                  else #filename.cpp:10:20
-                    end = line.indexOf(bycolon[0]) + \
-                    (bycolon[0]+bycolon[1]+bycolon[2]).length + 1
-                    row = bycolon[1]
-                    col = bycolon[2]
+                  end = line.indexOf(bycolon[0]) + (bycolon[0]+bycolon[1]).length
 
               filenames.push {
                 filename: fp
@@ -138,21 +113,19 @@ module.exports=
                 end: end
               }
               new_start = end
-
-
     return filenames
 
 
   parseGCC: (line) ->
-    if line.indexOf('error:') != -1 #Check for errors
+    if line.indexOf('error:') isnt -1 #Check for errors
       @continue_status = true
       @status = 'lineerror'
       return 'lineerror'
-    else if line.indexOf('warning:') != -1 #Check for warnings
+    else if line.indexOf('warning:') isnt -1 #Check for warnings
       @continue_status = true
       @status = 'linewarning'
       return 'linewarning'
-    else if line.trim() == '^' #Reached delimiter for error messages?
+    else if /^[\^\s~]+$/.test(line) #Reached delimiter for error messages?
       @continue_status = false
       return @status
     else if @continue_status #Continue treating as error message?
@@ -165,11 +138,10 @@ module.exports=
     @status = ''
     @nostatuslines = ''
     @continue_status = false
-    @c = null
 
   buildHTML: (message,status)->
     l = '<div'
-    if status != ''
+    if status isnt ''
       l += " class=\"#{status}\">"
     else
       l += ">"
@@ -183,7 +155,7 @@ module.exports=
         l += message.substr(file.start,file.end - file.start + 1)
         l += "</span>"
         prev = file.end
-      if prev != message.length - 1
+      if prev isnt message.length - 1
         l += message.substr(prev+1)
     else
       l += message
@@ -191,33 +163,19 @@ module.exports=
     return l
 
   removeQuotes: (line) ->
-    c1 = line.indexOf("\"")
-    if c1 != -1
-      c = "\""
-    else
-      c1 = line.indexOf("\'")
-      if c1 != -1
-        c = "\'"
-      else
-        return line
-    c2 = line.substr(c1+1).indexOf(c)
-    return '' if c2 == -1
-    l = ''
-    l += line.substr(0,c1) if c1 > 0
-    l += line.substr(c1+1,c2) if c2 > 0
-    l += line.substr(c2+c1+2) if c2+c1+2 < line.length - 1
-    return l
+    return line.replace(/[\"]/g,'') if line.search('"') isnt -1
+    return line.replace(/[\']/g,'')
 
   parseAndPrint: (line,script,printfunc) ->
-    if script == 'make'
+    if script is 'make'
       stat = @parseGCC line
     else
       stat = ''
 
-    if stat == '' and script != ''
+    if stat is '' and script isnt ''
       @nostatuslines = @nostatuslines + line + "\n"
     else
-      if @nostatuslines != ''
+      if @nostatuslines isnt ''
         for l in @nostatuslines.split("\n").slice(0,-1)
           printfunc (@buildHTML l,stat)
         @nostatuslines = ''
@@ -226,21 +184,21 @@ module.exports=
   toLine: (line, script, printfunc) ->
     lines = line.split("\n")
 
-    if lines.length == 1 #No '\n' found -> incomplete line -> add to rollover
+    if lines.length is 1 #No '\n' found -> incomplete line -> add to rollover
       @rollover = @rollover + lines[0]
-    else if lines.length == 2 and lines[1] == ''
-      if @rollover != '' #If incomplete line in @rollover
+    else if lines.length is 2 and lines[1] is ''
+      if @rollover isnt '' #If incomplete line in @rollover
         lines[0] = @rollover + lines[0] #Finish line
         @rollover = ''
 
       @parseAndPrint lines[0],script,printfunc
     else
-      if @rollover != ''
+      if @rollover isnt ''
         lines[0] = @rollover + lines[0]
         @rollover = ''
 
       for l in lines.slice(0,-1) #For each element except last one
         @toLine l+"\n", script, printfunc #Recursive call
       last = lines[lines.length-1] #Get last element
-      if last != '' #If last element not empty -> start of unfinished line
+      if last isnt '' #If last element not empty -> start of unfinished line
         @rollover = last

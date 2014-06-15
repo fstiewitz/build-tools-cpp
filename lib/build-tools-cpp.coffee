@@ -38,7 +38,7 @@ module.exports =
 
   getQuoteIndex: (line) ->
     c1 = line.indexOf("\"")
-    if c1 != -1
+    if c1 isnt -1
       return {index: c1, character: '\"'}
     c1 = line.indexOf("\'")
     return {index: c1, character: '\''}
@@ -47,17 +47,17 @@ module.exports =
     args = []
     cmd_list = cmd_string.split(' ')
     instring = false
-    while (cmd_list.length != 0)
+    while (cmd_list.length isnt 0)
       if not instring
         args.push cmd_list[0]
       else
         args[args.length-1] += ' ' + cmd_list[0]
       qi = @getQuoteIndex(cmd_list[0])
-      if qi.index != -1
+      if qi.index isnt -1
         if instring
           instring = false
         else
-          if cmd_list[0].substr(qi.index+1).indexOf(qi.character) == -1
+          if cmd_list[0].substr(qi.index+1).indexOf(qi.character) is -1
             instring = true
       cmd_list.shift()
     return args
@@ -71,26 +71,26 @@ module.exports =
     command.env = process.env
     cmd_reached = false
     for e in cmd_list
-      if e.indexOf('=') != -1 and (not cmd_reached)
+      if e.indexOf('=') isnt -1 and (not cmd_reached)
         epair = e.split('=')
         t = parser.removeQuotes epair[1]
-        if t != ''
+        if t isnt ''
           command.env[epair[0]]=t
       else if cmd_reached
         t = parser.removeQuotes e
-        command.arg.push t if t != ''
+        command.arg.push t if t isnt ''
       else
         cmd_reached = true
         command.cmd = parser.removeQuotes e
     return command
 
   spawn: (cmd_string,cwd_string) ->
-    if cmd_string != ''
+    if cmd_string isnt ''
       cmd_list = @split cmd_string
       cmd = @getcommand cmd_list
       parser.clearVars()
       wd = parser.getWD @projdir,cwd_string
-      if wd != ''
+      if wd isnt ''
         if (dependency = parser.hasDependencies wd, cmd.cmd, cmd.arg) is ""
           @buildToolsView.show()
           @buildToolsView.setHeader(cmd.cmd)
