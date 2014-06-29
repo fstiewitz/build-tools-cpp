@@ -76,7 +76,7 @@ module.exports=
     return false
 
   getAbsPath: (filepath) ->
-    fp = path.resolve(atom.project.getPath(),filepath);
+    fp = path.resolve(atom.project.getPath(),filepath)
     return fp if fs.existsSync(fp)
     return ''
 
