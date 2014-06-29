@@ -119,12 +119,12 @@ module.exports=
   parseGCC: (line) ->
     if line.indexOf('error:') isnt -1 #Check for errors
       @continue_status = true
-      @status = 'lineerror'
-      return 'lineerror'
+      @status = 'error'
+      return 'error'
     else if line.indexOf('warning:') isnt -1 #Check for warnings
       @continue_status = true
-      @status = 'linewarning'
-      return 'linewarning'
+      @status = 'warning'
+      return 'warning'
     else if /^[\^\s~]+$/.test(line) #Reached delimiter for error messages?
       @continue_status = false
       return @status
@@ -142,7 +142,7 @@ module.exports=
   buildHTML: (message,status)->
     l = '<div'
     if status isnt ''
-      l += " class=\"#{status}\">"
+      l += " class=\"bold text-#{status}\">"
     else
       l += ">"
     filenames = @getFileNames message
@@ -150,10 +150,10 @@ module.exports=
     if filenames.length?
       for file in filenames
         l += message.substr(prev+1,file.start - (prev + 1))
-        l += "<span class=\"filelink\" name=\"#{file.filename}\""
+        l += "<div class=\"filelink inline-block highlight-#{status}\" name=\"#{file.filename}\""
         l += "row=\"#{file.row}\" col=\"#{file.col}\">"
         l += message.substr(file.start,file.end - file.start + 1)
-        l += "</span>"
+        l += "</div>"
         prev = file.end
       if prev isnt message.length - 1
         l += message.substr(prev+1)

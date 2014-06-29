@@ -113,19 +113,19 @@ describe "build tools cpp parser", ->
 
     describe "receives a line with a status indicator", ->
       it "returns the correct status", ->
-        expect(parser.parseGCC("filename.cpp:10:20: error: bla")).toBe('lineerror')
-        expect(parser.parseGCC("filename.cpp:10:20: warning: bla")).toBe('linewarning')
+        expect(parser.parseGCC("filename.cpp:10:20: error: bla")).toBe('error')
+        expect(parser.parseGCC("filename.cpp:10:20: warning: bla")).toBe('warning')
 
     describe "receives a line in an error message", ->
       it "returns the status of the last line with status indicator", ->
-        expect(parser.parseGCC("filename.cpp:10:20: error: bla")).toBe('lineerror')
-        expect(parser.parseGCC('println("Hello\n")')).toBe('lineerror')
+        expect(parser.parseGCC("filename.cpp:10:20: error: bla")).toBe('error')
+        expect(parser.parseGCC('println("Hello\n")')).toBe('error')
 
     describe "receives a delimiter", ->
       it "returns the status of the previous lines and resets", ->
-        expect(parser.parseGCC("filename.cpp:10:20: error: bla")).toBe('lineerror')
-        expect(parser.parseGCC('println("Hello\n")')).toBe('lineerror')
-        expect(parser.parseGCC('    ^    ')).toBe('lineerror')
+        expect(parser.parseGCC("filename.cpp:10:20: error: bla")).toBe('error')
+        expect(parser.parseGCC('println("Hello\n")')).toBe('error')
+        expect(parser.parseGCC('    ^    ')).toBe('error')
         expect(parser.parseGCC('In function bla():')).toBe('')
 
   describe "when removeQuotes ", ->

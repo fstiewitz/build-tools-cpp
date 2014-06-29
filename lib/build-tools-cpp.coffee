@@ -164,4 +164,4 @@ module.exports =
     Build_Command: "make"
     BuildFolder: "."
     ErrorHighlighting: true
-    SourceFileExtensions: "\".cpp\",\".h\",\".c\",\".hpp\""
+    SourceFileExtensions: '".cpp",".h",".c",".hpp"'
