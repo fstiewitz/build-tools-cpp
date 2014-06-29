@@ -1,7 +1,7 @@
 {
   "name": "build-tools-cpp",
   "main": "./lib/build-tools-cpp",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Build your autotools / CMake / Makefile project in atom",
   "activationEvents": [
     "build-tools-cpp:pre-configure",
