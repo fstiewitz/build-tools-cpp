@@ -3,7 +3,7 @@ build-tools-cpp
 
 ### Build your autotools / CMake / Makefile project in atom
 
-![Error highlighting](https://cloud.githubusercontent.com/assets/7817714/3279835/b69bbb2a-f420-11e3-99c9-2acd3f866842.png)
+![Error highlighting](https://cloud.githubusercontent.com/assets/7817714/3423149/34a97ec6-ff84-11e3-9237-8fe420bb1b90.png)
 
 ## Features
 * Tested with Autotools, CMake and custom Makefiles
