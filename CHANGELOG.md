@@ -1,3 +1,6 @@
+## 0.4.0 - Use atom's styleguide
+* Improve file path highlighting
+
 ## 0.3.0 - Refactor code, Clang and specs
 * Refactor code for better readability
 * Add clang support ( at least with `-fno-diagnostics-fixit-info`)
