@@ -13,7 +13,9 @@ module.exports =
     return atom.project.getPath()
 
   currentFile: (root) ->
-    return path.relative(root, atom.workspace.getActiveEditor()?.getPath())
+    if (editor = atom.workspace.getActiveEditor())?
+      return path.relative(root, editor.getPath())
+    return ""
 
   baseFileName: (root) ->
     current = @currentFile(root)
@@ -23,8 +25,10 @@ module.exports =
     return path.dirname(@currentFile(root))
 
   filename: (root) ->
-    current = atom.workspace.getActiveEditor()?.getPath()
-    return path.basename(current, path.extname(current))
+    if (editor = atom.workspace.getActiveEditor())?
+      current = editor.getPath()
+      return path.basename(current, path.extname(current))
+    return ""
 
   replaceWildcards: (command, root) ->
     if /%[g]?[pcbnf]{1}/.test(command)
@@ -34,5 +38,6 @@ module.exports =
         if new RegExp("%[g]?"+c+"{1}").test(command)
           result = @[@wildcards[c]](resroot)
           command = command.replace(new RegExp("%" + c,"g"), result)
-          command = command.replace(new RegExp("%" + "g" + c,"g"), path.resolve(root, result))
+          if c is 'c' or c is 'f' or c is 'b'
+            command = command.replace(new RegExp("%" + "g" + c,"g"), path.resolve(root, result))
     return command
