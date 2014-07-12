@@ -23,12 +23,16 @@ module.exports =
     return path.dirname(@currentFile(root))
 
   filename: (root) ->
-    current = @currentFile(root)
+    current = atom.workspace.getActiveEditor()?.getPath()
     return path.basename(current, path.extname(current))
 
   replaceWildcards: (command, root) ->
-    k = Object.keys(@wildcards)
-    for c in k
-      command = command.replace(new RegExp("%" + c,"g"), @[@wildcards[c]](path.resolve(@projectPath(),root)))
-      command = command.replace(new RegExp("%" + "g" + c,"g"), path.resolve(root, @[@wildcards[c]](path.resolve(@projectPath(),root))))
+    if /%[g]?[pcbnf]{1}/.test(command)
+      k = Object.keys(@wildcards)
+      resroot = path.resolve(@projectPath(),root)
+      for c in k
+        if new RegExp("%[g]?"+c+"{1}").test(command)
+          result = @[@wildcards[c]](resroot)
+          command = command.replace(new RegExp("%" + c,"g"), result)
+          command = command.replace(new RegExp("%" + "g" + c,"g"), path.resolve(root, result))
     return command
