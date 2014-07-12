@@ -50,9 +50,7 @@ Wildcard | Description | Build folder | File path | Output
  | | `build` | `main.cpp` | `..`
  | | `build` | `build/main.cpp` | `.`
 
-To get absolute path names use `%g...` ( e.g. `%gc`, `%gf` ).
-* `%gp` is the same as `%p`
-* `%gb` is the same as `%n`
+To get absolute path names use `%gc`, `%gb` and `%gf`
 
 
 ## Syntax
