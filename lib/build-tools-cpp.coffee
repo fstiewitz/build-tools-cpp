@@ -1,5 +1,6 @@
 cp = require 'child_process'
 parser = require './build-parser.coffee'
+wc = require './command-wildcards.coffee'
 
 module.exports =
 
@@ -125,7 +126,7 @@ module.exports =
     return
 
   step1: ->
-    cmd_string = atom.config.get('build-tools-cpp.Pre_Configure_Command')
+    cmd_string = wc.replaceWildcards(atom.config.get('build-tools-cpp.Pre_Configure_Command'))
     cwd_string = atom.config.get('build-tools-cpp.BuildFolder')
     cmd = @spawn cmd_string, cwd_string
     if @stepchild
