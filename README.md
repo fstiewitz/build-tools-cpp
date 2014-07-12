@@ -26,15 +26,14 @@ build-tools-cpp
 | |Makefile | Autotools | CMake | Custom
 ---|---|---|---|---
 Build folder | `.` | `.` | `build` | `.`
-Build command | `make` | `make` | `make` | `g++ main.cpp -o hello_world`
+Build command | `make` | `make` | `make` | `g++ %c -o hello_world`
 Configure command | | `CXXFLAGS="-g -pg" ./configure` | `cmake ..` |
 Pre-Configure command | | `autoreconf -ifv` | |
 
-## Wildcards
-You can use the following wildcards in your commands:
+## Substitutions in commands
 
-Wildcard | Description | Build folder | File path | Output
----|---|---|---
+ | Description | Build folder | File path | Output
+---|---|---|---|---
 `%p` | Project path | Does not matter | |
 `%c` | Currently opened file relative to your `Build Folder` | `.` | `main.cpp` | `main.cpp`
  | | `.` | `build/main.cpp` | `build/main.cpp`
