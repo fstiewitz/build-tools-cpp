@@ -26,9 +26,31 @@ build-tools-cpp
 | |Makefile | Autotools | CMake | Custom
 ---|---|---|---|---
 Build folder | `.` | `.` | `build` | `.`
-Build command | `make` | `make` | `make` | `g++ main.cpp -o hello_world`
+Build command | `make` | `make` | `make` | `g++ %c -o hello_world`
 Configure command | | `CXXFLAGS="-g -pg" ./configure` | `cmake ..` |
 Pre-Configure command | | `autoreconf -ifv` | |
+
+## Substitutions in commands
+
+ | Description | Build folder | File path | Output
+---|---|---|---|---
+`%p` | Project path | Does not matter | |
+`%c` | Currently opened file relative to your `Build Folder` | `.` | `main.cpp` | `main.cpp`
+ | | `.` | `build/main.cpp` | `build/main.cpp`
+ | | `build` | `main.cpp` | `../main.cpp`
+ | | `build` | `build/main.cpp` | `main.cpp`
+`%b` | Same as `%c` but without a file extension | `.` | `main.cpp` | `main`
+ | | `.` | `build/main.cpp` | `build/main`
+ | | `build` | `main.cpp` | `../main`
+ | | `build` | `build/main.cpp` | `main`
+`%n` | Name of the file ( no path, no extension ) | Does not matter | `main.cpp` | `main`
+`%f` | Folder relative to your `Build Folder` | `.` | `main.cpp` | `.`
+ | | `.` | `build/main.cpp` | `build`
+ | | `build` | `main.cpp` | `..`
+ | | `build` | `build/main.cpp` | `.`
+
+To get absolute path names use `%gc`, `%gb` and `%gf`
+
 
 ## Syntax
 Every command line has the following syntax:
