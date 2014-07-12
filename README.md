@@ -30,6 +30,31 @@ Build command | `make` | `make` | `make` | `g++ main.cpp -o hello_world`
 Configure command | | `CXXFLAGS="-g -pg" ./configure` | `cmake ..` |
 Pre-Configure command | | `autoreconf -ifv` | |
 
+## Wildcards
+You can use the following wildcards in your commands:
+
+Wildcard | Description | Build folder | File path | Output
+---|---|---|---
+`%p` | Project path | Does not matter | |
+`%c` | Currently opened file relative to your `Build Folder` | `.` | `main.cpp` | `main.cpp`
+ | | `.` | `build/main.cpp` | `build/main.cpp`
+ | | `build` | `main.cpp` | `../main.cpp`
+ | | `build` | `build/main.cpp` | `main.cpp`
+`%b` | Same as `%c` but without a file extension | `.` | `main.cpp` | `main`
+ | | `.` | `build/main.cpp` | `build/main`
+ | | `build` | `main.cpp` | `../main`
+ | | `build` | `build/main.cpp` | `main`
+`%n` | Name of the file ( no path, no extension ) | Does not matter | `main.cpp` | `main`
+`%f` | Folder relative to your `Build Folder` | `.` | `main.cpp` | `.`
+ | | `.` | `build/main.cpp` | `build`
+ | | `build` | `main.cpp` | `..`
+ | | `build` | `build/main.cpp` | `.`
+
+To get absolute path names use `%g...` ( e.g. `%gc`, `%gf` ).
+* `%gp` is the same as `%p`
+* `%gb` is the same as `%n`
+
+
 ## Syntax
 Every command line has the following syntax:
 `[Environment variables] Command [Arguments]`
