@@ -1,3 +1,6 @@
+## 0.5.0 - Wildcards
+* See [README.md](README.md#Wildcards) for details
+
 ## 0.4.0 - Use atom's styleguide
 * Improve file path highlighting
 
