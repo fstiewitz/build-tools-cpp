@@ -126,8 +126,8 @@ module.exports =
     return
 
   step1: ->
-    cmd_string = wc.replaceWildcards(atom.config.get('build-tools-cpp.Pre_Configure_Command'))
     cwd_string = atom.config.get('build-tools-cpp.BuildFolder')
+    cmd_string = wc.replaceWildcards(atom.config.get('build-tools-cpp.Pre_Configure_Command'),cwd_string)
     cmd = @spawn cmd_string, cwd_string
     if @stepchild
       @stepchild.stdout.on 'data', (data) =>
@@ -136,8 +136,8 @@ module.exports =
         @buildToolsView.outputLineParsed data, ''
 
   step2: ->
-    cmd_string = atom.config.get('build-tools-cpp.Configure_Command')
     cwd_string = atom.config.get('build-tools-cpp.BuildFolder')
+    cmd_string = wc.replaceWildcards(atom.config.get('build-tools-cpp.Configure_Command'),cwd_string)
     cmd = @spawn cmd_string, cwd_string
     if @stepchild
       @stepchild.stdout.on 'data', (data) =>
@@ -146,8 +146,8 @@ module.exports =
         @buildToolsView.outputLineParsed data, ''
 
   step3: ->
-    cmd_string = atom.config.get('build-tools-cpp.Build_Command')
     cwd_string = atom.config.get('build-tools-cpp.BuildFolder')
+    cmd_string = wc.replaceWildcards(atom.config.get('build-tools-cpp.Build_Command'),cwd_string)
     cmd = @spawn cmd_string, cwd_string
     if @stepchild
       @stepchild.stdout.on 'data', (data) =>
