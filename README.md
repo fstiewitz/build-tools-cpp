@@ -18,7 +18,7 @@ build-tools-cpp
 * Error highlighting with `clang`/`clang++` only works properly with `-fno-diagnostics-fixit-info`
 
 ## Changelog
-See [ChANGELOG.md](CHANGELOG.md)
+See [CHANGELOG.md](CHANGELOG.md)
 
 ## How to
 * Click `ctrl-l ctrl-u` to execute your `Pre-Configure command`
