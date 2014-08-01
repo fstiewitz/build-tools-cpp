@@ -1,3 +1,9 @@
+## 0.6.0 - Per-project settings
+* Settings now use serialization to allow users to have different settings for different projects
+* After you updated this package you may have to set the settings for your project(s) again to initialize the serialization
+* Opening multiple projects at the same time causes problems ( so don't do it )
+* New projects have default build settings
+
 ## 0.5.0 - Wildcards
 * See [README.md](README.md) for details
 

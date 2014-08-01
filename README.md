@@ -17,6 +17,9 @@ build-tools-cpp
 * Error highlighting only works with `gcc` and `g++` v4.8+
 * Error highlighting with `clang`/`clang++` only works properly with `-fno-diagnostics-fixit-info`
 
+## Changelog
+See [ChANGELOG.md](CHANGELOG.md)
+
 ## How to
 * Click `ctrl-l ctrl-u` to execute your `Pre-Configure command`
 * Click `ctrl-l ctrl-i` to execute your `Configure command`
