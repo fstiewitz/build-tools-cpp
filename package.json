@@ -3,12 +3,6 @@
   "main": "./lib/build-tools-cpp",
   "version": "0.5.0",
   "description": "Build your autotools / CMake / Makefile project in atom",
-  "activationEvents": [
-    "build-tools-cpp:pre-configure",
-    "build-tools-cpp:configure",
-    "build-tools-cpp:make",
-    "build-tools-cpp:toggle"
-  ],
   "repository": "https://github.com/deprint/build-tools-cpp",
   "license": "MIT",
   "engines": {

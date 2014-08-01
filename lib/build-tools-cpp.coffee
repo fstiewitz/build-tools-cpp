@@ -8,6 +8,10 @@ module.exports =
   stepchild: null
 
   activate: (state) ->
+    for arg in @configDefaults
+      if arg in state then continue
+      state[arg] = @configDefaults[arg]
+    atom.config.set('build-tools-cpp',state);
     @projdir = atom.project.getPath()
     BuildToolsCommandOutput = require './build-tools-view'
     @buildToolsView = new BuildToolsCommandOutput()
@@ -23,6 +27,9 @@ module.exports =
   deactivate: ->
     @stepchild?.kill('SIGKILL')
     @buildToolsView.destroy()
+
+  serialize: ->
+    atom.config.get('build-tools-cpp')
 
   toggle: ->
     @buildToolsView.toggleBox()
