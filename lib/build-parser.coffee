@@ -3,11 +3,15 @@ fs = require 'fs-plus'
 
 module.exports=
   getWD: (projdir, build_folder) ->
-    p = path.join(projdir,build_folder)
-    if fs.isDirectorySync p
-      return p
+    if path.isAbsolute(build_folder)
+      if fs.isDirectorySync build_folder
+        return build_folder
     else
-      return ''
+      if projdir isnt ''
+        p = path.join(projdir,build_folder)
+        if fs.isDirectorySync p
+          return p
+    return ''
 
   importantFiles: {
     "make": "Makefile"
@@ -75,8 +79,18 @@ module.exports=
         return true
     return false
 
+  getProjectPath: ->
+    projdir = atom.project.getPath()
+    if not projdir? #Project path available? - If not use file path
+      editor = atom.workspace.getActiveEditor()?.getPath()
+      if editor? #File path available?
+        return path.dirname(editor)
+      else
+        return ''
+    return projdir
+
   getAbsPath: (filepath) ->
-    fp = path.resolve(atom.project.getPath(),filepath)
+    fp = path.resolve(@getProjectPath(),filepath)
     return fp if fs.existsSync(fp)
     return ''
 

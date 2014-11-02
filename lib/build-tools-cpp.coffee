@@ -12,7 +12,6 @@ module.exports =
       if arg in state then continue
       state[arg] = @configDefaults[arg]
     atom.config.set('build-tools-cpp',state);
-    @projdir = atom.project.getPath()
     BuildToolsCommandOutput = require './build-tools-view'
     @buildToolsView = new BuildToolsCommandOutput()
     atom.workspaceView.command "build-tools-cpp:pre-configure", ".editor", =>
@@ -97,7 +96,7 @@ module.exports =
       cmd_list = @split cmd_string
       cmd = @getcommand cmd_list
       parser.clearVars()
-      wd = parser.getWD @projdir,cwd_string
+      wd = parser.getWD parser.getProjectPath(),cwd_string
       if wd isnt ''
         if (dependency = parser.hasDependencies wd, cmd.cmd, cmd.arg) is ""
           @buildToolsView.show()
