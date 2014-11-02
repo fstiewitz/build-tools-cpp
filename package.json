@@ -1,7 +1,7 @@
 {
   "name": "build-tools-cpp",
   "main": "./lib/build-tools-cpp",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Build your autotools / CMake / Makefile project in atom",
   "repository": "https://github.com/deprint/build-tools-cpp",
   "license": "MIT",
