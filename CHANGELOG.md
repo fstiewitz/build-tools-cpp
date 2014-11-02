@@ -1,3 +1,8 @@
+## 0.7.0 - Absolute build path
+* Bugfix: `Uncaught TypeError: Arguments to path.join must be strings`
+* `Build Folder` now allows an absolute path
+* Use path of currently opened file if project path is not available
+
 ## 0.6.0 - Per-project settings
 * Settings now use serialization to allow users to have different settings for different projects
 * After you updated this package you may have to set the settings for your project(s) again to initialize the serialization
