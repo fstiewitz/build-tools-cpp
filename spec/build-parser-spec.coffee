@@ -9,7 +9,7 @@ describe "build tools cpp parser", ->
   describe "when getWD ", ->
     describe "has valid arguments", ->
       it "returns the absolute path", ->
-        expect(parser.getWD fixturePath,".").toBe(path.join(atom.project.getPath(),"."))
+        expect(parser.getWD fixturePath,".").toBe(path.join(atom.project.getPaths()[0],"."))
 
     describe "has invalid arguments", ->
       it "returns ''", ->
@@ -71,7 +71,7 @@ describe "build tools cpp parser", ->
           row: 0
           col: 0
           start: 5
-          end: 61
+          end: path.join(fixturePath,"filename.cpp").length + 4
         }
         result = parser.getFileNames("test " + path.join(fixturePath,"filename.cpp") + ":")
         expect(result[0]).toEqual(expectedResult)
@@ -86,7 +86,7 @@ describe "build tools cpp parser", ->
           row: '10'
           col: 0
           start: 5
-          end: 64
+          end: path.join(fixturePath,"filename.cpp").length + 7
         }
         result = parser.getFileNames("test " + path.join(fixturePath,"filename.cpp") + ":10:")
         expect(result[0]).toEqual(expectedResult)
@@ -98,7 +98,7 @@ describe "build tools cpp parser", ->
           row: '10'
           col: '20'
           start: 5
-          end: 67
+          end: path.join(fixturePath,"filename.cpp").length + 10
         }
         result = parser.getFileNames("test " + path.join(fixturePath,"filename.cpp") + ":10:20")
         expect(result[0]).toEqual(expectedResult)
