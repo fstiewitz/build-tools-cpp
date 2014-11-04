@@ -195,6 +195,12 @@ module.exports=
         @nostatuslines = ''
       printfunc (@buildHTML line,stat)
 
+  poplines: (printfunc)->
+    for l in @nostatuslines.split("\n")
+      if l isnt ''
+        printfunc (@buildHTML l,'')
+    @nostatuslines = ''
+
   toLine: (line, script, printfunc) ->
     lines = line.split("\n")
 

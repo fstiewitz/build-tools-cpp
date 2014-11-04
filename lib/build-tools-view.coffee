@@ -67,6 +67,7 @@ class BuildToolsCommandOutput extends View
           editor.setCursorBufferPosition([lineno-1,linecol-1])
 
   finishConsole: ->
+    parser.poplines(@printLine)
     $(document).find(".filelink").on 'click', @openFile
 
   printLine: (message) =>
