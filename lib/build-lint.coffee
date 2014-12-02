@@ -1,5 +1,6 @@
 linterPath = atom.packages.getLoadedPackage("linter").path
 Linter = require "#{linterPath}/lib/linter"
+{$} = require 'atom'
 path = require 'path'
 msgs = require './message-list.coffee'
 
@@ -15,7 +16,7 @@ class LinterBuildTools extends Linter
     super(editor)
 
   lintFile: (filePath, callback) ->
-    if (m=msgs.messages[path.basename(filePath)])?
+    if atom.config.get('build-tools-cpp.UseLinterIfAvailable') and (m=msgs.messages[path.basename(filePath)])?
       messages = []
       for item in m
         match = {

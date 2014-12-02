@@ -171,6 +171,7 @@ module.exports =
           @buildToolsView.outputLineParsed data, '' #No highlighting
 
   configDefaults:
+    UseLinterIfAvailable: true
     Pre_Configure_Command: ""
     Configure_Command: ""
     Build_Command: "make"
