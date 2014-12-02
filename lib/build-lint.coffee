@@ -9,7 +9,7 @@ class LinterBuildTools extends Linter
   cmd: ''
   regex: ''
 
-  linterName: 'buildtoolslint'
+  linterName: 'Build tools'
 
   constructor: (editor) ->
     super(editor)
