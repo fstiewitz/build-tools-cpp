@@ -91,6 +91,9 @@ module.exports =
         command.cmd = parser.removeQuotes e
     return command
 
+  lint: ->
+      atom.workspaceView.trigger('linter:lint')
+
   spawn: (cmd_string,cwd_string) ->
     if cmd_string isnt ''
       cmd_list = @split cmd_string
@@ -102,6 +105,7 @@ module.exports =
           @buildToolsView.show()
           @buildToolsView.setHeader(cmd.cmd)
           @buildToolsView.clear()
+          parser.unlint()
           @buildToolsView.unlock()
           @stepchild = cp.spawn(cmd.cmd, cmd.arg, { cwd: wd, env: cmd.env })
           @stepchild.on 'error', (error) =>
@@ -114,6 +118,7 @@ module.exports =
             @buildToolsView.setHeader
             (cmd.cmd + ": finished with signal #{signal}") if signal?
             @buildToolsView.finishConsole()
+            @lint()
             @stepchild = null
           return cmd
         else if dependency is undefined
@@ -166,6 +171,7 @@ module.exports =
           @buildToolsView.outputLineParsed data, '' #No highlighting
 
   configDefaults:
+    UseLinterIfAvailable: true
     Pre_Configure_Command: ""
     Configure_Command: ""
     Build_Command: "make"

@@ -1,3 +1,6 @@
+## 0.8.0 - Linter
+* Install [Linter](https://atom.io/packages/linter) to use inline error highlighting
+
 ## 0.7.0 - Absolute build path
 * Bugfix: `Uncaught TypeError: Arguments to path.join must be strings`
 * `Build Folder` now allows an absolute path
