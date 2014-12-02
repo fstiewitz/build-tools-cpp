@@ -8,9 +8,6 @@ module.exports =
   stepchild: null
 
   activate: (state) ->
-    for arg in @configDefaults
-      if arg in state then continue
-      state[arg] = @configDefaults[arg]
     atom.config.set('build-tools-cpp',state);
     BuildToolsCommandOutput = require './build-tools-view'
     @buildToolsView = new BuildToolsCommandOutput()
@@ -170,11 +167,41 @@ module.exports =
         @stepchild.stderr.on 'data', (data) =>
           @buildToolsView.outputLineParsed data, '' #No highlighting
 
-  configDefaults:
-    UseLinterIfAvailable: true
-    Pre_Configure_Command: ""
-    Configure_Command: ""
-    Build_Command: "make"
-    BuildFolder: "."
-    ErrorHighlighting: true
-    SourceFileExtensions: '".cpp",".h",".c",".hpp"'
+  config:
+    UseLinterIfAvailable:
+      title: "Inline highlighting"
+      description: "Highlight errors and warnings in your code ( requires Linter plugin )"
+      type: 'boolean'
+      default: true
+    Pre_Configure_Command:
+      title: "Pre configure command"
+      description: "Command to execute"
+      type: 'string'
+      default: ""
+    Configure_Command:
+      title: "Configure command"
+      description: "Command to execute"
+      type: 'string'
+      default: ""
+    Build_Command:
+      title: "Build command"
+      description: "Command to build your project"
+      type: 'string'
+      default: "make"
+    BuildFolder:
+      title: "Build folder"
+      description: "All commands will be executed from this folder"
+      type: 'string'
+      default: "."
+    ErrorHighlighting:
+      title: "Error highlighting"
+      description: "Highlight errors in console"
+      type: 'boolean'
+      default: true
+    SourceFileExtensions:
+      title: "File extensions"
+      description: "Types of source files"
+      type: 'array'
+      default: [".cpp",".h",".c",".hpp"]
+      items:
+          type: 'string'

@@ -73,8 +73,7 @@ module.exports=
       return ""
 
   extInList: (extlist, filename) ->
-    llist = extlist.split(',')
-    for item in llist
+    for item in extlist
       item_unquote = @removeQuotes item
       if item_unquote is filename.substr(filename.length-item_unquote.length)
         return true
