@@ -20,6 +20,7 @@ class LinterBuildTools extends Linter
       for item in m
         match = {
           message: item[4],
+          col: 0,
           line: item[2],
         }
         messages.push({

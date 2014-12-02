@@ -130,6 +130,9 @@ module.exports=
               new_start = end
     return filenames
 
+  unlint: ->
+      msgs.messages = []
+
   lint: (line) ->
      if (r = line.match(/([\w./\\]+):([\d]+):(?:[\d]+:)?\s*(error|warning):([\S\s]+)/))?
        if msgs.messages[path.basename(r[1])]?
