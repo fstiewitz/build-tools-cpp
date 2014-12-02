@@ -24,13 +24,14 @@ class LinterBuildTools extends Linter
           col: 0,
           line: item[2],
         }
-        messages.push({
-          line: item[2],
-          level: item[3],
-          message: item[4],
-          linter: @linterName,
-          range: @computeRange match
-        })
+        if (r = @computeRange match)?
+          messages.push({
+            line: item[2],
+            level: item[3],
+            message: item[4],
+            linter: @linterName,
+            range: r
+          })
       callback messages
 
 module.exports = LinterBuildTools
