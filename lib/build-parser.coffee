@@ -1,5 +1,6 @@
 path = require 'path'
 fs = require 'fs-plus'
+msgs = require './message-list.coffee'
 
 module.exports=
   getWD: (projdir, build_folder) ->
@@ -129,15 +130,23 @@ module.exports=
               new_start = end
     return filenames
 
+  lint: (line) ->
+     if (r = line.match(/([\w./\\]+):([\d]+):(?:[\d]+:)?\s*(error|warning):([\S\s]+)/))?
+       if msgs.messages[path.basename(r[1])]?
+           msgs.messages[path.basename(r[1])].push(r)
+       else
+           msgs.messages[path.basename(r[1])] = [r]
 
   parseGCC: (line) ->
     if line.indexOf('error:') isnt -1 #Check for errors
       @continue_status = true
       @status = 'error'
+      @lint line
       return 'error'
     else if line.indexOf('warning:') isnt -1 #Check for warnings
       @continue_status = true
       @status = 'warning'
+      @lint line
       return 'warning'
     else if /^[\^\s~]+$/.test(line) #Reached delimiter for error messages?
       @continue_status = false
