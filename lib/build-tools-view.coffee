@@ -4,13 +4,20 @@ parser = require './build-parser.coffee'
 module.exports =
 class BuildToolsCommandOutput extends View
   @content: ->
-    @div class: 'build-tools-cpp', =>
-      @div class:"commandheader horizontal", =>
-        @div class:"commandname"
-        @div class:"commandclose"
+    @div class: 'build-tools-cpp', outlet: "btdiv", =>
       @div class:"commandoutput", outlet:"cmd_output"
 
   initialize: ->
+    cheader = document.createElement("atom-workspace-axis")
+    cname = document.createElement("div")
+    cclose = document.createElement("div")
+    cheader.classList.add('commandheader')
+    cheader.classList.add('horizontal')
+    cname.classList.add('commandname')
+    cclose.classList.add('commandclose')
+    cheader.appendChild(cname)
+    cheader.appendChild(cclose)
+    @prepend(cheader)
     $(document).on 'click','.commandclose', =>
       @hideBox()
     return

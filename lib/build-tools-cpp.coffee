@@ -2,26 +2,28 @@ cp = require 'child_process'
 parser = require './build-parser.coffee'
 wc = require './command-wildcards.coffee'
 
+{CompositeDisposable} = require 'atom'
+
 module.exports =
 
   buildToolsView: null
   stepchild: null
+  subscriptions: null
 
   activate: (state) ->
     atom.config.set('build-tools-cpp',state);
     BuildToolsCommandOutput = require './build-tools-view'
-    @buildToolsView = new BuildToolsCommandOutput()
-    atom.workspaceView.command "build-tools-cpp:pre-configure", ".editor", =>
-      @step1()
-    atom.workspaceView.command "build-tools-cpp:configure", ".editor", =>
-      @step2()
-    atom.workspaceView.command "build-tools-cpp:make", ".editor", =>
-      @step3()
-    atom.workspaceView.command "build-tools-cpp:toggle", ".editor", => @toggle()
-    atom.workspaceView.on "core:cancel core:close", => @cancel()
+    @buildToolsView = new BuildToolsCommandOutput
+    @subscriptions = new CompositeDisposable
+    @subscriptions.add atom.commands.add 'atom-workspace', "build-tools-cpp:pre-configure": => @step1()
+    @subscriptions.add atom.commands.add 'atom-workspace', "build-tools-cpp:configure": => @step2()
+    @subscriptions.add atom.commands.add 'atom-workspace', "build-tools-cpp:make": => @step3()
+    @subscriptions.add atom.commands.add 'atom-workspace', "build-tools-cpp:toggle": => @toggle()
+    @subscriptions.add atom.commands.add 'atom-workspace', "core:cancel core:close": => @cancel()
 
   deactivate: ->
     @stepchild?.kill('SIGKILL')
+    @subscriptions.dispose()
     @buildToolsView.destroy()
 
   serialize: ->
