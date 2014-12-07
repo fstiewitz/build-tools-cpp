@@ -133,7 +133,7 @@ module.exports=
       msgs.messages = []
 
   lint: (line) ->
-     if (r = line.match(/([\w./\\]+):([\d]+):(?:[\d]+:)?\s*(error|warning):([\S\s]+)/))?
+     if (r = line.match(/([\w./\\]+):([\d]+):(?:[\d]+:)?[\w\s]*(error|warning):([\S\s]+)/))?
        if msgs.messages[path.basename(r[1])]?
            msgs.messages[path.basename(r[1])].push(r)
        else
