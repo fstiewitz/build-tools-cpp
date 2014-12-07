@@ -20,6 +20,7 @@ class BuildToolsCommandOutput extends View
     @prepend(cheader)
     $(document).on 'click','.commandclose', =>
       @hideBox()
+    $(document).on 'mousedown', '.commandheader', @startResize
     return
 
   serialize: ->
@@ -44,6 +45,18 @@ class BuildToolsCommandOutput extends View
   showBox: ->
     @attach()
     @visible = true
+
+  startResize: =>
+    $(document).on 'mousemove', @resize
+    $(document).on 'mouseup', @endResize
+
+  endResize: =>
+    $(document).off 'mousemove', @resize
+    $(document).off 'mouseup', @endResize
+
+  resize: ({pageY, which}) =>
+    return @endResize() unless which is 1
+    $(document).find(".commandoutput").height($(document.body).height() - pageY)
 
   showHeaderLineOnly: ->
     $(document).find(".commandoutput").addClass("build-tools-cpp-hidden")
