@@ -4,13 +4,16 @@ parser = require './build-parser.coffee'
 module.exports =
 class BuildToolsCommandOutput extends View
   @content: ->
-    @div class: 'build-tools-cpp', outlet: "btdiv", =>
-      @div class:"commandoutput", outlet:"cmd_output"
+    @div class: 'build-tools-cpp', outlet: 'btdiv', =>
+      @div class: 'commandoutput', outlet: 'cmd_output'
+
+  visible: false
+  lockoutput: false
 
   initialize: ->
-    cheader = document.createElement("atom-workspace-axis")
-    cname = document.createElement("div")
-    cclose = document.createElement("div")
+    cheader = document.createElement('atom-workspace-axis')
+    cname = document.createElement('div')
+    cclose = document.createElement('div')
     cheader.classList.add('commandheader')
     cheader.classList.add('horizontal')
     cname.classList.add('commandname')
@@ -56,13 +59,13 @@ class BuildToolsCommandOutput extends View
 
   resize: ({pageY, which}) =>
     return @endResize() unless which is 1
-    $(document).find(".commandoutput").height($(document.body).height() - pageY)
+    $(document).find('.commandoutput').height($(document.body).height() - pageY)
 
   showHeaderLineOnly: ->
-    $(document).find(".commandoutput").addClass("build-tools-cpp-hidden")
+    $(document).find('.commandoutput').addClass('build-tools-cpp-hidden')
 
   showOutput: ->
-    $(document).find(".commandoutput").removeClass("build-tools-cpp-hidden")
+    $(document).find('.commandoutput').removeClass('build-tools-cpp-hidden')
 
   toggleBox: ->
     if @visible
@@ -71,7 +74,7 @@ class BuildToolsCommandOutput extends View
       @showBox()
 
   clear: ->
-    $(document).find(".commandoutput").text('')
+    $(document).find('.commandoutput').text('')
     parser.clearVars()
 
   outputLineParsed: (line,script) =>
@@ -88,7 +91,7 @@ class BuildToolsCommandOutput extends View
 
   finishConsole: ->
     parser.poplines(@printLine)
-    $(document).find(".filelink").on 'click', @openFile
+    $(document).find('.filelink').on 'click', @openFile
 
   printLine: (message) =>
     @showOutput() if !@lockoutput
@@ -96,17 +99,14 @@ class BuildToolsCommandOutput extends View
     @cmd_output.scrollTop(@cmd_output[0].scrollHeight)
 
   setHeader: (name) ->
-    $(document).find(".commandname").html("<b>#{name}</b>")
+    $(document).find('.commandname').html("<b>#{name}</b>")
 
   setHeaderOnly: (text) ->
     @showHeaderLineOnly()
-    $(document).find(".commandname").html("<b>#{text}</b>")
+    $(document).find('.commandname').html("<b>#{text}</b>")
 
   lock: ->
     @lockoutput = true
 
   unlock: ->
     @lockoutput = false
-
-  visible: false
-  lockoutput: false

@@ -15,11 +15,11 @@ module.exports =
     BuildToolsCommandOutput = require './build-tools-view'
     @buildToolsView = new BuildToolsCommandOutput
     @subscriptions = new CompositeDisposable
-    @subscriptions.add atom.commands.add 'atom-workspace', "build-tools-cpp:pre-configure": => @step1()
-    @subscriptions.add atom.commands.add 'atom-workspace', "build-tools-cpp:configure": => @step2()
-    @subscriptions.add atom.commands.add 'atom-workspace', "build-tools-cpp:make": => @step3()
-    @subscriptions.add atom.commands.add 'atom-workspace', "build-tools-cpp:toggle": => @toggle()
-    @subscriptions.add atom.commands.add 'atom-workspace', "core:cancel core:close": => @cancel()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @step1()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:configure': => @step2()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:make': => @step3()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:toggle': => @toggle()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'core:cancel core:close': => @cancel()
 
   deactivate: ->
     @stepchild?.kill('SIGKILL')
@@ -43,11 +43,11 @@ module.exports =
       @buildToolsView.hide()
 
   getQuoteIndex: (line) ->
-    c1 = line.indexOf("\"")
+    c1 = line.indexOf('"')
     if c1 isnt -1
-      return {index: c1, character: '\"'}
-    c1 = line.indexOf("\'")
-    return {index: c1, character: '\''}
+      return {index: c1, character: '"'}
+    c1 = line.indexOf("'")
+    return {index: c1, character: "'"}
 
   split: (cmd_string) ->
     args = []
@@ -171,39 +171,39 @@ module.exports =
 
   config:
     UseLinterIfAvailable:
-      title: "Inline highlighting"
-      description: "Highlight errors and warnings in your code ( requires Linter plugin )"
+      title: 'Inline highlighting'
+      description: 'Highlight errors and warnings in your code ( requires Linter plugin )'
       type: 'boolean'
       default: true
     Pre_Configure_Command:
-      title: "Pre configure command"
-      description: "Command to execute"
+      title: 'Pre configure command'
+      description: 'Command to execute'
       type: 'string'
-      default: ""
+      default: ''
     Configure_Command:
-      title: "Configure command"
-      description: "Command to execute"
+      title: 'Configure command'
+      description: 'Command to execute'
       type: 'string'
-      default: ""
+      default: ''
     Build_Command:
-      title: "Build command"
-      description: "Command to build your project"
+      title: 'Build command'
+      description: 'Command to build your project'
       type: 'string'
-      default: "make"
+      default: 'make'
     BuildFolder:
-      title: "Build folder"
-      description: "All commands will be executed from this folder"
+      title: 'Build folder'
+      description: 'All commands will be executed from this folder'
       type: 'string'
-      default: "."
+      default: '.'
     ErrorHighlighting:
-      title: "Error highlighting"
-      description: "Highlight errors in console"
+      title: 'Error highlighting'
+      description: 'Highlight errors in console'
       type: 'boolean'
       default: true
     SourceFileExtensions:
-      title: "File extensions"
-      description: "Types of source files"
+      title: 'File extensions'
+      description: 'Types of source files'
       type: 'array'
-      default: [".cpp",".h",".c",".hpp"]
+      default: ['.cpp','.h','.c','.hpp']
       items:
           type: 'string'
