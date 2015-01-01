@@ -45,7 +45,7 @@ module.exports =
     if @stepchild?
       @kill()
     else
-      @buildToolsView.hide()
+      @buildToolsView.cancel()
 
   getQuoteIndex: (line) ->
     c1 = line.indexOf('"')
@@ -99,8 +99,7 @@ module.exports =
       atom.workspaceView.trigger('linter:lint')
 
   settings: ->
-      @buildToolsView.showBox()
-      @buildToolsView.showSettings(@settingsView)
+    @buildToolsView.toggleSettings(@settingsView)
 
   spawn: (cmd_string,cwd_string) ->
     if cmd_string isnt ''
@@ -110,14 +109,15 @@ module.exports =
       wd = parser.getWD parser.getProjectPath(),cwd_string
       if wd isnt ''
         if (dependency = parser.hasDependencies wd, cmd.cmd, cmd.arg) is ""
-          @buildToolsView.show()
+          @buildToolsView.showBox()
           @buildToolsView.setHeader(cmd.cmd)
           @buildToolsView.clear()
           parser.unlint()
           @buildToolsView.unlock()
           @stepchild = cp.spawn(cmd.cmd, cmd.arg, { cwd: wd, env: cmd.env })
           @stepchild.on 'error', (error) =>
-            @buildToolsView.setHeaderOnly("#{cmd_string}: received #{error}")
+            @buildToolsView.hideOutput()
+            @buildToolsView.setHeader("#{cmd_string}: received #{error}")
             @buildToolsView.lock()
             @kill()
           @stepchild.on 'exit', (exitcode, signal) =>
@@ -131,16 +131,19 @@ module.exports =
           return cmd
         else if dependency is undefined
           @buildToolsView.lock()
-          @buildToolsView.show()
-          @buildToolsView.setHeaderOnly("Error parsing arguments")
+          @buildToolsView.showBox()
+          @buildToolsView.hideOutput()
+          @buildToolsView.setHeader("Error parsing arguments")
         else
           @buildToolsView.lock()
-          @buildToolsView.show()
-          @buildToolsView.setHeaderOnly("Error: File #{dependency} not found")
+          @buildToolsView.showBox()
+          @buildToolsView.hideOutput()
+          @buildToolsView.setHeader("Error: File #{dependency} not found")
       else
         @buildToolsView.lock()
-        @buildToolsView.show()
-        @buildToolsView.setHeaderOnly("Error: Build folder #{cwd_string} not found")
+        @buildToolsView.showBox()
+        @buildToolsView.hideOutput()
+        @buildToolsView.setHeader("Error: Build folder #{cwd_string} not found")
         return
     return
 

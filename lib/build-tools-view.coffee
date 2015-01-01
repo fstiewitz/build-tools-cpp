@@ -10,8 +10,12 @@ class BuildToolsCommandOutput extends View
           @div class: 'commandclose'
       @div class: 'commandoutput', outlet: 'cmd_output'
 
-  visible: false
+  visible:
+    header: false
+    settings: false
+    output: false
   lockoutput: false
+  settings: null
 
   initialize: ->
     $(document).on 'click','.commandclose', =>
@@ -27,24 +31,44 @@ class BuildToolsCommandOutput extends View
   attach: ->
     atom.workspaceView.appendToBottom(this)
 
+  toggleSettings: (settings) ->
+    if @visible.settings
+      @hideSettings()
+    else
+      @showBox()
+      @showSettings(settings)
+
   showSettings: (settings) ->
-    @setHeaderOnly("Settings")
-    @cheader.after(settings)
+    @cheader.after(settings) if not @visible.settings
+    @settings = settings
+    $(document).find('.settings').addClass('settings-abs') if @visible.output
+    @visible.settings = true
 
-  show: ->
-    @showBox() if !@visible
-    @showHeaderLineOnly()
+  hideSettings: ->
+    @settings.detach()
+    @visible.settings = false
 
-  hide: ->
-    @hideBox() if @visible
+  toggleBox: ->
+    if @visible.header
+      @hideBox()
+    else
+      @showBox()
 
   hideBox: ->
-    @detach()
-    @visible = false
+    @detach() if @visible.header
+    @visible.header = false
 
   showBox: ->
-    @attach()
-    @visible = true
+    @attach() if not @visible.header
+    @visible.header = true
+
+  cancel: ->
+    if @visible.settings
+      @hideSettings()
+    else if @visible.output
+      @hideOutput()
+    else
+      @hideBox()
 
   startResize: =>
     $(document).on 'mousemove', @resize
@@ -58,17 +82,13 @@ class BuildToolsCommandOutput extends View
     return @endResize() unless which is 1
     $(document).find('.commandoutput').height($(document.body).height() - pageY)
 
-  showHeaderLineOnly: ->
+  hideOutput: ->
     $(document).find('.commandoutput').addClass('build-tools-cpp-hidden')
+    @visible.output = false
 
   showOutput: ->
     $(document).find('.commandoutput').removeClass('build-tools-cpp-hidden')
-
-  toggleBox: ->
-    if @visible
-      @hideBox()
-    else
-      @showBox()
+    @visible.output = true
 
   clear: ->
     $(document).find('.commandoutput').text('')
@@ -97,10 +117,6 @@ class BuildToolsCommandOutput extends View
 
   setHeader: (name) ->
     $(document).find('.commandname').html("<b>#{name}</b>")
-
-  setHeaderOnly: (text) ->
-    @showHeaderLineOnly()
-    $(document).find('.commandname').html("<b>#{text}</b>")
 
   lock: ->
     @lockoutput = true
