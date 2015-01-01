@@ -5,22 +5,15 @@ module.exports =
 class BuildToolsCommandOutput extends View
   @content: ->
     @div class: 'build-tools-cpp', outlet: 'btdiv', =>
+      @div class: 'commandheader', outlet: 'cheader', =>
+          @div class: 'commandname'
+          @div class: 'commandclose'
       @div class: 'commandoutput', outlet: 'cmd_output'
 
   visible: false
   lockoutput: false
 
   initialize: ->
-    cheader = document.createElement('atom-workspace-axis')
-    cname = document.createElement('div')
-    cclose = document.createElement('div')
-    cheader.classList.add('commandheader')
-    cheader.classList.add('horizontal')
-    cname.classList.add('commandname')
-    cclose.classList.add('commandclose')
-    cheader.appendChild(cname)
-    cheader.appendChild(cclose)
-    @prepend(cheader)
     $(document).on 'click','.commandclose', =>
       @hideBox()
     $(document).on 'mousedown', '.commandheader', @startResize
@@ -33,6 +26,10 @@ class BuildToolsCommandOutput extends View
 
   attach: ->
     atom.workspaceView.appendToBottom(this)
+
+  showSettings: (settings) ->
+    @setHeaderOnly("Settings")
+    @cheader.after(settings)
 
   show: ->
     @showBox() if !@visible

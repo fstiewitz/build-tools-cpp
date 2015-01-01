@@ -23,7 +23,8 @@ module.exports =
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:make': => @step3()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:toggle': => @toggle()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:settings': => @settings()
-    @subscriptions.add atom.commands.add 'atom-workspace', 'core:cancel core:close': => @cancel()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'core:cancel': => @cancel()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'core:close': => @cancel()
 
   deactivate: ->
     @stepchild?.kill('SIGKILL')
@@ -98,8 +99,8 @@ module.exports =
       atom.workspaceView.trigger('linter:lint')
 
   settings: ->
-      @buildToolsView.show()
-      @buildToolsView.append(@settingsView)
+      @buildToolsView.showBox()
+      @buildToolsView.showSettings(@settingsView)
 
   spawn: (cmd_string,cwd_string) ->
     if cmd_string isnt ''
