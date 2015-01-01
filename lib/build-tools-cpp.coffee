@@ -7,18 +7,22 @@ wc = require './command-wildcards.coffee'
 module.exports =
 
   buildToolsView: null
+  settingsView: null
   stepchild: null
   subscriptions: null
 
   activate: (state) ->
     atom.config.set('build-tools-cpp',state);
     BuildToolsCommandOutput = require './build-tools-view'
+    SettingsView = require './settings-view'
     @buildToolsView = new BuildToolsCommandOutput
+    @settingsView = new SettingsView
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @step1()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:configure': => @step2()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:make': => @step3()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:toggle': => @toggle()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:settings': => @settings()
     @subscriptions.add atom.commands.add 'atom-workspace', 'core:cancel core:close': => @cancel()
 
   deactivate: ->
@@ -92,6 +96,10 @@ module.exports =
 
   lint: ->
       atom.workspaceView.trigger('linter:lint')
+
+  settings: ->
+      @buildToolsView.show()
+      @buildToolsView.append(@settingsView)
 
   spawn: (cmd_string,cwd_string) ->
     if cmd_string isnt ''
