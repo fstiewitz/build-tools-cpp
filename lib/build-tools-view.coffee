@@ -19,13 +19,13 @@ class BuildToolsCommandOutput extends View
   lockoutput: false
 
   initialize: ->
-    $(document).on 'click','.commandclose', =>
+    @on 'click','.commandclose', =>
       @hideBox()
-    $(document).on 'click','.commandsettings', =>
+    @on 'click','.commandsettings', =>
       @showSettings()
-    $(document).on 'click','.commandsettingsup', =>
+    @on 'click','.commandsettingsup', =>
       @hideSettings()
-    $(document).on 'mousedown', '.commandheader', @startResize
+    @on 'mousedown', '.commandheader', @startResize
     return
 
   serialize: ->
@@ -46,14 +46,14 @@ class BuildToolsCommandOutput extends View
   showSettings: ->
     if not @visible.settings
       @cheader.after(ml.settings)
-      $(document).find('.settings').addClass('settings-abs') if @visible.output
-      $(document).find('.commandsettings').removeClass('commandsettings').addClass('commandsettingsup')
+      @find('.settings').addClass('settings-abs') if @visible.output
+      @find('.commandsettings').removeClass('commandsettings').addClass('commandsettingsup')
       @visible.settings = true
 
   hideSettings: ->
     if @visible.settings
       ml.settings.detach()
-      $(document).find('.commandsettingsup').removeClass('commandsettingsup').addClass('commandsettings')
+      @find('.commandsettingsup').removeClass('commandsettingsup').addClass('commandsettings')
       @visible.settings = false
 
   toggleBox: ->
@@ -73,8 +73,6 @@ class BuildToolsCommandOutput extends View
   cancel: ->
     if @visible.settings
       @hideSettings()
-    else if @visible.output
-      @hideOutput()
     else
       @hideBox()
 
@@ -88,19 +86,18 @@ class BuildToolsCommandOutput extends View
 
   resize: ({pageY, which}) =>
     return @endResize() unless which is 1
-    if @visible.settings then pageY = pageY + ml.settings.height()
-    $(document).find('.commandoutput').height($(document.body).height() - pageY)
+    @find('.commandoutput').height($(document.body).height() - pageY)
 
   hideOutput: ->
-    $(document).find('.commandoutput').addClass('build-tools-cpp-hidden')
+    @find('.commandoutput').addClass('build-tools-cpp-hidden')
     @visible.output = false
 
   showOutput: ->
-    $(document).find('.commandoutput').removeClass('build-tools-cpp-hidden')
+    @find('.commandoutput').removeClass('build-tools-cpp-hidden')
     @visible.output = true
 
   clear: ->
-    $(document).find('.commandoutput').text('')
+    @find('.commandoutput').text('')
     parser.clearVars()
 
   outputLineParsed: (line,script) =>
@@ -117,7 +114,7 @@ class BuildToolsCommandOutput extends View
 
   finishConsole: ->
     parser.poplines(@printLine)
-    $(document).find('.filelink').on 'click', @openFile
+    @find('.filelink').on 'click', @openFile
 
   printLine: (message) =>
     @showOutput() if !@lockoutput
@@ -125,7 +122,7 @@ class BuildToolsCommandOutput extends View
     @cmd_output.scrollTop(@cmd_output[0].scrollHeight)
 
   setHeader: (name) ->
-    $(document).find('.commandname').html("<b>#{name}</b>")
+    @find('.commandname').html("<b>#{name}</b>")
 
   lock: ->
     @lockoutput = true

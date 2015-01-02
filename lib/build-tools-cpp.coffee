@@ -8,7 +8,6 @@ ml = require './message-list.coffee'
 module.exports =
 
   buildToolsView: null
-  settingsView: null
   stepchild: null
   subscriptions: null
 
@@ -16,8 +15,7 @@ module.exports =
     BuildToolsCommandOutput = require './build-tools-view'
     SettingsView = require './settings-view'
     @buildToolsView = new BuildToolsCommandOutput
-    @settingsView = new SettingsView
-    ml.settings = @settingsView
+    ml.settings = new SettingsView
     if state["Configure_Command"]?
       state.bf = state["BuildFolder"]
       state.pc = state["Pre_Configure_Command"]
