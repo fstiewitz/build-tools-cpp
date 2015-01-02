@@ -10,6 +10,7 @@ build-tools-cpp
 * Highlights errors and warnings of `gcc` and `g++`
 * File paths can be opened with left click
 * Highlight errors inline with [Linter](https://atom.io/packages/linter)
+* Use different build settings for different projects
 
 <b>Error highlighting may not work with all compilers, but can be disabled.
 </b>
