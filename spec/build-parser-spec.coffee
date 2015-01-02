@@ -52,11 +52,11 @@ describe "build tools cpp parser", ->
   describe "when extension of extInList ", ->
     describe "exists", ->
       it "returns true", ->
-        expect(parser.extInList('".cpp",".c"',"filename.cpp")).toBe(true)
+        expect(parser.extInList([".cpp",".c"],"filename.cpp")).toBe(true)
 
     describe "does not exist", ->
       it "returns false", ->
-        expect(parser.extInList('".cpp",".c"',"filename.h")).toBe(false)
+        expect(parser.extInList([".cpp",".c"],"filename.h")).toBe(false)
 
   describe "when getFileNames ", ->
     saveConf = ""
