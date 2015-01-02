@@ -213,4 +213,4 @@ module.exports =
       type: 'array'
       default: ['.cpp','.h','.c','.hpp']
       items:
-          type: 'string'
+        type: 'string'

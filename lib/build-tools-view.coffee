@@ -20,6 +20,7 @@ class BuildToolsCommandOutput extends View
 
   initialize: ->
     @on 'click','.commandclose', =>
+      @hideSettings()
       @hideBox()
     @on 'click','.commandsettings', =>
       @showSettings()
