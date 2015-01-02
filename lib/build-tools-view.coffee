@@ -7,6 +7,7 @@ class BuildToolsCommandOutput extends View
     @div class: 'build-tools-cpp', outlet: 'btdiv', =>
       @div class: 'commandheader', outlet: 'cheader', =>
           @div class: 'commandname'
+          @div class: 'commandsettings'
           @div class: 'commandclose'
       @div class: 'commandoutput', outlet: 'cmd_output'
 
@@ -20,6 +21,10 @@ class BuildToolsCommandOutput extends View
   initialize: ->
     $(document).on 'click','.commandclose', =>
       @hideBox()
+    $(document).on 'click','.commandsettings', =>
+      @showSettings()
+    $(document).on 'click','.commandsettingsup', =>
+      @hideSettings()
     $(document).on 'mousedown', '.commandheader', @startResize
     return
 
@@ -31,22 +36,28 @@ class BuildToolsCommandOutput extends View
   attach: ->
     atom.workspaceView.appendToBottom(this)
 
-  toggleSettings: (settings) ->
+  setSettings:(settings) ->
+    @settings = settings
+
+  toggleSettings: ->
     if @visible.settings
       @hideSettings()
     else
       @showBox()
-      @showSettings(settings)
+      @showSettings
 
-  showSettings: (settings) ->
-    @cheader.after(settings) if not @visible.settings
-    @settings = settings
-    $(document).find('.settings').addClass('settings-abs') if @visible.output
-    @visible.settings = true
+  showSettings: ->
+    if not @visible.settings
+      @cheader.after(@settings)
+      $(document).find('.settings').addClass('settings-abs') if @visible.output
+      $(document).find('.commandsettings').removeClass('commandsettings').addClass('commandsettingsup')
+      @visible.settings = true
 
   hideSettings: ->
-    @settings.detach()
-    @visible.settings = false
+    if @visible.settings
+      @settings.detach()
+      $(document).find('.commandsettingsup').removeClass('commandsettingsup').addClass('commandsettings')
+      @visible.settings = false
 
   toggleBox: ->
     if @visible.header

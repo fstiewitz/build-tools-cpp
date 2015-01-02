@@ -17,6 +17,7 @@ module.exports =
     SettingsView = require './settings-view'
     @buildToolsView = new BuildToolsCommandOutput
     @settingsView = new SettingsView
+    @buildToolsView.setSettings(@settingsView)
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @step1()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:configure': => @step2()
@@ -99,7 +100,7 @@ module.exports =
       atom.workspaceView.trigger('linter:lint')
 
   settings: ->
-    @buildToolsView.toggleSettings(@settingsView)
+    @buildToolsView.toggleSettings()
 
   spawn: (cmd_string,cwd_string) ->
     if cmd_string isnt ''

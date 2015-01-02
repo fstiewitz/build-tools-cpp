@@ -9,6 +9,16 @@
       right: 5px;
   }
 
+  .commandsettings {
+      position: absolute;
+      right: 20px;
+  }
+
+  .commandsettingsup {
+      position: absolute;
+      right: 20px;
+  }
+
   .bold {
       font-weight: bold;
   }
@@ -59,6 +69,42 @@
       width: @component-icon-size;
       height: @component-icon-size;
       content: "\f081";
+  }
+
+  .commandsettings:before {
+    font-family: 'Octicons Regular';
+    font-weight: normal;
+    font-style: normal;
+    display: inline-block;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    text-decoration: none;
+    font-size: 12px;
+    width: @component-icon-size;
+    height: @component-icon-size;
+    content: "\f0A3";
+  }
+
+  .commandsettingsup:before {
+    font-family: 'Octicons Regular';
+    font-weight: normal;
+    font-style: normal;
+    display: inline-block;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    text-decoration: none;
+    font-size: 12px;
+    width: @component-icon-size;
+    height: @component-icon-size;
+    content: "\f0A2";
+  }
+
+  .commandsettingsup:hover {
+    color: #ffffff;
+  }
+
+  .commandsettings:hover {
+    color: #ffffff;
   }
 
   .commandclose:hover {
