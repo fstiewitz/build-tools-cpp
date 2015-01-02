@@ -1,2 +1,4 @@
 module.exports =
-    messages: {}
+  settings: null
+
+  messages: {}

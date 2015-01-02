@@ -1,6 +1,7 @@
 cp = require 'child_process'
 parser = require './build-parser.coffee'
 wc = require './command-wildcards.coffee'
+ml = require './message-list.coffee'
 
 {CompositeDisposable} = require 'atom'
 
@@ -12,12 +13,20 @@ module.exports =
   subscriptions: null
 
   activate: (state) ->
-    atom.config.set('build-tools-cpp',state);
     BuildToolsCommandOutput = require './build-tools-view'
     SettingsView = require './settings-view'
     @buildToolsView = new BuildToolsCommandOutput
     @settingsView = new SettingsView
-    @buildToolsView.setSettings(@settingsView)
+    ml.settings = @settingsView
+    if state["Configure_Command"]?
+      state.bf = state["BuildFolder"]
+      state.pc = state["Pre_Configure_Command"]
+      state.c = state["Configure_Command"]
+      state.m = state["Build_Command"]
+    ml.settings.setBuildFolder(state.bf)
+    ml.settings.setPreConfigure(state.pc)
+    ml.settings.setConfigure(state.c)
+    ml.settings.setMake(state.m)
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @step1()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:configure': => @step2()
@@ -31,9 +40,15 @@ module.exports =
     @stepchild?.kill('SIGKILL')
     @subscriptions.dispose()
     @buildToolsView.destroy()
+    ml.settings.destroy()
 
   serialize: ->
-    atom.config.get('build-tools-cpp')
+    return {
+      bf: ml.settings.getBuildFolder()
+      pc: ml.settings.getPreConfigure()
+      c: ml.settings.getConfigure()
+      m: ml.settings.getMake()
+    }
 
   toggle: ->
     @buildToolsView.toggleBox()
@@ -149,8 +164,8 @@ module.exports =
     return
 
   step1: ->
-    cwd_string = atom.config.get('build-tools-cpp.BuildFolder')
-    cmd_string = wc.replaceWildcards(atom.config.get('build-tools-cpp.Pre_Configure_Command'),cwd_string)
+    cwd_string = ml.settings.getBuildFolder()
+    cmd_string = wc.replaceWildcards(ml.settings.getPreConfigure(),cwd_string)
     cmd = @spawn cmd_string, cwd_string
     if @stepchild
       @stepchild.stdout.on 'data', (data) =>
@@ -159,8 +174,8 @@ module.exports =
         @buildToolsView.outputLineParsed data, ''
 
   step2: ->
-    cwd_string = atom.config.get('build-tools-cpp.BuildFolder')
-    cmd_string = wc.replaceWildcards(atom.config.get('build-tools-cpp.Configure_Command'),cwd_string)
+    cwd_string = ml.settings.getBuildFolder()
+    cmd_string = wc.replaceWildcards(ml.settings.getConfigure(),cwd_string)
     cmd = @spawn cmd_string, cwd_string
     if @stepchild
       @stepchild.stdout.on 'data', (data) =>
@@ -169,8 +184,8 @@ module.exports =
         @buildToolsView.outputLineParsed data, ''
 
   step3: ->
-    cwd_string = atom.config.get('build-tools-cpp.BuildFolder')
-    cmd_string = wc.replaceWildcards(atom.config.get('build-tools-cpp.Build_Command'),cwd_string)
+    cwd_string = ml.settings.getBuildFolder()
+    cmd_string = wc.replaceWildcards(ml.settings.getMake(),cwd_string)
     cmd = @spawn cmd_string, cwd_string
     if @stepchild
       @stepchild.stdout.on 'data', (data) =>
@@ -188,26 +203,6 @@ module.exports =
       description: 'Highlight errors and warnings in your code ( requires Linter plugin )'
       type: 'boolean'
       default: true
-    Pre_Configure_Command:
-      title: 'Pre configure command'
-      description: 'Command to execute'
-      type: 'string'
-      default: ''
-    Configure_Command:
-      title: 'Configure command'
-      description: 'Command to execute'
-      type: 'string'
-      default: ''
-    Build_Command:
-      title: 'Build command'
-      description: 'Command to build your project'
-      type: 'string'
-      default: 'make'
-    BuildFolder:
-      title: 'Build folder'
-      description: 'All commands will be executed from this folder'
-      type: 'string'
-      default: '.'
     ErrorHighlighting:
       title: 'Error highlighting'
       description: 'Highlight errors in console'

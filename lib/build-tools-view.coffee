@@ -1,5 +1,6 @@
 {$,View} = require 'atom'
 parser = require './build-parser.coffee'
+ml = require './message-list.coffee'
 
 module.exports =
 class BuildToolsCommandOutput extends View
@@ -9,14 +10,13 @@ class BuildToolsCommandOutput extends View
           @div class: 'commandname'
           @div class: 'commandsettings'
           @div class: 'commandclose'
-      @div class: 'commandoutput', outlet: 'cmd_output'
+      @div class: 'commandoutput build-tools-cpp-hidden', outlet: 'cmd_output'
 
   visible:
     header: false
     settings: false
     output: false
   lockoutput: false
-  settings: null
 
   initialize: ->
     $(document).on 'click','.commandclose', =>
@@ -36,26 +36,23 @@ class BuildToolsCommandOutput extends View
   attach: ->
     atom.workspaceView.appendToBottom(this)
 
-  setSettings:(settings) ->
-    @settings = settings
-
   toggleSettings: ->
     if @visible.settings
       @hideSettings()
     else
       @showBox()
-      @showSettings
+      @showSettings()
 
   showSettings: ->
     if not @visible.settings
-      @cheader.after(@settings)
+      @cheader.after(ml.settings)
       $(document).find('.settings').addClass('settings-abs') if @visible.output
       $(document).find('.commandsettings').removeClass('commandsettings').addClass('commandsettingsup')
       @visible.settings = true
 
   hideSettings: ->
     if @visible.settings
-      @settings.detach()
+      ml.settings.detach()
       $(document).find('.commandsettingsup').removeClass('commandsettingsup').addClass('commandsettings')
       @visible.settings = false
 
@@ -91,6 +88,7 @@ class BuildToolsCommandOutput extends View
 
   resize: ({pageY, which}) =>
     return @endResize() unless which is 1
+    if @visible.settings then pageY = pageY + ml.settings.height()
     $(document).find('.commandoutput').height($(document.body).height() - pageY)
 
   hideOutput: ->
