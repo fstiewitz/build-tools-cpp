@@ -1,6 +1,7 @@
 cp = require 'child_process'
 parser = require './build-parser.coffee'
 wc = require './command-wildcards.coffee'
+ml = require './message-list.coffee'
 
 {CompositeDisposable} = require 'atom'
 
@@ -11,23 +12,41 @@ module.exports =
   subscriptions: null
 
   activate: (state) ->
-    atom.config.set('build-tools-cpp',state);
     BuildToolsCommandOutput = require './build-tools-view'
+    SettingsView = require './settings-view'
     @buildToolsView = new BuildToolsCommandOutput
+    ml.settings = new SettingsView
+    if state["Configure_Command"]?
+      state.bf = state["BuildFolder"]
+      state.pc = state["Pre_Configure_Command"]
+      state.c = state["Configure_Command"]
+      state.m = state["Build_Command"]
+    ml.settings.setBuildFolder(state.bf)
+    ml.settings.setPreConfigure(state.pc)
+    ml.settings.setConfigure(state.c)
+    ml.settings.setMake(state.m)
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @step1()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:configure': => @step2()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:make': => @step3()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:toggle': => @toggle()
-    @subscriptions.add atom.commands.add 'atom-workspace', 'core:cancel core:close': => @cancel()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:settings': => @settings()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'core:cancel': => @cancel()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'core:close': => @cancel()
 
   deactivate: ->
     @stepchild?.kill('SIGKILL')
     @subscriptions.dispose()
     @buildToolsView.destroy()
+    ml.settings.destroy()
 
   serialize: ->
-    atom.config.get('build-tools-cpp')
+    return {
+      bf: ml.settings.getBuildFolder()
+      pc: ml.settings.getPreConfigure()
+      c: ml.settings.getConfigure()
+      m: ml.settings.getMake()
+    }
 
   toggle: ->
     @buildToolsView.toggleBox()
@@ -40,7 +59,7 @@ module.exports =
     if @stepchild?
       @kill()
     else
-      @buildToolsView.hide()
+      @buildToolsView.cancel()
 
   getQuoteIndex: (line) ->
     c1 = line.indexOf('"')
@@ -91,7 +110,11 @@ module.exports =
     return command
 
   lint: ->
-      atom.workspaceView.trigger('linter:lint')
+    ev = atom.views.getView(atom.workspace.getActiveEditor())
+    atom.commands.dispatch(ev, "linter:lint")
+
+  settings: ->
+    @buildToolsView.toggleSettings()
 
   spawn: (cmd_string,cwd_string) ->
     if cmd_string isnt ''
@@ -101,14 +124,15 @@ module.exports =
       wd = parser.getWD parser.getProjectPath(),cwd_string
       if wd isnt ''
         if (dependency = parser.hasDependencies wd, cmd.cmd, cmd.arg) is ""
-          @buildToolsView.show()
+          @buildToolsView.showBox()
           @buildToolsView.setHeader(cmd.cmd)
           @buildToolsView.clear()
           parser.unlint()
           @buildToolsView.unlock()
           @stepchild = cp.spawn(cmd.cmd, cmd.arg, { cwd: wd, env: cmd.env })
           @stepchild.on 'error', (error) =>
-            @buildToolsView.setHeaderOnly("#{cmd_string}: received #{error}")
+            @buildToolsView.hideOutput()
+            @buildToolsView.setHeader("#{cmd_string}: received #{error}")
             @buildToolsView.lock()
             @kill()
           @stepchild.on 'exit', (exitcode, signal) =>
@@ -122,22 +146,25 @@ module.exports =
           return cmd
         else if dependency is undefined
           @buildToolsView.lock()
-          @buildToolsView.show()
-          @buildToolsView.setHeaderOnly("Error parsing arguments")
+          @buildToolsView.showBox()
+          @buildToolsView.hideOutput()
+          @buildToolsView.setHeader("Error parsing arguments")
         else
           @buildToolsView.lock()
-          @buildToolsView.show()
-          @buildToolsView.setHeaderOnly("Error: File #{dependency} not found")
+          @buildToolsView.showBox()
+          @buildToolsView.hideOutput()
+          @buildToolsView.setHeader("Error: File #{dependency} not found")
       else
         @buildToolsView.lock()
-        @buildToolsView.show()
-        @buildToolsView.setHeaderOnly("Error: Build folder #{cwd_string} not found")
+        @buildToolsView.showBox()
+        @buildToolsView.hideOutput()
+        @buildToolsView.setHeader("Error: Build folder #{cwd_string} not found")
         return
     return
 
   step1: ->
-    cwd_string = atom.config.get('build-tools-cpp.BuildFolder')
-    cmd_string = wc.replaceWildcards(atom.config.get('build-tools-cpp.Pre_Configure_Command'),cwd_string)
+    cwd_string = ml.settings.getBuildFolder()
+    cmd_string = wc.replaceWildcards(ml.settings.getPreConfigure(),cwd_string)
     cmd = @spawn cmd_string, cwd_string
     if @stepchild
       @stepchild.stdout.on 'data', (data) =>
@@ -146,8 +173,8 @@ module.exports =
         @buildToolsView.outputLineParsed data, ''
 
   step2: ->
-    cwd_string = atom.config.get('build-tools-cpp.BuildFolder')
-    cmd_string = wc.replaceWildcards(atom.config.get('build-tools-cpp.Configure_Command'),cwd_string)
+    cwd_string = ml.settings.getBuildFolder()
+    cmd_string = wc.replaceWildcards(ml.settings.getConfigure(),cwd_string)
     cmd = @spawn cmd_string, cwd_string
     if @stepchild
       @stepchild.stdout.on 'data', (data) =>
@@ -156,8 +183,8 @@ module.exports =
         @buildToolsView.outputLineParsed data, ''
 
   step3: ->
-    cwd_string = atom.config.get('build-tools-cpp.BuildFolder')
-    cmd_string = wc.replaceWildcards(atom.config.get('build-tools-cpp.Build_Command'),cwd_string)
+    cwd_string = ml.settings.getBuildFolder()
+    cmd_string = wc.replaceWildcards(ml.settings.getMake(),cwd_string)
     cmd = @spawn cmd_string, cwd_string
     if @stepchild
       @stepchild.stdout.on 'data', (data) =>
@@ -175,26 +202,6 @@ module.exports =
       description: 'Highlight errors and warnings in your code ( requires Linter plugin )'
       type: 'boolean'
       default: true
-    Pre_Configure_Command:
-      title: 'Pre configure command'
-      description: 'Command to execute'
-      type: 'string'
-      default: ''
-    Configure_Command:
-      title: 'Configure command'
-      description: 'Command to execute'
-      type: 'string'
-      default: ''
-    Build_Command:
-      title: 'Build command'
-      description: 'Command to build your project'
-      type: 'string'
-      default: 'make'
-    BuildFolder:
-      title: 'Build folder'
-      description: 'All commands will be executed from this folder'
-      type: 'string'
-      default: '.'
     ErrorHighlighting:
       title: 'Error highlighting'
       description: 'Highlight errors in console'
@@ -206,4 +213,4 @@ module.exports =
       type: 'array'
       default: ['.cpp','.h','.c','.hpp']
       items:
-          type: 'string'
+        type: 'string'

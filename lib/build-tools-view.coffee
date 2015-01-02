@@ -1,29 +1,32 @@
 {$,View} = require 'atom'
 parser = require './build-parser.coffee'
+ml = require './message-list.coffee'
 
 module.exports =
 class BuildToolsCommandOutput extends View
   @content: ->
     @div class: 'build-tools-cpp', outlet: 'btdiv', =>
-      @div class: 'commandoutput', outlet: 'cmd_output'
+      @div class: 'commandheader', outlet: 'cheader', =>
+          @div class: 'commandname'
+          @div class: 'commandsettings'
+          @div class: 'commandclose'
+      @div class: 'commandoutput build-tools-cpp-hidden', outlet: 'cmd_output'
 
-  visible: false
+  visible:
+    header: false
+    settings: false
+    output: false
   lockoutput: false
 
   initialize: ->
-    cheader = document.createElement('atom-workspace-axis')
-    cname = document.createElement('div')
-    cclose = document.createElement('div')
-    cheader.classList.add('commandheader')
-    cheader.classList.add('horizontal')
-    cname.classList.add('commandname')
-    cclose.classList.add('commandclose')
-    cheader.appendChild(cname)
-    cheader.appendChild(cclose)
-    @prepend(cheader)
-    $(document).on 'click','.commandclose', =>
+    @on 'click','.commandclose', =>
+      @hideSettings()
       @hideBox()
-    $(document).on 'mousedown', '.commandheader', @startResize
+    @on 'click','.commandsettings', =>
+      @showSettings()
+    @on 'click','.commandsettingsup', =>
+      @hideSettings()
+    @on 'mousedown', '.commandheader', @startResize
     return
 
   serialize: ->
@@ -34,20 +37,45 @@ class BuildToolsCommandOutput extends View
   attach: ->
     atom.workspaceView.appendToBottom(this)
 
-  show: ->
-    @showBox() if !@visible
-    @showHeaderLineOnly()
+  toggleSettings: ->
+    if @visible.settings
+      @hideSettings()
+    else
+      @showBox()
+      @showSettings()
 
-  hide: ->
-    @hideBox() if @visible
+  showSettings: ->
+    if not @visible.settings
+      @cheader.after(ml.settings)
+      @find('.settings').addClass('settings-abs') if @visible.output
+      @find('.commandsettings').removeClass('commandsettings').addClass('commandsettingsup')
+      @visible.settings = true
+
+  hideSettings: ->
+    if @visible.settings
+      ml.settings.detach()
+      @find('.commandsettingsup').removeClass('commandsettingsup').addClass('commandsettings')
+      @visible.settings = false
+
+  toggleBox: ->
+    if @visible.header
+      @hideBox()
+    else
+      @showBox()
 
   hideBox: ->
-    @detach()
-    @visible = false
+    @detach() if @visible.header
+    @visible.header = false
 
   showBox: ->
-    @attach()
-    @visible = true
+    @attach() if not @visible.header
+    @visible.header = true
+
+  cancel: ->
+    if @visible.settings
+      @hideSettings()
+    else
+      @hideBox()
 
   startResize: =>
     $(document).on 'mousemove', @resize
@@ -59,22 +87,18 @@ class BuildToolsCommandOutput extends View
 
   resize: ({pageY, which}) =>
     return @endResize() unless which is 1
-    $(document).find('.commandoutput').height($(document.body).height() - pageY)
+    @find('.commandoutput').height($(document.body).height() - pageY)
 
-  showHeaderLineOnly: ->
-    $(document).find('.commandoutput').addClass('build-tools-cpp-hidden')
+  hideOutput: ->
+    @find('.commandoutput').addClass('build-tools-cpp-hidden')
+    @visible.output = false
 
   showOutput: ->
-    $(document).find('.commandoutput').removeClass('build-tools-cpp-hidden')
-
-  toggleBox: ->
-    if @visible
-      @hideBox()
-    else
-      @showBox()
+    @find('.commandoutput').removeClass('build-tools-cpp-hidden')
+    @visible.output = true
 
   clear: ->
-    $(document).find('.commandoutput').text('')
+    @find('.commandoutput').text('')
     parser.clearVars()
 
   outputLineParsed: (line,script) =>
@@ -91,7 +115,7 @@ class BuildToolsCommandOutput extends View
 
   finishConsole: ->
     parser.poplines(@printLine)
-    $(document).find('.filelink').on 'click', @openFile
+    @find('.filelink').on 'click', @openFile
 
   printLine: (message) =>
     @showOutput() if !@lockoutput
@@ -99,11 +123,7 @@ class BuildToolsCommandOutput extends View
     @cmd_output.scrollTop(@cmd_output[0].scrollHeight)
 
   setHeader: (name) ->
-    $(document).find('.commandname').html("<b>#{name}</b>")
-
-  setHeaderOnly: (text) ->
-    @showHeaderLineOnly()
-    $(document).find('.commandname').html("<b>#{text}</b>")
+    @find('.commandname').html("<b>#{name}</b>")
 
   lock: ->
     @lockoutput = true

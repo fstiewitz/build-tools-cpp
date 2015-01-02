@@ -8,6 +8,7 @@
         { 'label': 'Run pre-configure command', 'command': 'build-tools-cpp:pre-configure'}
         { 'label': 'Run configure command', 'command': 'build-tools-cpp:configure'},
         { 'label': 'Run build command', 'command': 'build-tools-cpp:make'}
+        { 'label': 'Show build settings', 'command': 'build-tools-cpp:settings'}
       ]
     ]
   }

@@ -3,57 +3,122 @@
 .build-tools-cpp {
   color: @text-color;
   background-color: @app-background-color;
+
+  .commandclose {
+      position: absolute;
+      right: 5px;
+  }
+
+  .commandsettings {
+      position: absolute;
+      right: 20px;
+  }
+
+  .commandsettingsup {
+      position: absolute;
+      right: 20px;
+  }
+
+  .bold {
+      font-weight: bold;
+  }
+
+  .filelink:hover {
+      text-decoration: underline;
+      cursor: pointer;
+  }
+
+  .settings-abs {
+      position: absolute;
+      z-index: 1;
+      width: 100%;
+  }
+
+  .settings {
+      background-color: @tool-panel-background-color;
+      padding: 5px;
+  }
+
+  .editor-container {
+      position: relative;
+      -webkit-flex: 1;
+      margin: 1px;
+  }
+
+  .commandheader {
+      border: 1px solid @tab-bar-background-color;
+      background-color: @tool-panel-background-color;
+      display: -webkit-flex;
+      -webkit-flex-direction: row;
+  }
+
+  .commandname {
+      cursor: default;
+      height: @component-icon-size;
+  }
+
+  .commandclose:before {
+      font-family: 'Octicons Regular';
+      font-weight: normal;
+      font-style: normal;
+      display: inline-block;
+      line-height: 1;
+      -webkit-font-smoothing: antialiased;
+      text-decoration: none;
+      font-size: 12px;
+      width: @component-icon-size;
+      height: @component-icon-size;
+      content: "\f081";
+  }
+
+  .commandsettings:before {
+    font-family: 'Octicons Regular';
+    font-weight: normal;
+    font-style: normal;
+    display: inline-block;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    text-decoration: none;
+    font-size: 12px;
+    width: @component-icon-size;
+    height: @component-icon-size;
+    content: "\f0A3";
+  }
+
+  .commandsettingsup:before {
+    font-family: 'Octicons Regular';
+    font-weight: normal;
+    font-style: normal;
+    display: inline-block;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    text-decoration: none;
+    font-size: 12px;
+    width: @component-icon-size;
+    height: @component-icon-size;
+    content: "\f0A2";
+  }
+
+  .commandsettingsup:hover {
+    color: #ffffff;
+  }
+
+  .commandsettings:hover {
+    color: #ffffff;
+  }
+
+  .commandclose:hover {
+      color: #ffffff;
+  }
+
+  .commandoutput {
+      height: 200px;
+      overflow: scroll;
+      font-family: monospace;
+      white-space: pre-wrap;
+  }
 }
 
 .build-tools-cpp-hidden {
   display: none;
-}
-
-.commandclose {
-  position: absolute;
-  right: 5px;
-}
-
-.bold {
-  font-weight: bold;
-}
-
-.filelink:hover {
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.commandheader {
-  border: 1px solid @tab-bar-background-color;
-  background-color: @tool-panel-background-color;
-}
-
-.commandname {
-  cursor: default;
-  height: @component-icon-size;
-}
-
-.commandclose:before {
-  font-family: 'Octicons Regular';
-  font-weight: normal;
-  font-style: normal;
-  display: inline-block;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased;
-  text-decoration: none;
-  font-size: 12px;
-  width: @component-icon-size;
-  height: @component-icon-size;
-  content: "\f081";
-}
-
-.commandclose:hover {
-  color: #ffffff;
-}
-
-.commandoutput {
-  height: 200px;
-  overflow: scroll;
-  font-family: monospace;
-  white-space: pre-wrap;
 }
