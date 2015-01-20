@@ -35,7 +35,7 @@ class BuildToolsCommandOutput extends View
     @detach()
 
   attach: ->
-    atom.workspaceView.appendToBottom(this)
+    atom.workspace.addBottomPanel({item: this})
 
   toggleSettings: ->
     if @visible.settings
@@ -109,9 +109,10 @@ class BuildToolsCommandOutput extends View
     lineno = parseInt($(this).attr('row'))
     linecol= parseInt($(this).attr('col'))
     if $(this).attr('name') isnt ''
-      atom.workspaceView.open($(this).attr('name')).then (editor) ->
-        if lineno isnt 0
-          editor.setCursorBufferPosition([lineno-1,linecol-1])
+      atom.workspace.open($(this).attr('name'),{
+          initialLine: lineno-1
+          initialColumn: linecol-1
+        })
 
   finishConsole: ->
     parser.poplines(@printLine)

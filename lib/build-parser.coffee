@@ -108,7 +108,7 @@ module.exports=
             if fp isnt ''
               end = line.indexOf(bycolon[0]) + bycolon[0].length - 1
               row = 0
-              col = 0
+              col = 1
               validRow = /^[\d]+$/.test(bycolon[1])
               validCol = /^[\d]+$/.test(bycolon[2])
               if validRow
