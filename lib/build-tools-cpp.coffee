@@ -110,8 +110,9 @@ module.exports =
     return command
 
   lint: ->
-    ev = atom.views.getView(atom.workspace.getActiveEditor())
-    atom.commands.dispatch(ev, "linter:lint")
+    if (v=atom.workspace.getActiveEditor())?
+      ev = atom.views.getView(v)
+      atom.commands.dispatch(ev, "linter:lint")
 
   settings: ->
     @buildToolsView.toggleSettings()
