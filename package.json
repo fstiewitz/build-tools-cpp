@@ -3,7 +3,7 @@
   "main": "./lib/build-tools-cpp",
   "linter-package": true,
   "linter-implementation": "build-lint",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Build your autotools / CMake / Makefile project in atom",
   "repository": "https://github.com/deprint/build-tools-cpp",
   "activationEvents": [
