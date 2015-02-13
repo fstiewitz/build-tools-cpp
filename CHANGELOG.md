@@ -1,3 +1,6 @@
+## 1.1.0 - Auto-save
+* Added option to automatically save all files before building
+
 ## 1.0.0 - Per-project settings
 * Moved `Build Folder` and build commands from atom's settings panel to a settings panel, which can be accessed via `build-tools-cpp:settings` or by clicking the arrow next to the package view's close button
 * You can have multiple atom windows with different build settings open at the same time
