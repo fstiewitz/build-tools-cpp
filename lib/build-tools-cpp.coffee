@@ -114,6 +114,11 @@ module.exports =
       ev = atom.views.getView(v)
       atom.commands.dispatch(ev, "linter:lint")
 
+  saveall: ->
+    if (v=atom.workspace.getActiveEditor())?
+      ev = atom.views.getView(v)
+      atom.commands.dispatch(ev, "window:save-all")
+
   settings: ->
     @buildToolsView.toggleSettings()
 
@@ -184,6 +189,7 @@ module.exports =
         @buildToolsView.outputLineParsed data, ''
 
   step3: ->
+    @saveall() if atom.config.get('build-tools-cpp.SaveAll')
     cwd_string = ml.settings.getBuildFolder()
     cmd_string = wc.replaceWildcards(ml.settings.getMake(),cwd_string)
     cmd = @spawn cmd_string, cwd_string
@@ -198,6 +204,11 @@ module.exports =
           @buildToolsView.outputLineParsed data, '' #No highlighting
 
   config:
+    SaveAll:
+      title: 'Save all'
+      description: 'Save all files before executing your build command'
+      type: 'boolean'
+      default: true
     UseLinterIfAvailable:
       title: 'Inline highlighting'
       description: 'Highlight errors and warnings in your code ( requires Linter plugin )'
