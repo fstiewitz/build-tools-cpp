@@ -77,17 +77,18 @@ class BuildToolsCommandOutput extends View
     else
       @hideBox()
 
-  startResize: =>
+  startResize: (e) => # pass in the mousedown event
     $(document).on 'mousemove', @resize
     $(document).on 'mouseup', @endResize
+    @padding = $(document.body).height() - (e.clientY + @find('.commandoutput').height()) # calculate padding offset
+
+  resize: ({pageY, which}) =>
+    return @endResize() unless which is 1
+    @find('.commandoutput').height($(document.body).height() - pageY - @padding) #includes padding offset
 
   endResize: =>
     $(document).off 'mousemove', @resize
     $(document).off 'mouseup', @endResize
-
-  resize: ({pageY, which}) =>
-    return @endResize() unless which is 1
-    @find('.commandoutput').height($(document.body).height() - pageY)
 
   hideOutput: ->
     @find('.commandoutput').addClass('build-tools-cpp-hidden')
