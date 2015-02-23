@@ -11,7 +11,8 @@
     "build-tools-cpp:configure",
     "build-tools-cpp:make",
     "build-tools-cpp:toggle",
-    "build-tools-cpp:settings"
+    "build-tools-cpp:settings",
+    "build-tools-cpp:show-commands"
   ],
   "license": "MIT",
   "engines": {

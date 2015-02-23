@@ -8,12 +8,14 @@ ml = require './message-list.coffee'
 module.exports =
 
   buildToolsView: null
+  commandsView: null
   stepchild: null
   subscriptions: null
 
   activate: (state) ->
     BuildToolsCommandOutput = require './build-tools-view'
     SettingsView = require './settings-view'
+    AdditionalCommandsList = require './add-cmd-view'
     @buildToolsView = new BuildToolsCommandOutput
     ml.settings = new SettingsView
     if state["Configure_Command"]?
@@ -25,18 +27,21 @@ module.exports =
     ml.settings.setPreConfigure(state.pc)
     ml.settings.setConfigure(state.c)
     ml.settings.setMake(state.m)
+    @commandsView = new AdditionalCommandsList()
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @step1()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:configure': => @step2()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:make': => @step3()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:toggle': => @toggle()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:settings': => @settings()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:show-commands': => @commands()
     @subscriptions.add atom.commands.add 'atom-workspace', 'core:cancel': => @cancel()
     @subscriptions.add atom.commands.add 'atom-workspace', 'core:close': => @cancel()
 
   deactivate: ->
     @stepchild?.kill('SIGKILL')
     @subscriptions.dispose()
+    @commandsView.destroy()
     @buildToolsView.destroy()
     ml.settings.destroy()
 
@@ -60,6 +65,16 @@ module.exports =
       @kill()
     else
       @buildToolsView.cancel()
+
+  commands: ->
+    @commandsView.show(@getCommands())
+
+  getCommands: ->
+    ret = []
+    if (make=ml.settings.getMake()) isnt "" then ret.push(make)
+    if (conf=ml.settings.getConfigure()) isnt "" then ret.push(conf)
+    if (pcon=ml.settings.getPreConfigure()) isnt "" then ret.push(pcon)
+    return ret
 
   getQuoteIndex: (line) ->
     c1 = line.indexOf('"')
