@@ -73,6 +73,7 @@ module.exports =
       @buildToolsView.cancel()
 
   commands: ->
+    @commandsView.resetDialog()
     @commandsView.show(@getCommands())
 
   getCommands: ->

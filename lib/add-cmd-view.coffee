@@ -33,6 +33,9 @@ class AdditionalCommandsListView extends SelectListView
       btcpp.execute(command)
       @cancel()
 
+  resetDialog: ->
+    @dialog = 0
+
   getFilterKey: ->
     filter = 'name'
     input = @filterEditorView.getText()
