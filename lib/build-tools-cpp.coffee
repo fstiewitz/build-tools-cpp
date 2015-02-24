@@ -9,6 +9,7 @@ module.exports =
 
   buildToolsView: null
   commandsView: null
+  editcommandView: null
   stepchild: null
   subscriptions: null
 
@@ -16,7 +17,10 @@ module.exports =
     BuildToolsCommandOutput = require './build-tools-view'
     SettingsView = require './settings-view'
     AdditionalCommandsList = require './add-cmd-view'
+    EditCommand = require './edit-cmd-view'
     @buildToolsView = new BuildToolsCommandOutput
+    @commandsView = new AdditionalCommandsList()
+    @editcommandView = new EditCommand(@commandsView.dialogConfirm)
     ml.settings = new SettingsView
     if state["Configure_Command"]?
       state.bf = state["BuildFolder"]
@@ -27,11 +31,10 @@ module.exports =
     ml.settings.setPreConfigure(state.pc)
     ml.settings.setConfigure(state.c)
     ml.settings.setMake(state.m)
-    @commandsView = new AdditionalCommandsList()
     @subscriptions = new CompositeDisposable
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @step1()
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:configure': => @step2()
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:make': => @step3()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @execute(ml.settings.getPreConfigure())
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:configure': => @execute(ml.settings.getConfigure())
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:make': => @executeMake()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:toggle': => @toggle()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:settings': => @settings()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:show-commands': => @commands()
@@ -70,10 +73,12 @@ module.exports =
     @commandsView.show(@getCommands())
 
   getCommands: ->
-    ret = []
-    if (make=ml.settings.getMake()) isnt "" then ret.push(make)
-    if (conf=ml.settings.getConfigure()) isnt "" then ret.push(conf)
-    if (pcon=ml.settings.getPreConfigure()) isnt "" then ret.push(pcon)
+    ret = [{name: "Add", command: "Add command"},{name: "Edit", command: "Edit command"},{name: "Remove", command: "Remove command"}]
+    if (make=ml.settings.getMake()) isnt "" then ret.push({name: "Make", command: make})
+    if (conf=ml.settings.getConfigure()) isnt "" then ret.push({name: "Configure", command: conf})
+    if (pcon=ml.settings.getPreConfigure()) isnt "" then ret.push({name: "Pre configure", command: pcon})
+    for name,command of ml.commands
+      ret.push({name: name, command: command})
     return ret
 
   getQuoteIndex: (line) ->
@@ -183,9 +188,9 @@ module.exports =
         return
     return
 
-  step1: ->
+  execute: (command) ->
     cwd_string = ml.settings.getBuildFolder()
-    cmd_string = wc.replaceWildcards(ml.settings.getPreConfigure(),cwd_string)
+    cmd_string = wc.replaceWildcards(command,cwd_string)
     cmd = @spawn cmd_string, cwd_string
     if @stepchild
       @stepchild.stdout.on 'data', (data) =>
@@ -193,17 +198,7 @@ module.exports =
       @stepchild.stderr.on 'data', (data) =>
         @buildToolsView.outputLineParsed data, ''
 
-  step2: ->
-    cwd_string = ml.settings.getBuildFolder()
-    cmd_string = wc.replaceWildcards(ml.settings.getConfigure(),cwd_string)
-    cmd = @spawn cmd_string, cwd_string
-    if @stepchild
-      @stepchild.stdout.on 'data', (data) =>
-        @buildToolsView.outputLineParsed data, ''
-      @stepchild.stderr.on 'data', (data) =>
-        @buildToolsView.outputLineParsed data, ''
-
-  step3: ->
+  executeMake: ->
     @saveall() if atom.config.get('build-tools-cpp.SaveAll')
     cwd_string = ml.settings.getBuildFolder()
     cmd_string = wc.replaceWildcards(ml.settings.getMake(),cwd_string)

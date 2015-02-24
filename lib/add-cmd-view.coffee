@@ -1,13 +1,37 @@
 {SelectListView, $$} = require 'atom-space-pen-views'
 
+ml = require './message-list.coffee'
+btcpp = require './build-tools-cpp.coffee'
+
 module.exports =
 class AdditionalCommandsListView extends SelectListView
 
-  viewForItem: (item) ->
-    $$ -> @li(item)
+  dialog: 0 # 0: normal/add; 1: edit; 2: remove
 
-  confirmed: (item) ->
-    @cancel()
+  viewForItem: ({name,command}) ->
+    $$ ->
+      @li class: 'two-lines', =>
+        @div class: 'primary-line', =>
+          @span name
+        @div class: 'secondary-line', =>
+          @span command
+
+  confirmed: ({name,command}) ->
+    if name is "Add"
+      @addDialog()
+      @cancel()
+    else if name is "Edit" then @editDialog()
+    else if name is "Remove" then @removeDialog()
+    else if @dialog is 2
+      ml.removeCommand(name)
+      @cancel()
+      @dialog = 0
+    else if @dialog is 1
+      @cancel()
+      btcpp.editcommandView.show({name: name,command: command})
+    else
+      btcpp.execute(command)
+      @cancel()
 
   cancel: ->
     super
@@ -18,3 +42,23 @@ class AdditionalCommandsListView extends SelectListView
     @panel.show()
     @setItems(items)
     @focusFilterEditor()
+
+  addDialog: ->
+    @dialog = 0
+    btcpp.editcommandView.show(undefined)
+    @cancel()
+
+  editDialog: ->
+    @dialog = 1
+    items = @items.slice(3)
+    @show(items)
+
+  removeDialog: ->
+    @dialog = 2
+    items = @items.slice(3)
+    @show(items)
+
+  dialogConfirm: (item) =>
+    if @dialog is 0 then ml.addCommand(item)
+    else if @dialog is 1 then ml.editCommand(item)
+    @dialog = 0
