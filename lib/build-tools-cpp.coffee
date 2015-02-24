@@ -31,6 +31,7 @@ module.exports =
     ml.settings.setPreConfigure(state.pc)
     ml.settings.setConfigure(state.c)
     ml.settings.setMake(state.m)
+    if state.cmd? then ml.commands = state.cmd
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @execute(ml.settings.getPreConfigure())
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:configure': => @execute(ml.settings.getConfigure())
@@ -44,6 +45,7 @@ module.exports =
   deactivate: ->
     @stepchild?.kill('SIGKILL')
     @subscriptions.dispose()
+    @editcommandView.destroy()
     @commandsView.destroy()
     @buildToolsView.destroy()
     ml.settings.destroy()
@@ -54,6 +56,7 @@ module.exports =
       pc: ml.settings.getPreConfigure()
       c: ml.settings.getConfigure()
       m: ml.settings.getMake()
+      cmd: ml.commands
     }
 
   toggle: ->
