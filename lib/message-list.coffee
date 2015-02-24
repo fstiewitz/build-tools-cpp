@@ -4,7 +4,7 @@ module.exports =
   commands: {}
 
   addCommand: (item) ->
-    @commands[item.name] = item.command
+    if item.name isnt "" then @commands[item.name] = item.command
     return
 
   editCommand: (item) ->
