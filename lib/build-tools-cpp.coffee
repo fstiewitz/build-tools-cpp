@@ -8,13 +8,19 @@ ml = require './message-list.coffee'
 module.exports =
 
   buildToolsView: null
+  commandsView: null
+  editcommandView: null
   stepchild: null
   subscriptions: null
 
   activate: (state) ->
     BuildToolsCommandOutput = require './build-tools-view'
     SettingsView = require './settings-view'
+    AdditionalCommandsList = require './add-cmd-view'
+    EditCommand = require './edit-cmd-view'
     @buildToolsView = new BuildToolsCommandOutput
+    @commandsView = new AdditionalCommandsList()
+    @editcommandView = new EditCommand(@commandsView.dialogConfirm)
     ml.settings = new SettingsView
     if state["Configure_Command"]?
       state.bf = state["BuildFolder"]
@@ -25,18 +31,22 @@ module.exports =
     ml.settings.setPreConfigure(state.pc)
     ml.settings.setConfigure(state.c)
     ml.settings.setMake(state.m)
+    if state.cmd? then ml.commands = state.cmd
     @subscriptions = new CompositeDisposable
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @step1()
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:configure': => @step2()
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:make': => @step3()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @execute(ml.settings.getPreConfigure())
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:configure': => @execute(ml.settings.getConfigure())
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:make': => @executeMake()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:toggle': => @toggle()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:settings': => @settings()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:show-commands': => @commands()
     @subscriptions.add atom.commands.add 'atom-workspace', 'core:cancel': => @cancel()
     @subscriptions.add atom.commands.add 'atom-workspace', 'core:close': => @cancel()
 
   deactivate: ->
     @stepchild?.kill('SIGKILL')
     @subscriptions.dispose()
+    @editcommandView.destroy()
+    @commandsView.destroy()
     @buildToolsView.destroy()
     ml.settings.destroy()
 
@@ -46,6 +56,7 @@ module.exports =
       pc: ml.settings.getPreConfigure()
       c: ml.settings.getConfigure()
       m: ml.settings.getMake()
+      cmd: ml.commands
     }
 
   toggle: ->
@@ -60,6 +71,16 @@ module.exports =
       @kill()
     else
       @buildToolsView.cancel()
+
+  commands: ->
+    @commandsView.resetDialog()
+    @commandsView.show(@getCommands())
+
+  getCommands: ->
+    ret = [{name: "Add", command: "Add command"},{name: "Edit", command: "Edit command"},{name: "Remove", command: "Remove command"}]
+    for name,command of ml.commands
+      ret.push({name: name, command: command})
+    return ret
 
   getQuoteIndex: (line) ->
     c1 = line.indexOf('"')
@@ -168,9 +189,9 @@ module.exports =
         return
     return
 
-  step1: ->
+  execute: (command) ->
     cwd_string = ml.settings.getBuildFolder()
-    cmd_string = wc.replaceWildcards(ml.settings.getPreConfigure(),cwd_string)
+    cmd_string = wc.replaceWildcards(command,cwd_string)
     cmd = @spawn cmd_string, cwd_string
     if @stepchild
       @stepchild.stdout.on 'data', (data) =>
@@ -178,17 +199,7 @@ module.exports =
       @stepchild.stderr.on 'data', (data) =>
         @buildToolsView.outputLineParsed data, ''
 
-  step2: ->
-    cwd_string = ml.settings.getBuildFolder()
-    cmd_string = wc.replaceWildcards(ml.settings.getConfigure(),cwd_string)
-    cmd = @spawn cmd_string, cwd_string
-    if @stepchild
-      @stepchild.stdout.on 'data', (data) =>
-        @buildToolsView.outputLineParsed data, ''
-      @stepchild.stderr.on 'data', (data) =>
-        @buildToolsView.outputLineParsed data, ''
-
-  step3: ->
+  executeMake: ->
     @saveall() if atom.config.get('build-tools-cpp.SaveAll')
     cwd_string = ml.settings.getBuildFolder()
     cmd_string = wc.replaceWildcards(ml.settings.getMake(),cwd_string)

@@ -9,6 +9,7 @@
         { 'label': 'Run configure command', 'command': 'build-tools-cpp:configure'},
         { 'label': 'Run build command', 'command': 'build-tools-cpp:make'}
         { 'label': 'Show build settings', 'command': 'build-tools-cpp:settings'}
+        { 'label': 'Show all commands', 'command': 'build-tools-cpp:show-commands'}
       ]
     ]
   }
