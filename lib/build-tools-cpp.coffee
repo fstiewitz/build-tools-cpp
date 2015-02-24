@@ -78,9 +78,6 @@ module.exports =
 
   getCommands: ->
     ret = [{name: "Add", command: "Add command"},{name: "Edit", command: "Edit command"},{name: "Remove", command: "Remove command"}]
-    if (make=ml.settings.getMake()) isnt "" then ret.push({name: "Make", command: make})
-    if (conf=ml.settings.getConfigure()) isnt "" then ret.push({name: "Configure", command: conf})
-    if (pcon=ml.settings.getPreConfigure()) isnt "" then ret.push({name: "Pre configure", command: pcon})
     for name,command of ml.commands
       ret.push({name: name, command: command})
     return ret

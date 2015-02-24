@@ -68,20 +68,12 @@ class AdditionalCommandsListView extends SelectListView
 
   editDialog: ->
     @dialog = 1
-    s = 3
-    if ml.settings.getMake() isnt "" then ++s
-    if ml.settings.getConfigure() isnt "" then ++s
-    if ml.settings.getPreConfigure() isnt "" then ++s
-    items = @items.slice(s)
+    items = @items.slice(3)
     @show(items)
 
   removeDialog: ->
     @dialog = 2
-    s = 3
-    if ml.settings.getMake() isnt "" then ++s
-    if ml.settings.getConfigure() isnt "" then ++s
-    if ml.settings.getPreConfigure() isnt "" then ++s
-    items = @items.slice(s)
+    items = @items.slice(3)
     @show(items)
 
   dialogConfirm: (item) =>

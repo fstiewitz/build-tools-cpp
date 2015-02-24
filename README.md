@@ -26,6 +26,7 @@ See [CHANGELOG.md](CHANGELOG.md)
 * Click `ctrl-l ctrl-u` to execute your `Pre-Configure command`
 * Click `ctrl-l ctrl-i` to execute your `Configure command`
 * Click `ctrl-l ctrl-o` to execute your `Build command`
+* Click `ctrl-l ctrl-l` to show additional commands
 
 ## Example settings
 | |Makefile | Autotools | CMake | Custom
