@@ -5,7 +5,7 @@ btcpp = require './build-tools-cpp.coffee'
 
 module.exports =
 class AdditionalCommandsListView extends SelectListView
-
+  possibleFilterKeys: ['name','command']
   dialog: 0 # 0: normal/add; 1: edit; 2: remove
 
   viewForItem: ({name,command}) ->
@@ -32,6 +32,21 @@ class AdditionalCommandsListView extends SelectListView
     else
       btcpp.execute(command)
       @cancel()
+
+  getFilterKey: ->
+    filter = 'name'
+    input = @filterEditorView.getText()
+    inputs = input.split(':')
+    if inputs.length > 1 and inputs[0] in @possibleFilterKeys
+      filter = inputs[0]
+    return filter
+
+  getFilterQuery: ->
+    input = @filterEditorView.getText()
+    inputs = input.split(':')
+    if inputs.length > 1 and inputs[0] in @possibleFilterKeys
+      return inputs[1]
+    return input
 
   cancel: ->
     super
