@@ -2,6 +2,11 @@
 
 module.exports =
 class SettingsView extends View
+  BuildFolderEditor: null
+  MakeEditor: null
+  ConfigureEditor: null
+  PreConfigureEditor: null
+
   @content: ->
     @div class: 'settings', =>
       @div class: 'editor-container', =>
@@ -14,34 +19,38 @@ class SettingsView extends View
         @subview 'PreConfigure', new TextEditorView(mini: true, placeholderText: 'Pre configure command')
 
   initialize: ->
+    @BuildFolderEditor = @BuildFolder.getModel()
+    @MakeEditor = @Make.getModel()
+    @ConfigureEditor = @Configure.getModel()
+    @PreConfigureEditor = @PreConfigure.getModel()
     return
 
   setBuildFolder: (text) ->
     if text?
-      @BuildFolder.setText(text)
+      @BuildFolderEditor.setText(text)
     else
-      @BuildFolder.setText(".")
+      @BuildFolderEditor.setText(".")
 
   getBuildFolder: ->
-    return @BuildFolder.getText()
+    return @BuildFolderEditor.getText()
 
   setMake:(text) ->
     if text?
-      @Make.setText(text)
+      @MakeEditor.setText(text)
     else
-      @Make.setText("make")
+      @MakeEditor.setText("make")
 
   getMake: ->
-    return @Make.getText()
+    return @MakeEditor.getText()
 
   setConfigure: (text) ->
-    @Configure.setText(text) if text?
+    @ConfigureEditor.setText(text) if text?
 
   getConfigure: ->
-    return @Configure.getText()
+    return @ConfigureEditor.getText()
 
   setPreConfigure: (text) ->
-    @PreConfigure.setText(text) if text?
+    @PreConfigureEditor.setText(text) if text?
 
   getPreConfigure: ->
-    return @PreConfigure.getText()
+    return @PreConfigureEditor.getText()

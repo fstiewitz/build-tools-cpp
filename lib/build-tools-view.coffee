@@ -1,4 +1,4 @@
-{$,View} = require 'atom'
+{$,View} = require 'atom-space-pen-views'
 parser = require './build-parser.coffee'
 ml = require './message-list.coffee'
 

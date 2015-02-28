@@ -2,6 +2,8 @@
 
 module.exports =
 class EditCommandView extends View
+  nameEditor: null
+  commandEditor: null
   @content: ->
     @div class: 'editcommandview', =>
       @div class: 'editor-container', =>
@@ -10,9 +12,11 @@ class EditCommandView extends View
         @subview 'command', new TextEditorView(mini: true, placeholderText: 'Command')
 
   initialize: (@callback) ->
+    @nameEditor = @name.getModel()
+    @commandEditor = @command.getModel()
     atom.commands.add @element,
       'core:confirm': (event) =>
-        @callback({name: @name.getText(), command: @command.getText(), oldname: @oldname})
+        @callback({name: @nameEditor.getText(), command: @commandEditor.getText(), oldname: @oldname})
         event.stopPropagation()
         @cancel()
 
@@ -24,13 +28,13 @@ class EditCommandView extends View
     @panel.hide()
 
   show: (items) ->
-    @name.setText("")
-    @command.setText("")
+    @nameEditor.setText("")
+    @commandEditor.setText("")
     @oldname = ""
     @panel ?= atom.workspace.addModalPanel(item: this)
     @panel.show()
     if items?
       @oldname = items.name
-      @name.setText(items.name)
-      @command.setText(items.command)
+      @nameEditor.setText(items.name)
+      @commandEditor.setText(items.command)
     @name.focus();

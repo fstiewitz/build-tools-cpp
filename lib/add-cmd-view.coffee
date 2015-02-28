@@ -53,7 +53,7 @@ class AdditionalCommandsListView extends SelectListView
 
   cancel: ->
     super
-    @panel.hide()
+    @panel?.hide()
 
   show: (items) ->
     @panel ?= atom.workspace.addModalPanel(item: this)

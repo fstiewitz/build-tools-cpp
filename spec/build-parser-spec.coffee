@@ -69,7 +69,7 @@ describe "build tools cpp parser", ->
         expectedResult = {
           filename: path.join(fixturePath,"filename.cpp")
           row: 0
-          col: 0
+          col: 1
           start: 5
           end: path.join(fixturePath,"filename.cpp").length + 4
         }
@@ -84,7 +84,7 @@ describe "build tools cpp parser", ->
         expectedResult = {
           filename: path.join(fixturePath,"filename.cpp")
           row: '10'
-          col: 0
+          col: 1
           start: 5
           end: path.join(fixturePath,"filename.cpp").length + 7
         }
