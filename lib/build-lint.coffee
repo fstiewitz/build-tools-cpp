@@ -5,7 +5,7 @@ path = require 'path'
 msgs = require './message-list.coffee'
 
 class LinterBuildTools extends Linter
-  @syntax: ['source.c++', 'source.cpp']
+  @syntax: ['source.c++', 'source.cpp', 'source.c']
 
   cmd: ''
   regex: ''
