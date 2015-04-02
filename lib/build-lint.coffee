@@ -1,6 +1,5 @@
 linterPath = atom.packages.getLoadedPackage("linter").path
 Linter = require "#{linterPath}/lib/linter"
-{$} = require 'atom'
 path = require 'path'
 msgs = require './message-list.coffee'
 
