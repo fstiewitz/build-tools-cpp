@@ -12,7 +12,7 @@ module.exports =
   projectPath: (root) ->
     projdir = atom.project.getPaths()[0]
     if not projdir? #Project path available? - If not use file path
-      editor = atom.workspace.getActiveEditor()?.getPath()
+      editor = atom.workspace.getActiveTextEditor()?.getPath()
       if editor? #File path available?
         return path.dirname(editor)
       else
@@ -20,7 +20,7 @@ module.exports =
     return projdir
 
   currentFile: (root) ->
-    if (editor = atom.workspace.getActiveEditor())?
+    if (editor = atom.workspace.getActiveTextEditor())?
       return path.relative(root, editor.getPath())
     return ""
 
@@ -32,7 +32,7 @@ module.exports =
     return path.dirname(@currentFile(root))
 
   filename: (root) ->
-    if (editor = atom.workspace.getActiveEditor())?
+    if (editor = atom.workspace.getActiveTextEditor())?
       current = editor.getPath()
       return path.basename(current, path.extname(current))
     return ""

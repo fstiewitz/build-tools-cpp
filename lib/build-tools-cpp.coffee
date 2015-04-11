@@ -131,12 +131,12 @@ module.exports =
     return command
 
   lint: ->
-    if (v=atom.workspace.getActiveEditor())?
+    if (v=atom.workspace.getActiveTextEditor())?
       ev = atom.views.getView(v)
       atom.commands.dispatch(ev, "linter:lint")
 
   saveall: ->
-    if (v=atom.workspace.getActiveEditor())?
+    if (v=atom.workspace.getActiveTextEditor())?
       ev = atom.views.getView(v)
       atom.commands.dispatch(ev, "window:save-all")
 

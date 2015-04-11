@@ -82,7 +82,7 @@ module.exports=
   getProjectPath: ->
     projdir = atom.project.getPaths()[0]
     if not projdir? #Project path available? - If not use file path
-      editor = atom.workspace.getActiveEditor()?.getPath()
+      editor = atom.workspace.getActiveTextEditor()?.getPath()
       if editor? #File path available?
         return path.dirname(editor)
       else
