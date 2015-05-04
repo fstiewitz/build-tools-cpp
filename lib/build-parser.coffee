@@ -98,35 +98,33 @@ module.exports=
     filenames = []
     byspace = line.split(' ')
     return filenames if byspace.length <= 1
+    regstring = "([\\S]+(?:" + atom.config.get('build-tools-cpp.SourceFileExtensions').join('|') + "))(?::([\\d]+)(?::([\\d]+))?)?"
+    regex = new RegExp(regstring)
     new_start = 0
-    for e,index in byspace
+    for e, index in byspace
       if e isnt ''
-        bycolon = e.split(':')
-        if bycolon.length > 1
-          if @extInList atom.config.get('build-tools-cpp.SourceFileExtensions'), bycolon[0]
-            fp = @getAbsPath bycolon[0]
-            if fp isnt ''
-              end = line.indexOf(bycolon[0]) + bycolon[0].length - 1
-              row = 0
-              col = 1
-              validRow = /^[\d]+$/.test(bycolon[1])
-              validCol = /^[\d]+$/.test(bycolon[2])
-              if validRow
-                row = bycolon[1]
-                if validCol
-                  col = bycolon[2]
-                  end = line.indexOf(bycolon[0]) + (bycolon[0]+bycolon[1]+bycolon[2]).length + 1
-                else
-                  end = line.indexOf(bycolon[0]) + (bycolon[0]+bycolon[1]).length
+        if (match = regex.exec(e))?
+          fp = @getAbsPath match[1]
+          if fp isnt ''
+            end = line.indexOf(match[1],new_start) + match[1].length - 1
+            row = 0
+            col = 1
+            if match[2]?
+              row = match[2]
+              if match[3]?
+                col = match[3]
+                end = end + match[2].length + match[3].length + 2
+              else
+                end = end + match[2].length + 1
 
-              filenames.push {
-                filename: fp
-                row: row
-                col: col
-                start: line.indexOf(e,new_start)
-                end: end
-              }
-              new_start = end
+            filenames.push {
+              filename: fp
+              row: row
+              col: col
+              start: line.indexOf(match[1],new_start)
+              end: end
+            }
+            new_start = end
     return filenames
 
   unlint: ->
