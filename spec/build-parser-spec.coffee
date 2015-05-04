@@ -62,7 +62,7 @@ describe "build tools cpp parser", ->
     saveConf = ""
     beforeEach ->
       saveConf = atom.config.get("build-tools-cpp.SourceFileExtensions")
-      atom.config.set("build-tools-cpp.SourceFileExtensions",'".cpp"')
+      atom.config.set("build-tools-cpp.SourceFileExtensions",[".cpp"])
 
     describe "detects a file without coordinates", ->
       it "correctly returns a result object", ->
