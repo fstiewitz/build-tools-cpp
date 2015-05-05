@@ -205,8 +205,12 @@ module.exports =
     cmd_string = wc.replaceWildcards(ml.settings.getMake(),cwd_string)
     cmd = @spawn cmd_string, cwd_string
     if @stepchild
-      @stepchild.stdout.on 'data', (data) =>
-        @buildToolsView.outputLineParsed data, ''
+      if atom.config.get('build-tools-cpp.ParseStdOut')
+        @stepchild.stdout.on 'data', (data) =>
+          @buildToolsView.outputLineParsed data, 'make'
+      else
+        @stepchild.stdout.on 'data', (data) =>
+          @buildToolsView.outputLineParsed data, ''
       if atom.config.get('build-tools-cpp.ErrorHighlighting')
         @stepchild.stderr.on 'data', (data) =>
           @buildToolsView.outputLineParsed data, 'make'
@@ -225,6 +229,11 @@ module.exports =
       description: 'Highlight errors and warnings in your code ( requires Linter plugin )'
       type: 'boolean'
       default: true
+    ParseStdOut:
+      title: 'Highlight errors in stdout'
+      description: 'Most build systems and compilers use stderr to display error messages, but some don\'t. Enable this setting to highlight error messages in stdout.'
+      type: 'boolean'
+      default: false
     ErrorHighlighting:
       title: 'Error highlighting'
       description: 'Highlight errors in console'

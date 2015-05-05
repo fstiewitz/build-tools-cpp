@@ -201,14 +201,17 @@ module.exports=
     else
       stat = ''
 
-    if stat is '' and script isnt ''
-      @nostatuslines = @nostatuslines + line + "\n"
+    if not atom.config.get('build-tools-cpp.ParseStdOut')
+      if stat is '' and script isnt ''
+        @nostatuslines = @nostatuslines + line + "\n"
+      else
+        if @nostatuslines isnt ''
+          for l in @nostatuslines.split("\n").slice(0,-1)
+            printfunc (@buildHTML l,stat)
+            @nostatuslines = ''
+        printfunc (@buildHTML line,stat)
     else
-      if @nostatuslines isnt ''
-        for l in @nostatuslines.split("\n").slice(0,-1)
-          printfunc (@buildHTML l,stat)
-        @nostatuslines = ''
-      printfunc (@buildHTML line,stat)
+      printfunc (@buildHTML line, stat)
 
   poplines: (printfunc)->
     for l in @nostatuslines.split("\n")
