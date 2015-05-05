@@ -1,3 +1,6 @@
+## 1.2.3 - Ninja support
+* Some build systems and compilers do not use stderr to display error messages ( e.g. Ninja ). This update adds an option to the package's global settings menu that enables error highlighting in stdout. This option is disabled by default and should only be enabled when necessary.
+
 ## 1.2.0 - Additional commands
 * Press `ctrl-l ctrl-l` or execute `build-tools-cpp:show-commands` to add,edit,remove and execute additional commands
 * They work like the `Make`, `Configure` and `Pre-configure` commands, except that they do not have a keybinding
