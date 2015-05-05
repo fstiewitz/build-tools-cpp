@@ -90,7 +90,7 @@ module.exports=
     return projdir
 
   getAbsPath: (filepath) ->
-    fp = path.resolve(@getProjectPath(),filepath)
+    fp = path.resolve(@getProjectPath(),msgs.settings.getBuildFolder(),filepath)
     return fp if fs.existsSync(fp)
     return ''
 
@@ -98,7 +98,9 @@ module.exports=
     filenames = []
     byspace = line.split(' ')
     return filenames if byspace.length <= 1
-    regstring = "([\\S]+(?:" + atom.config.get('build-tools-cpp.SourceFileExtensions').join('|') + "))(?::([\\d]+)(?::([\\d]+))?)?"
+    extensions = atom.config.get('build-tools-cpp.SourceFileExtensions').join('|')
+    extensions = extensions.replace(/\./g,"\\.")
+    regstring = "([\\S]+(?:" + extensions + "))(?::([\\d]+)(?::([\\d]+))?)?"
     regex = new RegExp(regstring)
     new_start = 0
     for e, index in byspace
@@ -131,11 +133,15 @@ module.exports=
       msgs.messages = []
 
   lint: (line) ->
-     if (r = line.match(/([\w./\\]+):([\d]+):(?:[\d]+:)?[\w\s]*(error|warning):([\S\s]+)/))?
-       if msgs.messages[path.basename(r[1])]?
-           msgs.messages[path.basename(r[1])].push(r)
-       else
-           msgs.messages[path.basename(r[1])] = [r]
+    extensions = atom.config.get('build-tools-cpp.SourceFileExtensions').join('|')
+    extensions = extensions.replace(/\./g,"\\.")
+    regstring = "([\\S]+(?:" + extensions + ")):([\\d]+)(?::[\\d]+)?:[\\w\\s]*(error|warning):([\\S\\s]+)"
+    regex = new RegExp(regstring)
+    if ( r = regex.exec(line))?
+      if msgs.messages[path.basename(r[1])]?
+        msgs.messages[path.basename(r[1])].push(r)
+      else
+        msgs.messages[path.basename(r[1])] = [r]
 
   parseGCC: (line) ->
     if line.indexOf('error:') isnt -1 #Check for errors
