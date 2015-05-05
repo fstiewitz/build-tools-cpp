@@ -107,6 +107,11 @@ describe "build tools cpp parser", ->
       atom.config.set("build-tools-cpp.SourceFileExtensions",saveConf)
 
   describe "when parseGCC ", ->
+    saveConf = ""
+    beforeEach ->
+      saveConf = atom.config.get("build-tools-cpp.SourceFileExtensions")
+      atom.config.set("build-tools-cpp.SourceFileExtensions",[".cpp"])
+
     describe "receives a line without a status indicator", ->
       it "returns ''", ->
         expect(parser.parseGCC("In function bla():")).toBe('')
@@ -127,6 +132,9 @@ describe "build tools cpp parser", ->
         expect(parser.parseGCC('println("Hello\n")')).toBe('error')
         expect(parser.parseGCC('    ^    ')).toBe('error')
         expect(parser.parseGCC('In function bla():')).toBe('')
+
+    afterEach ->
+      atom.config.set("build-tools-cpp.SourceFileExtensions",saveConf)
 
   describe "when removeQuotes ", ->
     describe "receives a line with quotes", ->

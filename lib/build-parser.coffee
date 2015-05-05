@@ -90,7 +90,10 @@ module.exports=
     return projdir
 
   getAbsPath: (filepath) ->
-    fp = path.resolve(@getProjectPath(),msgs.settings.getBuildFolder(),filepath)
+    bf = msgs.settings?.getBuildFolder()
+    if not bf?
+      bf = "."
+    fp = path.resolve(@getProjectPath(),bf,filepath)
     return fp if fs.existsSync(fp)
     return ''
 
