@@ -137,7 +137,7 @@ module.exports=
       @nolintlines = []
 
   lint: (line) ->
-    extensions = atom.config.get('build-tools-cpp.SourceFileExtensions').join('|')
+    extensions = atom.config.get('build-tools-cpp.SourceFileExtensions').sort().reverse().join('|')
     extensions = extensions.replace(/\./g,"\\.")
     regstring = "([\\S]+(?:" + extensions + ")):([\\d]+)(?::[\\d]+)?:[\\w\\s]*(error|warning):([\\S\\s]+)"
     regstring_file_included = "(?:In file included from|from) ([\\S]+(?:" + extensions + ")):([\\d]+)(?::[\\d]+)?[:,]"
