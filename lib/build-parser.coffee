@@ -134,31 +134,43 @@ module.exports=
 
   unlint: ->
       msgs.messages = []
+      @nolintlines = []
 
   lint: (line) ->
     extensions = atom.config.get('build-tools-cpp.SourceFileExtensions').join('|')
     extensions = extensions.replace(/\./g,"\\.")
     regstring = "([\\S]+(?:" + extensions + ")):([\\d]+)(?::[\\d]+)?:[\\w\\s]*(error|warning):([\\S\\s]+)"
+    regstring_file_included = "(?:In file included from|from) ([\\S]+(?:" + extensions + ")):([\\d]+)(?::[\\d]+)?[:,]"
     regex = new RegExp(regstring)
+    regex_file_included = new RegExp(regstring_file_included)
     if ( r = regex.exec(line))?
+      for line in @nolintlines
+        match = [line[0],line[1],line[2],r[3],r[4]]
+        if msgs.messages[path.basename(match[1])]?
+          msgs.messages[path.basename(match[1])].push(match)
+        else
+          msgs.messages[path.basename(match[1])] = [match]
+      @nolintlines = []
       if msgs.messages[path.basename(r[1])]?
         msgs.messages[path.basename(r[1])].push(r)
       else
         msgs.messages[path.basename(r[1])] = [r]
+    else if (r = regex_file_included.exec(line))?
+      @nolintlines.push(r)
 
   parseGCC: (line) ->
+    @lint line
     if line.indexOf('error:') isnt -1 #Check for errors
       @continue_status = true
       @status = 'error'
-      @lint line
       return 'error'
     else if line.indexOf('warning:') isnt -1 #Check for warnings
       @continue_status = true
       @status = 'warning'
-      @lint line
       return 'warning'
     else if /^[\^\s~]+$/.test(line) #Reached delimiter for error messages?
       @continue_status = false
+      @nolintlines = []
       return @status
     else if @continue_status #Continue treating as error message?
       return @status
@@ -169,6 +181,7 @@ module.exports=
     @rollover = ''
     @status = ''
     @nostatuslines = ''
+    @nolintlines = []
     @continue_status = false
 
   buildHTML: (message,status)->
