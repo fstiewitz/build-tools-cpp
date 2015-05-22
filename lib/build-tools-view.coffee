@@ -8,24 +8,17 @@ class BuildToolsCommandOutput extends View
     @div class: 'build-tools-cpp', outlet: 'btdiv', =>
       @div class: 'commandheader', outlet: 'cheader', =>
           @div class: 'commandname'
-          @div class: 'commandsettings'
           @div class: 'commandclose'
       @div class: 'commandoutput build-tools-cpp-hidden', outlet: 'cmd_output'
 
   visible:
     header: false
-    settings: false
     output: false
   lockoutput: false
 
   initialize: ->
     @on 'click','.commandclose', =>
-      @hideSettings()
       @hideBox()
-    @on 'click','.commandsettings', =>
-      @showSettings()
-    @on 'click','.commandsettingsup', =>
-      @hideSettings()
     @on 'mousedown', '.commandheader', @startResize
     return
 
@@ -36,26 +29,6 @@ class BuildToolsCommandOutput extends View
 
   attach: ->
     atom.workspace.addBottomPanel({item: this})
-
-  toggleSettings: ->
-    if @visible.settings
-      @hideSettings()
-    else
-      @showBox()
-      @showSettings()
-
-  showSettings: ->
-    if not @visible.settings
-      @cheader.after(ml.settings)
-      @find('.settings').addClass('settings-abs') if @visible.output
-      @find('.commandsettings').removeClass('commandsettings').addClass('commandsettingsup')
-      @visible.settings = true
-
-  hideSettings: ->
-    if @visible.settings
-      ml.settings.detach()
-      @find('.commandsettingsup').removeClass('commandsettingsup').addClass('commandsettings')
-      @visible.settings = false
 
   toggleBox: ->
     if @visible.header
@@ -72,10 +45,7 @@ class BuildToolsCommandOutput extends View
     @visible.header = true
 
   cancel: ->
-    if @visible.settings
-      @hideSettings()
-    else
-      @hideBox()
+    @hideBox()
 
   startResize: (e) => # pass in the mousedown event
     $(document).on 'mousemove', @resize

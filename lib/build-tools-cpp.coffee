@@ -8,56 +8,25 @@ ml = require './message-list.coffee'
 module.exports =
 
   buildToolsView: null
-  commandsView: null
-  editcommandView: null
   stepchild: null
   subscriptions: null
 
   activate: (state) ->
     BuildToolsCommandOutput = require './build-tools-view'
-    SettingsView = require './settings-view'
-    AdditionalCommandsList = require './add-cmd-view'
-    EditCommand = require './edit-cmd-view'
     @buildToolsView = new BuildToolsCommandOutput
-    @commandsView = new AdditionalCommandsList()
-    @editcommandView = new EditCommand(@commandsView.dialogConfirm)
-    ml.settings = new SettingsView
-    if state["Configure_Command"]?
-      state.bf = state["BuildFolder"]
-      state.pc = state["Pre_Configure_Command"]
-      state.c = state["Configure_Command"]
-      state.m = state["Build_Command"]
-    ml.settings.setBuildFolder(state.bf)
-    ml.settings.setPreConfigure(state.pc)
-    ml.settings.setConfigure(state.c)
-    ml.settings.setMake(state.m)
-    if state.cmd? then ml.commands = state.cmd
     @subscriptions = new CompositeDisposable
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @execute(ml.settings.getPreConfigure())
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:configure': => @execute(ml.settings.getConfigure())
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @execute("echo TODO")
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:configure': => @execute("echo TODO")
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:make': => @executeMake()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:toggle': => @toggle()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:settings': => @settings()
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:show-commands': => @commands()
     @subscriptions.add atom.commands.add 'atom-workspace', 'core:cancel': => @cancel()
     @subscriptions.add atom.commands.add 'atom-workspace', 'core:close': => @cancel()
 
   deactivate: ->
     @stepchild?.kill('SIGKILL')
     @subscriptions.dispose()
-    @editcommandView.destroy()
-    @commandsView.destroy()
     @buildToolsView.destroy()
-    ml.settings.destroy()
-
-  serialize: ->
-    return {
-      bf: ml.settings.getBuildFolder()
-      pc: ml.settings.getPreConfigure()
-      c: ml.settings.getConfigure()
-      m: ml.settings.getMake()
-      cmd: ml.commands
-    }
 
   toggle: ->
     @buildToolsView.toggleBox()
@@ -66,21 +35,14 @@ module.exports =
     @stepchild?.kill('SIGTERM')
     @stepchild = null
 
+  settings: ->
+    return
+
   cancel: ->
     if @stepchild?
       @kill()
     else
       @buildToolsView.cancel()
-
-  commands: ->
-    @commandsView.resetDialog()
-    @commandsView.show(@getCommands())
-
-  getCommands: ->
-    ret = [{name: "Add", command: "Add command"},{name: "Edit", command: "Edit command"},{name: "Remove", command: "Remove command"}]
-    for name,command of ml.commands
-      ret.push({name: name, command: command})
-    return ret
 
   getQuoteIndex: (line) ->
     c1 = line.indexOf('"')
@@ -140,9 +102,6 @@ module.exports =
       ev = atom.views.getView(v)
       atom.commands.dispatch(ev, "window:save-all")
 
-  settings: ->
-    @buildToolsView.toggleSettings()
-
   spawn: (cmd_string,cwd_string) ->
     if cmd_string isnt ''
       cmd_list = @split cmd_string
@@ -190,7 +149,7 @@ module.exports =
     return
 
   execute: (command) ->
-    cwd_string = ml.settings.getBuildFolder()
+    cwd_string = "build"
     cmd_string = wc.replaceWildcards(command,cwd_string)
     cmd = @spawn cmd_string, cwd_string
     if @stepchild
@@ -201,17 +160,17 @@ module.exports =
 
   executeMake: ->
     @saveall() if atom.config.get('build-tools-cpp.SaveAll')
-    cwd_string = ml.settings.getBuildFolder()
-    cmd_string = wc.replaceWildcards(ml.settings.getMake(),cwd_string)
+    cwd_string = "build"
+    cmd_string = wc.replaceWildcards("make -j4",cwd_string)
     cmd = @spawn cmd_string, cwd_string
     if @stepchild
-      if atom.config.get('build-tools-cpp.ParseStdOut')
+      if false
         @stepchild.stdout.on 'data', (data) =>
           @buildToolsView.outputLineParsed data, 'make'
       else
         @stepchild.stdout.on 'data', (data) =>
           @buildToolsView.outputLineParsed data, ''
-      if atom.config.get('build-tools-cpp.ErrorHighlighting')
+      if true
         @stepchild.stderr.on 'data', (data) =>
           @buildToolsView.outputLineParsed data, 'make'
       else
@@ -222,21 +181,6 @@ module.exports =
     SaveAll:
       title: 'Save all'
       description: 'Save all files before executing your build command'
-      type: 'boolean'
-      default: true
-    UseLinterIfAvailable:
-      title: 'Inline highlighting'
-      description: 'Highlight errors and warnings in your code ( requires Linter plugin )'
-      type: 'boolean'
-      default: true
-    ParseStdOut:
-      title: 'Highlight errors in stdout'
-      description: 'Most build systems and compilers use stderr to display error messages, but some don\'t. Enable this setting to highlight error messages in stdout.'
-      type: 'boolean'
-      default: false
-    ErrorHighlighting:
-      title: 'Error highlighting'
-      description: 'Highlight errors in console'
       type: 'boolean'
       default: true
     SourceFileExtensions:
