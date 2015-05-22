@@ -5,44 +5,60 @@ ml = require './message-list.coffee'
 
 {CompositeDisposable} = require 'atom'
 
+settingsviewuri= 'atom://build-tools-settings'
+SettingsView= null
+settingsview= null
+
+BuildToolsView= null
+buildtoolsview= null
+
+createBuildToolsView= ->
+  BuildToolsView ?= require './build-tools-view'
+  buildtoolsview ?= new BuildToolsView
+  buildtoolsview
+
+createSettingsView= (state) ->
+  SettingsView ?= require './settings-view'
+  settingsview ?= new SettingsView(state)
+  settingsview
+
 module.exports =
 
-  buildToolsView: null
   stepchild: null
   subscriptions: null
 
   activate: (state) ->
-    BuildToolsCommandOutput = require './build-tools-view'
-    @buildToolsView = new BuildToolsCommandOutput
+    createBuildToolsView()
+    atom.workspace.addOpener (uritoopen) ->
+      createSettingsView(uri: uritoopen) if uritoopen is settingsviewuri
+
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @execute("echo TODO")
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:configure': => @execute("echo TODO")
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:make': => @executeMake()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:toggle': => @toggle()
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:settings': => @settings()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:settings': ->
+      atom.workspace.open(settingsviewuri)
     @subscriptions.add atom.commands.add 'atom-workspace', 'core:cancel': => @cancel()
     @subscriptions.add atom.commands.add 'atom-workspace', 'core:close': => @cancel()
 
   deactivate: ->
     @stepchild?.kill('SIGKILL')
     @subscriptions.dispose()
-    @buildToolsView.destroy()
+    buildtoolsview?.destroy()
 
   toggle: ->
-    @buildToolsView.toggleBox()
+    buildtoolsview?.toggleBox()
 
   kill: ->
     @stepchild?.kill('SIGTERM')
     @stepchild = null
 
-  settings: ->
-    return
-
   cancel: ->
     if @stepchild?
       @kill()
     else
-      @buildToolsView.cancel()
+      buildtoolsview?.cancel()
 
   getQuoteIndex: (line) ->
     c1 = line.indexOf('"')
@@ -110,41 +126,41 @@ module.exports =
       wd = parser.getWD parser.getProjectPath(),cwd_string
       if wd isnt ''
         if (dependency = parser.hasDependencies wd, cmd.cmd, cmd.arg) is ""
-          @buildToolsView.showBox()
-          @buildToolsView.setHeader(cmd.cmd)
-          @buildToolsView.clear()
+          buildtoolsview?.showBox()
+          buildtoolsview?.setHeader(cmd.cmd)
+          buildtoolsview?.clear()
           parser.unlint()
-          @buildToolsView.unlock()
+          buildtoolsview?.unlock()
           @stepchild = cp.spawn(cmd.cmd, cmd.arg, { cwd: wd, env: cmd.env })
           @stepchild.on 'error', (error) =>
-            @buildToolsView.hideOutput()
-            @buildToolsView.setHeader("#{cmd_string}: received #{error}")
-            @buildToolsView.lock()
+            buildtoolsview?.hideOutput()
+            buildtoolsview?.setHeader("#{cmd_string}: received #{error}")
+            buildtoolsview?.lock()
             @kill()
           @stepchild.on 'exit', (exitcode, signal) =>
-            @buildToolsView.setHeader
+            buildtoolsview?.setHeader
             (cmd.cmd + ": finished with exitcode #{exitcode}") if exitcode?
-            @buildToolsView.setHeader
+            buildtoolsview?.setHeader
             (cmd.cmd + ": finished with signal #{signal}") if signal?
-            @buildToolsView.finishConsole()
+            buildtoolsview?.finishConsole()
             @lint()
             @stepchild = null
           return cmd
         else if dependency is undefined
-          @buildToolsView.lock()
-          @buildToolsView.showBox()
-          @buildToolsView.hideOutput()
-          @buildToolsView.setHeader("Error parsing arguments")
+          buildtoolsview?.lock()
+          buildtoolsview?.showBox()
+          buildtoolsview?.hideOutput()
+          buildtoolsview?.setHeader("Error parsing arguments")
         else
-          @buildToolsView.lock()
-          @buildToolsView.showBox()
-          @buildToolsView.hideOutput()
-          @buildToolsView.setHeader("Error: File #{dependency} not found")
+          buildtoolsview?.lock()
+          buildtoolsview?.showBox()
+          buildtoolsview?.hideOutput()
+          buildtoolsview?.setHeader("Error: File #{dependency} not found")
       else
-        @buildToolsView.lock()
-        @buildToolsView.showBox()
-        @buildToolsView.hideOutput()
-        @buildToolsView.setHeader("Error: Build folder #{cwd_string} not found")
+        buildtoolsview?.lock()
+        buildtoolsview?.showBox()
+        buildtoolsview?.hideOutput()
+        buildtoolsview?.setHeader("Error: Build folder #{cwd_string} not found")
         return
     return
 
@@ -154,9 +170,9 @@ module.exports =
     cmd = @spawn cmd_string, cwd_string
     if @stepchild
       @stepchild.stdout.on 'data', (data) =>
-        @buildToolsView.outputLineParsed data, ''
+        buildtoolsview?.outputLineParsed data, ''
       @stepchild.stderr.on 'data', (data) =>
-        @buildToolsView.outputLineParsed data, ''
+        buildtoolsview?.outputLineParsed data, ''
 
   executeMake: ->
     @saveall() if atom.config.get('build-tools-cpp.SaveAll')
@@ -166,16 +182,16 @@ module.exports =
     if @stepchild
       if false
         @stepchild.stdout.on 'data', (data) =>
-          @buildToolsView.outputLineParsed data, 'make'
+          buildtoolsview?.outputLineParsed data, 'make'
       else
         @stepchild.stdout.on 'data', (data) =>
-          @buildToolsView.outputLineParsed data, ''
+          buildtoolsview?.outputLineParsed data, ''
       if true
         @stepchild.stderr.on 'data', (data) =>
-          @buildToolsView.outputLineParsed data, 'make'
+          buildtoolsview?.outputLineParsed data, 'make'
       else
         @stepchild.stderr.on 'data', (data) =>
-          @buildToolsView.outputLineParsed data, '' #No highlighting
+          buildtoolsview?.outputLineParsed data, '' #No highlighting
 
   config:
     SaveAll:
