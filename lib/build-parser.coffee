@@ -144,12 +144,13 @@ module.exports=
     regex = new RegExp(regstring)
     regex_file_included = new RegExp(regstring_file_included)
     if ( r = regex.exec(line))?
-      for line in @nolintlines
-        match = [line[0],line[1],line[2],r[3],r[4]]
-        if msgs.messages[path.basename(match[1])]?
-          msgs.messages[path.basename(match[1])].push(match)
-        else
-          msgs.messages[path.basename(match[1])] = [match]
+      if @nolintlines?
+        for line in @nolintlines
+          match = [line[0],line[1],line[2],r[3],r[4]]
+          if msgs.messages[path.basename(match[1])]?
+            msgs.messages[path.basename(match[1])].push(match)
+          else
+            msgs.messages[path.basename(match[1])] = [match]
       @nolintlines = []
       if msgs.messages[path.basename(r[1])]?
         msgs.messages[path.basename(r[1])].push(r)
