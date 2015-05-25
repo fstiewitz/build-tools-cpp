@@ -10,7 +10,7 @@ module.exports =
           @ul class:'list-group project-list', outlet:'project_list', =>
         @div class:'panel', outlet: 'project_content', =>
           @h1 "Test"
-          @h2 "Test2"
+          @div class:'content', outlet: 'content'
 
     initialize: ({@uri}) ->
       @updateProjects(atom.project.getPaths())
@@ -34,6 +34,8 @@ module.exports =
       paths = @removeSharedPath paths
       for path in paths
         @addProject path
+      @project_list.on 'click', '.project-item', (e) =>
+        @setActiveProject e
 
     addProject: (path) ->
       @project_list.append("<li class='list-item project-item'><span class='icon icon-book'>#{path}</span></li>")
@@ -57,3 +59,15 @@ module.exports =
                 path_elements[j].splice(0,1,item)
               break
       (e.join(_p.sep) for e in path_elements)
+
+    setActiveProject: (e) ->
+      path = e.currentTarget.children[0].innerHTML
+      @markAsActive e.currentTarget
+      @setContent path
+
+    setContent: (path) ->
+      @content.html path
+
+    markAsActive: (e) ->
+      @project_list.find('.active').removeClass('active')
+      e.classList.add('active')
