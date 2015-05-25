@@ -41,6 +41,8 @@ module.exports =
       atom.workspace.open(settingsviewuri)
     @subscriptions.add atom.commands.add 'atom-workspace', 'core:cancel': => @cancel()
     @subscriptions.add atom.commands.add 'atom-workspace', 'core:close': => @cancel()
+    @subscriptions.add atom.project.onDidChangePaths =>
+      settingsview?.updateProjects()
 
   deactivate: ->
     @stepchild?.kill('SIGKILL')
