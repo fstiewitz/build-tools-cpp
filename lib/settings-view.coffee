@@ -15,13 +15,13 @@ highlight_translation= {
 module.exports =
   class BuildToolsSettingsView extends ScrollView
     @content: ->
-      @div class:'bt-settings pane-item native-key-bindings', tabindex:-1, =>
+      @div class:'settings pane-item native-key-bindings', tabindex:-1, =>
         @div class:'project-menu', =>
-          @ul class:'list-group project-list', outlet:'project_list', =>
+          @ul class:'list-group', outlet:'project_list', =>
         @div class:'panel', =>
           @div class:'project-header', outlet: 'title'
           @div class:'section', =>
-            @div class:'section-headerbar', =>
+            @div =>
               @div class:'section-header', 'Commands'
               @div id:'add-command-button', class:'inline-block btn btn-xs', 'Add command'
               @div class:'inline-block btn btn-xs', 'Import command'
@@ -31,7 +31,7 @@ module.exports =
                   @div 'Make Command'
                   @div 'Configure Command'
                   @div 'Pre-Configure Command'
-                @div class: 'key-press', =>
+                @div =>
                   @div class:'text-highlight', 'Ctrl+L Ctrl+O'
                   @div class:'text-highlight', 'Ctrl+L Ctrl+I'
                   @div class:'text-highlight', 'Ctrl+L Ctrl+U'
@@ -39,11 +39,11 @@ module.exports =
                 @ul class:'command-list', outlet: 'command_list', =>
                   @li 'Test'
           @div class:'section', =>
-            @div class:'section-headerbar', =>
+            @div =>
               @div class:'section-header', 'Dependencies'
               @div class:'inline-block btn btn-xs', 'Add dependency'
               @div class:'inline-block btn btn-xs', 'Import dependency'
-            @div class:'dependency-container', =>
+            @div =>
               @ul class:'dependency-list', =>
                 @li 'Test'
           @div class:'section', outlet: 'test_area'
@@ -81,7 +81,7 @@ module.exports =
     addProject: (path) ->
       item = $$ ->
         @li class:'list-item project-item', =>
-          @div class:'icon icon-book project-name', path.split(_p.sep).reverse()[0]
+          @div class:'icon icon-book', path.split(_p.sep).reverse()[0]
           @div class:'text-subtle', path
       @project_list.append(item)
 
@@ -126,16 +126,16 @@ module.exports =
     addCommand: (items) ->
       item = $$ ->
         @div class:'command', =>
-          @div class:'commandtop', =>
-            @div id:'begin', =>
+          @div class:'top', =>
+            @div class:'align', =>
               @div class:'icon-expand'
               @div id:'name', items.name
-            @div id:'options', =>
+            @div class:'align', =>
               @div class:'icon-edit'
               @div class:'icon-up'
               @div class:'icon-down'
               @div class:'icon-close'
-          @div class:'commandinfo', =>
+          @div class:'info', =>
             @div id:'general', =>
               @div class:'keys', =>
                 @div "Command"

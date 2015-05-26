@@ -1,42 +1,35 @@
 @import "ui-variables";
 
-.bt-settings {
+.settings {
   display: flex;
 
   .project-menu {
-    height: 100%;
     flex: 2;
-    flex-flow: row;
     border-width: 0 1px 0 0;
     border-color: #1b1b1b;
     border-style: solid;
 
-    .project-list {
-      height: inherit;
+    .project-item {
+      list-style: none;
+      padding: 10px 0 10px 5px;
+      cursor: pointer;
 
-      .project-item {
-        list-style: none;
-        padding: 10px 0 10px 5px;
-        cursor: pointer;
-
-        .text-subtle {
-          overflow-x: hidden;
-        }
-
-        &:hover {
-          background-color: @background-color-selected;
-        }
+      .text-subtle {
+        overflow-x: hidden;
       }
 
-      .active {
-        background-color: @background-color-highlight;
+      &:hover {
+        background-color: @background-color-selected;
       }
+    }
+
+    .active {
+      background-color: @background-color-highlight;
     }
   }
 
  .panel {
     flex: 8;
-    flex-flow: column;
     padding: 5px 20px 5px 20px;
 
     .project-header {
@@ -54,34 +47,26 @@
       border-style: solid;
     }
 
-    .section-headerbar {
-      .section-header {
-        display: inline;
-        margin: 0 5px 0 0;
-        color: @text-color-highlight;
-        font-size: 1.75em;
-        font-weight: bold;
-      }
+    .section-header {
+      display: inline;
+      margin: 0 5px 0 0;
+      color: @text-color-highlight;
+      font-size: 1.75em;
+      font-weight: bold;
     }
 
     .command-container {
       display: flex;
+
       .key-info {
-        flex: none;
         display: flex;
 
         .key-desc {
-          flex: none;
-          padding-right: 5px;
-        }
-
-        .key-press {
-          flex: none;
+          padding: 0 5px 0 0;
         }
       }
 
       .command-menu {
-        flex: auto;
         border-width: 0 0 0 1px;
         border-color: #1b1b1b;
         border-style: solid;
@@ -89,84 +74,11 @@
         .command-list {
           list-style: none;
           padding: 0 5px 0 5px;
-
-          .command {
-            .commandtop {
-              display: flex;
-              flex-flow: row wrap;
-              justify-content: space-between;
-              background-color: @background-color-highlight;
-
-              #begin {
-                display: flex;
-                padding: 0 0 0 5px;
-              }
-
-              #name {
-                color: @text-color-highlight;
-                cursor: default;
-              }
-
-              #options {
-                display: flex;
-              }
-            }
-
-            .commandinfo {
-              #general {
-                display: flex;
-
-                .keys {
-                  flex: none;
-                  padding: 0 5px 0 0;
-                  cursor: default;
-                }
-
-                .values {
-                  flex: auto;
-                }
-              }
-              .streams {
-                display: flex;
-                flex-flow: row wrap;
-
-                .stream {
-                  display: flex;
-                  padding: 0 5px 0 0;
-
-                  .keys {
-                    flex: none;
-                    padding: 0 5px 0 0;
-                    cursor: default;
-                  }
-
-                  .values {
-                    flex: none;
-                  }
-                }
-              }
-            }
-          }
         }
       }
     }
-    .dependency-container {
-      .dependency-list {
-        list-style: none;
-      }
+    .dependency-list {
+      list-style: none;
     }
   }
-}
-
-.settings-name {
-  font-size: 1.2em;
-}
-
-.small-header {
-  font-size: 1.5em;
-  font-weight: bold;
-  margin: 5px 0 0 0;
-  border-width: 1px 0 0 0;
-  border-color: #1b1b1b;
-  border-style: solid;
 }

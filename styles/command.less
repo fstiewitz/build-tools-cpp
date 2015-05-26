@@ -1,0 +1,41 @@
+@import "ui-variables";
+
+.command {
+  .top {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    background-color: @background-color-highlight;
+
+    .align {
+      display: flex;
+      padding: 0 0 0 5px;
+    }
+
+    #name {
+      color: @text-color-highlight;
+      cursor: default;
+    }
+  }
+
+  .info {
+    #general {
+      display: flex;
+    }
+
+    .streams {
+      display: flex;
+      flex-flow: row wrap;
+
+      .stream {
+        display: flex;
+        padding: 0 5px 0 0;
+      }
+    }
+
+    .keys {
+      padding: 0 5px 0 0;
+      cursor: default;
+    }
+  }
+}

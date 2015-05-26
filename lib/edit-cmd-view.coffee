@@ -8,7 +8,7 @@ class EditCommandView extends View
   wdEditor: null
 
   @content: ->
-    @div class: 'editcommandview', =>
+    @div class: 'commandview', =>
       @div class:'block', =>
         @label =>
           @div class:'settings-name', 'Command Name'
