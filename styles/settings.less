@@ -57,22 +57,30 @@
 
     .command-container {
       display: flex;
+      padding: 5px 0 0 0;
 
       .key-info {
         display: flex;
+        flex: none;
+        padding: 0 5px 0 0;
 
         .key-desc {
+          flex: none;
           padding: 0 5px 0 0;
+        }
+
+        .key-press {
+          flex: none;
         }
       }
 
       .command-menu {
+        flex: auto;
         border-width: 0 0 0 1px;
         border-color: #1b1b1b;
         border-style: solid;
 
         .command-list {
-          list-style: none;
           padding: 0 5px 0 5px;
         }
       }

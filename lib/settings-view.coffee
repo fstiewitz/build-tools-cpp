@@ -1,4 +1,4 @@
-{$$, ScrollView,TextEditorView} = require 'atom-space-pen-views'
+{$, $$, ScrollView,TextEditorView} = require 'atom-space-pen-views'
 {CompositeDisposable} = require 'atom'
 _p = require 'path'
 
@@ -31,13 +31,12 @@ module.exports =
                   @div 'Make Command'
                   @div 'Configure Command'
                   @div 'Pre-Configure Command'
-                @div =>
+                @div class: 'key-press', =>
                   @div class:'text-highlight', 'Ctrl+L Ctrl+O'
                   @div class:'text-highlight', 'Ctrl+L Ctrl+I'
                   @div class:'text-highlight', 'Ctrl+L Ctrl+U'
               @div class:'command-menu', =>
-                @ul class:'command-list', outlet: 'command_list', =>
-                  @li 'Test'
+                @div class:'command-list', outlet: 'command_list', =>
           @div class:'section', =>
             @div =>
               @div class:'section-header', 'Dependencies'
@@ -127,15 +126,15 @@ module.exports =
       item = $$ ->
         @div class:'command', =>
           @div class:'top', =>
-            @div class:'align', =>
-              @div class:'icon-expand'
+            @div id:'info', class:'align', =>
+              @div class:'icon-expand expander'
               @div id:'name', items.name
-            @div class:'align', =>
+            @div id:'options', class:'align', =>
               @div class:'icon-edit'
               @div class:'icon-up'
               @div class:'icon-down'
               @div class:'icon-close'
-          @div class:'info', =>
+          @div class:'info hidden', =>
             @div id:'general', =>
               @div class:'keys', =>
                 @div "Command"
@@ -160,4 +159,49 @@ module.exports =
                 @div class:'values', =>
                   @div class:'text-highlight', items.stderr.file.toString()
                   @div class:'text-highlight', highlight_translation[items.stderr.highlighting]
+      item.on 'click', '.icon-expand', (e) =>
+        @reduceAll e.currentTarget.parentNode.parentNode.parentNode.parentNode
+        @expandCommand e.currentTarget
+      item.on 'click', '.icon-down', (e) =>
+        target = e.currentTarget
+        if target.classList.contains('expander')
+          @reduceCommand target
+        else
+          @moveDown target.parentNode.parentNode.parentNode
+      item.on 'click', '.icon-up', (e) =>
+        @moveUp e.currentTarget.parentNode.parentNode.parentNode
+      item.on 'click', '.icon-close', (e) =>
+        @removeCommand e.currentTarget.parentNode.parentNode.parentNode
+
       @command_list.append(item)
+
+    expandCommand: (target) ->
+      target.classList.remove 'icon-expand'
+      target.classList.add 'icon-down'
+      target.parentNode.parentNode.parentNode.children[1].classList.remove('hidden')
+
+    reduceCommand: (target) ->
+      target.classList.remove 'icon-down'
+      target.classList.add 'icon-expand'
+      target.parentNode.parentNode.parentNode.children[1].classList.add('hidden')
+
+    reduceAll: (target) ->
+      $(target).find('.expander').each (i,e) =>
+        @reduceCommand e
+
+    moveDown: (target) ->
+      node = $(target)
+      if node.index() isnt target.parentNode.childElementCount-1
+        next = $(target.parentNode.children[node.index()+1])
+        node.detach()
+        node.insertAfter(next)
+
+    moveUp: (target) ->
+      node = $(target)
+      if node.index() isnt 0
+        next = $(target.parentNode.children[node.index()-1])
+        node.detach()
+        node.insertBefore(next)
+
+    removeCommand: (target) ->
+      $(target).remove()
