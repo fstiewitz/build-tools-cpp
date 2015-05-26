@@ -3,13 +3,13 @@ parser = require './build-parser.coffee'
 ml = require './message-list.coffee'
 
 module.exports =
-class BuildToolsCommandOutput extends View
+class ConsoleOutput extends View
   @content: ->
-    @div class: 'build-tools-cpp', outlet: 'btdiv', =>
-      @div class: 'commandheader', outlet: 'cheader', =>
-          @div class: 'commandname'
-          @div class: 'commandclose'
-      @div class: 'commandoutput build-tools-cpp-hidden', outlet: 'cmd_output'
+    @div class:'console', =>
+      @div class: 'header', =>
+          @div class: 'name bold', outlet: 'name'
+          @div class: 'icon-close'
+      @div class: 'output hidden', outlet: 'output'
 
   visible:
     header: false
@@ -17,9 +17,9 @@ class BuildToolsCommandOutput extends View
   lockoutput: false
 
   initialize: ->
-    @on 'click','.commandclose', =>
+    @on 'click','.icon-close', =>
       @hideBox()
-    @on 'mousedown', '.commandheader', @startResize
+    @on 'mousedown', '.header', @startResize
     return
 
   serialize: ->
@@ -50,26 +50,26 @@ class BuildToolsCommandOutput extends View
   startResize: (e) => # pass in the mousedown event
     $(document).on 'mousemove', @resize
     $(document).on 'mouseup', @endResize
-    @padding = $(document.body).height() - (e.clientY + @find('.commandoutput').height()) # calculate padding offset
+    @padding = $(document.body).height() - (e.clientY + @find('.output').height()) # calculate padding offset
 
   resize: ({pageY, which}) =>
     return @endResize() unless which is 1
-    @find('.commandoutput').height($(document.body).height() - pageY - @padding) #includes padding offset
+    @find('.output').height($(document.body).height() - pageY - @padding) #includes padding offset
 
   endResize: =>
     $(document).off 'mousemove', @resize
     $(document).off 'mouseup', @endResize
 
   hideOutput: ->
-    @find('.commandoutput').addClass('build-tools-cpp-hidden')
+    @find('.output').addClass('hidden')
     @visible.output = false
 
   showOutput: ->
-    @find('.commandoutput').removeClass('build-tools-cpp-hidden')
+    @find('.output').removeClass('hidden')
     @visible.output = true
 
   clear: ->
-    @find('.commandoutput').text('')
+    @find('.output').text('')
     parser.clearVars()
 
   outputLineParsed: (line,script) =>
@@ -91,11 +91,11 @@ class BuildToolsCommandOutput extends View
 
   printLine: (message) =>
     @showOutput() if !@lockoutput
-    @cmd_output.append(message)
-    @cmd_output.scrollTop(@cmd_output[0].scrollHeight)
+    @output.append(message)
+    @output.scrollTop(@output[0].scrollHeight)
 
   setHeader: (name) ->
-    @find('.commandname').html("<b>#{name}</b>")
+    @name.html(name)
 
   lock: ->
     @lockoutput = true

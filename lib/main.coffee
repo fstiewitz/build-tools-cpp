@@ -9,13 +9,13 @@ settingsviewuri= 'atom://build-tools-settings'
 SettingsView= null
 settingsview= null
 
-BuildToolsView= null
-buildtoolsview= null
+ConsoleView= null
+consoleview= null
 
-createBuildToolsView= ->
-  BuildToolsView ?= require './build-tools-view'
-  buildtoolsview ?= new BuildToolsView
-  buildtoolsview
+createConsoleView= ->
+  ConsoleView ?= require './console'
+  consoleview ?= new ConsoleView
+  consoleview
 
 createSettingsView= (state) ->
   SettingsView ?= require './settings-view'
@@ -28,7 +28,7 @@ module.exports =
   subscriptions: null
 
   activate: (state) ->
-    createBuildToolsView()
+    createConsoleView()
     atom.workspace.addOpener (uritoopen) ->
       createSettingsView(uri: uritoopen) if uritoopen is settingsviewuri
 
@@ -47,10 +47,10 @@ module.exports =
   deactivate: ->
     @stepchild?.kill('SIGKILL')
     @subscriptions.dispose()
-    buildtoolsview?.destroy()
+    consoleview?.destroy()
 
   toggle: ->
-    buildtoolsview?.toggleBox()
+    consoleview?.toggleBox()
 
   kill: ->
     @stepchild?.kill('SIGTERM')
@@ -60,7 +60,7 @@ module.exports =
     if @stepchild?
       @kill()
     else
-      buildtoolsview?.cancel()
+      consoleview?.cancel()
 
   getQuoteIndex: (line) ->
     c1 = line.indexOf('"')
@@ -128,41 +128,41 @@ module.exports =
       wd = parser.getWD parser.getProjectPath(),cwd_string
       if wd isnt ''
         if (dependency = parser.hasDependencies wd, cmd.cmd, cmd.arg) is ""
-          buildtoolsview?.showBox()
-          buildtoolsview?.setHeader(cmd.cmd)
-          buildtoolsview?.clear()
+          consoleview?.showBox()
+          consoleview?.setHeader(cmd.cmd)
+          consoleview?.clear()
           parser.unlint()
-          buildtoolsview?.unlock()
+          consoleview?.unlock()
           @stepchild = cp.spawn(cmd.cmd, cmd.arg, { cwd: wd, env: cmd.env })
           @stepchild.on 'error', (error) =>
-            buildtoolsview?.hideOutput()
-            buildtoolsview?.setHeader("#{cmd_string}: received #{error}")
-            buildtoolsview?.lock()
+            consoleview?.hideOutput()
+            consoleview?.setHeader("#{cmd_string}: received #{error}")
+            consoleview?.lock()
             @kill()
           @stepchild.on 'exit', (exitcode, signal) =>
-            buildtoolsview?.setHeader
+            consoleview?.setHeader
             (cmd.cmd + ": finished with exitcode #{exitcode}") if exitcode?
-            buildtoolsview?.setHeader
+            consoleview?.setHeader
             (cmd.cmd + ": finished with signal #{signal}") if signal?
-            buildtoolsview?.finishConsole()
+            consoleview?.finishConsole()
             @lint()
             @stepchild = null
           return cmd
         else if dependency is undefined
-          buildtoolsview?.lock()
-          buildtoolsview?.showBox()
-          buildtoolsview?.hideOutput()
-          buildtoolsview?.setHeader("Error parsing arguments")
+          consoleview?.lock()
+          consoleview?.showBox()
+          consoleview?.hideOutput()
+          consoleview?.setHeader("Error parsing arguments")
         else
-          buildtoolsview?.lock()
-          buildtoolsview?.showBox()
-          buildtoolsview?.hideOutput()
-          buildtoolsview?.setHeader("Error: File #{dependency} not found")
+          consoleview?.lock()
+          consoleview?.showBox()
+          consoleview?.hideOutput()
+          consoleview?.setHeader("Error: File #{dependency} not found")
       else
-        buildtoolsview?.lock()
-        buildtoolsview?.showBox()
-        buildtoolsview?.hideOutput()
-        buildtoolsview?.setHeader("Error: Build folder #{cwd_string} not found")
+        consoleview?.lock()
+        consoleview?.showBox()
+        consoleview?.hideOutput()
+        consoleview?.setHeader("Error: Build folder #{cwd_string} not found")
         return
     return
 
@@ -172,9 +172,9 @@ module.exports =
     cmd = @spawn cmd_string, cwd_string
     if @stepchild
       @stepchild.stdout.on 'data', (data) =>
-        buildtoolsview?.outputLineParsed data, ''
+        consoleview?.outputLineParsed data, ''
       @stepchild.stderr.on 'data', (data) =>
-        buildtoolsview?.outputLineParsed data, ''
+        consoleview?.outputLineParsed data, ''
 
   executeMake: ->
     @saveall() if atom.config.get('build-tools-cpp.SaveAll')
@@ -184,16 +184,16 @@ module.exports =
     if @stepchild
       if false
         @stepchild.stdout.on 'data', (data) =>
-          buildtoolsview?.outputLineParsed data, 'make'
+          consoleview?.outputLineParsed data, 'make'
       else
         @stepchild.stdout.on 'data', (data) =>
-          buildtoolsview?.outputLineParsed data, ''
+          consoleview?.outputLineParsed data, ''
       if true
         @stepchild.stderr.on 'data', (data) =>
-          buildtoolsview?.outputLineParsed data, 'make'
+          consoleview?.outputLineParsed data, 'make'
       else
         @stepchild.stderr.on 'data', (data) =>
-          buildtoolsview?.outputLineParsed data, '' #No highlighting
+          consoleview?.outputLineParsed data, '' #No highlighting
 
   config:
     SaveAll:

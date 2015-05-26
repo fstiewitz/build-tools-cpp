@@ -1,6 +1,6 @@
 {
   "name": "build-tools-cpp",
-  "main": "./lib/build-tools-cpp",
+  "main": "./lib/main",
   "linter-package": true,
   "linter-implementation": "build-lint",
   "version": "1.3.0",

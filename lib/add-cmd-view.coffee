@@ -1,7 +1,7 @@
 {SelectListView, $$} = require 'atom-space-pen-views'
 
 ml = require './message-list.coffee'
-btcpp = require './build-tools-cpp.coffee'
+btcpp = require './main.coffee'
 
 module.exports =
 class AdditionalCommandsListView extends SelectListView
