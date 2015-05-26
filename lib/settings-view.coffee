@@ -1,9 +1,9 @@
-{$, $$, ScrollView,TextEditorView} = require 'atom-space-pen-views'
+{$$, ScrollView,TextEditorView} = require 'atom-space-pen-views'
 {CompositeDisposable} = require 'atom'
 _p = require 'path'
 
-EditCommandView= null
-editcommandview= null
+CommandView= null
+commandview= null
 
 highlight_translation= {
   "nh": "No highlighting",
@@ -13,7 +13,7 @@ highlight_translation= {
 }
 
 module.exports =
-  class BuildToolsSettingsView extends ScrollView
+  class SettingsView extends ScrollView
     @content: ->
       @div class:'settings pane-item native-key-bindings', tabindex:-1, =>
         @div class:'project-menu', =>
@@ -52,9 +52,9 @@ module.exports =
       @updateProjects(atom.project.getPaths())
       @setActiveProject @project_list.children()[0]
       @on 'click', '#add-command-button', (e) =>
-        EditCommandView ?= require './edit-cmd-view'
-        editcommandview ?= new EditCommandView(@editcb)
-        editcommandview.show()
+        CommandView ?= require './command-view'
+        commandview ?= new CommandView(@editcb)
+        commandview.show()
       return
 
     destroy: ->

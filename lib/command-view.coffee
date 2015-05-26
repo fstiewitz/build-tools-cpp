@@ -1,8 +1,8 @@
-{$$$,View,TextEditorView} = require 'atom-space-pen-views'
+{View,TextEditorView} = require 'atom-space-pen-views'
 {CompositeDisposable} = require 'atom'
 
 module.exports =
-class EditCommandView extends View
+class CommandView extends View
   nameEditor: null
   commandEditor: null
   wdEditor: null
