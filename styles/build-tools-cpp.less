@@ -147,13 +147,186 @@
       }
 
       .command-menu {
-        flex: none;
+        flex: auto;
         border-width: 0 0 0 1px;
         border-color: #1b1b1b;
         border-style: solid;
 
         .command-list {
           list-style: none;
+          padding: 0 5px 0 5px;
+
+          .command {
+            .commandtop {
+              display: flex;
+              flex-flow: row wrap;
+              justify-content: space-between;
+              background-color: @background-color-highlight;
+
+              #begin {
+                display: flex;
+                padding: 0 0 0 5px;
+              }
+
+              #name {
+                color: @text-color-highlight;
+                cursor: default;
+              }
+
+              #expand:before {
+                font-family: 'Octicons Regular';
+                font-weight: normal;
+                font-style: normal;
+                padding: 0 5px 0 0;
+                line-height: 1;
+                -webkit-font-smoothing: antialiased;
+                text-decoration: none;
+                font-size: 12px;
+                width: @component-icon-size;
+                height: @component-icon-size;
+                content: "\f05a";
+              }
+
+              #expand:hover {
+                color: #ffffff;
+                cursor: pointer;
+              }
+
+              #reduce:before {
+                font-family: 'Octicons Regular';
+                font-weight: normal;
+                font-style: normal;
+                padding: 0 5px 0 0;
+                line-height: 1;
+                -webkit-font-smoothing: antialiased;
+                text-decoration: none;
+                font-size: 12px;
+                width: @component-icon-size;
+                height: @component-icon-size;
+                content: "\f05b";
+              }
+
+              #reduce:hover {
+                color: #ffffff;
+                cursor: pointer;
+              }
+
+              #options {
+                display: flex;
+              }
+
+              #remove::before {
+                font-family: 'Octicons Regular';
+                font-weight: normal;
+                font-style: normal;
+                padding: 0 5px 0 0;
+                line-height: 1;
+                -webkit-font-smoothing: antialiased;
+                text-decoration: none;
+                font-size: 12px;
+                width: @component-icon-size;
+                height: @component-icon-size;
+                content: "\f081";
+              }
+
+              #remove:hover {
+                color: #ffffff;
+                cursor: pointer;
+              }
+
+              #up:before {
+                font-family: 'Octicons Regular';
+                font-weight: normal;
+                font-style: normal;
+                padding: 0 5px 0 0;
+                line-height: 1;
+                -webkit-font-smoothing: antialiased;
+                text-decoration: none;
+                font-size: 12px;
+                width: @component-icon-size;
+                height: @component-icon-size;
+                content: "\f0aa";
+              }
+
+              #up:hover {
+                color: #ffffff;
+                cursor: pointer;
+              }
+
+              #down:before {
+                font-family: 'Octicons Regular';
+                font-weight: normal;
+                font-style: normal;
+                padding: 0 5px 0 0;
+                line-height: 1;
+                -webkit-font-smoothing: antialiased;
+                text-decoration: none;
+                font-size: 12px;
+                width: @component-icon-size;
+                height: @component-icon-size;
+                content: "\f05b";
+              }
+
+              #down:hover {
+                color: #ffffff;
+                cursor: pointer;
+              }
+
+              #edit:before {
+                font-family: 'Octicons Regular';
+                font-weight: normal;
+                font-style: normal;
+                padding: 0 5px 0 0;
+                line-height: 1;
+                -webkit-font-smoothing: antialiased;
+                text-decoration: none;
+                font-size: 12px;
+                width: @component-icon-size;
+                height: @component-icon-size;
+                content: "\f058";
+              }
+
+              #edit:hover {
+                color: #ffffff;
+                cursor: pointer;
+              }
+            }
+
+            .commandinfo {
+              #general {
+                display: flex;
+
+                .keys {
+                  flex: none;
+                  padding: 0 5px 0 0;
+                  cursor: default;
+                }
+
+                .values {
+                  flex: auto;
+                }
+              }
+              .streams {
+                display: flex;
+                flex-flow: row wrap;
+
+                .stream {
+                  display: flex;
+                  padding: 0 5px 0 0;
+
+                  .keys {
+                    flex: none;
+                    padding: 0 5px 0 0;
+                    cursor: default;
+                  }
+
+                  .values {
+                    flex: none;
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }

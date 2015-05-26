@@ -5,6 +5,13 @@ _p = require 'path'
 EditCommandView= null
 editcommandview= null
 
+highlight_translation= {
+  "nh": "No highlighting",
+  "ha": "Highlight all",
+  "ht": "Highlight tags",
+  "hc": "GCC/Clang highlighting"
+}
+
 module.exports =
   class BuildToolsSettingsView extends ScrollView
     @content: ->
@@ -29,7 +36,7 @@ module.exports =
                   @div class:'text-highlight', 'Ctrl+L Ctrl+I'
                   @div class:'text-highlight', 'Ctrl+L Ctrl+U'
               @div class:'command-menu', =>
-                @ul class:'command-list', =>
+                @ul class:'command-list', outlet: 'command_list', =>
                   @li 'Test'
           @div class:'section', =>
             @div class:'section-headerbar', =>
@@ -114,3 +121,43 @@ module.exports =
 
     editcb: (oldname, items) =>
       @test_area.html(JSON.stringify(items))
+      @addCommand items
+
+    addCommand: (items) ->
+      item = $$ ->
+        @div class:'command', =>
+          @div class:'commandtop', =>
+            @div id:'begin', =>
+              @div id:'expand'
+              @div id:'name', items.name
+            @div id:'options', =>
+              @div id:'edit'
+              @div id:'up'
+              @div id:'down'
+              @div id:'remove'
+          @div class:'commandinfo', =>
+            @div id:'general', =>
+              @div class:'keys', =>
+                @div "Command"
+                @div "Working Directory"
+                @div "Shell"
+              @div class:'values', =>
+                @div class:'text-highlight', items.command
+                @div class:'text-highlight', items.wd
+                @div class:'text-highlight', items.shell.toString()
+            @div class:'streams', =>
+              @div id:'stdout', class:'stream', =>
+                @div class:'keys', =>
+                  @div "Mark paths (stdout)"
+                  @div "Highlighting (stdout)"
+                @div class:'values', =>
+                  @div class:'text-highlight', items.stdout.file.toString()
+                  @div class:'text-highlight', highlight_translation[items.stdout.highlighting]
+              @div id:'stderr', class:'stream', =>
+                @div class:'keys', =>
+                  @div "Mark paths (stderr)"
+                  @div "Highlighting (stderr)"
+                @div class:'values', =>
+                  @div class:'text-highlight', items.stderr.file.toString()
+                  @div class:'text-highlight', highlight_translation[items.stderr.highlighting]
+      @command_list.append(item)
