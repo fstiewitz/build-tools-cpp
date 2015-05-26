@@ -85,6 +85,10 @@
         padding: 10px 0 10px 5px;
         cursor: pointer;
 
+        .text-subtle {
+          overflow-x: hidden;
+        }
+
         &:hover {
           background-color: @background-color-selected;
         }
@@ -99,5 +103,55 @@
  .panel {
     flex: 8;
     flex-flow: column;
+    padding-left: 5px;
+
+    .project-header {
+      color: @text-color-highlight;
+      font-size: 2em;
+      font-weight: bold;
+      border-width: 0 0 1px 0;
+      border-color: #1b1b1b;
+      border-style: solid;
+    }
+
+    .section {
+      border-width: 0 0 1px 0;
+      border-color: #1b1b1b;
+      border-style: solid;
+    }
+
+    .section-headerbar {
+      .section-header {
+        display: inline;
+        margin: 0 5px 0 0;
+        color: @text-color-highlight;
+        font-size: 1.75em;
+        font-weight: bold;
+      }
+    }
+
+    .command-container {
+      display: flex;
+      .key-info {
+        flex: none;
+        display: flex;
+
+        .key-desc {
+          flex: none;
+          padding-right: 5px;
+        }
+
+        .key-press {
+          flex: none;
+        }
+      }
+
+      .command-menu {
+        flex: none;
+        border-width: 0 0 0 1px;
+        border-color: #1b1b1b;
+        border-style: solid;
+      }
+    }
   }
 }

@@ -8,9 +8,32 @@ module.exports =
       @div class:'bt-settings pane-item native-key-bindings', tabindex:-1, =>
         @div class:'project-menu', =>
           @ul class:'list-group project-list', outlet:'project_list', =>
-        @div class:'panel', outlet: 'project_content', =>
-          @h1 "Test"
-          @div class:'content', outlet: 'content'
+        @div class:'panel', =>
+          @div class:'project-header', outlet: 'title'
+          @div class:'section', =>
+            @div class:'section-headerbar', =>
+              @div class:'section-header', 'Commands'
+              @div class:'inline-block btn btn-xs', 'Add command'
+            @div class:'command-container', =>
+              @div class:'key-info', =>
+                @div class: 'key-desc text-subtle', =>
+                  @div 'Make Command'
+                  @div 'Configure Command'
+                  @div 'Pre-Configure Command'
+                @div class: 'key-press', =>
+                  @div class:'text-highlight', 'Ctrl+L Ctrl+O'
+                  @div class:'text-highlight', 'Ctrl+L Ctrl+I'
+                  @div class:'text-highlight', 'Ctrl+L Ctrl+U'
+              @div class:'command-menu', =>
+                @ul class:'command-list', =>
+                  @li 'Test'
+          @div class:'section', =>
+            @div class:'section-headerbar', =>
+              @div class:'section-header', 'Dependencies'
+              @div class:'inline-block btn btn-xs', 'Add dependency'
+            @div class:'dependency-container', =>
+              @ul class:'dependency-list', =>
+                @li 'Test'
 
     initialize: ({@uri}) ->
       @updateProjects(atom.project.getPaths())
@@ -38,12 +61,16 @@ module.exports =
         @setActiveProject e
 
     addProject: (path) ->
-      @project_list.append("<li class='list-item project-item'><span class='icon icon-book'>#{path}</span></li>")
+      item = $$ ->
+        @li class:'list-item project-item', =>
+          @div class:'icon icon-book project-name', path.split(_p.sep).reverse()[0]
+          @div class:'text-subtle', path
+      @project_list.append(item)
 
     removeSharedPath: (paths) ->
       if paths.length is 1 then return paths
       path_elements = (e.split(_p.sep) for e in paths)
-      item = ""
+      item = ''
       finished = false
 
       while not finished
@@ -61,12 +88,12 @@ module.exports =
       (e.join(_p.sep) for e in path_elements)
 
     setActiveProject: (e) ->
-      path = e.currentTarget.children[0].innerHTML
+      name = e.currentTarget.children[0].innerHTML
       @markAsActive e.currentTarget
-      @setContent path
+      @setContent name
 
-    setContent: (path) ->
-      @content.html path
+    setContent: (name) ->
+      @title.html name
 
     markAsActive: (e) ->
       @project_list.find('.active').removeClass('active')
