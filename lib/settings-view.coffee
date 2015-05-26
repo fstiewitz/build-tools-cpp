@@ -1,6 +1,9 @@
-{$, $$, ScrollView} = require 'atom-space-pen-views'
+{$, $$, ScrollView,TextEditorView} = require 'atom-space-pen-views'
 {CompositeDisposable} = require 'atom'
 _p = require 'path'
+
+EditCommandView= null
+editcommandview= null
 
 module.exports =
   class BuildToolsSettingsView extends ScrollView
@@ -13,7 +16,8 @@ module.exports =
           @div class:'section', =>
             @div class:'section-headerbar', =>
               @div class:'section-header', 'Commands'
-              @div class:'inline-block btn btn-xs', 'Add command'
+              @div id:'add-command-button', class:'inline-block btn btn-xs', 'Add command'
+              @div class:'inline-block btn btn-xs', 'Import command'
             @div class:'command-container', =>
               @div class:'key-info', =>
                 @div class: 'key-desc text-subtle', =>
@@ -31,12 +35,19 @@ module.exports =
             @div class:'section-headerbar', =>
               @div class:'section-header', 'Dependencies'
               @div class:'inline-block btn btn-xs', 'Add dependency'
+              @div class:'inline-block btn btn-xs', 'Import dependency'
             @div class:'dependency-container', =>
               @ul class:'dependency-list', =>
                 @li 'Test'
+          @div class:'section', outlet: 'test_area'
 
     initialize: ({@uri}) ->
       @updateProjects(atom.project.getPaths())
+      @setActiveProject @project_list.children()[0]
+      @on 'click', '#add-command-button', (e) =>
+        EditCommandView ?= require './edit-cmd-view'
+        editcommandview ?= new EditCommandView(@editcb)
+        editcommandview.show()
       return
 
     destroy: ->
@@ -58,7 +69,7 @@ module.exports =
       for path in paths
         @addProject path
       @project_list.on 'click', '.project-item', (e) =>
-        @setActiveProject e
+        @setActiveProject e.currentTarget
 
     addProject: (path) ->
       item = $$ ->
@@ -88,9 +99,11 @@ module.exports =
       (e.join(_p.sep) for e in path_elements)
 
     setActiveProject: (e) ->
-      name = e.currentTarget.children[0].innerHTML
-      @markAsActive e.currentTarget
+      name = e.children[0].innerHTML
+      path = e.children[1].innerHTML
+      @markAsActive e
       @setContent name
+      @activeProject = path
 
     setContent: (name) ->
       @title.html name
@@ -98,3 +111,6 @@ module.exports =
     markAsActive: (e) ->
       @project_list.find('.active').removeClass('active')
       e.classList.add('active')
+
+    editcb: (oldname, items) =>
+      @test_area.html(JSON.stringify(items))
