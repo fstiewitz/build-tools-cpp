@@ -45,7 +45,6 @@ module.exports =
               @div class:'inline-block btn btn-xs', 'Add dependency'
               @div class:'inline-block btn btn-xs', 'Import dependency'
             @div outlet:'dependency_list', =>
-          @div class:'section', outlet: 'test_area'
 
     initialize: ({@uri}) ->
       super
@@ -138,7 +137,6 @@ module.exports =
     editcb: (oldname, items) =>
       @addCommand items
       main.projects.addCommand(@activeProject, items)
-      @test_area.html(JSON.stringify(main.projects.data))
 
     addCommand: (items) ->
       item = $$ ->
@@ -180,20 +178,16 @@ module.exports =
       item.on 'click', '.icon-expand', (e) =>
         @reduceAll e.currentTarget.parentNode.parentNode.parentNode.parentNode
         @expandCommand e.currentTarget
-        @test_area.html(JSON.stringify(main.projects.data))
       item.on 'click', '.icon-down', (e) =>
         target = e.currentTarget
         if target.classList.contains('expander')
           @reduceCommand target
         else
           @moveDown target.parentNode.parentNode.parentNode
-        @test_area.html(JSON.stringify(main.projects.data))
       item.on 'click', '.icon-up', (e) =>
         @moveUp e.currentTarget.parentNode.parentNode.parentNode
-        @test_area.html(JSON.stringify(main.projects.data))
       item.on 'click', '.icon-close', (e) =>
         @removeCommand e.currentTarget.parentNode.parentNode.parentNode
-        @test_area.html(JSON.stringify(main.projects.data))
       @command_list.append(item)
 
     expandCommand: (target) ->
