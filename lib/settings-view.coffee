@@ -1,6 +1,7 @@
 {$, $$, ScrollView,TextEditorView} = require 'atom-space-pen-views'
 {CompositeDisposable} = require 'atom'
 _p = require 'path'
+main = require './main.coffee'
 
 CommandView= null
 commandview= null
@@ -43,12 +44,11 @@ module.exports =
               @div class:'section-header', 'Dependencies'
               @div class:'inline-block btn btn-xs', 'Add dependency'
               @div class:'inline-block btn btn-xs', 'Import dependency'
-            @div =>
-              @ul class:'dependency-list', =>
-                @li 'Test'
+            @div outlet:'dependency_list', =>
           @div class:'section', outlet: 'test_area'
 
     initialize: ({@uri}) ->
+      super
       @updateProjects(atom.project.getPaths())
       @setActiveProject @project_list.children()[0]
       @on 'click', '#add-command-button', (e) =>
@@ -72,18 +72,20 @@ module.exports =
     updateProjects: ->
       paths = atom.project.getPaths()
       @project_list.empty()
-      paths = @removeSharedPath paths
-      for path in paths
-        @addProject path
+      small_paths = @removeSharedPath paths
+      for path,i in small_paths
+        @addProject path, paths[i]
       @project_list.on 'click', '.project-item', (e) =>
         @setActiveProject e.currentTarget
 
-    addProject: (path) ->
+    addProject: (name, path) ->
       item = $$ ->
         @li class:'list-item project-item', =>
-          @div class:'icon icon-book', path.split(_p.sep).reverse()[0]
+          @div class:'icon icon-book', name
           @div class:'text-subtle', path
       @project_list.append(item)
+      if main.projects.getProject(path) is null
+        main.projects.addProject(path)
 
     removeSharedPath: (paths) ->
       if paths.length is 1 then return paths
@@ -109,19 +111,34 @@ module.exports =
       name = e.children[0].innerHTML
       path = e.children[1].innerHTML
       @markAsActive e
-      @setContent name
+      @setContent name, path
       @activeProject = path
 
-    setContent: (name) ->
+    setContent: (name, path) ->
+      @clearAll()
       @title.html name
+      if (project = main.projects.getProject(path))?
+        commands = project["commands"]
+        for command in commands
+          @addCommand command
+      else
+        main.projects.addProject(path)
+
+    clearAll: ->
+      @command_list.empty()
+      @dependency_list.empty()
+
+    clearDependencies: ->
+      @dependency_list.empty()
 
     markAsActive: (e) ->
       @project_list.find('.active').removeClass('active')
       e.classList.add('active')
 
     editcb: (oldname, items) =>
-      @test_area.html(JSON.stringify(items))
       @addCommand items
+      main.projects.addCommand(@activeProject, items)
+      @test_area.html(JSON.stringify(main.projects.data))
 
     addCommand: (items) ->
       item = $$ ->

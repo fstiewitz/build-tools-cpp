@@ -27,7 +27,15 @@ module.exports =
   stepchild: null
   subscriptions: null
 
+  Projects: null
+  projects: null
+
+  createProjectInstance: ->
+    @Projects ?= require './projects'
+    @projects ?= new @Projects()
+
   activate: (state) ->
+    @createProjectInstance()
     createConsoleView()
     atom.workspace.addOpener (uritoopen) ->
       createSettingsView(uri: uritoopen) if uritoopen is settingsviewuri
@@ -48,6 +56,7 @@ module.exports =
     @stepchild?.kill('SIGKILL')
     @subscriptions.dispose()
     consoleview?.destroy()
+    @projects?.destroy()
 
   toggle: ->
     consoleview?.toggleBox()
