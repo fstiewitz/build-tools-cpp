@@ -6,7 +6,7 @@ module.exports =
     filename: ""
     data: {}
 
-    initialize: ->
+    constructor: ->
       @getFileName()
       @touchFile()
       @getData()
@@ -15,14 +15,11 @@ module.exports =
       @setData()
 
     getFileName: ->
-      @filename = path.dirname(atom.config.getUserConfigPath()) + "/build-tools-cpp.projects"
+      @filename = path.join(path.dirname(atom.config.getUserConfigPath()),"build-tools-cpp.projects")
 
     getData: ->
       CSON = require 'season'
-      CSON.readFile @filename, (error, filedata) =>
-        unless error
-          @data = filedata
-        done?()
+      @data = CSON.readFileSync @filename
 
     setData: ->
       CSON = require 'season'
@@ -40,21 +37,21 @@ module.exports =
     addProject: (path) ->
       @data[path] = {}
       @data[path]["commands"] = []
-      @setData
+      @setData()
 
     addCommand: (path, item) ->
       if @data[path]?
-        if not @commandExists path,item
+        if @commandExists path,item is -1
           @data[path]["commands"].push(item)
-          @setData
+          @setData()
 
     commandExists: (path, item) ->
       if @data[path]?
-        for c in @data[path]["commands"]
+        for c,i in @data[path]["commands"]
           if c.name is item.name
-            return true
-        return false
-      return false
+            return i
+        return -1
+      return -1
 
     getCommands: (path) ->
       @data[path]["commands"]
@@ -67,3 +64,9 @@ module.exports =
 
     setProject: (path, pdata) ->
       @data[path] = pdata
+
+    removeCommand: (path, command) ->
+      if @data[path]?
+        if (i = @commandExists path,{name: command}) isnt -1
+          cmds = @data[path]["commands"]
+          cmds.splice(i,1)

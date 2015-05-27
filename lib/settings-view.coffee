@@ -190,7 +190,6 @@ module.exports =
         @moveUp e.currentTarget.parentNode.parentNode.parentNode
       item.on 'click', '.icon-close', (e) =>
         @removeCommand e.currentTarget.parentNode.parentNode.parentNode
-
       @command_list.append(item)
 
     expandCommand: (target) ->
@@ -225,3 +224,4 @@ module.exports =
 
     removeCommand: (target) ->
       $(target).remove()
+      main.projects.removeCommand @activeProject, $(target).find('#name').html()
