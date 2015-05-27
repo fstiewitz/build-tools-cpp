@@ -180,16 +180,20 @@ module.exports =
       item.on 'click', '.icon-expand', (e) =>
         @reduceAll e.currentTarget.parentNode.parentNode.parentNode.parentNode
         @expandCommand e.currentTarget
+        @test_area.html(JSON.stringify(main.projects.data))
       item.on 'click', '.icon-down', (e) =>
         target = e.currentTarget
         if target.classList.contains('expander')
           @reduceCommand target
         else
           @moveDown target.parentNode.parentNode.parentNode
+        @test_area.html(JSON.stringify(main.projects.data))
       item.on 'click', '.icon-up', (e) =>
         @moveUp e.currentTarget.parentNode.parentNode.parentNode
+        @test_area.html(JSON.stringify(main.projects.data))
       item.on 'click', '.icon-close', (e) =>
         @removeCommand e.currentTarget.parentNode.parentNode.parentNode
+        @test_area.html(JSON.stringify(main.projects.data))
       @command_list.append(item)
 
     expandCommand: (target) ->
@@ -214,6 +218,7 @@ module.exports =
         next = $(target.parentNode.children[node.index()+1])
         node.detach()
         node.insertAfter(next)
+        main.projects.moveCommand @activeProject, $(target).find('#name').html(), 1
 
     moveUp: (target) ->
       node = $(target)
@@ -221,6 +226,7 @@ module.exports =
         next = $(target.parentNode.children[node.index()-1])
         node.detach()
         node.insertBefore(next)
+        main.projects.moveCommand @activeProject, $(target).find('#name').html(), -1
 
     removeCommand: (target) ->
       $(target).remove()

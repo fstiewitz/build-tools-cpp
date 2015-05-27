@@ -70,3 +70,11 @@ module.exports =
         if (i = @commandExists path,{name: command}) isnt -1
           cmds = @data[path]["commands"]
           cmds.splice(i,1)
+          @setData()
+
+    moveCommand: (path, command, offset) ->
+      if @data[path]?
+        if (i = @commandExists path,{name: command}) isnt -1
+          cmds = @data[path]["commands"]
+          cmds.splice(i+offset,0,cmds.splice(i,1)[0])
+          @setData()
