@@ -28,13 +28,14 @@ module.exports =
             @div class:'command-container', =>
               @div class:'key-info', =>
                 @div class: 'key-desc text-subtle', =>
-                  @div 'Make Command'
-                  @div 'Configure Command'
-                  @div 'Pre-Configure Command'
-                @div class: 'key-press', =>
-                  @div class:'text-highlight', 'Ctrl+L Ctrl+O'
-                  @div class:'text-highlight', 'Ctrl+L Ctrl+I'
-                  @div class:'text-highlight', 'Ctrl+L Ctrl+U'
+                  @span 'Make Command'
+                  @span class:'text-highlight', 'Ctrl+L Ctrl+O'
+                @div class: 'key-desc text-subtle', =>
+                  @span 'Configure Command'
+                  @span class:'text-highlight', 'Ctrl+L Ctrl+I'
+                @div class: 'key-desc text-subtle', =>
+                  @span 'Pre-Configure Command'
+                  @span class:'text-highlight', 'Ctrl+L Ctrl+U'
               @div class:'command-menu', =>
                 @div class:'command-list', outlet: 'command_list', =>
           @div class:'section', =>
@@ -179,11 +180,13 @@ module.exports =
       target.classList.remove 'icon-expand'
       target.classList.add 'icon-down'
       target.parentNode.parentNode.parentNode.children[1].classList.remove('hidden')
+      target.parentNode.parentNode.classList.add('top-expanded')
 
     reduceCommand: (target) ->
       target.classList.remove 'icon-down'
       target.classList.add 'icon-expand'
       target.parentNode.parentNode.parentNode.children[1].classList.add('hidden')
+      target.parentNode.parentNode.classList.remove('top-expanded')
 
     reduceAll: (target) ->
       $(target).find('.expander').each (i,e) =>
