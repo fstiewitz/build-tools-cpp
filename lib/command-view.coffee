@@ -28,7 +28,7 @@ class CommandView extends View
           @div =>
             @span class:'inline-block text-subtle', 'Directory to execute command in'
         @subview 'working_directory', new TextEditorView(mini:true, placeholderText: '.')
-      @div class:'block', =>
+      @div class:'block checkbox', =>
         @input id:'command_in_shell', type:'checkbox'
         @label =>
           @div class:'settings-name', 'Execute in shell'
@@ -37,7 +37,7 @@ class CommandView extends View
       @div class:'streams', =>
         @div class:'stream', id:'stdout', =>
           @div class:'small-header', 'stdout'
-          @div class:'block', =>
+          @div class:'block checkbox', =>
             @input id:'mark_paths_stdout', type:'checkbox'
             @label =>
               @div class:'settings-name', 'Mark file paths + coordinates'
@@ -55,7 +55,7 @@ class CommandView extends View
               @button id:'hc', class:'btn', 'GCC/Clang-like highlighting'
         @div class:'stream', id:'stderr', =>
           @div class:'small-header', 'stderr'
-          @div class:'block', =>
+          @div class:'block checkbox', =>
             @input id:'mark_paths_stderr', type:'checkbox'
             @label =>
               @div class:'settings-name', 'Mark file paths + coordinates'
