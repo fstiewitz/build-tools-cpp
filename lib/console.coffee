@@ -1,6 +1,7 @@
 {$,View} = require 'atom-space-pen-views'
-parser = require './build-parser.coffee'
-ml = require './message-list.coffee'
+parser = require './build-parser'
+ml = require './message-list'
+output = require './output'
 
 module.exports =
 class ConsoleOutput extends View
@@ -70,11 +71,11 @@ class ConsoleOutput extends View
 
   clear: ->
     @find('.output').text('')
-    parser.clearVars()
+    output.clear()
 
-  outputLineParsed: (line,script) =>
+  outputLineParsed: (line,settings) =>
     line = line.toString()
-    parser.toLine line, script, @printLine
+    output.toLine line, settings, @printLine
 
   openFile: (element) ->
     lineno = parseInt($(this).attr('row'))
@@ -86,7 +87,7 @@ class ConsoleOutput extends View
         })
 
   finishConsole: ->
-    parser.poplines(@printLine)
+    output.popLines(@printLine)
     @find('.filelink').on 'click', @openFile
 
   printLine: (message) =>

@@ -1,7 +1,9 @@
 cp = require 'child_process'
-parser = require './build-parser.coffee'
-wc = require './command-wildcards.coffee'
-ml = require './message-list.coffee'
+parser = require './build-parser'
+wc = require './command-wildcards'
+ml = require './message-list'
+command = require './command'
+output = require './output'
 
 {CompositeDisposable} = require 'atom'
 
@@ -71,55 +73,6 @@ module.exports =
     else
       consoleview?.cancel()
 
-  getQuoteIndex: (line) ->
-    c1 = line.indexOf('"')
-    if c1 isnt -1
-      return {index: c1, character: '"'}
-    c1 = line.indexOf("'")
-    return {index: c1, character: "'"}
-
-  split: (cmd_string) ->
-      args = []
-      cmd_list = cmd_string.split(' ')
-      instring = false
-      while (cmd_list.length isnt 0)
-        if not instring
-          args.push cmd_list[0]
-        else
-          args[args.length-1] += ' ' + cmd_list[0]
-        qi = @getQuoteIndex(cmd_list[0])
-        if qi.index isnt -1
-          if instring
-            instring = false
-          else
-            if cmd_list[0].substr(qi.index+1).indexOf(qi.character) is -1
-              instring = true
-        cmd_list.shift()
-      return args
-
-  getcommand: (cmd_string, shell) ->
-    command = {
-      cmd: "",
-      arg: [],
-      env: {}
-    }
-    command.env = process.env
-    if shell
-      sh = atom.config.get('build-tools-cpp.ShellCommand')
-      sha = sh.split(' ')
-      command.cmd = sha[0]
-      command.arg = sha.slice(1)
-      command.arg.push(cmd_string)
-    else
-      args = @split cmd_string
-      reg = /[\"\']/
-      for a,i in args
-        if reg.test(a[0]) and reg.test(a[a.length - 1])
-          args[i]=a.slice(1,-1)
-      command.cmd = args[0]
-      command.arg = args.slice(1)
-    command
-
   lint: ->
     if (v=atom.workspace.getActiveTextEditor())?
       ev = atom.views.getView(v)
@@ -132,8 +85,8 @@ module.exports =
 
   spawn: (cmd_string,cwd_string,shell) ->
     if cmd_string isnt ''
-      cmd = @getcommand cmd_string, shell
-      parser.clearVars()
+      cmd = command.getCommand cmd_string, shell
+      output.clear()
       consoleview?.showBox()
       consoleview?.setHeader(cmd.cmd)
       consoleview?.clear()
@@ -145,27 +98,22 @@ module.exports =
         consoleview?.setHeader("#{cmd_string}: received #{error}")
         consoleview?.lock()
         @kill()
-      @stepchild.on 'exit', (exitcode, signal) =>
-        consoleview?.setHeader
-        (cmd.cmd + ": finished with exitcode #{exitcode}") if exitcode?
-        consoleview?.setHeader
-        (cmd.cmd + ": finished with signal #{signal}") if signal?
+      @stepchild.on 'close', (exitcode) =>
+        consoleview?.setHeader (cmd.cmd + ": finished with exitcode #{exitcode}")
         consoleview?.finishConsole()
         @lint()
         @stepchild = null
-      return cmd
-    return
 
   execute: (id) ->
     if (path=atom.workspace.getActiveTextEditor()?.getPath())?
       if (cmd = @projects.getKeyCommand path,id)?
-        cmd_string = wc.replaceWildcards(cmd.command,cmd.wd)
-        cmd = @spawn cmd_string, cmd.wd, cmd.shell
-        if @stepchild
+        cmd_string = wc.replaceWildcards(cmd.cmd.command,cmd.cmd.wd)
+        @spawn cmd_string, cmd.cmd.wd, cmd.cmd.shell
+        if @stepchild?
           @stepchild.stdout.on 'data', (data) =>
-            consoleview?.outputLineParsed data, ''
+            consoleview?.outputLineParsed data, {format: cmd.cmd.stdout, wd: @projects.resWD(cmd)}
           @stepchild.stderr.on 'data', (data) =>
-            consoleview?.outputLineParsed data, ''
+            consoleview?.outputLineParsed data, {format: cmd.cmd.stderr, wd: @projects.resWD(cmd)}
 
   config:
     SaveAll:

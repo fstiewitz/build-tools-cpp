@@ -84,8 +84,11 @@ module.exports =
       i = p.length - 1
       while (i isnt 0) and (@data[p.slice(0,i).join(_p.sep)] is undefined)
         i=i-1
-      @data[p.slice(0,i).join(_p.sep)]
+      p.slice(0,i).join(_p.sep)
 
     getKeyCommand: (path, id) ->
       if (p = @getProjectPath path)?
-        p["commands"][id]
+        {cmd: @data[p]["commands"][id], path: p}
+
+    resWD: (cmd) ->
+      _p.resolve(cmd.path, cmd.cmd.wd)
