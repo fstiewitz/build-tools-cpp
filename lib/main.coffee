@@ -79,45 +79,46 @@ module.exports =
     return {index: c1, character: "'"}
 
   split: (cmd_string) ->
-    args = []
-    cmd_list = cmd_string.split(' ')
-    instring = false
-    while (cmd_list.length isnt 0)
-      if not instring
-        args.push cmd_list[0]
-      else
-        args[args.length-1] += ' ' + cmd_list[0]
-      qi = @getQuoteIndex(cmd_list[0])
-      if qi.index isnt -1
-        if instring
-          instring = false
+      args = []
+      cmd_list = cmd_string.split(' ')
+      instring = false
+      while (cmd_list.length isnt 0)
+        if not instring
+          args.push cmd_list[0]
         else
-          if cmd_list[0].substr(qi.index+1).indexOf(qi.character) is -1
-            instring = true
-      cmd_list.shift()
-    return args
+          args[args.length-1] += ' ' + cmd_list[0]
+        qi = @getQuoteIndex(cmd_list[0])
+        if qi.index isnt -1
+          if instring
+            instring = false
+          else
+            if cmd_list[0].substr(qi.index+1).indexOf(qi.character) is -1
+              instring = true
+        cmd_list.shift()
+      return args
 
-  getcommand: (cmd_list) ->
+  getcommand: (cmd_string, shell) ->
     command = {
       cmd: "",
       arg: [],
       env: {}
     }
     command.env = process.env
-    cmd_reached = false
-    for e in cmd_list
-      if e.indexOf('=') isnt -1 and (not cmd_reached)
-        epair = e.split('=')
-        t = parser.removeQuotes epair[1]
-        if t isnt ''
-          command.env[epair[0]]=t
-      else if cmd_reached
-        t = parser.removeQuotes e
-        command.arg.push t if t isnt ''
-      else
-        cmd_reached = true
-        command.cmd = parser.removeQuotes e
-    return command
+    if shell
+      sh = atom.config.get('build-tools-cpp.ShellCommand')
+      sha = sh.split(' ')
+      command.cmd = sha[0]
+      command.arg = sha.slice(1)
+      command.arg.push(cmd_string)
+    else
+      args = @split cmd_string
+      reg = /[\"\']/
+      for a,i in args
+        if reg.test(a[0]) and reg.test(a[a.length - 1])
+          args[i]=a.slice(1,-1)
+      command.cmd = args[0]
+      command.arg = args.slice(1)
+    command
 
   lint: ->
     if (v=atom.workspace.getActiveTextEditor())?
@@ -131,48 +132,28 @@ module.exports =
 
   spawn: (cmd_string,cwd_string,shell) ->
     if cmd_string isnt ''
-      cmd_list = @split cmd_string
-      cmd = @getcommand cmd_list
+      cmd = @getcommand cmd_string, shell
       parser.clearVars()
-      wd = parser.getWD parser.getProjectPath(),cwd_string
-      if wd isnt ''
-        if (dependency = parser.hasDependencies wd, cmd.cmd, cmd.arg) is ""
-          consoleview?.showBox()
-          consoleview?.setHeader(cmd.cmd)
-          consoleview?.clear()
-          parser.unlint()
-          consoleview?.unlock()
-          @stepchild = cp.spawn(cmd.cmd, cmd.arg, { cwd: wd, env: cmd.env })
-          @stepchild.on 'error', (error) =>
-            consoleview?.hideOutput()
-            consoleview?.setHeader("#{cmd_string}: received #{error}")
-            consoleview?.lock()
-            @kill()
-          @stepchild.on 'exit', (exitcode, signal) =>
-            consoleview?.setHeader
-            (cmd.cmd + ": finished with exitcode #{exitcode}") if exitcode?
-            consoleview?.setHeader
-            (cmd.cmd + ": finished with signal #{signal}") if signal?
-            consoleview?.finishConsole()
-            @lint()
-            @stepchild = null
-          return cmd
-        else if dependency is undefined
-          consoleview?.lock()
-          consoleview?.showBox()
-          consoleview?.hideOutput()
-          consoleview?.setHeader("Error parsing arguments")
-        else
-          consoleview?.lock()
-          consoleview?.showBox()
-          consoleview?.hideOutput()
-          consoleview?.setHeader("Error: File #{dependency} not found")
-      else
-        consoleview?.lock()
-        consoleview?.showBox()
+      consoleview?.showBox()
+      consoleview?.setHeader(cmd.cmd)
+      consoleview?.clear()
+      parser.unlint()
+      consoleview?.unlock()
+      @stepchild = cp.spawn(cmd.cmd, cmd.arg, { cwd: cwd_string, env: cmd.env })
+      @stepchild.on 'error', (error) =>
         consoleview?.hideOutput()
-        consoleview?.setHeader("Error: Build folder #{cwd_string} not found")
-        return
+        consoleview?.setHeader("#{cmd_string}: received #{error}")
+        consoleview?.lock()
+        @kill()
+      @stepchild.on 'exit', (exitcode, signal) =>
+        consoleview?.setHeader
+        (cmd.cmd + ": finished with exitcode #{exitcode}") if exitcode?
+        consoleview?.setHeader
+        (cmd.cmd + ": finished with signal #{signal}") if signal?
+        consoleview?.finishConsole()
+        @lint()
+        @stepchild = null
+      return cmd
     return
 
   execute: (id) ->
@@ -199,3 +180,8 @@ module.exports =
       default: ['.cpp','.h','.c','.hpp']
       items:
         type: 'string'
+    ShellCommand:
+      title: 'Shell Command'
+      description: 'Shell command to execute when "Execute in Shell" is enabled. Command string is appended at the end of this string'
+      type: 'string'
+      default: 'bash -c'

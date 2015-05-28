@@ -33,7 +33,7 @@ class CommandView extends View
         @label =>
           @div class:'settings-name', 'Execute in shell'
           @div =>
-            @span class:'inline-block text-subtle', 'Execute the command in your OS\'s shell'
+            @span class:'inline-block text-subtle', 'Execute the command in your OS\'s shell. Change "Shell Command" in build-tools-cpp\'s settings if you are not using bash or use windows'
       @div class:'streams', =>
         @div class:'stream', id:'stdout', =>
           @div class:'small-header', 'stdout'
