@@ -41,9 +41,9 @@ module.exports =
       createSettingsView(uri: uritoopen) if uritoopen is settingsviewuri
 
     @subscriptions = new CompositeDisposable
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @execute("echo TODO")
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:configure': => @execute("echo TODO")
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:make': => @executeMake()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @execute(0)
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:configure': => @execute(1)
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:make': => @execute(2)
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:toggle': => @toggle()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:settings': ->
       atom.workspace.open(settingsviewuri)
@@ -129,7 +129,7 @@ module.exports =
       ev = atom.views.getView(v)
       atom.commands.dispatch(ev, "window:save-all")
 
-  spawn: (cmd_string,cwd_string) ->
+  spawn: (cmd_string,cwd_string,shell) ->
     if cmd_string isnt ''
       cmd_list = @split cmd_string
       cmd = @getcommand cmd_list
@@ -175,34 +175,16 @@ module.exports =
         return
     return
 
-  execute: (command) ->
-    cwd_string = "build"
-    cmd_string = wc.replaceWildcards(command,cwd_string)
-    cmd = @spawn cmd_string, cwd_string
-    if @stepchild
-      @stepchild.stdout.on 'data', (data) =>
-        consoleview?.outputLineParsed data, ''
-      @stepchild.stderr.on 'data', (data) =>
-        consoleview?.outputLineParsed data, ''
-
-  executeMake: ->
-    @saveall() if atom.config.get('build-tools-cpp.SaveAll')
-    cwd_string = "build"
-    cmd_string = wc.replaceWildcards("make -j4",cwd_string)
-    cmd = @spawn cmd_string, cwd_string
-    if @stepchild
-      if false
-        @stepchild.stdout.on 'data', (data) =>
-          consoleview?.outputLineParsed data, 'make'
-      else
-        @stepchild.stdout.on 'data', (data) =>
-          consoleview?.outputLineParsed data, ''
-      if true
-        @stepchild.stderr.on 'data', (data) =>
-          consoleview?.outputLineParsed data, 'make'
-      else
-        @stepchild.stderr.on 'data', (data) =>
-          consoleview?.outputLineParsed data, '' #No highlighting
+  execute: (id) ->
+    if (path=atom.workspace.getActiveTextEditor()?.getPath())?
+      if (cmd = @projects.getKeyCommand path,id)?
+        cmd_string = wc.replaceWildcards(cmd.command,cmd.wd)
+        cmd = @spawn cmd_string, cmd.wd, cmd.shell
+        if @stepchild
+          @stepchild.stdout.on 'data', (data) =>
+            consoleview?.outputLineParsed data, ''
+          @stepchild.stderr.on 'data', (data) =>
+            consoleview?.outputLineParsed data, ''
 
   config:
     SaveAll:

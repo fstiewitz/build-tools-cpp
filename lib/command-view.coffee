@@ -27,7 +27,7 @@ class CommandView extends View
           @div class:'settings-name', 'Working Directory'
           @div =>
             @span class:'inline-block text-subtle', 'Directory to execute command in'
-        @subview 'working_directory', new TextEditorView(mini:true)
+        @subview 'working_directory', new TextEditorView(mini:true, placeholderText: '.')
       @div class:'block', =>
         @input id:'command_in_shell', type:'checkbox'
         @label =>
@@ -89,21 +89,22 @@ class CommandView extends View
         e.currentTarget.classList.add('selected')
 
     @disposables.add atom.commands.add @element, 'core:confirm': (event) =>
-        @callback(@oldname, {
-          name: @nameEditor.getText(),
-          command: @commandEditor.getText(),
-          wd: @wdEditor.getText(),
-          shell: @find('#command_in_shell').prop('checked')
-          stdout: {
-            file: @find('#mark_paths_stdout').prop('checked')
-            highlighting: @stdout_highlighting
-          }
-          stderr: {
-            file: @find('#mark_paths_stderr').prop('checked')
-            highlighting: @stderr_highlighting
-          }
-          })
-        @hide()
+        if ((n=@nameEditor.getText()) isnt '') and ((c=@commandEditor.getText()) isnt '')
+          @callback(@oldname, {
+            name: n,
+            command: @commandEditor.getText(),
+            wd: if (d=@wdEditor.getText()) is '' then '.' else d,
+            shell: @find('#command_in_shell').prop('checked')
+            stdout: {
+              file: @find('#mark_paths_stdout').prop('checked')
+              highlighting: @stdout_highlighting
+            }
+            stderr: {
+              file: @find('#mark_paths_stderr').prop('checked')
+              highlighting: @stderr_highlighting
+            }
+            })
+          @hide()
         event.stopPropagation()
 
     @disposables.add atom.commands.add @element, 'core:cancel': (event) =>

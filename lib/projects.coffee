@@ -1,5 +1,5 @@
 fs = require 'fs'
-path = require 'path'
+_p = require 'path'
 
 module.exports =
   class Projects
@@ -15,7 +15,7 @@ module.exports =
       @setData()
 
     getFileName: ->
-      @filename = path.join(path.dirname(atom.config.getUserConfigPath()),"build-tools-cpp.projects")
+      @filename = _p.join(_p.dirname(atom.config.getUserConfigPath()),"build-tools-cpp.projects")
 
     getData: ->
       CSON = require 'season'
@@ -78,3 +78,14 @@ module.exports =
           cmds = @data[path]["commands"]
           cmds.splice(i+offset,0,cmds.splice(i,1)[0])
           @setData()
+
+    getProjectPath: (path) ->
+      p = path.split(_p.sep)
+      i = p.length - 1
+      while (i isnt 0) and (@data[p.slice(0,i).join(_p.sep)] is undefined)
+        i=i-1
+      @data[p.slice(0,i).join(_p.sep)]
+
+    getKeyCommand: (path, id) ->
+      if (p = @getProjectPath path)?
+        p["commands"][id]
