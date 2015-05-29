@@ -31,7 +31,10 @@ module.exports =
 
     getData: ->
       CSON = require 'season'
-      @data = CSON.readFileSync @filename
+      try
+        @data = CSON.readFileSync @filename
+      catch error
+        atom.notifications?.addError "Settings could not be read from #{@filename}"
 
     setData: ->
       CSON = require 'season'
@@ -46,11 +49,10 @@ module.exports =
       s
 
     touchFile: ->
-      fs.exists @filename, (exists) =>
-        unless exists
-          fs.writeFile @filename, '{}', (error) ->
-            if error
-              atom.notifications?.addError "Could not open #{@filename}"
+      if not fs.existsSync @filename
+        fs.writeFile @filename, '{}', (error) ->
+          if error
+            atom.notifications?.addError "Could not open #{@filename}"
 
     addProject: (path) ->
       @data[path] = {}

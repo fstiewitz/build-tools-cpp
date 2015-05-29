@@ -9,6 +9,7 @@ module.exports =
     status: ''
     nostatuslines: ''
     continue_status: ''
+    nolintlines: []
     printfunc: null
 
     constructor: (project, command, stream, printfunc) ->
@@ -57,8 +58,10 @@ module.exports =
         stat = 'warning'
       else if format is 'ht'
         stat = @parseTags line
+        @lint line if @settings.stream.lint
       else if format is 'hc'
-        stat = @parseGCC line, stream
+        stat = @parseGCC line
+        @lint line if @settings.stream.lint
 
       if stat is '' and format is 'hc'
         @nostatuslines = @nostatuslines + line + "\n"
@@ -140,3 +143,27 @@ module.exports =
 
     getAbsPath: (file) ->
       return fp if fs.existsSync(fp=path.resolve(@settings.wd, file))
+
+    lint: (line) ->
+      msgs = require './linter-list'
+      extensions = atom.config.get('build-tools-cpp.SourceFileExtensions').sort().reverse().join('|')
+      extensions = extensions.replace(/\./g,"\\.")
+      regstring = "([\\S]+(?:" + extensions + ")):([\\d]+)(?::[\\d]+)?:[\\w\\s]*(error|warning):([\\S\\s]+)"
+      regstring_file_included = "(?:In file included from|from) ([\\S]+(?:" + extensions + ")):([\\d]+)(?::[\\d]+)?[:,]"
+      regex = new RegExp(regstring)
+      regex_file_included = new RegExp(regstring_file_included)
+      if ( r = regex.exec(line))?
+        if @nolintlines?
+          for line in @nolintlines
+            match = [line[0],line[1],line[2],r[3],r[4]]
+            if msgs.messages[path.basename(match[1])]?
+              msgs.messages[path.basename(match[1])].push(match)
+            else
+              msgs.messages[path.basename(match[1])] = [match]
+        @nolintlines = []
+        if msgs.messages[path.basename(r[1])]?
+          msgs.messages[path.basename(r[1])].push(r)
+        else
+          msgs.messages[path.basename(r[1])] = [r]
+      else if (r = regex_file_included.exec(line))?
+        @nolintlines.push(r)

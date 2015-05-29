@@ -53,6 +53,12 @@ class CommandView extends View
               @button id:'ha', class:'btn', 'Highlight all'
               @button id:'ht', class:'btn', 'Only lines with error or warning tags'
               @button id:'hc', class:'btn', 'GCC/Clang-like highlighting'
+          @div class:'block checkbox hidden', outlet:'stdout_lint', =>
+            @input id:'lint_stdout', type:'checkbox'
+            @label =>
+              @div class:'settings-name', 'Lint errors/warnings'
+              @div =>
+                @span class:'inline-block text-subtle', 'Use Linter package to highlight errors in your code'
         @div class:'stream', id:'stderr', =>
           @div class:'small-header', 'stderr'
           @div class:'block checkbox', =>
@@ -71,6 +77,12 @@ class CommandView extends View
               @button id:'ha', class:'btn', 'Highlight all'
               @button id:'ht', class:'btn', 'Only lines with error or warning tags'
               @button id:'hc', class:'btn', 'GCC/Clang-like highlighting'
+          @div class:'block checkbox hidden', outlet:'stderr_lint', =>
+            @input id:'lint_stderr', type:'checkbox'
+            @label =>
+              @div class:'settings-name', 'Lint errors/warnings'
+              @div =>
+                @span class:'inline-block text-subtle', 'Use Linter package to highlight errors in your code'
 
   initialize: (@callback) ->
     @disposables = new CompositeDisposable
@@ -83,10 +95,18 @@ class CommandView extends View
         @stdout_highlighting = e.currentTarget.id
         @stdout_highlights.find('.selected').removeClass('selected')
         e.currentTarget.classList.add('selected')
+        if /ht|hc/.test(@stdout_highlighting)
+          @stdout_lint.removeClass('hidden')
+        else
+          @stdout_lint.addClass('hidden')
       else if e.currentTarget.parentNode.id is 'stderr'
         @stderr_highlighting = e.currentTarget.id
         @stderr_highlights.find('.selected').removeClass('selected')
         e.currentTarget.classList.add('selected')
+        if /ht|hc/.test(@stderr_highlighting)
+          @stderr_lint.removeClass('hidden')
+        else
+          @stderr_lint.addClass('hidden')
 
     @disposables.add atom.commands.add @element, 'core:confirm': (event) =>
         if ((n=@nameEditor.getText()) isnt '') and ((c=@commandEditor.getText()) isnt '')
@@ -98,10 +118,12 @@ class CommandView extends View
             stdout: {
               file: @find('#mark_paths_stdout').prop('checked')
               highlighting: @stdout_highlighting
+              lint: @find('#lint_stdout').prop('checked')
             }
             stderr: {
               file: @find('#mark_paths_stderr').prop('checked')
               highlighting: @stderr_highlighting
+              lint: @find('#lint_stderr').prop('checked')
             }
             })
           @hide()
@@ -129,6 +151,8 @@ class CommandView extends View
     @find('#command_in_shell').prop('checked', false)
     @find('#mark_paths_stdout').prop('checked', true)
     @find('#mark_paths_stderr').prop('checked', true)
+    @find('#lint_stdout').prop('checked', false)
+    @find('#lint_stderr').prop('checked', false)
 
     @stdout_highlights.find('.selected').removeClass('selected')
     @stderr_highlights.find('.selected').removeClass('selected')
@@ -151,6 +175,8 @@ class CommandView extends View
       @stderr_highlights.find('.selected').removeClass('selected')
       @stdout_highlights.find("\##{items.stdout.highlighting}").addClass('selected')
       @stderr_highlights.find("\##{items.stderr.highlighting}").addClass('selected')
+      @stdout_lint.find('#lint_stdout').prop('checked', items.stdout.lint)
+      @stderr_lint.find('#lint_stderr').prop('checked', items.stderr.lint)
 
     @panel ?= atom.workspace.addModalPanel(item: this)
     @panel.show()

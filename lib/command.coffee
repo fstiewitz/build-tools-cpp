@@ -1,4 +1,9 @@
+path = require 'path'
+
 module.exports =
+  getWD: (res) ->
+    path.resolve(res.projectpath, res.cmd.wd)
+
   getQuoteIndex: (line) ->
     c1 = line.indexOf('"')
     if c1 isnt -1

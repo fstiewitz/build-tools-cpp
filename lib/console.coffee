@@ -1,6 +1,5 @@
 {$,View} = require 'atom-space-pen-views'
-parser = require './build-parser'
-ml = require './message-list'
+ll = require './linter-list'
 output = require './output'
 
 module.exports =
@@ -104,6 +103,7 @@ class ConsoleOutput extends View
     @stderr.destroy if @stdout?
     @stdout = new @Output(projectpath, cmd, 'stdout', @printLine)
     @stderr = new @Output(projectpath, cmd, 'stderr', @printLine)
+    ll.messages = {}
 
   destroyOutput: ->
     @stdout.destroy if @stdout?

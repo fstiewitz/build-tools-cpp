@@ -1,6 +1,4 @@
 cp = require 'child_process'
-parser = require './build-parser'
-ml = require './message-list'
 command = require './command'
 
 {CompositeDisposable} = require 'atom'
@@ -83,7 +81,7 @@ module.exports =
 
   spawn: (res) ->
     cmd_string = res.cmd.command
-    cwd_string = res.cmd.wd
+    cwd_string = command.getWD res
     shell = res.cmd.shell
     if cmd_string isnt ''
       {cmd,arg,env} = command.getCommand cmd_string, shell
