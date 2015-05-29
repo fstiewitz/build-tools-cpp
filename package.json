@@ -11,7 +11,7 @@
       "build-tools-cpp:pre-configure",
       "build-tools-cpp:configure",
       "build-tools-cpp:make",
-      "build-tools-cpp:toggle",
+      "build-tools-cpp:show",
       "build-tools-cpp:settings",
       "build-tools-cpp:show-commands"
     ]

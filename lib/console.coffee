@@ -11,7 +11,7 @@ class ConsoleOutput extends View
           @div class: 'icon-close'
       @div class: 'output hidden', outlet: 'output'
 
-  visible:
+  visible_items:
     header: false
     output: false
   lockoutput: false
@@ -30,19 +30,13 @@ class ConsoleOutput extends View
   attach: ->
     atom.workspace.addBottomPanel({item: this})
 
-  toggleBox: ->
-    if @visible.header
-      @hideBox()
-    else
-      @showBox()
-
   hideBox: ->
-    @detach() if @visible.header
-    @visible.header = false
+    @detach() if @visible_items.header
+    @visible_items.header = false
 
   showBox: ->
-    @attach() if not @visible.header
-    @visible.header = true
+    @attach() if not @visible_items.header
+    @visible_items.header = true
 
   cancel: ->
     @hideBox()
@@ -62,11 +56,11 @@ class ConsoleOutput extends View
 
   hideOutput: ->
     @find('.output').addClass('hidden')
-    @visible.output = false
+    @visible_items.output = false
 
   showOutput: ->
     @find('.output').removeClass('hidden')
-    @visible.output = true
+    @visible_items.output = true
 
   clear: ->
     @find('.output').text('')

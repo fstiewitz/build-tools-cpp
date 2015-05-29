@@ -42,7 +42,7 @@ module.exports =
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @execute(2)
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:configure': => @execute(1)
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:make': => @execute(0)
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:toggle': => @toggle()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:show': => @show()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:settings': ->
       atom.workspace.open(settingsviewuri)
     @subscriptions.add atom.commands.add 'atom-workspace', 'core:cancel': => @cancel()
@@ -56,8 +56,8 @@ module.exports =
     consoleview?.destroy()
     @projects?.destroy()
 
-  toggle: ->
-    consoleview?.toggleBox()
+  show: ->
+    consoleview?.showBox()
 
   kill: ->
     @stepchild?.kill('SIGTERM')
