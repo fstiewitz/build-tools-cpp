@@ -41,9 +41,9 @@ module.exports =
       createSettingsView(uri: uritoopen) if uritoopen is settingsviewuri
 
     @subscriptions = new CompositeDisposable
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @execute(0)
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @execute(2)
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:configure': => @execute(1)
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:make': => @execute(2)
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:make': => @execute(0)
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:toggle': => @toggle()
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:settings': ->
       atom.workspace.open(settingsviewuri)
