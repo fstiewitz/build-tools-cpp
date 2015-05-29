@@ -183,16 +183,20 @@ module.exports =
                 @div class:'keys', =>
                   @div "Mark paths (stdout)"
                   @div "Highlighting (stdout)"
+                  @div "Use Linter (stdout)"
                 @div class:'values', =>
                   @div class:'text-highlight', items.stdout.file.toString()
                   @div class:'text-highlight', highlight_translation[items.stdout.highlighting]
+                  @div class:'text-highlight', if /ht|hc/.test(items.stdout.highlighting) then items.stdout.lint.toString() else 'Disabled'
               @div id:'stderr', class:'stream', =>
                 @div class:'keys', =>
                   @div "Mark paths (stderr)"
                   @div "Highlighting (stderr)"
+                  @div "Use Linter (stderr)"
                 @div class:'values', =>
                   @div class:'text-highlight', items.stderr.file.toString()
                   @div class:'text-highlight', highlight_translation[items.stderr.highlighting]
+                  @div class:'text-highlight', if /ht|hc/.test(items.stderr.highlighting) then items.stderr.lint.toString() else 'Disabled'
       item.on 'click', '.icon-expand', (e) =>
         @reduceAll e.currentTarget.parentNode.parentNode.parentNode.parentNode
         @expandCommand e.currentTarget

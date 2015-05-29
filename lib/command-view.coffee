@@ -118,12 +118,12 @@ class CommandView extends View
             stdout: {
               file: @find('#mark_paths_stdout').prop('checked')
               highlighting: @stdout_highlighting
-              lint: @find('#lint_stdout').prop('checked')
+              lint: if @stdout_lint.hasClass('hidden') then false else @find('#lint_stdout').prop('checked')
             }
             stderr: {
               file: @find('#mark_paths_stderr').prop('checked')
               highlighting: @stderr_highlighting
-              lint: @find('#lint_stderr').prop('checked')
+              lint: if @stderr_lint.hasClass('hidden') then false else @find('#lint_stderr').prop('checked')
             }
             })
           @hide()
@@ -175,8 +175,18 @@ class CommandView extends View
       @stderr_highlights.find('.selected').removeClass('selected')
       @stdout_highlights.find("\##{cmd.stdout.highlighting}").addClass('selected')
       @stderr_highlights.find("\##{cmd.stderr.highlighting}").addClass('selected')
+      @stdout_highlighting = cmd.stdout.highlighting
+      @stderr_highlighting = cmd.stderr.highlighting
       @stdout_lint.find('#lint_stdout').prop('checked', cmd.stdout.lint)
       @stderr_lint.find('#lint_stderr').prop('checked', cmd.stderr.lint)
+      if /ht|hc/.test(@stdout_highlighting)
+        @stdout_lint.removeClass('hidden')
+      else
+        @stdout_lint.addClass('hidden')
+      if /ht|hc/.test(@stderr_highlighting)
+        @stderr_lint.removeClass('hidden')
+      else
+        @stderr_lint.addClass('hidden')
 
     @panel ?= atom.workspace.addModalPanel(item: this)
     @panel.show()

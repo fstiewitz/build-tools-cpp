@@ -50,9 +50,13 @@ module.exports =
 
     addCommand: (path, item) ->
       if @data[path]?
-        if @commandExists path,item is -1
+        if @commandExists(path,item) is -1
           @data[path]["commands"].push(item)
           @setData()
+        else
+          atom.notifications?.addError "Command \"#{item.name}\" already exists"
+      else
+        atom.notifications?.addError "Project \"#{path}\" not found"
 
     commandExists: (path, item) ->
       if @data[path]?
