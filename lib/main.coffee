@@ -1,6 +1,5 @@
 cp = require 'child_process'
 parser = require './build-parser'
-wc = require './command-wildcards'
 ml = require './message-list'
 command = require './command'
 output = require './output'
@@ -83,37 +82,38 @@ module.exports =
       ev = atom.views.getView(v)
       atom.commands.dispatch(ev, "window:save-all")
 
-  spawn: (cmd_string,cwd_string,shell) ->
+  spawn: (res) ->
+    cmd_string = res.cmd.command
+    cwd_string = res.cmd.wd
+    shell = res.cmd.shell
     if cmd_string isnt ''
-      cmd = command.getCommand cmd_string, shell
+      {cmd,arg,env} = command.getCommand cmd_string, shell
       output.clear()
+      output.set res.cmd, res.projectpath
       consoleview?.showBox()
-      consoleview?.setHeader(cmd.cmd)
+      consoleview?.setHeader(cmd_string)
       consoleview?.clear()
-      parser.unlint()
       consoleview?.unlock()
-      @stepchild = cp.spawn(cmd.cmd, cmd.arg, { cwd: cwd_string, env: cmd.env })
+      @stepchild = cp.spawn(cmd, arg, { cwd: cwd_string, env: env })
       @stepchild.on 'error', (error) =>
         consoleview?.hideOutput()
         consoleview?.setHeader("#{cmd_string}: received #{error}")
         consoleview?.lock()
         @kill()
       @stepchild.on 'close', (exitcode) =>
-        consoleview?.setHeader (cmd.cmd + ": finished with exitcode #{exitcode}")
+        consoleview?.setHeader ("#{cmd_string}: finished with exitcode #{exitcode}")
         consoleview?.finishConsole()
-        @lint()
         @stepchild = null
 
   execute: (id) ->
     if (path=atom.workspace.getActiveTextEditor()?.getPath())?
       if (cmd = @projects.getKeyCommand path,id)?
-        cmd_string = wc.replaceWildcards(cmd.cmd.command,cmd.cmd.wd)
-        @spawn cmd_string, cmd.cmd.wd, cmd.cmd.shell
+        @spawn cmd
         if @stepchild?
-          @stepchild.stdout.on 'data', (data) =>
-            consoleview?.outputLineParsed data, {format: cmd.cmd.stdout, wd: @projects.resWD(cmd)}
-          @stepchild.stderr.on 'data', (data) =>
-            consoleview?.outputLineParsed data, {format: cmd.cmd.stderr, wd: @projects.resWD(cmd)}
+          @stepchild.stdout.on 'data', (data) ->
+            consoleview?.outputLineParsed data, 'stdout'
+          @stepchild.stderr.on 'data', (data) ->
+            consoleview?.outputLineParsed data, 'stderr'
 
   config:
     SaveAll:

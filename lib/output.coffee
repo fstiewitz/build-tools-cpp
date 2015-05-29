@@ -3,11 +3,21 @@ fs = require 'fs'
 path = require 'path'
 
 module.exports =
+  set: (cmd, projectpath) ->
+    @settings = {
+      path: projectpath,
+      command: cmd.command,
+      wd: cmd.wd,
+      stdout: cmd.stdout,
+      stderr: cmd.stderr
+    }
+
   clear: ->
     @rollover = ''
     @status = ''
     @nostatuslines = ''
     @continue_status = false
+    @settings = {}
 
   getAbsPath: (relpath, folder) ->
     return fp if fs.existsSync(fp=path.resolve(folder, relpath))
@@ -44,21 +54,23 @@ module.exports =
               end: end
             }
             new_start = end
-    return filenames
+    filenames
 
-  buildHTML: (message,status,wd,format)->
-    if format.file
+  buildHTML: (message,status,stream)->
+    mark = @settings[stream].file
+    wd = @settings.wd
+    if mark
       filenames = @getFileNames message, wd
     $$ ->
       stat = if status isnt '' then "text-#{status}" else ""
       @div class:"bold #{stat}", =>
         if filenames?.length?
           prev = -1
-          for file in filenames
-            @span message.substr(prev+1,file.start - (prev + 1))
+          for {filename, row, col, start, end} in filenames
+            @span message.substr(prev+1,start - (prev + 1))
             stat = "highlight-#{status}" if stat isnt ""
-            @span class:"filelink #{stat}", name:file.filename, row:file.row, col:file.col, message.substr(file.start,file.end - file.start + 1)
-            prev = file.end
+            @span class:"filelink #{stat}", name:filename, row:row, col:col, message.substr(start,end - start + 1)
+            prev = end
           @span message.substr(prev+1) if prev isnt message.length - 1
         else
           @span message
@@ -79,24 +91,25 @@ module.exports =
   parseTags: (line) ->
     if (r=/(error|warning):/g.exec(line))? then r[1] else ''
 
-  parseAndPrint: (line, wd, format, print) ->
-    if format.highlighting is 'nh'
+  parseAndPrint: (line, stream, print) ->
+    format = @settings[stream].highlighting
+    if format is 'nh'
       stat = ''
-    else if format.highlighting is 'ha'
+    else if format is 'ha'
       stat = 'warning'
-    else if format.highlighting is 'ht'
+    else if format is 'ht'
       stat = @parseTags line
-    else if format.highlighting is 'hc'
+    else if format is 'hc'
       stat = @parseGCC line
 
-    if stat is '' and format.highlighting is 'hc'
+    if stat is '' and format is 'hc'
       @nostatuslines = @nostatuslines + line + "\n"
     else
       if @nostatuslines isnt ''
         for l in @nostatuslines.split("\n").slice(0,-1)
-          print (@buildHTML l, stat, wd, format)
+          print (@buildHTML l, stat, stream)
           @nostatuslines = ''
-      print (@buildHTML line, stat, wd, format)
+      print (@buildHTML line, stat, stream)
 
   popLines: (print)->
     for l in @nostatuslines.split("\n")
@@ -104,7 +117,7 @@ module.exports =
         print (@buildHTML l,'')
     @nostatuslines = ''
 
-  toLine: (line, settings, print) ->
+  toLine: (line, stream, print) ->
     lines = line.split("\n")
 
     if lines.length is 1 #No '\n' found -> incomplete line -> add to rollover
@@ -114,14 +127,14 @@ module.exports =
         lines[0] = @rollover + lines[0] #Finish line
         @rollover = ''
 
-      @parseAndPrint lines[0], settings.wd, settings.format, print
+      @parseAndPrint lines[0], stream, print
     else
       if @rollover isnt ''
         lines[0] = @rollover + lines[0]
         @rollover = ''
 
       for l in lines.slice(0,-1) #For each element except last one
-        @toLine l+"\n", settings, print #Recursive call
+        @toLine l+"\n", stream, print #Recursive call
       last = lines[lines.length-1] #Get last element
       if last isnt '' #If last element not empty -> start of unfinished line
         @rollover = last

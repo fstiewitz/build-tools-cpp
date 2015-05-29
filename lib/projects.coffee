@@ -88,7 +88,4 @@ module.exports =
 
     getKeyCommand: (path, id) ->
       if (p = @getProjectPath path)?
-        {cmd: @data[p]["commands"][id], path: p}
-
-    resWD: (cmd) ->
-      _p.resolve(cmd.path, cmd.cmd.wd)
+        {cmd: @data[p]["commands"][id], projectpath: p}

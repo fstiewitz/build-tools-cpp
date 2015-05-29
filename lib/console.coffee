@@ -71,11 +71,10 @@ class ConsoleOutput extends View
 
   clear: ->
     @find('.output').text('')
-    output.clear()
 
-  outputLineParsed: (line,settings) =>
+  outputLineParsed: (line,stream) =>
     line = line.toString()
-    output.toLine line, settings, @printLine
+    output.toLine line, stream, @printLine
 
   openFile: (element) ->
     lineno = parseInt($(this).attr('row'))
