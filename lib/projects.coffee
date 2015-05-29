@@ -6,22 +6,15 @@ module.exports =
   class Projects
     filename: ""
     data: {}
-    watcher: null
-    suppress: false
 
     constructor: ->
       @getFileName()
       @touchFile()
       @getData()
       @emitter = new Emitter
-      @watcher = fs.watch @filename, (event, filename) =>
-        @getData()
-        @emitter.emit 'file-change' if not @isSuppressed()
 
     destroy: ->
       @emitter.dispose()
-      @watcher.close()
-      @setData()
 
     getFileName: ->
       @filename = _p.join(_p.dirname(atom.config.getUserConfigPath()),"build-tools-cpp.projects")
@@ -38,15 +31,11 @@ module.exports =
 
     setData: ->
       CSON = require 'season'
-      @suppress = true
       CSON.writeFile @filename, @data, (error) =>
         if error
           atom.notifications?.addError "Settings could not be written to #{@filename}"
-
-    isSuppressed: ->
-      s = @suppress
-      @suppress = false
-      s
+        else
+          @emitter.emit 'file-change'
 
     touchFile: ->
       if not fs.existsSync @filename
@@ -92,6 +81,12 @@ module.exports =
           cmds.splice(i,1)
           @setData()
 
+    replaceCommand: (path, oldname, item) ->
+      if @data[path]?
+        if (i = @commandExists path,{name: oldname}) isnt -1
+          @data[path]["commands"][i] = item
+          @setData()
+
     moveCommand: (path, command, offset) ->
       if @data[path]?
         if (i = @commandExists path,{name: command}) isnt -1
@@ -101,7 +96,7 @@ module.exports =
 
     getProjectPath: (path) ->
       p = path.split(_p.sep)
-      i = p.length - 1
+      i = p.length
       while (i isnt 0) and (@data[p.slice(0,i).join(_p.sep)] is undefined)
         i=i-1
       p.slice(0,i).join(_p.sep)

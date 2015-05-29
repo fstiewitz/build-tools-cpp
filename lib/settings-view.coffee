@@ -151,8 +151,10 @@ module.exports =
       e.classList.add('active')
 
     editcb: (oldname, items) =>
-      @addCommand items
-      main.projects.addCommand(@activeProject, items)
+      if oldname?
+        main.projects.replaceCommand @activeProject, oldname, items
+      else
+        main.projects.addCommand(@activeProject, items)
 
     addCommand: (items) ->
       item = $$ ->
@@ -204,6 +206,8 @@ module.exports =
         @moveUp e.currentTarget.parentNode.parentNode.parentNode
       item.on 'click', '.icon-close', (e) =>
         @removeCommand e.currentTarget.parentNode.parentNode.parentNode
+      item.on 'click', '.icon-edit', (e) =>
+        @editCommand e.currentTarget.parentNode.parentNode.parentNode
       @command_list.append(item)
 
     expandCommand: (target) ->
@@ -218,6 +222,13 @@ module.exports =
       target.parentNode.parentNode.parentNode.children[1].classList.add('hidden')
       target.parentNode.parentNode.classList.remove('top-expanded')
 
+    editCommand: (target) ->
+      CommandView ?= require './command-view'
+      commandview ?= new CommandView(@editcb)
+      id = Array.prototype.indexOf.call(target.parentNode.childNodes, target)
+      cmd = main.projects.getKeyCommand(@activeProject, id)
+      commandview.show(cmd)
+
     reduceAll: (target) ->
       $(target).find('.expander').each (i,e) =>
         @reduceCommand e
@@ -225,19 +236,12 @@ module.exports =
     moveDown: (target) ->
       node = $(target)
       if node.index() isnt target.parentNode.childElementCount-1
-        next = $(target.parentNode.children[node.index()+1])
-        node.detach()
-        node.insertAfter(next)
         main.projects.moveCommand @activeProject, $(target).find('#name').html(), 1
 
     moveUp: (target) ->
       node = $(target)
       if node.index() isnt 0
-        next = $(target.parentNode.children[node.index()-1])
-        node.detach()
-        node.insertBefore(next)
         main.projects.moveCommand @activeProject, $(target).find('#name').html(), -1
 
     removeCommand: (target) ->
-      $(target).remove()
       main.projects.removeCommand @activeProject, $(target).find('#name').html()
