@@ -3,138 +3,140 @@ fs = require 'fs'
 path = require 'path'
 
 module.exports =
-  set: (cmd, projectpath) ->
-    @settings = {
-      path: projectpath,
-      command: cmd.command,
-      wd: cmd.wd,
-      stdout: cmd.stdout,
-      stderr: cmd.stderr
-    }
+  class Output
+    settings: null
+    rollover: ''
+    status: ''
+    nostatuslines: ''
+    continue_status: ''
+    printfunc: null
 
-  clear: ->
-    @rollover = ''
-    @status = ''
-    @nostatuslines = ''
-    @continue_status = false
-    @settings = {}
+    constructor: (project, command, stream, printfunc) ->
+      @settings = {
+        path: project,
+        command: command.command,
+        wd: command.wd,
+        shell: command.shell,
+        stream: command[stream]
+      }
+      @printfunc = printfunc
 
-  getAbsPath: (relpath, folder) ->
-    return fp if fs.existsSync(fp=path.resolve(folder, relpath))
+    destroy: ->
+      for l in @nostatuslines.split("\n")
+        if l isnt ''
+          item = @buildHTML l, ''
+          @printfunc item
+      @nostatuslines = ''
 
-  getFileNames: (line,wd) ->
-    filenames = []
-    byspace = line.split(' ')
-    return filenames if byspace.length <= 1
-    extensions = atom.config.get('build-tools-cpp.SourceFileExtensions').sort().reverse().join('|')
-    extensions = extensions.replace(/\./g,"\\.")
-    regstring = "([\\S]+(?:" + extensions + "))(?::([\\d]+)(?::([\\d]+))?)?"
-    regex = new RegExp(regstring)
-    new_start = 0
-    for e, index in byspace
-      if e isnt ''
-        if (match = regex.exec(e))?
-          if (fp = @getAbsPath(match[1],wd))?
-            end = line.indexOf(match[1],new_start) + match[1].length - 1
-            row = 0
-            col = 1
-            if match[2]?
-              row = match[2]
-              if match[3]?
-                col = match[3]
-                end = end + match[2].length + match[3].length + 2
-              else
-                end = end + match[2].length + 1
+    in: (line) ->
+      lines = line.split("\n")
 
-            filenames.push {
-              filename: fp
-              row: row
-              col: col
-              start: line.indexOf(match[1],new_start)
-              end: end
-            }
-            new_start = end
-    filenames
+      if lines.length is 1 #No '\n' found -> incomplete line -> add to rollover
+        @rollover = @rollover + lines[0]
+      else if lines.length is 2 and lines[1] is ''
+        if @rollover isnt '' #If incomplete line in rollover
+          lines[0] = @rollover + lines[0] #Finish line
+          @rollover = ''
+        @parse lines[0]
+      else
+        if @rollover isnt ''
+          lines[0] = @rollover + lines[0]
+          @rollover = ''
 
-  buildHTML: (message,status,stream)->
-    mark = @settings[stream].file
-    wd = @settings.wd
-    if mark
-      filenames = @getFileNames message, wd
-    $$ ->
-      stat = if status isnt '' then "text-#{status}" else ""
-      @div class:"bold #{stat}", =>
-        if filenames?.length?
-          prev = -1
-          for {filename, row, col, start, end} in filenames
-            @span message.substr(prev+1,start - (prev + 1))
-            stat = "highlight-#{status}" if stat isnt ""
-            @span class:"filelink #{stat}", name:filename, row:row, col:col, message.substr(start,end - start + 1)
-            prev = end
-          @span message.substr(prev+1) if prev isnt message.length - 1
-        else
-          @span message
+        for l in lines.slice(0,-1) #For each element except last one
+          @in l+"\n" #Recursive call
+        last = lines[lines.length-1] #Get last element
+        if last isnt '' #If last element not empty -> start of unfinished line
+          @rollover = last
 
-  parseGCC: (line) ->
-    if (r=/(error|warning):/g.exec(line))?
-      @continue_status = true
-      @status = r[1]
-      return r[1]
-    else if /^[\^\s~]+$/.test(line) #Reached delimiter for error messages?
-      @continue_status = false
-      return @status
-    else if @continue_status #Continue treating as error message?
-      return @status
-    else
-      return ''
+    parse: (line) ->
+      format = @settings.stream.highlighting
+      if format is 'nh'
+        stat = ''
+      else if format is 'ha'
+        stat = 'warning'
+      else if format is 'ht'
+        stat = @parseTags line
+      else if format is 'hc'
+        stat = @parseGCC line, stream
 
-  parseTags: (line) ->
-    if (r=/(error|warning):/g.exec(line))? then r[1] else ''
-
-  parseAndPrint: (line, stream, print) ->
-    format = @settings[stream].highlighting
-    if format is 'nh'
-      stat = ''
-    else if format is 'ha'
-      stat = 'warning'
-    else if format is 'ht'
-      stat = @parseTags line
-    else if format is 'hc'
-      stat = @parseGCC line
-
-    if stat is '' and format is 'hc'
-      @nostatuslines = @nostatuslines + line + "\n"
-    else
-      if @nostatuslines isnt ''
-        for l in @nostatuslines.split("\n").slice(0,-1)
-          print (@buildHTML l, stat, stream)
+      if stat is '' and format is 'hc'
+        @nostatuslines = @nostatuslines + line + "\n"
+      else
+        if @nostatuslines isnt ''
+          for l in @nostatuslines.split("\n").slice(0,-1)
+            item = @buildHTML l, stat
+            @printfunc item
           @nostatuslines = ''
-      print (@buildHTML line, stat, stream)
+        item = @buildHTML line, stat
+        @printfunc item
 
-  popLines: (print)->
-    for l in @nostatuslines.split("\n")
-      if l isnt ''
-        print (@buildHTML l,'')
-    @nostatuslines = ''
+    parseTags: (line) ->
+      if (r=/(error|warning):/g.exec(line))? then r[1] else ''
 
-  toLine: (line, stream, print) ->
-    lines = line.split("\n")
+    parseGCC: (line) ->
+      if (r=/(error|warning):/g.exec(line))?
+        @continue_status = true
+        @status = r[1]
+        return r[1]
+      else if /^[\^\s~]+$/.test(line) #Reached delimiter for error messages?
+        @continue_status = false
+        return @status
+      else if @continue_status #Continue treating as error message?
+        return @status
+      else
+        return ''
 
-    if lines.length is 1 #No '\n' found -> incomplete line -> add to rollover
-      @rollover = @rollover + lines[0]
-    else if lines.length is 2 and lines[1] is ''
-      if @rollover isnt '' #If incomplete line in @rollover
-        lines[0] = @rollover + lines[0] #Finish line
-        @rollover = ''
+    buildHTML: (message, status) ->
+      if @settings.stream.file
+        filenames = @getFileNames message
+      $$ ->
+        stat = if status isnt '' then "text-#{status}" else ""
+        @div class:"bold #{stat}", =>
+          if filenames?.length?
+            prev = -1
+            for {filename, row, col, start, end} in filenames
+              @span message.substr(prev+1,start - (prev + 1))
+              stat = "highlight-#{status}" if stat isnt ""
+              @span class:"filelink #{stat}", name:filename, row:row, col:col, message.substr(start,end - start + 1)
+              prev = end
+            @span message.substr(prev+1) if prev isnt message.length - 1
+          else
+            @span message
 
-      @parseAndPrint lines[0], stream, print
-    else
-      if @rollover isnt ''
-        lines[0] = @rollover + lines[0]
-        @rollover = ''
+    getFileNames: (line) ->
+      filenames = []
+      byspace = line.split(' ')
+      return filenames if byspace.length <= 1
+      extensions = atom.config.get('build-tools-cpp.SourceFileExtensions').sort().reverse().join('|')
+      extensions = extensions.replace(/\./g,"\\.")
+      regstring = "([\\S]+(?:" + extensions + "))(?::([\\d]+)(?::([\\d]+))?)?"
+      regex = new RegExp(regstring)
+      new_start = 0
+      for e, index in byspace
+        if e isnt ''
+          if (match = regex.exec(e))?
+            if (fp = @getAbsPath(match[1]))?
+              end = line.indexOf(match[1],new_start) + match[1].length - 1
+              row = 0
+              col = 1
+              if match[2]?
+                row = match[2]
+                if match[3]?
+                  col = match[3]
+                  end = end + match[2].length + match[3].length + 2
+                else
+                  end = end + match[2].length + 1
 
-      for l in lines.slice(0,-1) #For each element except last one
-        @toLine l+"\n", stream, print #Recursive call
-      last = lines[lines.length-1] #Get last element
-      if last isnt '' #If last element not empty -> start of unfinished line
-        @rollover = last
+              filenames.push {
+                filename: fp
+                row: row
+                col: col
+                start: line.indexOf(match[1],new_start)
+                end: end
+              }
+              new_start = end
+      filenames
+
+    getAbsPath: (file) ->
+      return fp if fs.existsSync(fp=path.resolve(@settings.wd, file))

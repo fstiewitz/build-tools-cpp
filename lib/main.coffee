@@ -2,7 +2,6 @@ cp = require 'child_process'
 parser = require './build-parser'
 ml = require './message-list'
 command = require './command'
-output = require './output'
 
 {CompositeDisposable} = require 'atom'
 
@@ -88,8 +87,7 @@ module.exports =
     shell = res.cmd.shell
     if cmd_string isnt ''
       {cmd,arg,env} = command.getCommand cmd_string, shell
-      output.clear()
-      output.set res.cmd, res.projectpath
+      consoleview?.createOutput res
       consoleview?.showBox()
       consoleview?.setHeader(cmd_string)
       consoleview?.clear()
@@ -103,6 +101,7 @@ module.exports =
       @stepchild.on 'close', (exitcode) =>
         consoleview?.setHeader ("#{cmd_string}: finished with exitcode #{exitcode}")
         consoleview?.finishConsole()
+        consoleview?.destroyOutput
         @stepchild = null
 
   execute: (id) ->
@@ -111,9 +110,9 @@ module.exports =
         @spawn cmd
         if @stepchild?
           @stepchild.stdout.on 'data', (data) ->
-            consoleview?.outputLineParsed data, 'stdout'
+            consoleview?.stdout?.in data.toString()
           @stepchild.stderr.on 'data', (data) ->
-            consoleview?.outputLineParsed data, 'stderr'
+            consoleview?.stderr?.in data.toString()
 
   config:
     SaveAll:

@@ -72,10 +72,6 @@ class ConsoleOutput extends View
   clear: ->
     @find('.output').text('')
 
-  outputLineParsed: (line,stream) =>
-    line = line.toString()
-    output.toLine line, stream, @printLine
-
   openFile: (element) ->
     lineno = parseInt($(this).attr('row'))
     linecol= parseInt($(this).attr('col'))
@@ -86,7 +82,6 @@ class ConsoleOutput extends View
         })
 
   finishConsole: ->
-    output.popLines(@printLine)
     @find('.filelink').on 'click', @openFile
 
   printLine: (message) =>
@@ -102,3 +97,14 @@ class ConsoleOutput extends View
 
   unlock: ->
     @lockoutput = false
+
+  createOutput: ({cmd, projectpath}) ->
+    @Output ?= require './output'
+    @stdout.destroy if @stdout?
+    @stderr.destroy if @stdout?
+    @stdout = new @Output(projectpath, cmd, 'stdout', @printLine)
+    @stderr = new @Output(projectpath, cmd, 'stderr', @printLine)
+
+  destroyOutput: ->
+    @stdout.destroy if @stdout?
+    @stderr.destroy if @stdout?
