@@ -118,6 +118,9 @@ class CommandView extends View
   hide: ->
     @panel?.hide()
 
+  visible: ->
+    @panel?.isVisible()
+
   show: (items) ->
     @nameEditor.setText("")
     @commandEditor.setText("")

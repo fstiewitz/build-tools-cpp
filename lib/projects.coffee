@@ -1,21 +1,33 @@
 fs = require 'fs'
 _p = require 'path'
+{Emitter} = require 'atom'
 
 module.exports =
   class Projects
     filename: ""
     data: {}
+    watcher: null
+    suppress: false
 
     constructor: ->
       @getFileName()
       @touchFile()
       @getData()
+      @emitter = new Emitter
+      @watcher = fs.watch @filename, (event, filename) =>
+        @getData()
+        @emitter.emit 'file-change' if not @isSuppressed()
 
     destroy: ->
+      @emitter.dispose()
+      @watcher.close()
       @setData()
 
     getFileName: ->
       @filename = _p.join(_p.dirname(atom.config.getUserConfigPath()),"build-tools-cpp.projects")
+
+    onFileChange: (callback) ->
+      @emitter.on 'file-change', callback
 
     getData: ->
       CSON = require 'season'
@@ -23,9 +35,15 @@ module.exports =
 
     setData: ->
       CSON = require 'season'
+      @suppress = true
       CSON.writeFile @filename, @data, (error) =>
         if error
           atom.notifications?.addError "Settings could not be written to #{@filename}"
+
+    isSuppressed: ->
+      s = @suppress
+      @suppress = false
+      s
 
     touchFile: ->
       fs.exists @filename, (exists) =>

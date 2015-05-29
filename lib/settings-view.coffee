@@ -48,6 +48,7 @@ module.exports =
 
     initialize: ({@uri}) ->
       super
+      @filechange = main.projects.onFileChange @reload
       @updateProjects(atom.project.getPaths())
       @setActiveProject @project_list.children()[0]
       @on 'click', '#add-command-button', (e) =>
@@ -57,6 +58,7 @@ module.exports =
       return
 
     destroy: ->
+      @filechange.dispose()
       @detach()
 
     getURI: ->
@@ -113,6 +115,11 @@ module.exports =
       @setContent name, path
       @activeProject = path
 
+    getElement: (path) ->
+      for e in @project_list.children()
+        if e.children[1].innerHTML is path
+          return e
+
     setContent: (name, path) ->
       @clearAll()
       @title.html name
@@ -129,6 +136,15 @@ module.exports =
 
     clearDependencies: ->
       @dependency_list.empty()
+
+    reload: =>
+      if commandview?.visible()
+        commandview.hide()
+      @updateProjects()
+      if main.projects.getProject(@activeProject)? and (e=@getElement(@activeProject))?
+        @setActiveProject e
+      else
+        @setActiveProject @project_list.children()[0]
 
     markAsActive: (e) ->
       @project_list.find('.active').removeClass('active')
