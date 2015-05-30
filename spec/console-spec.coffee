@@ -1,5 +1,33 @@
+path = require 'path'
+
 describe 'Console View', ->
-  [workspaceElement, activationPromise, view] = []
+  [workspaceElement, activationPromise, view, fixturesPath, data, input_stdout, input_stderr] = []
+  data = {
+    name: 'Test command',
+    command: 'echo "Test"',
+    wd: 'build',
+    shell: false,
+    stdout: {
+      file: false,
+      highlighting: 'ha',
+      lint: false
+    }
+    stderr: {
+      file: true,
+      highlighting: 'hc',
+      lint: false
+    }
+  }
+  input_stdout = [
+    "test out",
+    "put\n../src/test.c:3",
+    "\ntest.c: 2: error: Something\n"
+  ]
+  input_stderr = [
+    "stderr ",
+    "test\n../src/test.c:4:2: error: Someth",
+    "ing\nfoo\n^\nstderr"
+  ]
 
   execute = (callback) ->
     atom.commands.dispatch(workspaceElement, 'build-tools-cpp:show')
@@ -32,3 +60,50 @@ describe 'Console View', ->
           view.printLine 'Test'
           expect(view.find('.output').html()).toBe 'Test'
           expect(view.find('.output').hasClass('hidden')).toBe false
+
+    describe 'Output', ->
+      beforeEach ->
+        fixturesPath = atom.project.getPaths()[0]
+        atom.config.set('build-tools-cpp.SourceFileExtensions', ['.c'])
+
+      describe 'When :createOutput', ->
+        it 'creates output objects', ->
+          execute ->
+            view = workspaceElement.getModel().getBottomPanels()[0].getItem()
+            expect(view.Output).toBeUndefined
+            expect(view.stdout).toBeUndefined
+            expect(view.stderr).toBeUndefined
+            view.createOutput {cmd: data, projectpath: fixturesPath}
+            expect(view.Output).toBeDefined
+            expect(view.stdout).toBeDefined
+            expect(view.stderr).toBeDefined
+
+      describe 'On input', ->
+        it 'correctly displays errors and warnings', ->
+          execute ->
+            view = workspaceElement.getModel().getBottomPanels()[0].getItem()
+            expect(view.Output).toBeDefined
+            expect(view.stdout).toBeDefined
+            expect(view.stderr).toBeDefined
+            for i in [0..2]
+              view.stdout.in input_stdout[i]
+            for i in [0..2]
+              view.stderr.in input_stderr[i]
+            view.destroyOutput()
+            content = view.find('.output').children()
+            expect(content.length).toBe 8
+            expect(content[0].classList.contains('text-warning')).toBe true
+            expect(content[1].classList.contains('text-warning')).toBe true
+            expect(content[2].classList.contains('text-warning')).toBe true
+            expect(content[3].classList.contains('text-error')).toBe true
+            expect(content[4].classList.contains('text-error')).toBe true
+            expect(content[5].classList.contains('text-error')).toBe true
+            expect(content[6].classList.contains('text-error')).toBe true
+            expect(content[7].classList.contains('text-error')).toBe false
+            expect(content[1].children[0].innerHTML).toBe '../src/test.c:3'
+            link = content[4].children[1]
+            expect(link.classList.contains('filelink')).toBe true
+            expect(link.attributes['name'].value).toBe path.join(fixturesPath,'src','test.c')
+            expect(link.attributes['row'].value).toBe '4'
+            expect(link.attributes['col'].value).toBe '2'
+            expect(link.innerHTML).toBe '../src/test.c:4:2'

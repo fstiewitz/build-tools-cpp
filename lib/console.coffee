@@ -93,12 +93,12 @@ class ConsoleOutput extends View
 
   createOutput: ({cmd, projectpath}) ->
     @Output ?= require './output'
-    @stdout.destroy if @stdout?
-    @stderr.destroy if @stdout?
+    @stdout.destroy() if @stdout?
+    @stderr.destroy() if @stdout?
     @stdout = new @Output(projectpath, cmd, 'stdout', @printLine)
     @stderr = new @Output(projectpath, cmd, 'stderr', @printLine)
     ll.messages = {}
 
   destroyOutput: ->
-    @stdout.destroy if @stdout?
-    @stderr.destroy if @stdout?
+    @stdout.destroy() if @stdout?
+    @stderr.destroy() if @stderr?

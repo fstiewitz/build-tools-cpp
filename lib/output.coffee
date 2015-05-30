@@ -23,6 +23,8 @@ module.exports =
       @printfunc = printfunc
 
     destroy: ->
+      if @rollover isnt ''
+        @parse @rollover
       for l in @nostatuslines.split("\n")
         if l isnt ''
           item = @buildHTML l, ''
@@ -142,7 +144,7 @@ module.exports =
       filenames
 
     getAbsPath: (file) ->
-      return fp if fs.existsSync(fp=path.resolve(@settings.wd, file))
+      return fp if fs.existsSync(fp=path.resolve(@settings.path, @settings.wd, file))
 
     lint: (line) ->
       msgs = require './linter-list'
