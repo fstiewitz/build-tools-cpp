@@ -161,24 +161,23 @@ class CommandView extends View
 
     @stdout_highlighting = 'nh'
     @stderr_highlighting = 'nh'
-
+    @oldname = null
     if items?
-      cmd = items.cmd
-      @oldname = cmd.name
-      @nameEditor.setText(cmd.name)
-      @commandEditor.setText(cmd.command)
-      @wdEditor.setText(cmd.wd)
-      @find('#command_in_shell').prop('checked', cmd.shell)
-      @find('#mark_paths_stdout').prop('checked', cmd.stdout.file)
-      @find('#mark_paths_stderr').prop('checked', cmd.stderr.file)
+      @oldname = items.name
+      @nameEditor.setText(items.name)
+      @commandEditor.setText(items.command)
+      @wdEditor.setText(items.wd)
+      @find('#command_in_shell').prop('checked', items.shell)
+      @find('#mark_paths_stdout').prop('checked', items.stdout.file)
+      @find('#mark_paths_stderr').prop('checked', items.stderr.file)
       @stdout_highlights.find('.selected').removeClass('selected')
       @stderr_highlights.find('.selected').removeClass('selected')
-      @stdout_highlights.find("\##{cmd.stdout.highlighting}").addClass('selected')
-      @stderr_highlights.find("\##{cmd.stderr.highlighting}").addClass('selected')
-      @stdout_highlighting = cmd.stdout.highlighting
-      @stderr_highlighting = cmd.stderr.highlighting
-      @stdout_lint.find('#lint_stdout').prop('checked', cmd.stdout.lint)
-      @stderr_lint.find('#lint_stderr').prop('checked', cmd.stderr.lint)
+      @stdout_highlights.find("\##{items.stdout.highlighting}").addClass('selected')
+      @stderr_highlights.find("\##{items.stderr.highlighting}").addClass('selected')
+      @stdout_highlighting = items.stdout.highlighting
+      @stderr_highlighting = items.stderr.highlighting
+      @stdout_lint.find('#lint_stdout').prop('checked', items.stdout.lint)
+      @stderr_lint.find('#lint_stderr').prop('checked', items.stderr.lint)
       if /ht|hc/.test(@stdout_highlighting)
         @stdout_lint.removeClass('hidden')
       else

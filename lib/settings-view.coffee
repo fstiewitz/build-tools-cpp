@@ -48,7 +48,6 @@ module.exports =
 
     initialize: ({@uri}) ->
       super
-      @filechange = main.projects.onFileChange @reload
       @updateProjects(atom.project.getPaths())
       @setActiveProject @project_list.children()[0]
       @on 'click', '#add-command-button', (e) =>
@@ -58,8 +57,13 @@ module.exports =
       return
 
     destroy: ->
-      @filechange.dispose()
       @detach()
+
+    attached: ->
+      @filechange = main.projects.onFileChange @reload
+
+    detached: ->
+      @filechange?.dispose()
 
     getURI: ->
       @uri

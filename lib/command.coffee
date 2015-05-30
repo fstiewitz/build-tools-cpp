@@ -17,7 +17,6 @@ module.exports =
       if @shell
         sh = atom.config.get('build-tools-cpp.ShellCommand')
         sha = sh.split(' ')
-        command.cmd = sha[0]
         args = sha.slice(1)
         args.push(@command)
         {cmd: sha[0], args, env: process.env, cwd: path.resolve(@project, @wd)}

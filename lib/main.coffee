@@ -65,8 +65,7 @@ module.exports =
   cancel: ->
     if @process?
       @kill()
-    else
-      consoleview?.cancel()
+    consoleview?.cancel()
 
   lint: ->
     if (v=atom.workspace.getActiveTextEditor())?
