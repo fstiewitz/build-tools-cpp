@@ -33,7 +33,7 @@ module.exports =
   getCommand: (cmd_string, shell) ->
     command = {
       cmd: "",
-      arg: [],
+      args: [],
       env: {}
     }
     command.env = process.env
@@ -41,8 +41,8 @@ module.exports =
       sh = atom.config.get('build-tools-cpp.ShellCommand')
       sha = sh.split(' ')
       command.cmd = sha[0]
-      command.arg = sha.slice(1)
-      command.arg.push(cmd_string)
+      command.args = sha.slice(1)
+      command.args.push(cmd_string)
     else
       args = @split cmd_string
       reg = /[\"\']/
@@ -50,5 +50,5 @@ module.exports =
         if reg.test(a[0]) and reg.test(a[a.length - 1])
           args[i]=a.slice(1,-1)
       command.cmd = args[0]
-      command.arg = args.slice(1)
+      command.args = args.slice(1)
     command

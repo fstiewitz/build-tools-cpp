@@ -1,7 +1,6 @@
-cp = require 'child_process'
 command = require './command'
 
-{CompositeDisposable} = require 'atom'
+{CompositeDisposable, BufferedProcess} = require 'atom'
 
 settingsviewuri= 'atom://build-tools-settings'
 SettingsView= null
@@ -22,7 +21,7 @@ createSettingsView= (state) ->
 
 module.exports =
 
-  stepchild: null
+  process: null
   subscriptions: null
 
   Projects: null
@@ -51,7 +50,7 @@ module.exports =
       settingsview?.reload()
 
   deactivate: ->
-    @stepchild?.kill('SIGKILL')
+    @process?.kill()
     @subscriptions.dispose()
     consoleview?.destroy()
     @projects?.destroy()
@@ -60,11 +59,11 @@ module.exports =
     consoleview?.showBox()
 
   kill: ->
-    @stepchild?.kill('SIGTERM')
-    @stepchild = null
+    @process?.kill()
+    @process = null
 
   cancel: ->
-    if @stepchild?
+    if @process?
       @kill()
     else
       consoleview?.cancel()
@@ -84,33 +83,40 @@ module.exports =
     cwd_string = command.getWD res
     shell = res.cmd.shell
     if cmd_string isnt ''
-      {cmd,arg,env} = command.getCommand cmd_string, shell
+      {cmd,args,env} = command.getCommand cmd_string, shell
       consoleview?.createOutput res
       consoleview?.showBox()
       consoleview?.setHeader(cmd_string)
       consoleview?.clear()
       consoleview?.unlock()
-      @stepchild = cp.spawn(cmd, arg, { cwd: cwd_string, env: env })
-      @stepchild.on 'error', (error) =>
+      @process = new BufferedProcess({
+        command: cmd,
+        args,
+        options: {
+          cwd: cwd_string,
+          env: env
+        },
+        stdout: (data) =>
+          consoleview?.stdout?.in data
+        ,
+        stderr: (data) =>
+          consoleview?.stderr?.in data
+        ,
+        exit: (exitcode) =>
+          consoleview?.setHeader ("#{cmd_string}: finished with exitcode #{exitcode}")
+          consoleview?.finishConsole()
+          consoleview?.destroyOutput()
+        })
+      @process.onWillThrowError ({error, handle}) =>
         consoleview?.hideOutput()
         consoleview?.setHeader("#{cmd_string}: received #{error}")
         consoleview?.lock()
-        @kill()
-      @stepchild.on 'close', (exitcode) =>
-        consoleview?.setHeader ("#{cmd_string}: finished with exitcode #{exitcode}")
-        consoleview?.finishConsole()
-        consoleview?.destroyOutput
-        @stepchild = null
+        handle()
 
   execute: (id) ->
     if (path=atom.workspace.getActiveTextEditor()?.getPath())?
       if (cmd = @projects.getKeyCommand path,id)?
         @spawn cmd
-        if @stepchild?
-          @stepchild.stdout.on 'data', (data) ->
-            consoleview?.stdout?.in data.toString()
-          @stepchild.stderr.on 'data', (data) ->
-            consoleview?.stderr?.in data.toString()
 
   config:
     SaveAll:

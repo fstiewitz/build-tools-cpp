@@ -48,6 +48,11 @@ module.exports =
       @data[path]["commands"] = []
       @setData()
 
+    removeProject: (path) ->
+      if @data[path]?
+        delete @data[path]
+        @setData()
+
     addCommand: (path, item) ->
       if @data[path]?
         if @commandExists(path,item) is -1

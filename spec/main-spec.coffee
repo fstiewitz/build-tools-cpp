@@ -1,4 +1,4 @@
-main = '../lib/main'
+main = require '../lib/main'
 
 describe 'On package activation', ->
   [workspaceElement, activationPromise] = []
@@ -14,5 +14,5 @@ describe 'On package activation', ->
 
   it 'loads the project configuration', ->
     execute ->
-      expect(main.Projects).not.toBeNull
-      expect(main.projects).not.toBeNull
+      expect(main.Projects).toBeDefined
+      expect(main.projects).toBeDefined

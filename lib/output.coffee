@@ -5,7 +5,6 @@ path = require 'path'
 module.exports =
   class Output
     settings: null
-    rollover: ''
     status: ''
     nostatuslines: ''
     continue_status: ''
@@ -23,34 +22,17 @@ module.exports =
       @printfunc = printfunc
 
     destroy: ->
-      if @rollover isnt ''
-        @parse @rollover
       for l in @nostatuslines.split("\n")
         if l isnt ''
           item = @buildHTML l, ''
           @printfunc item
       @nostatuslines = ''
 
-    in: (line) ->
-      lines = line.split("\n")
-
-      if lines.length is 1 #No '\n' found -> incomplete line -> add to rollover
-        @rollover = @rollover + lines[0]
-      else if lines.length is 2 and lines[1] is ''
-        if @rollover isnt '' #If incomplete line in rollover
-          lines[0] = @rollover + lines[0] #Finish line
-          @rollover = ''
-        @parse lines[0]
-      else
-        if @rollover isnt ''
-          lines[0] = @rollover + lines[0]
-          @rollover = ''
-
-        for l in lines.slice(0,-1) #For each element except last one
-          @in l+"\n" #Recursive call
-        last = lines[lines.length-1] #Get last element
-        if last isnt '' #If last element not empty -> start of unfinished line
-          @rollover = last
+    in: (message) ->
+      lines = message.split('\n')
+      for line in lines
+        if line isnt ''
+          @parse line
 
     parse: (line) ->
       format = @settings.stream.highlighting
