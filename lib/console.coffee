@@ -91,12 +91,12 @@ class ConsoleOutput extends View
   unlock: ->
     @lockoutput = false
 
-  createOutput: ({cmd, projectpath}) ->
+  createOutput: (cmd) ->
     @Output ?= require './output'
     @stdout.destroy() if @stdout?
     @stderr.destroy() if @stdout?
-    @stdout = new @Output(projectpath, cmd, 'stdout', @printLine)
-    @stderr = new @Output(projectpath, cmd, 'stderr', @printLine)
+    @stdout = new @Output(cmd, 'stdout', @printLine)
+    @stderr = new @Output(cmd, 'stderr', @printLine)
     ll.messages = {}
 
   destroyOutput: ->

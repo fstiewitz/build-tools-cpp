@@ -79,44 +79,43 @@ module.exports =
       atom.commands.dispatch(ev, "window:save-all")
 
   spawn: (res) ->
-    cmd_string = res.cmd.command
-    cwd_string = command.getWD res
-    shell = res.cmd.shell
-    if cmd_string isnt ''
-      {cmd,args,env} = command.getCommand cmd_string, shell
-      consoleview?.createOutput res
-      consoleview?.showBox()
-      consoleview?.setHeader(cmd_string)
-      consoleview?.clear()
-      consoleview?.unlock()
-      @process = new BufferedProcess({
-        command: cmd,
-        args,
-        options: {
-          cwd: cwd_string,
-          env: env
-        },
-        stdout: (data) =>
-          consoleview?.stdout?.in data
-        ,
-        stderr: (data) =>
-          consoleview?.stderr?.in data
-        ,
-        exit: (exitcode) =>
-          consoleview?.setHeader ("#{cmd_string}: finished with exitcode #{exitcode}")
-          consoleview?.finishConsole()
-          consoleview?.destroyOutput()
-        })
-      @process.onWillThrowError ({error, handle}) =>
-        consoleview?.hideOutput()
-        consoleview?.setHeader("#{cmd_string}: received #{error}")
-        consoleview?.lock()
-        handle()
+    {cmd,args,env,cwd} = res.parseCommand()
+    consoleview?.createOutput res
+    consoleview?.showBox()
+    consoleview?.setHeader(res.command)
+    consoleview?.clear()
+    consoleview?.unlock()
+    @process = new BufferedProcess({
+      command: cmd,
+      args,
+      options: {
+        cwd: cwd,
+        env: env
+      },
+      stdout: (data) =>
+        consoleview?.stdout?.in data
+      ,
+      stderr: (data) =>
+        consoleview?.stderr?.in data
+      ,
+      exit: (exitcode) =>
+        consoleview?.setHeader ("#{res.command}: finished with exitcode #{exitcode}")
+        consoleview?.finishConsole()
+        consoleview?.destroyOutput()
+      })
+    @process.onWillThrowError ({error, handle}) =>
+      consoleview?.hideOutput()
+      consoleview?.setHeader("#{res.command}: received #{error}")
+      consoleview?.lock()
+      handle()
 
   execute: (id) ->
     if (path=atom.workspace.getActiveTextEditor()?.getPath())?
-      if (cmd = @projects.getKeyCommand path,id)?
-        @spawn cmd
+      if (projectpath=@projects.getNextProjectPath path) isnt ''
+        project = @projects.getProject projectpath
+        if (command = project.getCommandByIndex id)?
+          @spawn command
+
 
   config:
     SaveAll:

@@ -1,14 +1,18 @@
+Project = require './project'
+path = require 'path'
 fs = require 'fs'
-_p = require 'path'
 {Emitter} = require 'atom'
 
 module.exports =
   class Projects
-    filename: ""
+    filename: null
     data: {}
 
-    constructor: ->
-      @getFileName()
+    constructor: (arg) ->
+      if arg?
+        @filename = arg
+      else
+        @getFileName()
       @touchFile()
       @getData()
       @emitter = new Emitter
@@ -17,99 +21,48 @@ module.exports =
       @emitter.dispose()
 
     getFileName: ->
-      @filename = _p.join(_p.dirname(atom.config.getUserConfigPath()),"build-tools-cpp.projects")
+      @filename = path.join(path.dirname(atom.config.getUserConfigPath()),"build-tools-cpp.projects")
 
     onFileChange: (callback) ->
       @emitter.on 'file-change', callback
 
     getData: ->
       CSON = require 'season'
-      try
-        @data = CSON.readFileSync @filename
-      catch error
-        atom.notifications?.addError "Settings could not be read from #{@filename}"
+      data = CSON.readFileSync @filename
+      Object.keys(data).forEach (key) =>
+        @data[key] = new Project(key, data[key], @setData)
 
-    setData: ->
+    setData: =>
       CSON = require 'season'
-      CSON.writeFile @filename, @data, (error) =>
-        if error
-          atom.notifications?.addError "Settings could not be written to #{@filename}"
-        else
-          @emitter.emit 'file-change'
+      try
+        CSON.writeFileSync @filename, @data
+        @emitter.emit 'file-change'
+      catch error
+        atom.notifications?.addError "Settings could not be written to #{@filename}"
 
     touchFile: ->
       if not fs.existsSync @filename
-        fs.writeFile @filename, '{}', (error) ->
-          if error
-            atom.notifications?.addError "Could not open #{@filename}"
+        fs.writeFileSync @filename, '{}'
 
     addProject: (path) ->
-      @data[path] = {}
-      @data[path]["commands"] = []
-      @setData()
+      if @data[path]?
+        atom.notifications?.addError "Project \"#{path}\" already exists"
+      else
+        @data[path] = new Project(path, {commands: [], dependencies: []}, @setData)
+        @setData()
 
     removeProject: (path) ->
       if @data[path]?
         delete @data[path]
-        @setData()
-
-    addCommand: (path, item) ->
-      if @data[path]?
-        if @commandExists(path,item) is -1
-          @data[path]["commands"].push(item)
-          @setData()
-        else
-          atom.notifications?.addError "Command \"#{item.name}\" already exists"
       else
         atom.notifications?.addError "Project \"#{path}\" not found"
 
-    commandExists: (path, item) ->
-      if @data[path]?
-        for c,i in @data[path]["commands"]
-          if c.name is item.name
-            return i
-        return -1
-      return -1
-
-    getCommands: (path) ->
-      @data[path]["commands"]
-
-    getProjects: ->
-      (p for p in @data)
+    getNextProjectPath: (file) ->
+      p = file.split(path.sep)
+      i = p.length
+      while (i isnt 0) and (@data[p.slice(0,i).join(path.sep)] is undefined)
+        i=i-1
+      p.slice(0,i).join(path.sep)
 
     getProject: (path) ->
       @data[path]
-
-    setProject: (path, pdata) ->
-      @data[path] = pdata
-
-    removeCommand: (path, command) ->
-      if @data[path]?
-        if (i = @commandExists path,{name: command}) isnt -1
-          cmds = @data[path]["commands"]
-          cmds.splice(i,1)
-          @setData()
-
-    replaceCommand: (path, oldname, item) ->
-      if @data[path]?
-        if (i = @commandExists path,{name: oldname}) isnt -1
-          @data[path]["commands"][i] = item
-          @setData()
-
-    moveCommand: (path, command, offset) ->
-      if @data[path]?
-        if (i = @commandExists path,{name: command}) isnt -1
-          cmds = @data[path]["commands"]
-          cmds.splice(i+offset,0,cmds.splice(i,1)[0])
-          @setData()
-
-    getProjectPath: (path) ->
-      p = path.split(_p.sep)
-      i = p.length
-      while (i isnt 0) and (@data[p.slice(0,i).join(_p.sep)] is undefined)
-        i=i-1
-      p.slice(0,i).join(_p.sep)
-
-    getKeyCommand: (path, id) ->
-      if (p = @getProjectPath path)?
-        {cmd: @data[p]["commands"][id], projectpath: p}

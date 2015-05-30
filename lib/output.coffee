@@ -11,9 +11,9 @@ module.exports =
     nolintlines: []
     printfunc: null
 
-    constructor: (project, command, stream, printfunc) ->
+    constructor: (command, stream, printfunc) ->
       @settings = {
-        path: project,
+        path: command.path,
         command: command.command,
         wd: command.wd,
         shell: command.shell,

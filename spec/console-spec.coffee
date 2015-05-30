@@ -19,14 +19,16 @@ describe 'Console View', ->
     }
   }
   input_stdout = [
-    "test out",
-    "put\n../src/test.c:3",
-    "\ntest.c: 2: error: Something\n"
+    "test output",
+    "../src/test.c:3",
+    "test.c: 2: error: Something"
   ]
   input_stderr = [
-    "stderr ",
-    "test\n../src/test.c:4:2: error: Someth",
-    "ing\nfoo\n^\nstderr"
+    "stderr test",
+    "../src/test.c:4:2: error: Something",
+    "foo",
+    "^",
+    "stderr"
   ]
 
   execute = (callback) ->
@@ -70,10 +72,11 @@ describe 'Console View', ->
         it 'creates output objects', ->
           execute ->
             view = workspaceElement.getModel().getBottomPanels()[0].getItem()
+            data['path'] = fixturesPath
             expect(view.Output).toBeUndefined
             expect(view.stdout).toBeUndefined
             expect(view.stderr).toBeUndefined
-            view.createOutput {cmd: data, projectpath: fixturesPath}
+            view.createOutput data
             expect(view.Output).toBeDefined
             expect(view.stdout).toBeDefined
             expect(view.stderr).toBeDefined
@@ -87,7 +90,7 @@ describe 'Console View', ->
             expect(view.stderr).toBeDefined
             for i in [0..2]
               view.stdout.in input_stdout[i]
-            for i in [0..2]
+            for i in [0..4]
               view.stderr.in input_stderr[i]
             view.destroyOutput()
             content = view.find('.output').children()

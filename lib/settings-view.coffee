@@ -113,7 +113,7 @@ module.exports =
       path = e.children[1].innerHTML
       @markAsActive e
       @setContent name, path
-      @activeProject = path
+      @activeProject = main.projects.getProject path
 
     getElement: (path) ->
       for e in @project_list.children()
@@ -152,9 +152,9 @@ module.exports =
 
     editcb: (oldname, items) =>
       if oldname?
-        main.projects.replaceCommand @activeProject, oldname, items
+        @activeProject.replaceCommand oldname, items
       else
-        main.projects.addCommand(@activeProject, items)
+        @activeProject.addCommand items
 
     addCommand: (items) ->
       item = $$ ->
@@ -230,7 +230,7 @@ module.exports =
       CommandView ?= require './command-view'
       commandview ?= new CommandView(@editcb)
       id = Array.prototype.indexOf.call(target.parentNode.childNodes, target)
-      cmd = main.projects.getKeyCommand(@activeProject, id)
+      cmd = @activeProject.getCommandByIndex id
       commandview.show(cmd)
 
     reduceAll: (target) ->
@@ -240,12 +240,12 @@ module.exports =
     moveDown: (target) ->
       node = $(target)
       if node.index() isnt target.parentNode.childElementCount-1
-        main.projects.moveCommand @activeProject, $(target).find('#name').html(), 1
+        @activeProject.moveCommand $(target).find('#name').html(), 1
 
     moveUp: (target) ->
       node = $(target)
       if node.index() isnt 0
-        main.projects.moveCommand @activeProject, $(target).find('#name').html(), -1
+        @activeProject.moveCommand $(target).find('#name').html(), -1
 
     removeCommand: (target) ->
-      main.projects.removeCommand @activeProject, $(target).find('#name').html()
+      @activeProject.removeCommand $(target).find('#name').html()
