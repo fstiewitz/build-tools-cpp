@@ -54,6 +54,7 @@ module.exports =
     removeProject: (path) ->
       if @data[path]?
         delete @data[path]
+        @setData()
       else
         atom.notifications?.addError "Project \"#{path}\" not found"
 

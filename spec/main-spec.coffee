@@ -14,5 +14,5 @@ describe 'On package activation', ->
 
   it 'loads the project configuration', ->
     execute ->
-      expect(main.Projects).toBeDefined
-      expect(main.projects).toBeDefined
+      expect(main.Projects).toBeDefined()
+      expect(main.projects).toBeDefined()

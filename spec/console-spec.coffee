@@ -73,21 +73,21 @@ describe 'Console View', ->
           execute ->
             view = workspaceElement.getModel().getBottomPanels()[0].getItem()
             data['path'] = fixturesPath
-            expect(view.Output).toBeUndefined
-            expect(view.stdout).toBeUndefined
-            expect(view.stderr).toBeUndefined
+            expect(view.Output).toBeUndefined()
+            expect(view.stdout).toBeUndefined()
+            expect(view.stderr).toBeUndefined()
             view.createOutput data
-            expect(view.Output).toBeDefined
-            expect(view.stdout).toBeDefined
-            expect(view.stderr).toBeDefined
+            expect(view.Output).toBeDefined()
+            expect(view.stdout).toBeDefined()
+            expect(view.stderr).toBeDefined()
 
       describe 'On input', ->
         it 'correctly displays errors and warnings', ->
           execute ->
             view = workspaceElement.getModel().getBottomPanels()[0].getItem()
-            expect(view.Output).toBeDefined
-            expect(view.stdout).toBeDefined
-            expect(view.stderr).toBeDefined
+            expect(view.Output).toBeDefined()
+            expect(view.stdout).toBeDefined()
+            expect(view.stderr).toBeDefined()
             for i in [0..2]
               view.stdout.in input_stdout[i]
             for i in [0..4]
