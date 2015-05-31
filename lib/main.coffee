@@ -35,7 +35,7 @@ module.exports =
     @createProjectInstance()
     createConsoleView()
     atom.workspace.addOpener (uritoopen) ->
-      createSettingsView(uri: uritoopen) if uritoopen is settingsviewuri
+      createSettingsView(uri: uritoopen, @projects) if uritoopen is settingsviewuri
 
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @execute(2)

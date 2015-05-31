@@ -1,7 +1,6 @@
 {$, $$, ScrollView,TextEditorView} = require 'atom-space-pen-views'
 {CompositeDisposable} = require 'atom'
 _p = require 'path'
-main = require './main.coffee'
 
 highlight_translation= {
   "nh": "No highlighting",
@@ -46,7 +45,7 @@ module.exports =
               @div class:'inline-block btn btn-xs', 'Import dependency'
             @div outlet:'dependency_list', =>
 
-    initialize: ({@uri}) ->
+    initialize: ({@uri,@projects}) ->
       super
       @CommandView=null
       @commandview=null
@@ -61,7 +60,7 @@ module.exports =
       @detach()
 
     attached: ->
-      @filechange = main.projects.onFileChange @reload
+      @filechange = @projects.onFileChange @reload
 
     detached: ->
       @filechange?.dispose()
@@ -90,8 +89,8 @@ module.exports =
           @div class:'icon icon-book', name
           @div class:'text-subtle', path
       @project_list.append(item)
-      if main.projects.getProject(path) is null
-        main.projects.addProject(path)
+      if @projects.getProject(path) is null
+        @projects.addProject(path)
 
     removeSharedPath: (paths) ->
       if paths.length is 1 then return paths
@@ -118,7 +117,7 @@ module.exports =
       path = e.children[1].innerHTML
       @markAsActive e
       @setContent name, path
-      @activeProject = main.projects.getProject path
+      @activeProject = @projects.getProject path
 
     getElement: (path) ->
       for e in @project_list.children()
@@ -128,12 +127,12 @@ module.exports =
     setContent: (name, path) ->
       @clearAll()
       @title.html name
-      if (project = main.projects.getProject(path))?
+      if (project = @projects.getProject(path))?
         commands = project["commands"]
         for command in commands
           @addCommand command
       else
-        main.projects.addProject(path)
+        @projects.addProject(path)
 
     clearAll: ->
       @command_list.empty()
@@ -146,7 +145,7 @@ module.exports =
       if @commandview?.visible()
         @commandview.hide()
       @updateProjects()
-      if main.projects.getProject(@activeProject)? and (e=@getElement(@activeProject))?
+      if @projects.getProject(@activeProject)? and (e=@getElement(@activeProject))?
         @setActiveProject e
       else
         @setActiveProject @project_list.children()[0]
