@@ -11,7 +11,7 @@ consoleview= null
 
 createConsoleView= ->
   ConsoleView ?= require './console'
-  consoleview ?= new ConsoleView
+  consoleview ?= new ConsoleView()
   consoleview
 
 createSettingsView= (state) ->
@@ -34,8 +34,8 @@ module.exports =
   activate: (state) ->
     @createProjectInstance()
     createConsoleView()
-    atom.workspace.addOpener (uritoopen) ->
-      createSettingsView(uri: uritoopen, @projects) if uritoopen is settingsviewuri
+    atom.workspace.addOpener (uritoopen) =>
+      createSettingsView({uri: uritoopen, @projects}) if uritoopen is settingsviewuri
 
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @execute(2)
