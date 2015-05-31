@@ -11,9 +11,12 @@ describe 'Project', ->
     atom.commands.dispatch(workspaceElement, 'build-tools-cpp:show')
     waitsForPromise -> activationPromise
     runs ->
-      fixturesPath = atom.project.getPaths()[0]
-      root1 = path.join(fixturesPath,'root1')
-      root2 = path.join(fixturesPath,'root2')
+      waitsFor ->
+        main.projects?
+      runs ->
+        fixturesPath = atom.project.getPaths()[0]
+        root1 = path.join(fixturesPath,'root1')
+        root2 = path.join(fixturesPath,'root2')
 
   describe 'On package activation', ->
     it 'creates/loads the project file', ->

@@ -38,10 +38,12 @@ describe 'Console View', ->
     atom.commands.dispatch(workspaceElement, 'build-tools-cpp:show')
     waitsForPromise -> activationPromise
     runs ->
-      panels = workspaceElement.getModel().getBottomPanels()
-      expect(panels.length).toBe 1
-      view = panels[0].getItem()
-      fixturesPath = atom.project.getPaths()[0]
+      waitsFor ->
+        atom.workspace.getBottomPanels().length is 1
+      runs ->
+        panels = workspaceElement.getModel().getBottomPanels()
+        view = panels[0].getItem()
+        fixturesPath = atom.project.getPaths()[0]
 
   describe 'On build-tools-cpp:show', ->
     it 'shows a header without a console', ->

@@ -12,27 +12,30 @@ describe 'Settings page', ->
     waitsForPromise -> activationPromise
     runs ->
       fixturesPath = atom.project.getPaths()[0]
-      view = atom.workspace.getActivePaneItem()
-      expect(view).toBeDefined()
-      if (project = main.projects.getProject fixturesPath) is undefined
-        main.projects.addProject fixturesPath
-        data = {
-          name: 'Test command',
-          command: 'pwd "Hello World" test',
-          wd: 'sub0',
-          shell: false,
-          stdout: {
-            file: false,
-            highlighting: 'ha',
-            lint: false
+      waitsFor ->
+        atom.workspace.getActivePaneItem()?.getURI() is 'atom://build-tools-settings'
+      runs ->
+        view = atom.workspace.getActivePaneItem()
+        expect(view).toBeDefined()
+        if (project = main.projects.getProject fixturesPath) is undefined
+          main.projects.addProject fixturesPath
+          data = {
+            name: 'Test command',
+            command: 'pwd "Hello World" test',
+            wd: 'sub0',
+            shell: false,
+            stdout: {
+              file: false,
+              highlighting: 'ha',
+              lint: false
+            }
+            stderr: {
+              file: true,
+              highlighting: 'hc',
+              lint: false
+            }
           }
-          stderr: {
-            file: true,
-            highlighting: 'hc',
-            lint: false
-          }
-        }
-        main.projects.getProject(fixturesPath).addCommand data
+          main.projects.getProject(fixturesPath).addCommand data
 
 
   describe 'On build-tools-cpp:settings', ->
