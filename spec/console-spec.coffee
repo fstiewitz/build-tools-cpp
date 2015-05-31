@@ -42,8 +42,8 @@ describe 'Console View', ->
       activationPromise = atom.packages.activatePackage('build-tools-cpp')
       execute ->
         view = workspaceElement.getModel().getBottomPanels()[0].getItem()
-        expect(view.hasClass('console')).toBe true
-        expect(view.find('.output').hasClass('hidden')).toBe true
+        expect(view.hasClass('console')).toBeTruthy()
+        expect(view.find('.output').hasClass('hidden')).toBeTruthy()
 
     describe 'When :setHeader', ->
       it 'sets the header', ->
@@ -58,10 +58,10 @@ describe 'Console View', ->
         execute ->
           view = workspaceElement.getModel().getBottomPanels()[0].getItem()
           expect(view.find('.output').html()).toBe ''
-          expect(view.find('.output').hasClass('hidden')).toBe true
+          expect(view.find('.output').hasClass('hidden')).toBeTruthy()
           view.printLine 'Test'
           expect(view.find('.output').html()).toBe 'Test'
-          expect(view.find('.output').hasClass('hidden')).toBe false
+          expect(view.find('.output').hasClass('hidden')).toBeFalsy()
 
     describe 'Output', ->
       beforeEach ->
@@ -95,17 +95,17 @@ describe 'Console View', ->
             view.destroyOutput()
             content = view.find('.output').children()
             expect(content.length).toBe 8
-            expect(content[0].classList.contains('text-warning')).toBe true
-            expect(content[1].classList.contains('text-warning')).toBe true
-            expect(content[2].classList.contains('text-warning')).toBe true
-            expect(content[3].classList.contains('text-error')).toBe true
-            expect(content[4].classList.contains('text-error')).toBe true
-            expect(content[5].classList.contains('text-error')).toBe true
-            expect(content[6].classList.contains('text-error')).toBe true
-            expect(content[7].classList.contains('text-error')).toBe false
+            expect(content[0].classList.contains('text-warning')).toBeTruthy()
+            expect(content[1].classList.contains('text-warning')).toBeTruthy()
+            expect(content[2].classList.contains('text-warning')).toBeTruthy()
+            expect(content[3].classList.contains('text-error')).toBeTruthy()
+            expect(content[4].classList.contains('text-error')).toBeTruthy()
+            expect(content[5].classList.contains('text-error')).toBeTruthy()
+            expect(content[6].classList.contains('text-error')).toBeTruthy()
+            expect(content[7].classList.contains('text-error')).toBeFalsy()
             expect(content[1].children[0].innerHTML).toBe '../src/test.c:3'
             link = content[4].children[1]
-            expect(link.classList.contains('filelink')).toBe true
+            expect(link.classList.contains('filelink')).toBeTruthy()
             expect(link.attributes['name'].value).toBe path.join(fixturesPath,'src','test.c')
             expect(link.attributes['row'].value).toBe '4'
             expect(link.attributes['col'].value).toBe '2'

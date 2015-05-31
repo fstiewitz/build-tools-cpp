@@ -34,13 +34,13 @@ describe 'Settings page', ->
       expect(icon.length).toBe 1
       icon.click()
       commandview = atom.workspace.getModalPanels()[0].getItem()
-      expect(atom.workspace.getModalPanels()[0].visible).toBe true
+      expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
       expect(commandview.nameEditor.getText()).toBe 'Test command'
       atom.commands.dispatch(commandview.element, 'core:cancel')
-      expect(atom.workspace.getModalPanels()[0].visible).toBe false
+      expect(atom.workspace.getModalPanels()[0].visible).toBeFalsy()
       view.commandview.show()
       commandview = atom.workspace.getModalPanels()[0].getItem()
-      expect(atom.workspace.getModalPanels()[0].visible).toBe true
+      expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
       expect(commandview.nameEditor.getText()).toBe ''
       atom.commands.dispatch(commandview.element, 'core:cancel')
-      expect(atom.workspace.getModalPanels()[0].visible).toBe false
+      expect(atom.workspace.getModalPanels()[0].visible).toBeFalsy()
