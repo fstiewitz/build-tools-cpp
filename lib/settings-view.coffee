@@ -48,14 +48,13 @@ module.exports =
 
     initialize: ({@uri}) ->
       super
-      @updateProjects(atom.project.getPaths())
-      @setActiveProject @project_list.children()[0]
       @CommandView=null
       @commandview=null
       @on 'click', '#add-command-button', (e) =>
         @CommandView ?= require './command-view'
         @commandview ?= new @CommandView(@editcb)
         @commandview.show()
+      @reload()
       return
 
     destroy: ->

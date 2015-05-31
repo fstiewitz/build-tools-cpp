@@ -5,6 +5,7 @@ describe 'On package activation', ->
 
   beforeEach ->
     workspaceElement = atom.views.getView(atom.workspace)
+    jasmine.attachToDOM(workspaceElement)
     activationPromise = atom.packages.activatePackage('build-tools-cpp')
     atom.commands.dispatch(workspaceElement, 'build-tools-cpp:show')
     waitsForPromise -> activationPromise

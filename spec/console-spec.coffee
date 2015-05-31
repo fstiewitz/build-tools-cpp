@@ -31,47 +31,43 @@ describe 'Console View', ->
     "stderr"
   ]
 
-  execute = (callback) ->
+  beforeEach ->
+    workspaceElement = atom.views.getView(atom.workspace)
+    jasmine.attachToDOM(workspaceElement)
+    activationPromise = atom.packages.activatePackage('build-tools-cpp')
     atom.commands.dispatch(workspaceElement, 'build-tools-cpp:show')
     waitsForPromise -> activationPromise
-    runs callback
+    runs ->
+      panels = workspaceElement.getModel().getBottomPanels()
+      expect(panels.length).toBe 1
+      view = panels[0].getItem()
+      fixturesPath = atom.project.getPaths()[0]
 
   describe 'On build-tools-cpp:show', ->
     it 'shows a header without a console', ->
-      workspaceElement = atom.views.getView(atom.workspace)
-      activationPromise = atom.packages.activatePackage('build-tools-cpp')
-      execute ->
-        view = workspaceElement.getModel().getBottomPanels()[0].getItem()
-        expect(view.hasClass('console')).toBeTruthy()
-        expect(view.find('.output').hasClass('hidden')).toBeTruthy()
+      expect(view.hasClass('console')).toBeTruthy()
+      expect(view.find('.output').hasClass('hidden')).toBeTruthy()
 
-    describe 'When :setHeader', ->
-      it 'sets the header', ->
-        execute ->
-          view = workspaceElement.getModel().getBottomPanels()[0].getItem()
+      describe 'When :setHeader', ->
+        it 'sets the header', ->
           expect(view.find('.name').html()).toBe ''
           view.setHeader 'Test'
           expect(view.find('.name').html()).toBe 'Test'
 
-    describe 'When :printLine', ->
-      it 'prints a line', ->
-        execute ->
-          view = workspaceElement.getModel().getBottomPanels()[0].getItem()
+      describe 'When :printLine', ->
+        it 'prints a line', ->
           expect(view.find('.output').html()).toBe ''
           expect(view.find('.output').hasClass('hidden')).toBeTruthy()
           view.printLine 'Test'
           expect(view.find('.output').html()).toBe 'Test'
           expect(view.find('.output').hasClass('hidden')).toBeFalsy()
 
-    describe 'Output', ->
-      beforeEach ->
-        fixturesPath = atom.project.getPaths()[0]
-        atom.config.set('build-tools-cpp.SourceFileExtensions', ['.c'])
+      describe 'Output', ->
+        beforeEach ->
+          atom.config.set('build-tools-cpp.SourceFileExtensions', ['.c'])
 
-      describe 'When :createOutput', ->
-        it 'creates output objects', ->
-          execute ->
-            view = workspaceElement.getModel().getBottomPanels()[0].getItem()
+        describe 'When :createOutput', ->
+          it 'creates output objects', ->
             data['path'] = fixturesPath
             expect(view.Output).toBeUndefined()
             expect(view.stdout).toBeUndefined()
@@ -81,10 +77,8 @@ describe 'Console View', ->
             expect(view.stdout).toBeDefined()
             expect(view.stderr).toBeDefined()
 
-      describe 'On input', ->
-        it 'correctly displays errors and warnings', ->
-          execute ->
-            view = workspaceElement.getModel().getBottomPanels()[0].getItem()
+        describe 'On input', ->
+          it 'correctly displays errors and warnings', ->
             expect(view.Output).toBeDefined()
             expect(view.stdout).toBeDefined()
             expect(view.stderr).toBeDefined()
