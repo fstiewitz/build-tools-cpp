@@ -24,7 +24,7 @@ module.exports =
       @filename = path.join(path.dirname(atom.config.getUserConfigPath()),"build-tools-cpp.projects")
 
     onFileChange: (callback) ->
-      @emitter.on 'file-change', callback
+      @emitter.on 'file-change', callback if not @emitter.isDisposed
 
     getData: ->
       CSON = require 'season'

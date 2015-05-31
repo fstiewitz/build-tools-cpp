@@ -148,5 +148,11 @@ describe 'Project', ->
   describe 'When removing a project', ->
     it 'removes the project', ->
       expect(main.projects.getProject(root1)).toBeDefined()
+      cmd = (main.projects.getProject root1).getCommandByIndex 0
       main.projects.removeProject(root1)
       expect(main.projects.getProject(root1)).toBeUndefined()
+      p=main.projects.getProject(fixturesPath)
+      expect(p).toBeDefined()
+      if p.getCommand('Test command') is undefined
+        main.projects.addProject fixturesPath
+        main.projects.getProject(fixturesPath).addCommand(cmd)

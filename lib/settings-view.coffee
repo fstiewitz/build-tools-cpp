@@ -3,9 +3,6 @@
 _p = require 'path'
 main = require './main.coffee'
 
-CommandView= null
-commandview= null
-
 highlight_translation= {
   "nh": "No highlighting",
   "ha": "Highlight all",
@@ -15,6 +12,9 @@ highlight_translation= {
 
 module.exports =
   class SettingsView extends ScrollView
+    CommandView: null
+    commandview: null
+
     @content: ->
       @div class:'settings pane-item native-key-bindings', tabindex:-1, =>
         @div class:'project-menu', =>
@@ -50,10 +50,12 @@ module.exports =
       super
       @updateProjects(atom.project.getPaths())
       @setActiveProject @project_list.children()[0]
+      @CommandView=null
+      @commandview=null
       @on 'click', '#add-command-button', (e) =>
-        CommandView ?= require './command-view'
-        commandview ?= new CommandView(@editcb)
-        commandview.show()
+        @CommandView ?= require './command-view'
+        @commandview ?= new @CommandView(@editcb)
+        @commandview.show()
       return
 
     destroy: ->
@@ -69,7 +71,7 @@ module.exports =
       @uri
 
     getTitle: ->
-      'Build tools settings'
+      'Build Tools Settings'
 
     getIconName: ->
       'tools'
@@ -142,8 +144,8 @@ module.exports =
       @dependency_list.empty()
 
     reload: =>
-      if commandview?.visible()
-        commandview.hide()
+      if @commandview?.visible()
+        @commandview.hide()
       @updateProjects()
       if main.projects.getProject(@activeProject)? and (e=@getElement(@activeProject))?
         @setActiveProject e
@@ -231,11 +233,11 @@ module.exports =
       target.parentNode.parentNode.classList.remove('top-expanded')
 
     editCommand: (target) ->
-      CommandView ?= require './command-view'
-      commandview ?= new CommandView(@editcb)
+      @CommandView ?= require './command-view'
+      @commandview ?= new @CommandView(@editcb)
       id = Array.prototype.indexOf.call(target.parentNode.childNodes, target)
       cmd = @activeProject.getCommandByIndex id
-      commandview.show(cmd)
+      @commandview.show(cmd)
 
     reduceAll: (target) ->
       $(target).find('.expander').each (i,e) =>
