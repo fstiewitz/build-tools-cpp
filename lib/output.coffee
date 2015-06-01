@@ -13,7 +13,7 @@ module.exports =
 
     constructor: (command, stream, printfunc) ->
       @settings = {
-        path: command.path,
+        project: command.project,
         command: command.command,
         wd: command.wd,
         shell: command.shell,
@@ -126,7 +126,7 @@ module.exports =
       filenames
 
     getAbsPath: (file) ->
-      return fp if fs.existsSync(fp=path.resolve(@settings.path, @settings.wd, file))
+      return fp if fs.existsSync(fp=path.resolve(@settings.project, @settings.wd, file))
 
     lint: (line) ->
       msgs = require './linter-list'

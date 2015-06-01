@@ -13,12 +13,51 @@ module.exports =
     constructor: ({@project,@name,@command,@wd,@shell,@stdout,@stderr}) ->
       return
 
+    getProject: ->
+      @project
+
+    baseName: ->
+      if (filename=@file())?
+        path.basename(filename)
+
+    fileWithoutExtension: ->
+      if (filename=@file())?
+        path.basename(filename,path.extname(filename))
+
+    folder: ->
+      if (filename=@file())?
+        path.dirname(filename)
+
+    file: ->
+      path.relative(@wd,atom.workspace.getActiveTextEditor()?.getPath())
+
+    replaceWildcards: ->
+      command = @command
+      if /%[fbde]/.test(@command)
+        if /%f/.test(@command)
+          command = command.replace /(\\)?(%f)/g, ($0,$1,$2) =>
+            if $1 then $2 else @file()
+
+        if /%b/.test(@command)
+          command = command.replace /(\\)?(%b)/g, ($0,$1,$2) =>
+            if $1 then $2 else @baseName()
+
+        if /%d/.test(@command)
+          command = command.replace /(\\)?(%d)/g, ($0,$1,$2) =>
+            if $1 then $2 else @folder()
+
+        if /%e/.test(@command)
+          command = command.replace /(\\)?(%e)/g, ($0,$1,$2) =>
+            if $1 then $2 else @fileWithoutExtension()
+      command
+
     parseCommand: ->
+      command = @replaceWildcards @command
       if @shell
         sh = atom.config.get('build-tools-cpp.ShellCommand')
         sha = sh.split(' ')
         args = sha.slice(1)
-        args.push(@command)
+        args.push(command)
         {cmd: sha[0], args, env: process.env, cwd: path.resolve(@project, @wd)}
       else
         split = (cmd_string) ->
@@ -42,7 +81,7 @@ module.exports =
                   instring = true
             cmd_list.shift()
           args
-        args = split @command
+        args = split command
         reg = /[\"\']/
         for a,i in args
           if reg.test(a[0]) and reg.test(a[a.length - 1])
