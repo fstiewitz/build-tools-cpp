@@ -12,6 +12,7 @@ describe 'Settings page', ->
     command: 'pwd "Hello World" test',
     wd: 'sub0',
     shell: false,
+    wildcards: false,
     stdout: {
       file: false,
       highlighting: 'ha',

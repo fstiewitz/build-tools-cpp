@@ -38,6 +38,7 @@ describe 'Project', ->
         command: 'pwd "Hello World" test',
         wd: 'sub0',
         shell: false,
+        wildcards: false,
         stdout: {
           file: false,
           highlighting: 'ha',
@@ -54,6 +55,7 @@ describe 'Project', ->
         command: 'pwd',
         wd: 'sub0',
         shell: false,
+        wildcards: true,
         stdout: {
           file: false,
           highlighting: 'ha',
@@ -83,6 +85,7 @@ describe 'Project', ->
         command: 'pwd',
         wd: 'sub0',
         shell: false,
+        wildcards: true,
         stdout: {
           file: false,
           highlighting: 'ha',

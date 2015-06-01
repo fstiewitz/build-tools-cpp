@@ -4,22 +4,7 @@ ConsoleOutput = require '../lib/console'
 describe 'Console View', ->
   [view, fixturesPath, data, input_stdout, input_stderr] = []
 
-  data = {
-    name: 'Test command',
-    command: 'echo "Test"',
-    wd: 'build',
-    shell: false,
-    stdout: {
-      file: false,
-      highlighting: 'ha',
-      lint: false
-    }
-    stderr: {
-      file: true,
-      highlighting: 'hc',
-      lint: false
-    }
-  }
+  data = {}
   input_stdout = [
     "test output",
     "../src/test.c:3",
@@ -39,6 +24,24 @@ describe 'Console View', ->
     expect(view.hasClass('console')).toBeTruthy()
     expect(view.find('.output').hasClass('hidden')).toBeTruthy()
     fixturesPath = atom.project.getPaths()[0]
+    data = {
+      project: fixturesPath
+      name: 'Test command',
+      command: 'echo "Test"',
+      wd: 'build',
+      shell: false,
+      wildcards: false,
+      stdout: {
+        file: false,
+        highlighting: 'ha',
+        lint: false
+      }
+      stderr: {
+        file: true,
+        highlighting: 'hc',
+        lint: false
+      }
+    }
 
   afterEach ->
     view.destroy()
