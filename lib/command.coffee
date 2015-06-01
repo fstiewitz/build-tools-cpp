@@ -49,16 +49,33 @@ module.exports =
         if /%e/.test(@command)
           command = command.replace /(\\)?(%e)/g, ($0,$1,$2) =>
             if $1 then $2 else @fileWithoutExtension()
-      command
+      wd = @wd
+      if /%[fbde]/.test(@wd)
+        if /%f/.test(@wd)
+          wd = wd.replace /(\\)?(%f)/g, ($0,$1,$2) =>
+            if $1 then $2 else @file()
+
+        if /%b/.test(@wd)
+          wd = wd.replace /(\\)?(%b)/g, ($0,$1,$2) =>
+            if $1 then $2 else @baseName()
+
+        if /%d/.test(@wd)
+          wd = wd.replace /(\\)?(%d)/g, ($0,$1,$2) =>
+            if $1 then $2 else @folder()
+
+        if /%e/.test(@wd)
+          wd = wd.replace /(\\)?(%e)/g, ($0,$1,$2) =>
+            if $1 then $2 else @fileWithoutExtension()
+      {command,wd}
 
     parseCommand: ->
-      command = @replaceWildcards @command
+      {command,wd} = @replaceWildcards @command
       if @shell
         sh = atom.config.get('build-tools-cpp.ShellCommand')
         sha = sh.split(' ')
         args = sha.slice(1)
         args.push(command)
-        {cmd: sha[0], args, env: process.env, cwd: path.resolve(@project, @wd)}
+        {cmd: sha[0], args, env: process.env, cwd: path.resolve(@project, wd)}
       else
         split = (cmd_string) ->
           args = []
@@ -88,4 +105,4 @@ module.exports =
             args[i]=a.slice(1,-1)
         cmd = args[0]
         args = args.slice(1)
-        {cmd, args, env: process.env, cwd: path.resolve(@project, @wd)}
+        {cmd, args, env: process.env, cwd: path.resolve(@project, wd)}
