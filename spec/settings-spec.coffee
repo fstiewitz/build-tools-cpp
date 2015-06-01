@@ -2,9 +2,10 @@
 SettingsView = require '../lib/settings-view'
 fs = require 'fs'
 Projects = require '../lib/projects'
+path = require 'path'
 
 describe 'Settings page', ->
-  [data, projects, view, fixturesPath] = []
+  [data, projects, view, fixturesPath, filename] = []
 
   data = {
     name: 'Test command',
@@ -24,22 +25,22 @@ describe 'Settings page', ->
   }
 
   beforeEach ->
-    projects = new Projects('spec/build-tools-cpp.projects')
-    projects.addProject fixturesPath
-    view = new SettingsView({uri: 'atom://build-tools-settings', projects})
-    projects.getProject(fixturesPath).addCommand data
-    jasmine.attachToDOM(view.element)
     fixturesPath = atom.project.getPaths()[0]
+    filename = path.resolve('spec/build-tools-cpp.projects')
+    projects = new Projects(filename)
+    view = new SettingsView({uri: 'atom://build-tools-settings', projects})
+    jasmine.attachToDOM(view.element)
 
   afterEach ->
-    projects.destroy()
-    fs.unlinkSync 'spec/build-tools-cpp.projects'
     view.destroy()
+    projects.destroy()
 
   describe 'When a project is added', ->
     it 'adds the project to the project menu', ->
+      projects.getProject(fixturesPath).addCommand data
       expect(view.find('.list-group').children().length).toBe 1
       expect(view.find('.list-group').children()[0].children[0].innerHTML).toBe fixturesPath
+      expect(view.find('.command #name').html()).toBe 'Test command'
 
   describe 'When multiple projects are open', ->
     it 'removes the shared path', ->
@@ -47,7 +48,6 @@ describe 'Settings page', ->
 
   describe 'On edit/add command click', ->
     it 'opens command view', ->
-      view.reload()
       icon = view.find('.icon-edit')
       expect(icon.length).toBe 1
       icon.click()
@@ -62,3 +62,22 @@ describe 'Settings page', ->
       expect(commandview.nameEditor.getText()).toBe ''
       atom.commands.dispatch(commandview.element, 'core:cancel')
       expect(atom.workspace.getModalPanels()[0].visible).toBeFalsy()
+
+  describe 'When project file changes on disk', ->
+    it 'reloads the view', ->
+      CSON = require 'season'
+      d = CSON.readFileSync projects.filename
+      expect(d[fixturesPath]).toBeDefined()
+      expect(d[fixturesPath].commands[0].name).toBe 'Test command'
+      d[fixturesPath].commands[0].name = 'Test command 4'
+      projects.getProject(fixturesPath).removeCommand 'Test command'
+      waitsFor ->
+        view.find('.command').length is 0
+      runs ->
+        CSON.writeFileSync projects.filename, d
+        waitsFor ->
+          view.find('.command').length is 1
+        runs ->
+          expect(view.find('.command #name').html()).toBe 'Test command 4'
+          projects.watcher.close()
+          fs.unlinkSync filename

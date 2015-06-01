@@ -7,6 +7,7 @@ module.exports =
   class Projects
     filename: null
     data: {}
+    writing: false
 
     constructor: (arg) ->
       if arg?
@@ -16,15 +17,20 @@ module.exports =
       @touchFile()
       @getData()
       @emitter = new Emitter
+      @watcher = fs.watch @filename, (event, filename) =>
+        if not @writing
+          @getData()
+          @emitter.emit 'file-change'
 
     destroy: ->
+      @watcher.close()
       @emitter.dispose()
 
     getFileName: ->
       @filename = path.join(path.dirname(atom.config.getUserConfigPath()),"build-tools-cpp.projects")
 
     onFileChange: (callback) ->
-      @emitter.on 'file-change', callback if not @emitter.isDisposed
+      @emitter.on 'file-change', callback
 
     getData: ->
       CSON = require 'season'
@@ -35,8 +41,10 @@ module.exports =
     setData: =>
       CSON = require 'season'
       try
+        @writing = true
         CSON.writeFileSync @filename, @data
         @emitter.emit 'file-change'
+        @writing = false
       catch error
         atom.notifications?.addError "Settings could not be written to #{@filename}"
 

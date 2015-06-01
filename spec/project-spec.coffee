@@ -3,10 +3,11 @@ path = require 'path'
 fs = require 'fs'
 
 describe 'Project', ->
-  [projects, fixturesPath, root1, root2] = []
+  [projects, fixturesPath, root1, root2, filename] = []
 
   beforeEach ->
-    projects = new Projects('spec/build-tools-cpp.projects')
+    filename = path.resolve('spec/build-tools-cpp.projects')
+    projects = new Projects(filename)
     fixturesPath = atom.project.getPaths()[0]
     root1 = path.join(fixturesPath,'root1')
     root2 = path.join(fixturesPath,'root2')
@@ -131,4 +132,5 @@ describe 'Project', ->
       cmd = (projects.getProject root1).getCommandByIndex 0
       projects.removeProject(root1)
       expect(projects.getProject(root1)).toBeUndefined()
-      fs.unlinkSync 'spec/build-tools-cpp.projects'
+      projects.watcher.close()
+      fs.unlinkSync filename
