@@ -6,11 +6,12 @@ module.exports =
     name: ''
     command: ''
     wd: ''
-    shell: ''
+    shell: false
+    wildcards: false
     stdout: {}
     stderr: {}
 
-    constructor: ({@project,@name,@command,@wd,@shell,@stdout,@stderr}) ->
+    constructor: ({@project,@name,@command,@wd,@shell,@wildcards,@stdout,@stderr}) ->
       return
 
     getProject: ->
@@ -33,43 +34,44 @@ module.exports =
 
     replaceWildcards: ->
       command = @command
-      if /%[fbde]/.test(@command)
-        if /%f/.test(@command)
-          command = command.replace /(\\)?(%f)/g, ($0,$1,$2) =>
-            if $1 then $2 else @file()
-
-        if /%b/.test(@command)
-          command = command.replace /(\\)?(%b)/g, ($0,$1,$2) =>
-            if $1 then $2 else @baseName()
-
-        if /%d/.test(@command)
-          command = command.replace /(\\)?(%d)/g, ($0,$1,$2) =>
-            if $1 then $2 else @folder()
-
-        if /%e/.test(@command)
-          command = command.replace /(\\)?(%e)/g, ($0,$1,$2) =>
-            if $1 then $2 else @fileWithoutExtension()
       wd = @wd
-      if /%[fbde]/.test(@wd)
-        if /%f/.test(@wd)
-          wd = wd.replace /(\\)?(%f)/g, ($0,$1,$2) =>
-            if $1 then $2 else @file()
+      if @wildcards
+        if /%[fbde]/.test(@command)
+          if /%f/.test(@command)
+            command = command.replace /(\\)?(%f)/g, ($0,$1,$2) =>
+              if $1 then $2 else @file()
 
-        if /%b/.test(@wd)
-          wd = wd.replace /(\\)?(%b)/g, ($0,$1,$2) =>
-            if $1 then $2 else @baseName()
+          if /%b/.test(@command)
+            command = command.replace /(\\)?(%b)/g, ($0,$1,$2) =>
+              if $1 then $2 else @baseName()
 
-        if /%d/.test(@wd)
-          wd = wd.replace /(\\)?(%d)/g, ($0,$1,$2) =>
-            if $1 then $2 else @folder()
+          if /%d/.test(@command)
+            command = command.replace /(\\)?(%d)/g, ($0,$1,$2) =>
+              if $1 then $2 else @folder()
 
-        if /%e/.test(@wd)
-          wd = wd.replace /(\\)?(%e)/g, ($0,$1,$2) =>
-            if $1 then $2 else @fileWithoutExtension()
+          if /%e/.test(@command)
+            command = command.replace /(\\)?(%e)/g, ($0,$1,$2) =>
+              if $1 then $2 else @fileWithoutExtension()
+        if /%[fbde]/.test(@wd)
+          if /%f/.test(@wd)
+            wd = wd.replace /(\\)?(%f)/g, ($0,$1,$2) =>
+              if $1 then $2 else @file()
+
+          if /%b/.test(@wd)
+            wd = wd.replace /(\\)?(%b)/g, ($0,$1,$2) =>
+              if $1 then $2 else @baseName()
+
+          if /%d/.test(@wd)
+            wd = wd.replace /(\\)?(%d)/g, ($0,$1,$2) =>
+              if $1 then $2 else @folder()
+
+          if /%e/.test(@wd)
+            wd = wd.replace /(\\)?(%e)/g, ($0,$1,$2) =>
+              if $1 then $2 else @fileWithoutExtension()
       {command,wd}
 
     parseCommand: ->
-      {command,wd} = @replaceWildcards @command
+      {command,wd} = @replaceWildcards()
       if @shell
         sh = atom.config.get('build-tools-cpp.ShellCommand')
         sha = sh.split(' ')

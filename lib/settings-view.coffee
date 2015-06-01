@@ -178,10 +178,12 @@ module.exports =
                 @div "Command"
                 @div "Working Directory"
                 @div "Shell"
+                @div "Wildcards"
               @div class:'values', =>
                 @div class:'text-highlight', items.command
                 @div class:'text-highlight', items.wd
                 @div class:'text-highlight', items.shell.toString()
+                @div class:'text-highlight', items.wildcards.toString()
             @div class:'streams', =>
               @div id:'stdout', class:'stream', =>
                 @div class:'keys', =>

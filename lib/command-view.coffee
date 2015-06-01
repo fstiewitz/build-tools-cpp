@@ -18,13 +18,43 @@ class CommandView extends View
         @subview 'command_name', new TextEditorView(mini:true)
       @div class:'block', =>
         @label =>
-          @div class:'settings-name', 'Command'
+          @div class:'settings-header', =>
+            @div class:'settings-name', 'Command'
+            @div class:'wildcard-info icon-info', =>
+              @div class:'content', =>
+                @div class:'text-highlight bold', 'Wildcards'
+                @div class:'info', =>
+                  @div class:'col', =>
+                    @div class:'text-subtle', 'Current File'
+                    @div class:'text-subtle', 'Base Path'
+                    @div class:'text-subtle', 'Folder (rel.)'
+                    @div class:'text-subtle', 'File (no ext.)'
+                  @div class:'col', =>
+                    @div class:'text-highlight', '%f'
+                    @div class:'text-highlight', '%b'
+                    @div class:'text-highlight', '%d'
+                    @div class:'text-highlight', '%e'
           @div =>
             @span class:'inline-block text-subtle', 'Command to execute '
         @subview 'command_text', new TextEditorView(mini:true)
       @div class:'block', =>
         @label =>
-          @div class:'settings-name', 'Working Directory'
+          @div class:'settings-header', =>
+            @div class:'settings-name', 'Working Directory'
+            @div class:'wildcard-info icon-info', =>
+              @div class:'content', =>
+                @div class:'text-highlight bold', 'Wildcards'
+                @div class:'info', =>
+                  @div class:'col', =>
+                    @div class:'text-subtle', 'Current File'
+                    @div class:'text-subtle', 'Base Path'
+                    @div class:'text-subtle', 'Folder (rel.)'
+                    @div class:'text-subtle', 'File (no ext.)'
+                  @div class:'col', =>
+                    @div class:'text-highlight', '%f'
+                    @div class:'text-highlight', '%b'
+                    @div class:'text-highlight', '%d'
+                    @div class:'text-highlight', '%e'
           @div =>
             @span class:'inline-block text-subtle', 'Directory to execute command in'
         @subview 'working_directory', new TextEditorView(mini:true, placeholderText: '.')
@@ -34,6 +64,12 @@ class CommandView extends View
           @div class:'settings-name', 'Execute in shell'
           @div =>
             @span class:'inline-block text-subtle', 'Execute the command in your OS\'s shell. Change "Shell Command" in build-tools-cpp\'s settings if you are not using bash or use windows'
+      @div class:'block checkbox', =>
+        @input id:'wildcards', type:'checkbox'
+        @label =>
+          @div class:'settings-name', 'Replace Wildcards'
+          @div =>
+            @span class:'inline-block text-subtle', 'Enable if command or working directory contain wildcards'
       @div class:'streams', =>
         @div class:'stream', id:'stdout', =>
           @div class:'small-header', 'stdout'
@@ -115,6 +151,7 @@ class CommandView extends View
             command: @commandEditor.getText(),
             wd: if (d=@wdEditor.getText()) is '' then '.' else d,
             shell: @find('#command_in_shell').prop('checked')
+            wildcards: @find('#wildcards').prop('checked')
             stdout: {
               file: @find('#mark_paths_stdout').prop('checked')
               highlighting: @stdout_highlighting
@@ -152,6 +189,7 @@ class CommandView extends View
     @wdEditor.setText("")
 
     @find('#command_in_shell').prop('checked', false)
+    @find('#wildcards').prop('checked', false)
     @find('#mark_paths_stdout').prop('checked', true)
     @find('#mark_paths_stderr').prop('checked', true)
     @find('#lint_stdout').prop('checked', false)
@@ -171,6 +209,7 @@ class CommandView extends View
       @commandEditor.setText(items.command)
       @wdEditor.setText(items.wd)
       @find('#command_in_shell').prop('checked', items.shell)
+      @find('#wildcards').prop('checked', items.wildcards)
       @find('#mark_paths_stdout').prop('checked', items.stdout.file)
       @find('#mark_paths_stderr').prop('checked', items.stderr.file)
       @stdout_highlights.find('.selected').removeClass('selected')

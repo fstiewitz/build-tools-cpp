@@ -1,5 +1,4 @@
 @import "ui-variables";
-
 .console {
   .icon-close {
     position: absolute;
@@ -7,38 +6,35 @@
   }
 
   .bold {
-      font-weight: bold;
+    font-weight: bold;
   }
 
   .filelink:hover {
-        text-decoration: underline;
-        cursor: pointer;
-  }
-
-  .output {
-          position: relative;
-          -webkit-flex: 1;
-          margin: 1px;
+    text-decoration: underline;
+    cursor: pointer;
   }
 
   .header {
-            border: 1px solid @tab-bar-background-color;
-            background-color: @tool-panel-background-color;
-            display: flex;
+    border: 1px solid @tab-bar-background-color;
+    background-color: @tool-panel-background-color;
+    display: flex;
   }
 
   .name {
-              cursor: default;
-              height: @component-icon-size;
+    cursor: default;
+    height: @component-icon-size;
   }
 
   .output {
-                height: 200px;
-                overflow-y: scroll;
-                font-family: monospace;
-                white-space: pre-wrap;
+    position: relative;
+    -webkit-flex: 1;
+    margin: 1px;
+    height: 200px;
+    overflow-y: scroll;
+    font-family: monospace;
+    white-space: pre-wrap;
   }
-
+  
   .hidden {
     display: none;
   }
