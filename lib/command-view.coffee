@@ -119,6 +119,11 @@ class CommandView extends View
               @div class:'settings-name', 'Lint errors/warnings'
               @div =>
                 @span class:'inline-block text-subtle', 'Use Linter package to highlight errors in your code'
+        @div class:'buttons small-header', =>
+          @div class:'block', =>
+            @div class: 'btn btn-error icon icon-close inline-block-tight', 'Cancel'
+          @div class:'block', =>
+            @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
 
   initialize: (@callback) ->
     @disposables = new CompositeDisposable
@@ -126,7 +131,7 @@ class CommandView extends View
     @commandEditor = @command_text.getModel()
     @wdEditor = @working_directory.getModel()
 
-    @on 'click', '.btn', (e) =>
+    @on 'click', '.btn-group .btn', (e) =>
       if e.currentTarget.parentNode.id is 'stdout'
         @stdout_highlighting = e.currentTarget.id
         @stdout_highlights.find('.selected').removeClass('selected')
@@ -144,35 +149,43 @@ class CommandView extends View
         else
           @stderr_lint.addClass('hidden')
 
-    @disposables.add atom.commands.add @element, 'core:confirm': (event) =>
-        if ((n=@nameEditor.getText()) isnt '') and ((c=@commandEditor.getText()) isnt '')
-          @callback(@oldname, {
-            name: n,
-            command: @commandEditor.getText(),
-            wd: if (d=@wdEditor.getText()) is '' then '.' else d,
-            shell: @find('#command_in_shell').prop('checked')
-            wildcards: @find('#wildcards').prop('checked')
-            stdout: {
-              file: @find('#mark_paths_stdout').prop('checked')
-              highlighting: @stdout_highlighting
-              lint: if @stdout_lint.hasClass('hidden') then false else @find('#lint_stdout').prop('checked')
-            }
-            stderr: {
-              file: @find('#mark_paths_stderr').prop('checked')
-              highlighting: @stderr_highlighting
-              lint: if @stderr_lint.hasClass('hidden') then false else @find('#lint_stderr').prop('checked')
-            }
-            })
-          @hide()
-        event.stopPropagation()
+    @on 'click', '.buttons .icon-close', @accept
+    @on 'click', '.buttons .icon-check', @cancel
 
-    @disposables.add atom.commands.add @element, 'core:cancel': (event) =>
-        @hide()
-        event.stopPropagation()
+    @disposables.add atom.commands.add @element, {
+      'core:confirm': @accept
+      'core:cancel': @cancel
+    }
 
   destroy: ->
     @disposables.dispose()
     @detach()
+
+  accept: (event) =>
+    if ((n=@nameEditor.getText()) isnt '') and ((c=@commandEditor.getText()) isnt '')
+      @callback(@oldname, {
+        name: n,
+        command: @commandEditor.getText(),
+        wd: if (d=@wdEditor.getText()) is '' then '.' else d,
+        shell: @find('#command_in_shell').prop('checked')
+        wildcards: @find('#wildcards').prop('checked')
+        stdout: {
+          file: @find('#mark_paths_stdout').prop('checked')
+          highlighting: @stdout_highlighting
+          lint: if @stdout_lint.hasClass('hidden') then false else @find('#lint_stdout').prop('checked')
+        }
+        stderr: {
+          file: @find('#mark_paths_stderr').prop('checked')
+          highlighting: @stderr_highlighting
+          lint: if @stderr_lint.hasClass('hidden') then false else @find('#lint_stderr').prop('checked')
+        }
+        })
+      @hide()
+    event.stopPropagation()
+
+  cancel: (event) =>
+    @hide()
+    event.stopPropagation()
 
   hide: ->
     @panel?.hide()
