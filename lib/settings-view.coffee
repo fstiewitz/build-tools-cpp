@@ -280,7 +280,7 @@ module.exports =
 
     editCommand: (target) ->
       @CommandView ?= require './command-view'
-      @commandview ?= new @CommandView(@editcb)
+      @commandview ?= new @CommandView(@editccb)
       id = Array.prototype.indexOf.call(target.parentNode.childNodes, target)
       cmd = @activeProject.getCommandByIndex id
       @commandview.show(cmd)

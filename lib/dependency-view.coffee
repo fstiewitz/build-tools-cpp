@@ -12,12 +12,26 @@ class DependencyView extends View
 
   @content: ->
     @div class:'dependency-view', =>
-      @div class:'align from', =>
-        @select class:'project form-control', outlet: 'project_from'
-        @select class:'command form-control', outlet: 'command_from'
-      @div class:'align to', =>
-        @select class:'project form-control', outlet: 'project_to'
-        @select class:'command form-control', outlet: 'command_to'
+      @div id:'from', =>
+        @div class:'small-header', 'Command'
+        @div class:'block', =>
+          @label =>
+            @div class:'settings-name', 'Project Name'
+          @select class:'project form-control', outlet: 'project_from'
+        @div class:'block', =>
+          @label =>
+            @div class:'settings-name', 'Command Name'
+          @select class:'command form-control', outlet: 'command_from'
+      @div id:'to', =>
+        @div class:'small-header', 'depends on'
+        @div class:'block', =>
+          @label =>
+            @div class:'settings-name', 'Project Name'
+          @select class:'project form-control', outlet: 'project_to'
+        @div class:'block', =>
+          @label =>
+            @div class:'settings-name', 'Command Name'
+          @select class:'command form-control', outlet: 'command_to'
 
   initialize: (@callback,@projects) ->
     @disposables = new CompositeDisposable
@@ -78,7 +92,9 @@ class DependencyView extends View
     @project_from.focus()
 
   validInput: ->
-    (@project_from[0].selectedIndex isnt 0) and (@command_from[0].selectedIndex isnt 0) and (@project_to[0].selectedIndex isnt 0) and (@command_to[0].selectedIndex isnt 0)
+    f = (o) ->
+      o.children[o.selectedIndex]?.prop('value') isnt ''
+    f(@project_from) and f(@command_from) and f(@project_to) and f(@project_from)
 
   updateProjects: ->
     @project_from.empty()
@@ -86,32 +102,36 @@ class DependencyView extends View
     @command_from.empty()
     @command_to.empty()
 
-    @project_from.append(@defaultproject())
-    @project_to.append(@defaultproject())
     @command_from.append(@defaultcommand())
     @command_to.append(@defaultcommand())
 
     projects = @projects.getProjects()
+    if projects.length is 0
+      @project_from.append(@defaultproject())
+      @project_to.append(@defaultproject())
+      return
     for project in projects
       item = ->
         $$ ->
           @option value:project, project
       @project_from.append(item())
       @project_to.append(item())
+    @project_from[0].selectedIndex = -1
+    @project_to[0].selectedIndex = -1
 
   selectedProject: (e) ->
     project = e.children[e.selectedIndex].innerHTML
-    if e.parentNode.classList.contains 'from'
+    if e.parentNode.parentNode.id is 'from'
       c = @command_from
-    else if e.parentNode.classList.contains 'to'
+    else if e.parentNode.parentNode.id is 'to'
       c = @command_to
     else
       return
     c.empty()
-    c.append @defaultcommand()
-    return if project is 'Select project'
+    if project is 'Select project'
+      c.append @defaultcommand()
+      return
     if (p = @projects.getProject(project))?
       for command in p.commands
-        item = $$ ->
+        c.append $$ ->
           @option value:command.name, command.name
-        c.append item
