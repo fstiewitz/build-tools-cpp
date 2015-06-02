@@ -5,9 +5,9 @@ Projects = require '../lib/projects'
 path = require 'path'
 
 describe 'Settings page', ->
-  [data, projects, view, fixturesPath, filename] = []
+  [cmd, dep, projects, view, fixturesPath, filename] = []
 
-  data = {
+  cmd = {
     name: 'Test command',
     command: 'pwd "Hello World" test',
     wd: 'sub0',
@@ -27,6 +27,13 @@ describe 'Settings page', ->
 
   beforeEach ->
     fixturesPath = atom.project.getPaths()[0]
+    dep = {
+      from: fixturesPath,
+      to: {
+        project: 'Testproj',
+        command: 'Testcmd'
+      }
+    }
     filename = path.resolve('spec/build-tools-cpp.projects')
     projects = new Projects(filename)
     view = new SettingsView({uri: 'atom://build-tools-settings', projects})
@@ -38,7 +45,8 @@ describe 'Settings page', ->
 
   describe 'When a project is added', ->
     it 'adds the project to the project menu', ->
-      projects.getProject(fixturesPath).addCommand data
+      projects.getProject(fixturesPath).addCommand cmd
+      projects.getProject(fixturesPath).addDependency dep
       expect(view.find('.list-group').children().length).toBe 1
       expect(view.find('.list-group').children()[0].children[0].innerHTML).toBe fixturesPath
       expect(view.find('.command #name').html()).toBe 'Test command'
@@ -49,7 +57,7 @@ describe 'Settings page', ->
 
   describe 'On edit/add command click', ->
     it 'opens command view', ->
-      icon = view.find('.icon-edit')
+      icon = view.find('.command .icon-edit')
       expect(icon.length).toBe 1
       icon.click()
       commandview = atom.workspace.getModalPanels()[0].getItem()
@@ -63,6 +71,27 @@ describe 'Settings page', ->
       expect(commandview.nameEditor.getText()).toBe ''
       atom.commands.dispatch(commandview.element, 'core:cancel')
       expect(atom.workspace.getModalPanels()[0].visible).toBeFalsy()
+
+  describe 'On edit/add dependency click', ->
+    it 'opens the dependency view', ->
+      projects.addProject('Testproj')
+      icon = view.find('.dependency .icon-edit')
+      expect(icon.length).toBe 1
+      icon.click()
+      dependencyview = atom.workspace.getModalPanels()[0].getItem()
+      expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
+      project_to = dependencyview.project_to[0]
+      expect(project_to.children[project_to.selectedIndex].innerHTML).toBe 'Testproj'
+      dependencyview.find('.buttons .icon-close').click()
+      expect(atom.workspace.getModalPanels()[0].visible).toBeFalsy()
+      view.dependencyview.show(fixturesPath)
+      expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
+      project_from = dependencyview.project_from[0]
+      expect(project_from.children[project_from.selectedIndex].innerHTML).toBe fixturesPath
+      dependencyview.find('.buttons .icon-close').click()
+      expect(atom.workspace.getModalPanels()[0].visible).toBeFalsy()
+      projects.removeProject('Testproj')
+
 
   describe 'When project file changes on disk', ->
     it 'reloads the view', ->
