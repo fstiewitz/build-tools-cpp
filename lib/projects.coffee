@@ -75,3 +75,9 @@ module.exports =
 
     getProject: (path) ->
       @data[path]
+
+    getProjects: ->
+      p = []
+      Object.keys(@data).forEach (key) ->
+        p.push(key)
+      p

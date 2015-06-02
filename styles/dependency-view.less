@@ -1,0 +1,18 @@
+@import "ui-variables";
+
+.dependency-view {
+  .align {
+    display: flex;
+  }
+
+  .form-control {
+    color: @text-color;
+    border-color: @button-border-color;
+    background-color: @button-background-color;
+    &:hover,
+    &:focus {
+      box-shadow: none;
+      background-color: @button-background-color-hover;
+    }
+  }
+}

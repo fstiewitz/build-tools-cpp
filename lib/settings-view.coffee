@@ -14,6 +14,9 @@ module.exports =
     CommandView: null
     commandview: null
 
+    DependencyView: null
+    dependencyview: null
+
     @content: ->
       @div class:'settings pane-item native-key-bindings', tabindex:-1, =>
         @div class:'project-menu', =>
@@ -41,18 +44,24 @@ module.exports =
           @div class:'section', =>
             @div =>
               @div class:'section-header', 'Dependencies'
-              @div class:'inline-block btn btn-xs', 'Add dependency'
+              @div id:'add-dependency-button', class:'inline-block btn btn-xs', 'Add dependency'
               @div class:'inline-block btn btn-xs', 'Import dependency'
-            @div outlet:'dependency_list', =>
+            @div class:'dependency-list', outlet:'dependency_list', =>
 
     initialize: ({@uri,@projects}) ->
       super
       @CommandView=null
       @commandview=null
+      @DependencyView=null
+      @dependencyview=null
       @on 'click', '#add-command-button', (e) =>
         @CommandView ?= require './command-view'
-        @commandview ?= new @CommandView(@editcb)
+        @commandview ?= new @CommandView(@editccb)
         @commandview.show()
+      @on 'click', '#add-dependency-button', (e) =>
+        @DependencyView ?= require './dependency-view'
+        @dependencyview ?= new @DependencyView(@editdcb, @projects)
+        @dependencyview.show()
       @reload()
       return
 
@@ -78,8 +87,8 @@ module.exports =
       paths = atom.project.getPaths()
       @project_list.empty()
       small_paths = @removeSharedPath paths
-      for path,i in small_paths
-        @addProject path, paths[i]
+      for name,i in small_paths
+        @addProject name, paths[i]
       @project_list.on 'click', '.project-item', (e) =>
         @setActiveProject e.currentTarget
 
@@ -128,9 +137,10 @@ module.exports =
       @clearAll()
       @title.html name
       if (project = @projects.getProject(path))?
-        commands = project["commands"]
-        for command in commands
+        for command in project.commands
           @addCommand command
+        for dependency in project.dependencies
+          @addDependency dependency
       else
         @projects.addProject(path)
 
@@ -144,6 +154,8 @@ module.exports =
     reload: =>
       if @commandview?.visible()
         @commandview.hide()
+      if @dependencyview?.visible()
+        @dependencyview.hide()
       @updateProjects()
       if @projects.getProject(@activeProject)? and (e=@getElement(@activeProject))?
         @setActiveProject e
@@ -154,11 +166,17 @@ module.exports =
       @project_list.find('.active').removeClass('active')
       e.classList.add('active')
 
-    editcb: (oldname, items) =>
+    editccb: (oldname, items) =>
       if oldname?
         @activeProject.replaceCommand oldname, items
       else
         @activeProject.addCommand items
+
+    editdcb: (oldid, items) =>
+      if oldid?
+        @activeProject.replaceDependency oldid, items
+      else
+        @activeProject.addDependency items
 
     addCommand: (items) ->
       item = $$ ->
@@ -211,14 +229,42 @@ module.exports =
         if target.classList.contains('expander')
           @reduceCommand target
         else
-          @moveDown target.parentNode.parentNode.parentNode
+          @moveCommandDown target.parentNode.parentNode.parentNode
       item.on 'click', '.icon-up', (e) =>
-        @moveUp e.currentTarget.parentNode.parentNode.parentNode
+        @moveCommandUp e.currentTarget.parentNode.parentNode.parentNode
       item.on 'click', '.icon-close', (e) =>
         @removeCommand e.currentTarget.parentNode.parentNode.parentNode
       item.on 'click', '.icon-edit', (e) =>
         @editCommand e.currentTarget.parentNode.parentNode.parentNode
       @command_list.append(item)
+
+    addDependency: (items) ->
+      item = $$ ->
+        @div class:'dependency', =>
+          @div class:'align', =>
+            @span class:'text-success', items.from.project
+            @span ':'
+            @span class:'text-success', items.from.command
+          @div id:'left', class:'align', =>
+            @div id:'to', =>
+              @span class:'dep', ' depends on '
+              @span class:'text-success', items.to.project
+              @span ':'
+              @span class:'text-success', items.to.command
+            @div id:'options', =>
+              @div class:'icon-edit'
+              @div class:'icon-up'
+              @div class:'icon-down'
+              @div class:'icon-close'
+      item.on 'click', '.icon-edit', (e) =>
+        @editDependency e.currentTarget.parentNode.parentNode.parentNode
+      item.on 'click', '.icon-up', (e) =>
+        @moveDependencyUp e.currentTarget.parentNode.parentNode.parentNode
+      item.on 'click', '.icon-down', (e) =>
+        @moveDependencyDown e.currentTarget.parentNode.parentNode.parentNode
+      item.on 'click', '.icon-close', (e) =>
+        @removeDependency e.currentTarget.parentNode.parentNode.parentNode
+      @dependency_list.append(item)
 
     expandCommand: (target) ->
       target.classList.remove 'icon-expand'
@@ -239,19 +285,41 @@ module.exports =
       cmd = @activeProject.getCommandByIndex id
       @commandview.show(cmd)
 
+    editDependency: (target) ->
+      @DependencyView ?= require './dependency-view'
+      @dependencyview ?= new @DependencyView(@editdcb, @projects)
+      id = Array.prototype.indexOf.call(target.parentNode.childNodes, target)
+      @dependencyview.show(@activeProject.dependencies[id], id)
+
     reduceAll: (target) ->
       $(target).find('.expander').each (i,e) =>
         @reduceCommand e
 
-    moveDown: (target) ->
+    moveCommandDown: (target) ->
       node = $(target)
       if node.index() isnt target.parentNode.childElementCount-1
         @activeProject.moveCommand $(target).find('#name').html(), 1
 
-    moveUp: (target) ->
+    moveDependencyDown: (target) ->
+      node = $(target)
+      if node.index() isnt target.parentNode.childElementCount-1
+        id = Array.prototype.indexOf.call(target.parentNode.childNodes, target)
+        @activeProject.moveDependency id, 1
+
+    moveCommandUp: (target) ->
       node = $(target)
       if node.index() isnt 0
         @activeProject.moveCommand $(target).find('#name').html(), -1
 
+    moveDependencyUp: (target) ->
+      node = $(target)
+      if node.index() isnt 0
+        id = Array.prototype.indexOf.call(target.parentNode.childNodes, target)
+        @activeProject.moveDependency id, -1
+
     removeCommand: (target) ->
       @activeProject.removeCommand $(target).find('#name').html()
+
+    removeDependency: (target) ->
+      id = Array.prototype.indexOf.call(target.parentNode.childNodes, target)
+      @activeProject.removeDependency id

@@ -231,4 +231,4 @@ class CommandView extends View
 
     @panel ?= atom.workspace.addModalPanel(item: this)
     @panel.show()
-    @command_name.focus();
+    @command_name.focus()
