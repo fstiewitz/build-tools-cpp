@@ -61,7 +61,7 @@ module.exports =
       @on 'click', '#add-dependency-button', (e) =>
         @DependencyView ?= require './dependency-view'
         @dependencyview ?= new @DependencyView(@editdcb, @projects)
-        @dependencyview.show()
+        @dependencyview.show(@activeProject.path)
       @reload()
       return
 
@@ -124,9 +124,9 @@ module.exports =
     setActiveProject: (e) ->
       name = e.children[0].innerHTML
       path = e.children[1].innerHTML
+      @activeProject = @projects.getProject path
       @markAsActive e
       @setContent name, path
-      @activeProject = @projects.getProject path
 
     getElement: (path) ->
       for e in @project_list.children()
@@ -242,28 +242,24 @@ module.exports =
       item = $$ ->
         @div class:'dependency', =>
           @div class:'align', =>
-            @span class:'text-success', items.from.project
+            @span class:'text-success', items.from
+            @span class:'dep', ' depends on '
+            @span class:'text-success', items.to.project
             @span ':'
-            @span class:'text-success', items.from.command
-          @div id:'left', class:'align', =>
-            @div id:'to', =>
-              @span class:'dep', ' depends on '
-              @span class:'text-success', items.to.project
-              @span ':'
-              @span class:'text-success', items.to.command
-            @div id:'options', =>
-              @div class:'icon-edit'
-              @div class:'icon-up'
-              @div class:'icon-down'
-              @div class:'icon-close'
+            @span class:'text-success', items.to.command
+          @div id:'options', =>
+            @div class:'icon-edit'
+            @div class:'icon-up'
+            @div class:'icon-down'
+            @div class:'icon-close'
       item.on 'click', '.icon-edit', (e) =>
-        @editDependency e.currentTarget.parentNode.parentNode.parentNode
+        @editDependency e.currentTarget.parentNode.parentNode
       item.on 'click', '.icon-up', (e) =>
-        @moveDependencyUp e.currentTarget.parentNode.parentNode.parentNode
+        @moveDependencyUp e.currentTarget.parentNode.parentNode
       item.on 'click', '.icon-down', (e) =>
-        @moveDependencyDown e.currentTarget.parentNode.parentNode.parentNode
+        @moveDependencyDown e.currentTarget.parentNode.parentNode
       item.on 'click', '.icon-close', (e) =>
-        @removeDependency e.currentTarget.parentNode.parentNode.parentNode
+        @removeDependency e.currentTarget.parentNode.parentNode
       @dependency_list.append(item)
 
     expandCommand: (target) ->
@@ -289,7 +285,7 @@ module.exports =
       @DependencyView ?= require './dependency-view'
       @dependencyview ?= new @DependencyView(@editdcb, @projects)
       id = Array.prototype.indexOf.call(target.parentNode.childNodes, target)
-      @dependencyview.show(@activeProject.dependencies[id], id)
+      @dependencyview.show(@activeProject.path, @activeProject.dependencies[id], id)
 
     reduceAll: (target) ->
       $(target).find('.expander').each (i,e) =>

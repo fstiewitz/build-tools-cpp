@@ -17,7 +17,9 @@ class DependencyView extends View
         @div class:'block', =>
           @label =>
             @div class:'settings-name', 'Project Name'
-          @select class:'project form-control', outlet: 'project_from'
+            @div =>
+              @span class:'text-subtle', 'Cannot be changed'
+          @select disabled:"yes", class:'project form-control', outlet: 'project_from'
         @div class:'block', =>
           @label =>
             @div class:'settings-name', 'Command Name'
@@ -41,10 +43,7 @@ class DependencyView extends View
     @disposables.add atom.commands.add @element, 'core:confirm': (event) =>
         if @validInput()
           @callback(@oldid, {
-            from: {
-              project: @project_from.children()[@project_from[0].selectedIndex].innerHTML,
-              command: @command_from.children()[@command_from[0].selectedIndex].innerHTML
-            },
+            from: @command_from.children()[@command_from[0].selectedIndex].innerHTML,
             to: {
               project: @project_to.children()[@project_to[0].selectedIndex].innerHTML,
               command: @command_to.children()[@command_to[0].selectedIndex].innerHTML
@@ -70,14 +69,13 @@ class DependencyView extends View
     else
       return false
 
-  show: (items, @oldid) ->
+  show: (project, items, @oldid) ->
     @updateProjects()
+    e = @project_from.find('[value="' + project + '"]')[0]
+    @project_from[0].selectedIndex = if e? then Array.prototype.indexOf.call(e.parentNode.childNodes, e) else 0
+    @selectedProject @project_from[0]
     if items?
-      e = @project_from.find('[value="' + items.from.project + '"]')[0]
-      @project_from[0].selectedIndex = if e? then Array.prototype.indexOf.call(e.parentNode.childNodes, e) else 0
-      @selectedProject @project_from[0]
-
-      e = @command_from.find('[value="' + items.from.command + '"]')[0]
+      e = @command_from.find('[value="' + items.from + '"]')[0]
       @command_from[0].selectedIndex = if e? then Array.prototype.indexOf.call(e.parentNode.childNodes, e) else 0
 
       e = @project_to.find('[value="' + items.to.project + '"]')[0]
@@ -116,8 +114,8 @@ class DependencyView extends View
           @option value:project, project
       @project_from.append(item())
       @project_to.append(item())
-    @project_from[0].selectedIndex = -1
-    @project_to[0].selectedIndex = -1
+    @project_to[0].selectedIndex = 0
+    @selectedProject @project_to[0]
 
   selectedProject: (e) ->
     project = e.children[e.selectedIndex].innerHTML

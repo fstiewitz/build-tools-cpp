@@ -1,8 +1,6 @@
 module.exports =
   class Dependency
-    from:
-      project: ''
-      command: ''
+    from: ''
     to:
       project: ''
       command: ''
