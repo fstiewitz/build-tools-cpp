@@ -119,11 +119,9 @@ class CommandView extends View
               @div class:'settings-name', 'Lint errors/warnings'
               @div =>
                 @span class:'inline-block text-subtle', 'Use Linter package to highlight errors in your code'
-        @div class:'buttons small-header', =>
-          @div class:'block', =>
-            @div class: 'btn btn-error icon icon-close inline-block-tight', 'Cancel'
-          @div class:'block', =>
-            @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
+        @div class:'buttons', =>
+          @div class: 'btn btn-error icon icon-close inline-block-tight', 'Cancel'
+          @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
 
   initialize: (@callback) ->
     @disposables = new CompositeDisposable
@@ -149,8 +147,8 @@ class CommandView extends View
         else
           @stderr_lint.addClass('hidden')
 
-    @on 'click', '.buttons .icon-close', @accept
-    @on 'click', '.buttons .icon-check', @cancel
+    @on 'click', '.buttons .icon-close', @cancel
+    @on 'click', '.buttons .icon-check', @accept
 
     @disposables.add atom.commands.add @element, {
       'core:confirm': @accept

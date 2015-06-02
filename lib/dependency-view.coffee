@@ -34,31 +34,42 @@ class DependencyView extends View
           @label =>
             @div class:'settings-name', 'Command Name'
           @select class:'command form-control', outlet: 'command_to'
+      @div class:'buttons', =>
+        @div class: 'btn btn-error icon icon-close inline-block-tight', 'Cancel'
+        @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
 
   initialize: (@callback,@projects) ->
     @disposables = new CompositeDisposable
     @on 'change', '.project', (e) =>
       @selectedProject e.currentTarget
 
-    @disposables.add atom.commands.add @element, 'core:confirm': (event) =>
-        if @validInput()
-          @callback(@oldid, {
-            from: @command_from.children()[@command_from[0].selectedIndex].innerHTML,
-            to: {
-              project: @project_to.children()[@project_to[0].selectedIndex].innerHTML,
-              command: @command_to.children()[@command_to[0].selectedIndex].innerHTML
-            }
-            })
-          @hide()
-        event.stopPropagation()
+    @on 'click', '.buttons .icon-close', @cancel
+    @on 'click', '.buttons .icon-check', @accept
 
-    @disposables.add atom.commands.add @element, 'core:cancel': (event) =>
-        @hide()
-        event.stopPropagation()
+    @disposables.add atom.commands.add @element, {
+      'core:confirm': @accept
+      'core:cancel': @cancel
+    }
 
   destroy: ->
     @disposables.dispose()
     @detach()
+
+  accept: (event) =>
+    if @validInput()
+      @callback(@oldid, {
+        from: @command_from.children()[@command_from[0].selectedIndex].innerHTML,
+        to: {
+          project: @project_to.children()[@project_to[0].selectedIndex].innerHTML,
+          command: @command_to.children()[@command_to[0].selectedIndex].innerHTML
+        }
+        })
+      @hide()
+    event.stopPropagation()
+
+  cancel: (event) =>
+    @hide()
+    event.stopPropagation()
 
   hide: ->
     @panel?.hide()
