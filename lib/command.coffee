@@ -30,7 +30,7 @@ module.exports =
         path.dirname(filename)
 
     file: ->
-      path.relative(path.join(@project,@wd),atom.workspace.getActiveTextEditor()?.getPath())
+      path.relative(path.resolve(@project,@wd),atom.workspace.getActiveTextEditor()?.getPath())
 
     replaceWildcards: ->
       command = @command
