@@ -36,7 +36,7 @@ module.exports =
       CSON = require 'season'
       data = CSON.readFileSync @filename
       Object.keys(data).forEach (key) =>
-        @data[key] = new Project(key, data[key], @setData)
+        @data[key] = new Project(key, data[key], @setData, @checkDependencies)
 
     setData: =>
       CSON = require 'season'
@@ -48,6 +48,46 @@ module.exports =
       catch error
         atom.notifications?.addError "Settings could not be written to #{@filename}"
 
+    checkDependencies: ({added,removed}) =>
+      if added?
+        if added['from']?
+          #Added dependency
+          project = @data[added.to.project]
+          if project?
+            command = project.commands[added.to.command]
+            if command?
+              command.targetOf.push({project: added.project, command: added.from})
+              return {}
+            else
+              return {command: added.to.command}
+          else
+            return {project: added.to.project}
+        else
+          #Added command - nothing has to be done
+          return ''
+      else
+        if removed['from']?
+          #Removed dependency
+          project = @data[removed.to.project]
+          if project?
+            command = project.commands[removed.to.command]
+            if command?
+              i = command.targetOf.indexOf({project: removed.project, command: removed.from})
+              if i isnt -1
+                command.targetOf.splice(i,1)
+                return {}
+              else
+                return {targetOf: {project: removed.project, command: removed.from}}
+            else
+              return {command: removed.to.command}
+          else
+            return {project: removed.to.project}
+        else
+          #Removed command
+          for target in removed.targetOf
+            project = @data[target.project]
+            project.removeDependencies(target) if project?
+
     touchFile: ->
       if not fs.existsSync @filename
         fs.writeFileSync @filename, '{}'
@@ -56,7 +96,7 @@ module.exports =
       if @data[path]?
         atom.notifications?.addError "Project \"#{path}\" already exists"
       else
-        @data[path] = new Project(path, {commands: [], dependencies: []}, @setData)
+        @data[path] = new Project(path, {commands: [], dependencies: []}, @setData, @checkDependencies)
         @setData()
 
     removeProject: (path) ->

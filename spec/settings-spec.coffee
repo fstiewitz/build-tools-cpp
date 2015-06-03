@@ -3,6 +3,7 @@ SettingsView = require '../lib/settings-view'
 fs = require 'fs'
 Projects = require '../lib/projects'
 path = require 'path'
+temp = require('temp')
 
 describe 'Settings page', ->
   [cmd, dep, projects, view, fixturesPath, filename] = []
@@ -25,6 +26,11 @@ describe 'Settings page', ->
     }
   }
 
+  res = temp.openSync()
+  filename = res.path
+  fs.writeSync res.fd, '{}'
+  fs.fsyncSync res.fd
+
   beforeEach ->
     fixturesPath = atom.project.getPaths()[0]
     dep = {
@@ -34,7 +40,6 @@ describe 'Settings page', ->
         command: 'Testcmd'
       }
     }
-    filename = path.resolve('spec/build-tools-cpp.projects')
     projects = new Projects(filename)
     view = new SettingsView({uri: 'atom://build-tools-settings', projects})
     jasmine.attachToDOM(view.element)
@@ -45,6 +50,7 @@ describe 'Settings page', ->
 
   describe 'When a project is added', ->
     it 'adds the project to the project menu', ->
+      projects.addProject(fixturesPath)
       projects.getProject(fixturesPath).addCommand cmd
       projects.getProject(fixturesPath).addDependency dep
       expect(view.find('.list-group').children().length).toBe 1
@@ -110,4 +116,5 @@ describe 'Settings page', ->
         runs ->
           expect(view.find('.command #name').html()).toBe 'Test command 4'
           projects.watcher.close()
-          fs.unlinkSync filename
+
+  temp.cleanupSync()

@@ -1,12 +1,17 @@
 Projects = require '../lib/projects'
 path = require 'path'
 fs = require 'fs'
+temp = require('temp').track()
 
 describe 'Project', ->
   [projects, fixturesPath, root1, root2, filename] = []
 
+  res = temp.openSync()
+  filename = res.path
+  fs.writeSync res.fd, '{}'
+  fs.fsyncSync res.fd
+
   beforeEach ->
-    filename = path.resolve('spec/build-tools-cpp.projects')
     projects = new Projects(filename)
     fixturesPath = atom.project.getPaths()[0]
     root1 = path.join(fixturesPath,'root1')
@@ -24,15 +29,22 @@ describe 'Project', ->
     it 'creates a new project', ->
       expect(projects.data[root1]).toBeUndefined()
       projects.addProject root1
+      projects.addProject root2
       expect(projects.data[root1]).toBeDefined()
       expect(projects.data[root1]['path']).toBeDefined()
       expect(projects.data[root1]['dependencies']).toBeDefined()
       expect(projects.data[root1]['commands']).toBeDefined()
+      expect(projects.data[root2]).toBeDefined()
+      expect(projects.data[root2]['path']).toBeDefined()
+      expect(projects.data[root2]['dependencies']).toBeDefined()
+      expect(projects.data[root2]['commands']).toBeDefined()
 
   describe 'When adding a command', ->
     it 'creates a new command', ->
       project = projects.getProject root1
+      project2 = projects.getProject root2
       expect(projects.data[root1]['commands'].length).toBe 0
+      expect(projects.data[root2]['commands'].length).toBe 0
       data = {
         name: 'Test command',
         command: 'pwd "Hello World" test',
@@ -67,12 +79,48 @@ describe 'Project', ->
           lint: false
         }
       }
+      data3 = {
+        name: 'Test command 3',
+        command: 'pwd',
+        wd: 'sub0',
+        shell: false,
+        wildcards: true,
+        stdout: {
+          file: false,
+          highlighting: 'ha',
+          lint: false
+        }
+        stderr: {
+          file: true,
+          highlighting: 'hc',
+          lint: false
+        }
+      }
       project.addCommand data
       project.addCommand data2
+      project2.addCommand data2
+      project2.addCommand data3
       expect(project.getCommand('Test command').project).toBe root1
       expect(project.getCommand('Test command').wd).toBe 'sub0'
       expect(project.getCommand('Test command 2').project).toBe root1
       expect(project.getCommand('Test command 2').wd).toBe 'sub0'
+      expect(project2.getCommand('Test command 2').project).toBe root2
+      expect(project2.getCommand('Test command 3').project).toBe root2
+
+  describe 'When adding a dependency', ->
+    it 'adds a dependency', ->
+      project = projects.getProject root1
+      expect(project.dependencies.length).toBe 0
+      data = {
+        from: 'Test command 2'
+        to: {
+          project: root2,
+          command: 'Test command 3'
+        }
+      }
+      project.addDependency data
+      expect(project.dependencies.length).toBe 1
+      expect(project.dependencies[0].from).toBe 'Test command 2'
 
   describe 'When editing a command', ->
     it 'replaces the commands', ->
@@ -136,4 +184,5 @@ describe 'Project', ->
       projects.removeProject(root1)
       expect(projects.getProject(root1)).toBeUndefined()
       projects.watcher.close()
-      fs.unlinkSync filename
+
+  temp.cleanupSync()

@@ -25,6 +25,9 @@
     "fs-plus": "^2.0.4",
     "season": "^5.2.0"
   },
+  "devDependencies": {
+    "temp": "^0.8.0"
+  },
   "keywords": [
     "build",
     "compile",
