@@ -6,7 +6,7 @@ path = require 'path'
 temp = require('temp')
 
 describe 'Settings page', ->
-  [cmd, dep, projects, view, fixturesPath, filename] = []
+  [cmd, dep, projects, view, fixturesPath, filename, fd] = []
 
   cmd = {
     name: 'Test command',
@@ -28,8 +28,9 @@ describe 'Settings page', ->
 
   res = temp.openSync()
   filename = res.path
-  fs.writeSync res.fd, '{}'
-  fs.fsyncSync res.fd
+  fd = res.fd
+  fs.writeSync fd, '{}'
+  fs.fsyncSync fd
 
   beforeEach ->
     fixturesPath = atom.project.getPaths()[0]
@@ -106,15 +107,12 @@ describe 'Settings page', ->
       expect(d[fixturesPath]).toBeDefined()
       expect(d[fixturesPath].commands[0].name).toBe 'Test command'
       d[fixturesPath].commands[0].name = 'Test command 4'
-      projects.getProject(fixturesPath).removeCommand 'Test command'
+      spy = spyOn(projects, 'getData').andCallThrough()
+      CSON.writeFileSync projects.filename, d
       waitsFor ->
-        view.find('.command').length is 0
+        spy.callCount is 1
       runs ->
-        CSON.writeFileSync projects.filename, d
-        waitsFor ->
-          view.find('.command').length is 1
-        runs ->
-          expect(view.find('.command #name').html()).toBe 'Test command 4'
-          projects.watcher.close()
-
-  temp.cleanupSync()
+        expect(projects.getProject(fixturesPath).commands[0].name).toBe 'Test command 4'
+        projects.watcher.close()
+        fs.close fd, =>
+          fs.unlink filename

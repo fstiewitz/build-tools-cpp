@@ -1,15 +1,16 @@
 Projects = require '../lib/projects'
 path = require 'path'
 fs = require 'fs'
-temp = require('temp').track()
+temp = require('temp')
 
 describe 'Project', ->
-  [projects, fixturesPath, root1, root2, filename] = []
+  [projects, fixturesPath, root1, root2, filename, fd] = []
 
   res = temp.openSync()
   filename = res.path
-  fs.writeSync res.fd, '{}'
-  fs.fsyncSync res.fd
+  fd = res.fd
+  fs.writeSync fd, '{}'
+  fs.fsyncSync fd
 
   beforeEach ->
     projects = new Projects(filename)
@@ -184,5 +185,5 @@ describe 'Project', ->
       projects.removeProject(root1)
       expect(projects.getProject(root1)).toBeUndefined()
       projects.watcher.close()
-
-  temp.cleanupSync()
+      fs.close fd, =>
+        fs.unlink filename
