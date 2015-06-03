@@ -1,6 +1,6 @@
 build-tools-cpp
 ===============
-[![Build Status](https://travis-ci.org/deprint/build-tools-cpp.svg?branch=settings-view)](https://travis-ci.org/deprint/build-tools-cpp) [![Dependency Status](https://david-dm.org/deprint/build-tools-cpp/settings-view.svg)](https://david-dm.org/deprint/build-tools-cpp/settings-view)
+[![Build Status](https://travis-ci.org/deprint/build-tools-cpp.svg?branch=settings-view)](https://travis-ci.org/deprint/build-tools-cpp) [![Dependency Status](https://david-dm.org/deprint/build-tools-cpp/settings-view.svg)](https://david-dm.org/deprint/build-tools-cpp/settings-view) [![devDependency Status](https://david-dm.org/deprint/build-tools-cpp/settings-view/dev-status.svg)](https://david-dm.org/deprint/build-tools-cpp/settings-view#info=devDependencies)
 
 ### Build your autotools / CMake / Makefile project in atom
 
