@@ -16,6 +16,8 @@ class CommandView extends View
             @span class:'inline-block text-subtle', 'Name of command when using '
             @span class:'inline-block highlight', 'build-tools-cpp:show-commands'
         @subview 'command_name', new TextEditorView(mini:true)
+        @div id:'name-error-none' ,class:'error hidden', 'This field cannot be empty'
+        @div id:'name-error-used' ,class:'error hidden', 'Name already used in this project'
       @div class:'block', =>
         @label =>
           @div class:'settings-header', =>
@@ -37,6 +39,7 @@ class CommandView extends View
           @div =>
             @span class:'inline-block text-subtle', 'Command to execute '
         @subview 'command_text', new TextEditorView(mini:true)
+        @div id:'command-error-none' ,class:'error hidden', 'This field cannot be empty'
       @div class:'block', =>
         @label =>
           @div class:'settings-header', =>
@@ -123,7 +126,7 @@ class CommandView extends View
           @div class: 'btn btn-error icon icon-close inline-block-tight', 'Cancel'
           @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
 
-  initialize: (@callback) ->
+  initialize: (@callback,@project) ->
     @disposables = new CompositeDisposable
     @nameEditor = @command_name.getModel()
     @commandEditor = @command_text.getModel()
@@ -160,9 +163,20 @@ class CommandView extends View
     @detach()
 
   accept: (event) =>
-    if ((n=@nameEditor.getText()) isnt '') and ((c=@commandEditor.getText()) isnt '')
+    @find('.error').addClass('hidden')
+    n = not @validName()
+    c = not @validCommand()
+    if n or c
+      if n
+        if @nameEditor.getText() is ''
+          @find('#name-error-none').removeClass('hidden')
+        else
+          @find('#name-error-used').removeClass('hidden')
+      if c
+        @find('#command-error-none').removeClass('hidden')
+    else
       @callback(@oldname, {
-        name: n,
+        name: @nameEditor.getText(),
         command: @commandEditor.getText(),
         wd: if (d=@wdEditor.getText()) is '' then '.' else d,
         shell: @find('#command_in_shell').prop('checked')
@@ -180,6 +194,12 @@ class CommandView extends View
         })
       @hide()
     event.stopPropagation()
+
+  validName: ->
+    ((n=@nameEditor.getText()) isnt '') and ((n is @oldname) or (@project.getCommandIndex(n) is -1))
+
+  validCommand: ->
+    @commandEditor.getText() isnt ''
 
   cancel: (event) =>
     @hide()

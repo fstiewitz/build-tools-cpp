@@ -27,25 +27,19 @@ module.exports =
         atom.notifications?.addError "Command \"#{item.name}\" already exists"
 
     addDependency: (item) ->
-      item['project'] = @path
-      errors = @check(added: item)
-      @dependencies.push(new Dependency(item,errors))
-      atom.notifications?.addError "Project \"#{errors.project}\" not found" if errors.project?
-      atom.notifications?.addError "Command \"#{errors.command}\" not found" if errors.command?
+      item.from.project = @path
+      @dependencies.push(new Dependency(item))
       @save()
 
     removeCommand: (name) ->
       if (i = @getCommandIndex name) isnt -1
-        @check(removed: @commands.splice(i,1)[0])
+        @commands.splice(i,1)
         @save()
       else
         atom.notifications?.addError "Command \"#{name}\" not found"
 
     removeDependency: (id) ->
-      {targetOf, project, command} = @check(removed: @dependencies.splice(id,1)[0])
-      atom.notifications?.addError "Command \"#{command}\" does not depend on removed dependency" if targetOf?
-      atom.notifications?.addError "Project \"#{project}\" not found" if project?
-      atom.notifications?.addError "Command \"#{command}\" not found" if command?
+      @dependencies.splice(id,1)
       @save()
 
     removeDependencies: ({project,command}) ->
@@ -59,23 +53,14 @@ module.exports =
     replaceCommand: (oldname, item) ->
       if (i = @getCommandIndex oldname) isnt -1
         item['project'] = @path
-        @check(removed: @commands.splice(i,1)[0])
-        @commands.splice(i,0,new Command(item))
-        @check(added: item)
+        @commands.splice(i,1,new Command(item))
         @save()
       else
         atom.notifications?.addError "Command \"#{oldname}\" not found"
 
     replaceDependency: (oldid, item) ->
-      item['project'] = @path
-      {targetOf, project, command} = @check(removed: @dependencies.splice(oldid,1))
-      atom.notifications?.addError "Command \"#{command}\" does not depend on removed dependency" if targetOf?
-      atom.notifications?.addError "Project \"#{project}\" not found" if project?
-      atom.notifications?.addError "Command \"#{command}\" not found" if command?
-      errors = @check(added: item)
-      @dependencies.splice(oldid, 0, new Dependency(item,errors))
-      atom.notifications?.addError "Project \"#{errors.project}\" not found" if errors.project?
-      atom.notifications?.addError "Command \"#{errors.command}\" not found" if errors.command?
+      item.from.project = @path
+      @dependencies.splice(oldid, 1, new Dependency(item,errors))
       @save()
 
     moveCommand: (name, offset) ->

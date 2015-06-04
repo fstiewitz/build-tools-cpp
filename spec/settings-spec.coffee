@@ -35,7 +35,9 @@ describe 'Settings page', ->
   beforeEach ->
     fixturesPath = atom.project.getPaths()[0]
     dep = {
-      from: fixturesPath,
+      from:
+        project: fixturesPath
+        command: 'Test command'
       to: {
         project: 'Testproj',
         command: 'Testcmd'

@@ -113,7 +113,9 @@ describe 'Project', ->
       project = projects.getProject root1
       expect(project.dependencies.length).toBe 0
       data = {
-        from: 'Test command 2'
+        from:
+          project: root1
+          command: 'Test command 2'
         to: {
           project: root2,
           command: 'Test command 3'
@@ -121,7 +123,7 @@ describe 'Project', ->
       }
       project.addDependency data
       expect(project.dependencies.length).toBe 1
-      expect(project.dependencies[0].from).toBe 'Test command 2'
+      expect(project.dependencies[0].from.command).toBe 'Test command 2'
 
   describe 'When editing a command', ->
     it 'replaces the commands', ->

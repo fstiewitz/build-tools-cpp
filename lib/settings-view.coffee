@@ -56,7 +56,7 @@ module.exports =
       @dependencyview=null
       @on 'click', '#add-command-button', (e) =>
         @CommandView ?= require './command-view'
-        @commandview ?= new @CommandView(@editccb)
+        @commandview ?= new @CommandView(@editccb, @activeProject)
         @commandview.show()
       @on 'click', '#add-dependency-button', (e) =>
         @DependencyView ?= require './dependency-view'
@@ -242,7 +242,7 @@ module.exports =
       item = $$ ->
         @div class:'dependency', =>
           @div class:'align', =>
-            @span class:'text-success', items.from
+            @span class:'text-success', items.from.command
             @span class:'dep', ' depends on '
             @span class:'text-success', items.to.project
             @span ':'
@@ -276,7 +276,10 @@ module.exports =
 
     editCommand: (target) ->
       @CommandView ?= require './command-view'
-      @commandview ?= new @CommandView(@editccb)
+      if @commandview? and @commandview.project isnt @activeProject
+        @commandview = new @CommandView(@editccb, @activeProject)
+      else
+        @commandview ?= new @CommandView(@editccb, @activeProject)
       id = Array.prototype.indexOf.call(target.parentNode.childNodes, target)
       cmd = @activeProject.getCommandByIndex id
       @commandview.show(cmd)
