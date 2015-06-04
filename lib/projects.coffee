@@ -17,14 +17,16 @@ module.exports =
       @touchFile()
       @getData()
       @emitter = new Emitter
-      @watcher = fs.watch @filename, (event, filename) =>
-        if not @writing
-          @getData()
-          @emitter.emit 'file-change'
+      @watcher = fs.watch @filename, @reload
 
     destroy: ->
       @watcher.close()
       @emitter.dispose()
+
+    reload: (event,filename) =>
+      if not @writing
+        @getData()
+        @emitter.emit 'file-change'
 
     getFileName: ->
       @filename = path.join(path.dirname(atom.config.getUserConfigPath()),"build-tools-cpp.projects")
