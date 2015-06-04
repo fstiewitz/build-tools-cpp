@@ -50,19 +50,19 @@ module.exports =
 
     initialize: ({@uri,@projects}) ->
       super
+      @reload()
       @CommandView=null
       @commandview=null
       @DependencyView=null
       @dependencyview=null
       @on 'click', '#add-command-button', (e) =>
         @CommandView ?= require './command-view'
-        @commandview ?= new @CommandView(@editccb, @activeProject)
-        @commandview.show()
+        @commandview ?= new @CommandView(@editccb)
+        @commandview.show(null, @activeProject)
       @on 'click', '#add-dependency-button', (e) =>
         @DependencyView ?= require './dependency-view'
         @dependencyview ?= new @DependencyView(@editdcb, @projects)
         @dependencyview.show(@activeProject.path)
-      @reload()
       return
 
     destroy: ->
@@ -276,13 +276,10 @@ module.exports =
 
     editCommand: (target) ->
       @CommandView ?= require './command-view'
-      if @commandview? and @commandview.project isnt @activeProject
-        @commandview = new @CommandView(@editccb, @activeProject)
-      else
-        @commandview ?= new @CommandView(@editccb, @activeProject)
+      @commandview ?= new @CommandView(@editccb)
       id = Array.prototype.indexOf.call(target.parentNode.childNodes, target)
       cmd = @activeProject.getCommandByIndex id
-      @commandview.show(cmd)
+      @commandview.show(cmd, @activeProject)
 
     editDependency: (target) ->
       @DependencyView ?= require './dependency-view'

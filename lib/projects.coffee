@@ -27,6 +27,8 @@ module.exports =
       if not @writing
         @getData()
         @emitter.emit 'file-change'
+      else
+        @writing = false
 
     getFileName: ->
       @filename = path.join(path.dirname(atom.config.getUserConfigPath()),"build-tools-cpp.projects")
@@ -46,9 +48,45 @@ module.exports =
         @writing = true
         CSON.writeFileSync @filename, @data
         @emitter.emit 'file-change'
-        @writing = false
       catch error
         atom.notifications?.addError "Settings could not be written to #{@filename}"
+
+    checkDependencies: ({added, removed, replaced}) =>
+      if removed?
+        if removed['from']?
+          #Removed dependency
+          project = @data[removed.to.project]
+          command = project.getCommand removed.to.command
+          for target,i in command.targetOf
+            if (removed.to.project is target.project) and (removed.to.command is target.command)
+              command.targetOf.splice(i,1)
+              break
+        else
+          #Removed command
+          for target in removed.targetOf
+            project = @data[target.project]
+            project.dependencies = project.dependencies.filter (value) =>
+              not ((value.to.project is target.project) and (value.to.command is target.command))
+          project = @data[removed.project]
+          project.dependencies = project.dependencies.filter (value) =>
+            not (value.from.command is removed.name)
+      if added?
+        #Add dependency
+        @data[added.to.project].getCommand(added.to.command).targetOf.push(added.from)
+      if replaced?
+        #Replaced command
+        replaced.new['targetOf'] = replaced.old.targetOf
+        for target in replaced.old.targetOf
+          project = @data[target.project]
+          project.dependencies.forEach (value,index,array) =>
+            if (value.to.project is target.project) and (value.to.command is target.command)
+              array[index].to.command = replaced.new.name
+        project = @data[replaced.old.project]
+        project.dependencies.forEach (value,index,array) =>
+          if (value.from.command is replaced.old.name)
+            array[index].from.command = replaced.new.name
+
+
 
     touchFile: ->
       if not fs.existsSync @filename

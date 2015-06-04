@@ -29,38 +29,42 @@ module.exports =
     addDependency: (item) ->
       item.from.project = @path
       @dependencies.push(new Dependency(item))
+      @check(added: item)
       @save()
 
     removeCommand: (name) ->
       if (i = @getCommandIndex name) isnt -1
-        @commands.splice(i,1)
+        @check(removed: @commands.splice(i,1)[0])
         @save()
       else
         atom.notifications?.addError "Command \"#{name}\" not found"
 
     removeDependency: (id) ->
-      @dependencies.splice(id,1)
+      @check(removed: @dependencies.splice(id,1)[0])
       @save()
-
-    removeDependencies: ({project,command}) ->
-      new_dependencies = []
-      for dependency in @dependencies
-        if not (dependency.to.project is project and dependency.to.command is command)
-          new_dependencies.push(dependency)
-      @dependencies = new_dependencies
-
 
     replaceCommand: (oldname, item) ->
       if (i = @getCommandIndex oldname) isnt -1
         item['project'] = @path
-        @commands.splice(i,1,new Command(item))
+        if oldname is item.name
+          @commands.splice(i,1,new Command(item))
+        else
+          @check(replaced: {
+            old: @commands.splice(i,1)[0]
+            new: item
+            })
+          @commands.splice(i,0,new Command(item))
         @save()
       else
         atom.notifications?.addError "Command \"#{oldname}\" not found"
 
     replaceDependency: (oldid, item) ->
       item.from.project = @path
-      @dependencies.splice(oldid, 1, new Dependency(item,errors))
+      @check({
+        removed: @dependencies.splice(oldid,1)[0]
+        added: item
+      })
+      @dependencies.splice(oldid, 0, new Dependency(item,errors))
       @save()
 
     moveCommand: (name, offset) ->

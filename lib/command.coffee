@@ -12,8 +12,8 @@ module.exports =
     stderr: {}
     targetOf: []
 
-    constructor: ({@project,@name,@command,@wd,@shell,@wildcards,@stdout,@stderr,targetOf}) ->
-      @targetOf = [] if targetOf?
+    constructor: ({@project,@name,@command,@wd,@shell,@wildcards,@stdout,@stderr,@targetOf}) ->
+      @targetOf = [] if not @targetOf?
       return
 
     getProject: ->
