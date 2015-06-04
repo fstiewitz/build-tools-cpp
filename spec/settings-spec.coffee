@@ -107,12 +107,9 @@ describe 'Settings page', ->
       expect(d[fixturesPath]).toBeDefined()
       expect(d[fixturesPath].commands[0].name).toBe 'Test command'
       d[fixturesPath].commands[0].name = 'Test command 4'
-      spy = spyOn(projects.emitter, 'emit').andCallThrough()
       CSON.writeFileSync projects.filename, d
-      waitsFor ->
-        spy.callCount is 1
-      runs ->
-        expect(projects.getProject(fixturesPath).commands[0].name).toBe 'Test command 4'
-        projects.watcher.close()
-        fs.close fd, =>
-          fs.unlink filename
+      projects.reload()
+      expect(projects.getProject(fixturesPath).commands[0].name).toBe 'Test command 4'
+      projects.watcher.close()
+      fs.close fd, =>
+        fs.unlink filename
