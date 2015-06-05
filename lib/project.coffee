@@ -64,7 +64,7 @@ module.exports =
         removed: @dependencies.splice(oldid,1)[0]
         added: item
       })
-      @dependencies.splice(oldid, 0, new Dependency(item,errors))
+      @dependencies.splice(oldid, 0, new Dependency(item))
       @save()
 
     moveCommand: (name, offset) ->

@@ -124,15 +124,19 @@ describe 'Project', ->
       project.addDependency data
       expect(project.dependencies.length).toBe 1
       expect(project.dependencies[0].from.command).toBe 'Test command 2'
+      expect(projects.getProject(root2).getCommand('Test command 3').targetOf).toEqual [{
+        project: root1
+        command: 'Test command 2'
+        }]
 
   describe 'When editing a command', ->
     it 'replaces the commands', ->
-      project = projects.getProject root1
+      project = projects.getProject root2
       expect(projects.data[root1]['commands'].length).toBe 2
-      command = project.getCommand 'Test command 2'
-      expect(command.name).toBe 'Test command 2'
+      command = project.getCommand 'Test command 3'
+      expect(command.name).toBe 'Test command 3'
       data = {
-        name: 'Test command 3',
+        name: 'Test command 4',
         command: 'pwd',
         wd: 'sub0',
         shell: false,
@@ -149,26 +153,49 @@ describe 'Project', ->
         }
       }
       project.replaceCommand command.name, data
-      expect(project.getCommand 'Test command 2').toBeUndefined()
-      expect(project.getCommand 'Test command 3').toBeDefined()
+      expect(project.getCommand 'Test command 3').toBeUndefined()
+      expect(project.getCommand 'Test command 4').toBeDefined()
+      expect(project.getCommand('Test command 4').targetOf.length).toBe 1
+      expect(project.getCommand('Test command 4').targetOf[0].command).toBe 'Test command 2'
+      expect(projects.getProject(root1).dependencies[0].to.command).toBe 'Test command 4'
+
+  describe 'When editing a dependency', ->
+    it 'edits the dependency', ->
+      project = projects.getProject root1
+      expect(projects.data[root1]['dependencies'].length).toBe 1
+      data = {
+        from:
+          project: root1
+          command: 'Test command'
+        to:
+          project: root2
+          command: 'Test command 4'
+      }
+      project.replaceDependency 0, data
+      dependencies = project.dependencies
+      expect(dependencies.length).toBe 1
+      expect(dependencies[0].from.command).toBe 'Test command'
+      command = projects.getProject(root2).getCommand('Test command 4')
+      expect(command.targetOf.length).toBe 1
+      expect(command.targetOf[0].command).toBe 'Test command'
 
   describe 'When moving a command', ->
     it 'can move down', ->
-      project = projects.getProject root1
+      project = projects.getProject root2
       expect(project.commands.length).toBe 2
-      expect((project.getCommandByIndex 0).name).toBe 'Test command'
-      expect((project.getCommandByIndex 1).name).toBe 'Test command 3'
-      project.moveCommand 'Test command 3', -1
-      expect((project.getCommandByIndex 0).name).toBe 'Test command 3'
-      expect((project.getCommandByIndex 1).name).toBe 'Test command'
+      expect((project.getCommandByIndex 0).name).toBe 'Test command 2'
+      expect((project.getCommandByIndex 1).name).toBe 'Test command 4'
+      project.moveCommand 'Test command 4', -1
+      expect((project.getCommandByIndex 0).name).toBe 'Test command 4'
+      expect((project.getCommandByIndex 1).name).toBe 'Test command 2'
     it 'can move up', ->
-      project = projects.getProject root1
+      project = projects.getProject root2
       expect(project.commands.length).toBe 2
-      expect((project.getCommandByIndex 0).name).toBe 'Test command 3'
-      expect((project.getCommandByIndex 1).name).toBe 'Test command'
-      project.moveCommand 'Test command 3', 1
-      expect((project.getCommandByIndex 0).name).toBe 'Test command'
-      expect((project.getCommandByIndex 1).name).toBe 'Test command 3'
+      expect((project.getCommandByIndex 0).name).toBe 'Test command 4'
+      expect((project.getCommandByIndex 1).name).toBe 'Test command 2'
+      project.moveCommand 'Test command 4', 1
+      expect((project.getCommandByIndex 0).name).toBe 'Test command 2'
+      expect((project.getCommandByIndex 1).name).toBe 'Test command 4'
 
   describe 'When executing a command', ->
     it 'converts all information before giving them to BufferedProcess', ->

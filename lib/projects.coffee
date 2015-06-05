@@ -58,7 +58,7 @@ module.exports =
           project = @data[removed.to.project]
           command = project.getCommand removed.to.command
           for target,i in command.targetOf
-            if (removed.to.project is target.project) and (removed.to.command is target.command)
+            if (removed.from.project is target.project) and (removed.from.command is target.command)
               command.targetOf.splice(i,1)
               break
         else
@@ -66,7 +66,7 @@ module.exports =
           for target in removed.targetOf
             project = @data[target.project]
             project.dependencies = project.dependencies.filter (value) =>
-              not ((value.to.project is target.project) and (value.to.command is target.command))
+              not ((value.from.project is target.project) and (value.from.command is target.command))
           project = @data[removed.project]
           project.dependencies = project.dependencies.filter (value) =>
             not (value.from.command is removed.name)
@@ -78,13 +78,13 @@ module.exports =
         replaced.new['targetOf'] = replaced.old.targetOf
         for target in replaced.old.targetOf
           project = @data[target.project]
-          project.dependencies.forEach (value,index,array) =>
-            if (value.to.project is target.project) and (value.to.command is target.command)
-              array[index].to.command = replaced.new.name
+          project.dependencies.forEach (value,index) ->
+            if (value.from.project is target.project) and (value.from.command is target.command)
+              project.dependencies[index].to.command = replaced.new.name
         project = @data[replaced.old.project]
-        project.dependencies.forEach (value,index,array) =>
+        project.dependencies.forEach (value,index) ->
           if (value.from.command is replaced.old.name)
-            array[index].from.command = replaced.new.name
+            project.dependencies[index].from.command = replaced.new.name
 
 
 

@@ -39,8 +39,8 @@ describe 'Settings page', ->
         project: fixturesPath
         command: 'Test command'
       to: {
-        project: 'Testproj',
-        command: 'Testcmd'
+        project: fixturesPath,
+        command: 'Test command 2'
       }
     }
     projects = new Projects(filename)
@@ -55,6 +55,8 @@ describe 'Settings page', ->
     it 'adds the project to the project menu', ->
       projects.addProject(fixturesPath)
       projects.getProject(fixturesPath).addCommand cmd
+      cmd.name = 'Test command 2'
+      projects.getProject(fixturesPath).addCommand cmd
       projects.getProject(fixturesPath).addDependency dep
       expect(view.find('.list-group').children().length).toBe 1
       expect(view.find('.list-group').children()[0].children[0].innerHTML).toBe fixturesPath
@@ -64,42 +66,33 @@ describe 'Settings page', ->
     it 'removes the shared path', ->
       expect(view.removeSharedPath ['abc/def','abc/ghj']).toEqual ['def','ghj']
 
-  describe 'On edit/add command click', ->
+  describe 'On add command click', ->
+    it 'opens the command view', ->
+      button = view.find('#add-command-button')
+      expect(button.length).toBe 1
+      button.click()
+      expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy
+
+  describe 'On edit command click', ->
     it 'opens command view', ->
       icon = view.find('.command .icon-edit')
-      expect(icon.length).toBe 1
+      expect(icon.length).toBe 2
       icon.click()
-      commandview = atom.workspace.getModalPanels()[0].getItem()
       expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
-      expect(commandview.nameEditor.getText()).toBe 'Test command'
-      atom.commands.dispatch(commandview.element, 'core:cancel')
-      expect(atom.workspace.getModalPanels()[0].visible).toBeFalsy()
-      view.commandview.show()
-      commandview = atom.workspace.getModalPanels()[0].getItem()
-      expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
-      expect(commandview.nameEditor.getText()).toBe ''
-      atom.commands.dispatch(commandview.element, 'core:cancel')
-      expect(atom.workspace.getModalPanels()[0].visible).toBeFalsy()
 
-  describe 'On edit/add dependency click', ->
+  describe 'On add dependency click', ->
     it 'opens the dependency view', ->
-      projects.addProject('Testproj')
+      button = view.find('#add-dependency-button')
+      expect(button.length).toBe 1
+      button.click()
+      expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy
+
+  describe 'On edit dependency click', ->
+    it 'opens the dependency view', ->
       icon = view.find('.dependency .icon-edit')
       expect(icon.length).toBe 1
       icon.click()
-      dependencyview = atom.workspace.getModalPanels()[0].getItem()
       expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
-      project_to = dependencyview.project_to[0]
-      expect(project_to.children[project_to.selectedIndex].innerHTML).toBe 'Testproj'
-      dependencyview.find('.buttons .icon-close').click()
-      expect(atom.workspace.getModalPanels()[0].visible).toBeFalsy()
-      view.dependencyview.show(fixturesPath)
-      expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
-      project_from = dependencyview.project_from[0]
-      expect(project_from.children[project_from.selectedIndex].innerHTML).toBe fixturesPath
-      dependencyview.find('.buttons .icon-close').click()
-      expect(atom.workspace.getModalPanels()[0].visible).toBeFalsy()
-      projects.removeProject('Testproj')
 
 
   describe 'When project file changes on disk', ->
