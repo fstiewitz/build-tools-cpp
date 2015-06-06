@@ -12,13 +12,12 @@ module.exports =
     printfunc: null
 
     constructor: (command, stream, printfunc) ->
-      @settings = {
-        project: command.project,
-        command: command.command,
-        wd: command.wd,
-        shell: command.shell,
+      @settings =
+        project: command.project
+        command: command.command
+        wd: command.wd
+        shell: command.shell
         stream: command[stream]
-      }
       @printfunc = printfunc
 
     destroy: ->
@@ -115,13 +114,12 @@ module.exports =
                 else
                   end = end + match[2].length + 1
 
-              filenames.push {
+              filenames.push
                 filename: fp
                 row: row
                 col: col
                 start: line.indexOf(match[1],new_start)
                 end: end
-              }
               new_start = end
       filenames
 

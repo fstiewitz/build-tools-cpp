@@ -153,10 +153,9 @@ class CommandView extends View
     @on 'click', '.buttons .icon-close', @cancel
     @on 'click', '.buttons .icon-check', @accept
 
-    @disposables.add atom.commands.add @element, {
+    @disposables.add atom.commands.add @element,
       'core:confirm': @accept
       'core:cancel': @cancel
-    }
 
   destroy: ->
     @disposables.dispose()
@@ -176,9 +175,9 @@ class CommandView extends View
         @find('#command-error-none').removeClass('hidden')
     else
       @callback(@oldname, {
-        name: @nameEditor.getText(),
-        command: @commandEditor.getText(),
-        wd: if (d=@wdEditor.getText()) is '' then '.' else d,
+        name: @nameEditor.getText()
+        command: @commandEditor.getText()
+        wd: if (d=@wdEditor.getText()) is '' then '.' else d
         shell: @find('#command_in_shell').prop('checked')
         wildcards: @find('#wildcards').prop('checked')
         stdout: {

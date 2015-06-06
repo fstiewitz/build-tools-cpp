@@ -19,17 +19,16 @@ module.exports =
       if (m=msgs.messages[path.basename(filePath)])?
         messages = []
         for item in m
-          match = {
-            message: item[4],
-            col: 0,
-            line: item[2],
-          }
+          match =
+            message: item[4]
+            col: 0
+            line: item[2]
           if (r = @computeRange match)?
-            messages.push({
-              line: item[2],
-              level: item[3],
-              message: item[4],
-              linter: @linterName,
+            messages.push(
+              line: item[2]
+              level: item[3]
+              message: item[4]
+              linter: @linterName
               range: r
-            })
+            )
         callback messages

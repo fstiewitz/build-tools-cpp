@@ -50,10 +50,9 @@ class DependencyView extends View
     @on 'click', '.buttons .icon-close', @cancel
     @on 'click', '.buttons .icon-check', @accept
 
-    @disposables.add atom.commands.add @element, {
+    @disposables.add atom.commands.add @element,
       'core:confirm': @accept
       'core:cancel': @cancel
-    }
 
   destroy: ->
     @disposables.dispose()
@@ -69,16 +68,14 @@ class DependencyView extends View
       @find('#dest-project-none').removeClass('hidden') if not dp
       @find('#dest-command-none').removeClass('hidden') if not dc
     else
-      @callback(@oldid, {
-        from: {
+      @callback(@oldid,
+        from:
           project: ''
           command: @command_from.children()[@command_from[0].selectedIndex].innerHTML
-        }
-        to: {
-          project: @project_to.children()[@project_to[0].selectedIndex].innerHTML,
+        to:
+          project: @project_to.children()[@project_to[0].selectedIndex].innerHTML
           command: @command_to.children()[@command_to[0].selectedIndex].innerHTML
-        }
-        })
+      )
       @hide()
     event.stopPropagation()
 

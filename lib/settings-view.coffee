@@ -2,12 +2,11 @@
 {CompositeDisposable} = require 'atom'
 _p = require 'path'
 
-highlight_translation= {
-  "nh": "No highlighting",
-  "ha": "Highlight all",
-  "ht": "Highlight tags",
+highlight_translation =
+  "nh": "No highlighting"
+  "ha": "Highlight all"
+  "ht": "Highlight tags"
   "hc": "GCC/Clang highlighting"
-}
 
 module.exports =
   class SettingsView extends ScrollView

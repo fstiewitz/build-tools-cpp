@@ -84,24 +84,21 @@ module.exports =
     consoleview?.setHeader(res.command)
     consoleview?.clear()
     consoleview?.unlock()
-    @process = new BufferedProcess({
-      command: cmd,
-      args,
-      options: {
+    @process = new BufferedProcess(
+      command: cmd
+      args: args
+      options:
         cwd: cwd,
         env: env
-      },
       stdout: (data) =>
         consoleview?.stdout?.in data
-      ,
       stderr: (data) =>
         consoleview?.stderr?.in data
-      ,
       exit: (exitcode) =>
         consoleview?.setHeader ("#{res.command}: finished with exitcode #{exitcode}")
         consoleview?.finishConsole()
         consoleview?.destroyOutput()
-      })
+      )
     @process.onWillThrowError ({error, handle}) =>
       consoleview?.hideOutput()
       consoleview?.setHeader("#{res.command}: received #{error}")

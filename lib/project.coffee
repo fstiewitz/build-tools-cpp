@@ -49,10 +49,10 @@ module.exports =
         if oldname is item.name
           @commands.splice(i,1,new Command(item))
         else
-          @check(replaced: {
+          @check(replaced:
             old: @commands.splice(i,1)[0]
             new: item
-            })
+            )
           @commands.splice(i,0,new Command(item))
         @save()
       else
@@ -60,10 +60,10 @@ module.exports =
 
     replaceDependency: (oldid, item) ->
       item.from.project = @path
-      @check({
+      @check(
         removed: @dependencies.splice(oldid,1)[0]
         added: item
-      })
+      )
       @dependencies.splice(oldid, 0, new Dependency(item))
       @save()
 
