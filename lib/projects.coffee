@@ -68,8 +68,12 @@ module.exports =
             project.dependencies = project.dependencies.filter (value) =>
               not ((value.from.project is target.project) and (value.from.command is target.command))
           project = @data[removed.project]
+          omit = []
           project.dependencies = project.dependencies.filter (value) =>
-            not (value.from.command is removed.name)
+            omit.push(value) if (res = (value.from.command is removed.name))
+            not res
+          for dep in omit
+            @checkDependencies(removed: dep)
       if added?
         #Add dependency
         @data[added.to.project].getCommand(added.to.command).targetOf.push(added.from)
