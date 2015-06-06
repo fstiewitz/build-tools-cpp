@@ -71,7 +71,7 @@ module.exports =
       @filechange = @projects.onFileChange @reload
 
     detached: ->
-      @filechange?.dispose()
+      @filechange.dispose()
 
     getURI: ->
       @uri
@@ -97,8 +97,7 @@ module.exports =
           @div class:'icon icon-book', name
           @div class:'text-subtle', path
       @project_list.append(item)
-      if @projects.getProject(path) is null
-        @projects.addProject(path)
+      @projects.addProject(path) if not @projects.getProject(path)?
 
     removeSharedPath: (paths) ->
       if paths.length is 1 then return paths
@@ -140,8 +139,6 @@ module.exports =
           @addCommand command
         for dependency in project.dependencies
           @addDependency dependency
-      else
-        @projects.addProject(path)
 
     clearAll: ->
       @command_list.empty()

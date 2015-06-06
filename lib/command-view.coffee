@@ -174,23 +174,21 @@ class CommandView extends View
       if c
         @find('#command-error-none').removeClass('hidden')
     else
-      @callback(@oldname, {
+      @callback(@oldname,
         name: @nameEditor.getText()
         command: @commandEditor.getText()
         wd: if (d=@wdEditor.getText()) is '' then '.' else d
         shell: @find('#command_in_shell').prop('checked')
         wildcards: @find('#wildcards').prop('checked')
-        stdout: {
+        stdout:
           file: @find('#mark_paths_stdout').prop('checked')
           highlighting: @stdout_highlighting
           lint: if @stdout_lint.hasClass('hidden') then false else @find('#lint_stdout').prop('checked')
-        }
-        stderr: {
+        stderr:
           file: @find('#mark_paths_stderr').prop('checked')
           highlighting: @stderr_highlighting
           lint: if @stderr_lint.hasClass('hidden') then false else @find('#lint_stderr').prop('checked')
-        }
-        })
+        )
       @hide()
     event.stopPropagation()
 

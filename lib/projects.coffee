@@ -49,7 +49,11 @@ module.exports =
         CSON.writeFileSync @filename, @data
         @emitter.emit 'file-change'
       catch error
-        atom.notifications?.addError "Settings could not be written to #{@filename}"
+        @notify "Settings could not be written to #{@filename}"
+
+    notify: (message) ->
+      atom.notifications?.addError message
+      console.log('build-tools-cpp: ' + message)
 
     checkDependencies: ({added, removed, replaced}) =>
       if removed?
@@ -98,7 +102,7 @@ module.exports =
 
     addProject: (path) ->
       if @data[path]?
-        atom.notifications?.addError "Project \"#{path}\" already exists"
+        @notify "Project \"#{path}\" already exists"
       else
         @data[path] = new Project(path, {commands: [], dependencies: []}, @setData, @checkDependencies)
         @setData()
@@ -108,7 +112,7 @@ module.exports =
         delete @data[path]
         @setData()
       else
-        atom.notifications?.addError "Project \"#{path}\" not found"
+        @notify "Project \"#{path}\" not found"
 
     getNextProjectPath: (file) ->
       p = file.split(path.sep)

@@ -3,7 +3,7 @@ SettingsView = require '../lib/settings-view'
 fs = require 'fs'
 Projects = require '../lib/projects'
 path = require 'path'
-temp = require('temp')
+temp = require('temp').track()
 
 describe 'Settings page', ->
   [cmd, dep, projects, view, fixturesPath, filename, fd] = []
@@ -28,6 +28,7 @@ describe 'Settings page', ->
 
   res = temp.openSync()
   filename = res.path
+  console.log filename
   fd = res.fd
   fs.writeSync fd, '{}'
   fs.fsyncSync fd
@@ -53,11 +54,12 @@ describe 'Settings page', ->
 
   describe 'When a project is added', ->
     it 'adds the project to the project menu', ->
-      projects.addProject(fixturesPath)
-      projects.getProject(fixturesPath).addCommand cmd
+      project = projects.getProject(fixturesPath)
+      project.addCommand cmd
       cmd.name = 'Test command 2'
-      projects.getProject(fixturesPath).addCommand cmd
-      projects.getProject(fixturesPath).addDependency dep
+      project.addCommand cmd
+      project.addDependency dep
+      projects.setData() #For some reason projects.setData is not called as a callback
       expect(view.find('.list-group').children().length).toBe 1
       expect(view.find('.list-group').children()[0].children[0].innerHTML).toBe fixturesPath
       expect(view.find('.command #name').html()).toBe 'Test command'
@@ -106,5 +108,4 @@ describe 'Settings page', ->
       projects.reload()
       expect(projects.getProject(fixturesPath).commands[0].name).toBe 'Test command 4'
       projects.watcher.close()
-      fs.close fd, =>
-        fs.unlink filename
+      temp.cleanupSync()

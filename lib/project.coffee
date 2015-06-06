@@ -18,13 +18,17 @@ module.exports =
         @dependencies.push(new Dependency(dependency))
       return
 
+    notify: (message) ->
+      atom.notifications?.addError message
+      console.log('build-tools-cpp: ' + message)
+
     addCommand: (item) ->
       if @getCommandIndex(item.name) is -1
         item['project'] = @path
         @commands.push(new Command(item))
         @save()
       else
-        atom.notifications?.addError "Command \"#{item.name}\" already exists"
+        @notify "Command \"#{item.name}\" already exists"
 
     addDependency: (item) ->
       item.from.project = @path
@@ -37,7 +41,7 @@ module.exports =
         @check(removed: @commands.splice(i,1)[0])
         @save()
       else
-        atom.notifications?.addError "Command \"#{name}\" not found"
+        @notify "Command \"#{name}\" not found"
 
     removeDependency: (id) ->
       @check(removed: @dependencies.splice(id,1)[0])
@@ -56,7 +60,7 @@ module.exports =
           @commands.splice(i,0,new Command(item))
         @save()
       else
-        atom.notifications?.addError "Command \"#{oldname}\" not found"
+        @notify "Command \"#{oldname}\" not found"
 
     replaceDependency: (oldid, item) ->
       item.from.project = @path
@@ -72,7 +76,7 @@ module.exports =
         @commands.splice(i+offset,0,@commands.splice(i,1)[0])
         @save()
       else
-        atom.notifications?.addError "Command \"#{name}\" not found"
+        @notify "Command \"#{name}\" not found"
 
     moveDependency: (id, offset) ->
       @dependencies.splice(id+offset,0,@dependencies.splice(id,1)[0])
