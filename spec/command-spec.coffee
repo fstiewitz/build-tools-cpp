@@ -1,4 +1,3 @@
-{$} = require 'atom-space-pen-views'
 CommandView = require '../lib/command-view'
 fs = require 'fs'
 Projects = require '../lib/projects'

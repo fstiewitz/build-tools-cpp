@@ -10,6 +10,10 @@ class DependencyView extends View
     $$ ->
       @option value:'', 'Select project first'
 
+  nocommand: ->
+    $$ ->
+      @option value:'', 'Project has no commands'
+
   @content: ->
     @div class:'dependency-view', =>
       @div id:'from', =>
@@ -25,7 +29,8 @@ class DependencyView extends View
           @label =>
             @div class:'settings-name', 'Command Name'
           @select class:'command form-control', outlet: 'command_from'
-          @div id:'source-command-none', class:'error hidden', 'Select a command'
+          @div id:'source-command-select', class:'error hidden', 'Select a command'
+          @div id:'source-command-none', class:'error hidden', 'Project has no command'
       @div id:'to', =>
         @div class:'small-header', 'depends on'
         @div class:'block', =>
@@ -37,7 +42,8 @@ class DependencyView extends View
           @label =>
             @div class:'settings-name', 'Command Name'
           @select class:'command form-control', outlet: 'command_to'
-          @div id:'dest-command-none', class:'error hidden', 'Select a command'
+          @div id:'dest-command-select', class:'error hidden', 'Select a command'
+          @div id:'dest-command-none', class:'error hidden', 'Project has no command'
       @div class:'buttons', =>
         @div class: 'btn btn-error icon icon-close inline-block-tight', 'Cancel'
         @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
@@ -62,11 +68,13 @@ class DependencyView extends View
     @find('.error').addClass('hidden')
     {sp,sc} = @validSource()
     {dp,dc} = @validDest()
-    if (not sp) or (not sc) or (not dp) or (not dc)
+    if (not sp) or (sc isnt 0) or (not dp) or (dc isnt 0)
       @find('#source-project-none').removeClass('hidden') if not sp
-      @find('#source-command-none').removeClass('hidden') if not sc
+      @find('#source-command-select').removeClass('hidden') if sc is 1
+      @find('#source-command-none').removeClass('hidden') if sc is 2
       @find('#dest-project-none').removeClass('hidden') if not dp
-      @find('#dest-command-none').removeClass('hidden') if not dc
+      @find('#dest-command-select').removeClass('hidden') if dc is 1
+      @find('#dest-command-none').removeClass('hidden') if dc is 2
     else
       @callback(@oldid,
         from:
@@ -82,17 +90,23 @@ class DependencyView extends View
   validSource: ->
     if (sp=@projects.data[@project]?)
       c = @command_from.children()[@command_from[0].selectedIndex].innerHTML
-      {sp: true, sc: (@projects.data[@project].getCommandIndex c) isnt -1}
+      if c is 'Project has no commands'
+        {sp: true, sc: 2}
+      else
+        {sp: true, sc: if (@projects.data[@project].getCommandIndex c) isnt -1 then 0 else 1}
     else
-      {sp: false, sc: true}
+      {sp: false, sc: 0}
 
   validDest: ->
     p = @project_to.children()[@project_to[0].selectedIndex].innerHTML
     if (dp=@projects.data[p]?)
       c = @command_to.children()[@command_to[0].selectedIndex].innerHTML
-      {dp: true, dc: (@projects.data[p].getCommandIndex c) isnt -1}
+      if c is 'Project has no commands'
+        {dp: true, dc: 2}
+      else
+        {dp: true, dc: if (@projects.data[p].getCommandIndex c) isnt -1 then 0 else 1}
     else
-      {dp: false, dc: true}
+      {dp: false, dc: 0}
 
   cancel: (event) =>
     @hide()
@@ -108,6 +122,12 @@ class DependencyView extends View
       return false
 
   show: (@project, items, @oldid) ->
+    @find('#source-project-none').addClass('hidden')
+    @find('#source-command-select').addClass('hidden')
+    @find('#source-command-none').addClass('hidden')
+    @find('#dest-project-none').addClass('hidden')
+    @find('#dest-command-select').addClass('hidden')
+    @find('#dest-command-none').addClass('hidden')
     @updateProjects()
     e = @project_from.find('[value="' + project + '"]')[0]
     @project_from[0].selectedIndex = if e? then Array.prototype.indexOf.call(e.parentNode.childNodes, e) else 0
@@ -168,6 +188,9 @@ class DependencyView extends View
       c.append @defaultcommand()
       return
     if (p = @projects.getProject(project))?
-      for command in p.commands
-        c.append $$ ->
-          @option value:command.name, command.name
+      if p.commands.length isnt 0
+        for command in p.commands
+          c.append $$ ->
+            @option value:command.name, command.name
+      else
+        c.append @nocommand()

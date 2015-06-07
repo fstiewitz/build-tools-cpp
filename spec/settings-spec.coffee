@@ -54,6 +54,7 @@ describe 'Settings page', ->
 
   describe 'When a dependency is added', ->
     it 'adds the dependency to the dependency menu', ->
+      cmd.name = 'Test command'
       project.addCommand cmd
       cmd.name = 'Test command 2'
       project.addCommand cmd
@@ -88,6 +89,7 @@ describe 'Settings page', ->
 
   describe 'On edit dependency click', ->
     it 'opens the dependency view', ->
+      cmd.name = 'Test command'
       project.addCommand cmd
       cmd.name = 'Test command 2'
       project.addCommand cmd
