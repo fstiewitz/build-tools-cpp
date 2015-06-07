@@ -3,10 +3,9 @@ CommandView = require '../lib/command-view'
 fs = require 'fs'
 Projects = require '../lib/projects'
 path = require 'path'
-temp = require('temp').track()
 
 describe 'Command panel', ->
-  [spy, cmd, projects, view, fixturesPath, filename, fd] = []
+  [spy, cmd, projects, view, fixturesPath] = []
 
   cmd = {
     name: 'Test command',
@@ -26,16 +25,9 @@ describe 'Command panel', ->
     }
   }
 
-  res = temp.openSync()
-  filename = res.path
-  console.log filename
-  fd = res.fd
-  fs.writeSync fd, '{}'
-  fs.fsyncSync fd
-
   beforeEach ->
     fixturesPath = atom.project.getPaths()[0]
-    projects = new Projects(filename)
+    projects = new Projects('')
     projects.addProject(fixturesPath) if not projects.getProject(fixturesPath)?
     spy = jasmine.createSpy('callback')
     view = new CommandView(spy)
@@ -132,5 +124,3 @@ describe 'Command panel', ->
           lint: false
         }
       })
-      projects.watcher.close()
-      temp.cleanupSync()

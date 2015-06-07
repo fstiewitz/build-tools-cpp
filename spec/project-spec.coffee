@@ -1,55 +1,92 @@
 Projects = require '../lib/projects'
 path = require 'path'
 fs = require 'fs'
-temp = require('temp').track()
+{$} = require 'atom-space-pen-views'
 
 describe 'Project', ->
-  [projects, fixturesPath, root1, root2, filename, fd] = []
-
-  res = temp.openSync()
-  filename = res.path
-  console.log filename
-  fd = res.fd
-  fs.writeSync fd, '{}'
-  fs.fsyncSync fd
+  [projects, fixturesPath, root1, root2] = []
 
   beforeEach ->
-    projects = new Projects(filename)
     fixturesPath = atom.project.getPaths()[0]
+    projects = new Projects('')
+    expect(projects.data).toEqual {}
     root1 = path.join(fixturesPath,'root1')
     root2 = path.join(fixturesPath,'root2')
+
+    projects.addProject root1
+    projects.addProject root2
+
+    command = {
+      name: 'Test command',
+      command: 'pwd "Hello World" test',
+      wd: 'sub0',
+      shell: false,
+      wildcards: false,
+      stdout: {
+        file: false,
+        highlighting: 'ha',
+        lint: false
+      }
+      stderr: {
+        file: true,
+        highlighting: 'hc',
+        lint: false
+      }
+    }
+
+    dependency = {
+      from:
+        command: 'Test command 2'
+      to: {
+        project: root1,
+        command: 'Test command'
+      }
+    }
+
+    projects.getProject(root1).addCommand command
+    projects.getProject(root2).addCommand command
+    command = $.extend({}, command)
+    command.name = 'Test command 2'
+    projects.getProject(root1).addCommand command
+    projects.getProject(root1).addDependency dependency
+    dependency = $.extend({}, dependency)
+    dependency.from.command = 'Test command'
+    dependency.to.project = root2
+    projects.getProject(root1).addDependency dependency
+
+    expect(projects.getProject(root1).commands.length).toBe 2
+    expect(projects.getProject(root1).dependencies.length).toBe 2
+    expect(projects.getProject(root2).commands.length).toBe 1
+    expect(projects.getProject(root2).dependencies.length).toBe 0
+    expect(projects.getProject(root1).commands[0].targetOf.length).toBe 1
+    expect(projects.getProject(root1).commands[1].targetOf.length).toBe 0
+    expect(projects.getProject(root2).commands[0].targetOf.length).toBe 1
 
   afterEach ->
     projects.destroy()
 
   describe 'On package activation', ->
     it 'creates/loads the project file', ->
-      expect(projects.filename).not.toBe ''
       expect(projects.emitter).toBeDefined()
 
   describe 'When adding a project', ->
     it 'creates a new project', ->
-      expect(projects.data[root1]).toBeUndefined()
-      projects.addProject root1
-      projects.addProject root2
       expect(projects.data[root1]).toBeDefined()
       expect(projects.data[root1]['path']).toBeDefined()
-      expect(projects.data[root1]['dependencies']).toBeDefined()
-      expect(projects.data[root1]['commands']).toBeDefined()
+      expect(projects.data[root1]['dependencies'].length).toBe 2
+      expect(projects.data[root1]['commands'].length).toBe 2
       expect(projects.data[root2]).toBeDefined()
       expect(projects.data[root2]['path']).toBeDefined()
-      expect(projects.data[root2]['dependencies']).toBeDefined()
-      expect(projects.data[root2]['commands']).toBeDefined()
+      expect(projects.data[root2]['dependencies'].length).toBe 0
+      expect(projects.data[root2]['commands'].length).toBe 1
 
   describe 'When adding a command', ->
     it 'creates a new command', ->
-      project = projects.getProject root1
-      project2 = projects.getProject root2
-      expect(projects.data[root1]['commands'].length).toBe 0
-      expect(projects.data[root2]['commands'].length).toBe 0
+      project = projects.getProject root2
+      expect(project['commands'].length).toBe 1
       data = {
-        name: 'Test command',
-        command: 'pwd "Hello World" test',
+        name: 'Test command 2',
+        command: 'pwd',
         wd: 'sub0',
         shell: false,
         wildcards: false,
@@ -64,24 +101,50 @@ describe 'Project', ->
           lint: false
         }
       }
-      data2 = {
-        name: 'Test command 2',
-        command: 'pwd',
-        wd: 'sub0',
-        shell: false,
-        wildcards: true,
-        stdout: {
-          file: false,
-          highlighting: 'ha',
-          lint: false
-        }
-        stderr: {
-          file: true,
-          highlighting: 'hc',
-          lint: false
+      project.addCommand data
+      expect(project['commands'].length).toBe 2
+      expect(project['commands'][1].project).toBe root2
+      expect(project['commands'][1].name).toBe 'Test command 2'
+
+  describe 'When adding a dependency', ->
+    project = null
+
+    beforeEach ->
+      project = projects.getProject root1
+      expect(project['dependencies'].length).toBe 2
+      dependency = {
+        from:
+          command: 'Test command 2'
+        to: {
+          project: root2,
+          command: 'Test command'
         }
       }
-      data3 = {
+      project.addDependency dependency
+
+    it 'adds a dependency', ->
+      expect(project.dependencies.length).toBe 3
+      dependency = project.dependencies[1]
+      expect(dependency.from.project).toBe root1
+      expect(dependency.to.command).toBe 'Test command'
+
+    it 'links the target to the source command', ->
+      targetOf = projects.getProject(root2).getCommand('Test command').targetOf
+      expect(targetOf.length).toBe 2
+      expect(targetOf[1]).toEqual {
+        project: root1
+        command: 'Test command 2'
+      }
+
+  describe 'When editing a command', ->
+    [command_src, command_target, dependency] = []
+
+    beforeEach ->
+      project = projects.getProject root1
+      command_src = project.getCommand 'Test command'
+      command_target = projects.getProject(root2).getCommand('Test command')
+      dependency = project.dependencies[0]
+      data = {
         name: 'Test command 3',
         command: 'pwd',
         wd: 'sub0',
@@ -98,98 +161,50 @@ describe 'Project', ->
           lint: false
         }
       }
-      project.addCommand data
-      project.addCommand data2
-      project2.addCommand data2
-      project2.addCommand data3
-      expect(project.getCommand('Test command').project).toBe root1
-      expect(project.getCommand('Test command').wd).toBe 'sub0'
-      expect(project.getCommand('Test command 2').project).toBe root1
-      expect(project.getCommand('Test command 2').wd).toBe 'sub0'
-      expect(project2.getCommand('Test command 2').project).toBe root2
-      expect(project2.getCommand('Test command 3').project).toBe root2
+      project.replaceCommand command_src.name, data
+      command_src = project.getCommand 'Test command 3'
 
-  describe 'When adding a dependency', ->
-    it 'adds a dependency', ->
+    it 'replaces the command with the new one', ->
+      expect(command_src.name).toBe 'Test command 3'
+
+    it 'copies the targetOf property', ->
+      expect(command_src.targetOf.length).toBe 1
+      expect(command_src.targetOf[0].project).toBe root1
+      expect(command_src.targetOf[0].command).toBe 'Test command 2'
+
+    it 'changes the dependencies that point to the original command', ->
+      expect(dependency.to.command).toBe 'Test command 3'
+
+    it 'changes the targetOf property of its targets', ->
+      expect(command_target.targetOf.length).toBe 1
+      expect(command_target.targetOf[0].command).toBe 'Test command 3'
+
+  describe 'When editing a dependency', ->
+    [dependency, command_target] = []
+
+    beforeEach ->
       project = projects.getProject root1
-      project2 = projects.getProject root2
-      expect(project.dependencies.length).toBe 0
+      dependency = project.dependencies[0]
+      command_target = project.getCommand dependency.to.command
       data = {
         from:
           project: root1
-          command: 'Test command 2'
-        to: {
-          project: root2,
-          command: 'Test command 3'
-        }
-      }
-      data2 = {
-        from:
-          project: root1
-          command: 'Test command'
-        to: {
-          project: root2,
-          command: 'Test command 3'
-        }
-      }
-      data3 = {
-        from:
-          project: root2
           command: 'Test command 2'
         to:
           project: root2
-          command: 'Test command 3'
-      }
-      project.addDependency data
-      project.addDependency data2
-      project2.addDependency data3
-      expect(project.dependencies.length).toBe 2
-      expect(project.dependencies[0].from.command).toBe 'Test command 2'
-      expect(projects.getProject(root2).getCommand('Test command 3').targetOf).toEqual [{
-          project: root1
-          command: 'Test command 2'
-        },
-        {
-          project: root1
           command: 'Test command'
-        },
-        {
-          project: root2
-          command: 'Test command 2'
-        }]
-
-  describe 'When editing a command', ->
-    it 'replaces the commands', ->
-      project = projects.getProject root2
-      expect(projects.data[root1]['commands'].length).toBe 2
-      command = project.getCommand 'Test command 3'
-      expect(command.name).toBe 'Test command 3'
-      data = {
-        name: 'Test command 4',
-        command: 'pwd',
-        wd: 'sub0',
-        shell: false,
-        wildcards: true,
-        stdout: {
-          file: false,
-          highlighting: 'ha',
-          lint: false
-        }
-        stderr: {
-          file: true,
-          highlighting: 'hc',
-          lint: false
-        }
       }
-      project.replaceCommand command.name, data
-      expect(project.getCommand 'Test command 3').toBeUndefined()
-      expect(project.getCommand 'Test command 4').toBeDefined()
-      expect(project.getCommand('Test command 4').targetOf.length).toBe 3
-      expect(project.getCommand('Test command 4').targetOf[0].command).toBe 'Test command 2'
-      expect(projects.getProject(root1).dependencies[0].to.command).toBe 'Test command 4'
-      expect(project.dependencies[0].to.command).toBe 'Test command 4'
+      project.replaceDependency 0, data
+      dependency = project.dependencies[0]
 
-  describe 'When editing a dependency', ->
+    it 'replaces the dependency with the new one', ->
+      expect(dependency.to.project).toBe root2
+
+    it 'changes the targetOf property of its target', ->
+      expect(command_target.targetOf.length).toBe 2
+      expect(command_target.targetOf[1].command).toBe 'Test command 2'
+
+  xdescribe 'When editing a dependency', ->
     it 'edits the dependency', ->
       project = projects.getProject root1
       expect(projects.data[root1]['dependencies'].length).toBe 2
@@ -209,7 +224,7 @@ describe 'Project', ->
       expect(command.targetOf.length).toBe 3
       expect(command.targetOf[0].command).toBe 'Test command 2'
 
-  describe 'When moving a command', ->
+  xdescribe 'When moving a command', ->
     it 'can move down', ->
       project = projects.getProject root2
       expect(project.commands.length).toBe 2
@@ -227,7 +242,7 @@ describe 'Project', ->
       expect((project.getCommandByIndex 0).name).toBe 'Test command 2'
       expect((project.getCommandByIndex 1).name).toBe 'Test command 4'
 
-  describe 'When executing a command', ->
+  xdescribe 'When executing a command', ->
     it 'converts all information before giving them to BufferedProcess', ->
       project = projects.getProject root1
       command = project.getCommandByIndex 0
@@ -237,7 +252,7 @@ describe 'Project', ->
       expect(args).toEqual ["Hello World", "test"]
       expect(cwd).toBe (path.join(root1,command.wd))
 
-  describe 'When removing a command', ->
+  xdescribe 'When removing a command', ->
     it 'removes the command', ->
       project = projects.getProject root1
       command = project.getCommand 'Test command 2'
@@ -247,7 +262,7 @@ describe 'Project', ->
       expect(project.getCommand 'Test command 2').toBeUndefined()
       expect(projects.getProject(root2).getCommand('Test command 4').targetOf.length).toBe 1
 
-  describe 'When removing a dependency', ->
+  xdescribe 'When removing a dependency', ->
     it 'removes the dependency', ->
       project = projects.getProject root2
       dependency = project.dependencies[0]
@@ -260,10 +275,8 @@ describe 'Project', ->
       expect(dependency).toBeUndefined()
       expect(target.targetOf.length).toBe 0
 
-  describe 'When removing a project', ->
+  xdescribe 'When removing a project', ->
     it 'removes the project', ->
       expect(projects.getProject(root1)).toBeDefined()
       projects.removeProject(root1)
       expect(projects.getProject(root1)).toBeUndefined()
-      projects.watcher.close()
-      temp.cleanupSync()

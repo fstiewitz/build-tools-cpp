@@ -31,7 +31,7 @@ module.exports =
         @notify "Command \"#{item.name}\" already exists"
 
     addDependency: (item) ->
-      item.from.project = @path
+      item.from['project'] = @path
       @dependencies.push(new Dependency(item))
       @check(added: item)
       @save()
@@ -63,7 +63,7 @@ module.exports =
         @notify "Command \"#{oldname}\" not found"
 
     replaceDependency: (oldid, item) ->
-      item.from.project = @path
+      item.from['project'] = @path
       @check(
         removed: @dependencies.splice(oldid,1)[0]
         added: item

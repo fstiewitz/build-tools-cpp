@@ -2,6 +2,7 @@ Project = require './project'
 path = require 'path'
 fs = require 'fs'
 {Emitter} = require 'atom'
+{$} = require 'atom-space-pen-views'
 
 module.exports =
   class Projects
@@ -11,21 +12,25 @@ module.exports =
 
     constructor: (arg) ->
       if arg?
-        @filename = arg
+        @filename = if arg is '' then null else arg
       else
         @getFileName()
-      @touchFile()
-      @getData()
+      if @filename?
+        @touchFile()
+        @getData()
+        @watcher = fs.watch @filename, @reload
+      else
+        @data = {}
       @emitter = new Emitter
-      @watcher = fs.watch @filename, @reload
 
     destroy: ->
-      @watcher.close()
+      @watcher?.close()
       @emitter.dispose()
+      @data = {}
 
     reload: (event,filename) =>
       if not @writing
-        @getData()
+        @getData() if @filename?
         @emitter.emit 'file-change'
       else
         @writing = false
@@ -43,13 +48,14 @@ module.exports =
         @data[key] = new Project(key, data[key], @setData, @checkDependencies)
 
     setData: =>
-      CSON = require 'season'
-      try
-        @writing = true
-        CSON.writeFileSync @filename, @data
-        @emitter.emit 'file-change'
-      catch error
-        @notify "Settings could not be written to #{@filename}"
+      if @filename?
+        CSON = require 'season'
+        try
+          @writing = true
+          CSON.writeFileSync @filename, @data
+          @emitter.emit 'file-change'
+        catch error
+          @notify "Settings could not be written to #{@filename}"
 
     notify: (message) ->
       atom.notifications?.addError message
@@ -80,7 +86,7 @@ module.exports =
             @checkDependencies(removed: dep)
       if added?
         #Add dependency
-        @data[added.to.project].getCommand(added.to.command).targetOf.push(added.from)
+        @data[added.to.project].getCommand(added.to.command).targetOf.push($.extend({}, added.from))
       if replaced?
         #Replaced command
         replaced.new['targetOf'] = replaced.old.targetOf
