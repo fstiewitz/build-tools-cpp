@@ -2,7 +2,6 @@ Project = require './project'
 path = require 'path'
 fs = require 'fs'
 {Emitter} = require 'atom'
-{$} = require 'atom-space-pen-views'
 
 module.exports =
   class Projects
@@ -56,6 +55,8 @@ module.exports =
           @emitter.emit 'file-change'
         catch error
           @notify "Settings could not be written to #{@filename}"
+      else
+        @reload()
 
     notify: (message) ->
       atom.notifications?.addError message
@@ -86,21 +87,24 @@ module.exports =
             @checkDependencies(removed: dep)
       if added?
         #Add dependency
-        @data[added.to.project].getCommand(added.to.command).targetOf.push($.extend({}, added.from))
+        @data[added.to.project].getCommand(added.to.command).targetOf.push(added.from)
       if replaced?
         #Replaced command
-        replaced.new['targetOf'] = replaced.old.targetOf
+        replaced.new['targetOf'] = []
         for target in replaced.old.targetOf
+          replaced.new.targetOf.push(target)
+
           project = @data[target.project]
           project.dependencies.forEach (value,index) ->
-            if (value.from.project is target.project) and (value.from.command is target.command)
-              project.dependencies[index].to.command = replaced.new.name
+            project.dependencies[index].to.command = replaced.new.name if (value.from.project is target.project) and (value.from.command is target.command)
+
         project = @data[replaced.old.project]
-        project.dependencies.forEach (value,index) ->
-          if (value.from.command is replaced.old.name)
+        project.dependencies.forEach (value,index) =>
+          if value.from.command is replaced.old.name
             project.dependencies[index].from.command = replaced.new.name
-
-
+            command = @data[value.to.project].getCommand(value.to.command)
+            command.targetOf.forEach (value,index) ->
+              command.targetOf[index].command = replaced.new.name if value.command is replaced.old.name
 
     touchFile: ->
       if not fs.existsSync @filename
@@ -112,13 +116,6 @@ module.exports =
       else
         @data[path] = new Project(path, {commands: [], dependencies: []}, @setData, @checkDependencies)
         @setData()
-
-    removeProject: (path) ->
-      if @data[path]?
-        delete @data[path]
-        @setData()
-      else
-        @notify "Project \"#{path}\" not found"
 
     getNextProjectPath: (file) ->
       p = file.split(path.sep)

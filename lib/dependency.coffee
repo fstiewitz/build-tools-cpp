@@ -7,5 +7,5 @@ module.exports =
       project: ''
       command: ''
 
-    constructor: ({@from,@to}) ->
+    constructor: ({@from, @to}) ->
       return

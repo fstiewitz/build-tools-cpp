@@ -45,11 +45,16 @@ describe 'Project', ->
 
     projects.getProject(root1).addCommand command
     projects.getProject(root2).addCommand command
-    command = $.extend({}, command)
     command.name = 'Test command 2'
     projects.getProject(root1).addCommand command
     projects.getProject(root1).addDependency dependency
-    dependency = $.extend({}, dependency)
+    dependency = {
+      from:
+        command: ''
+      to:
+        project: ''
+        command: 'Test command'
+    }
     dependency.from.command = 'Test command'
     dependency.to.project = root2
     projects.getProject(root1).addDependency dependency
@@ -180,12 +185,13 @@ describe 'Project', ->
       expect(command_target.targetOf[0].command).toBe 'Test command 3'
 
   describe 'When editing a dependency', ->
-    [dependency, command_target] = []
+    [dependency, command_old, command_new] = []
 
     beforeEach ->
       project = projects.getProject root1
       dependency = project.dependencies[0]
-      command_target = project.getCommand dependency.to.command
+      command_old = project.getCommand dependency.to.command
+      command_new = projects.getProject(root2).getCommand 'Test command'
       data = {
         from:
           project: root1
@@ -200,49 +206,53 @@ describe 'Project', ->
     it 'replaces the dependency with the new one', ->
       expect(dependency.to.project).toBe root2
 
-    it 'changes the targetOf property of its target', ->
-      expect(command_target.targetOf.length).toBe 2
-      expect(command_target.targetOf[1].command).toBe 'Test command 2'
+    it 'removes the reference in the old target command', ->
+      expect(command_old.targetOf.length).toBe 0
 
-  xdescribe 'When editing a dependency', ->
-    it 'edits the dependency', ->
-      project = projects.getProject root1
-      expect(projects.data[root1]['dependencies'].length).toBe 2
-      data = {
-        from:
-          project: root1
-          command: 'Test command 2'
-        to:
-          project: root2
-          command: 'Test command 4'
+    it 'adds a reference to the new target command', ->
+      expect(command_new.targetOf).toContain {
+        project: root1
+        command: 'Test command 2'
       }
-      project.replaceDependency 1, data
-      dependencies = project.dependencies
-      expect(dependencies.length).toBe 2
-      expect(dependencies[0].from.command).toBe 'Test command 2'
-      command = projects.getProject(root2).getCommand('Test command 4')
-      expect(command.targetOf.length).toBe 3
-      expect(command.targetOf[0].command).toBe 'Test command 2'
 
-  xdescribe 'When moving a command', ->
+  describe 'When moving a command', ->
+    project = null
+
+    beforeEach ->
+      project = projects.getProject root1
+      expect(project.commands.length).toBe 2
+      expect((project.getCommandByIndex 0).name).toBe 'Test command'
+      expect((project.getCommandByIndex 1).name).toBe 'Test command 2'
+
     it 'can move down', ->
-      project = projects.getProject root2
-      expect(project.commands.length).toBe 2
+      project.moveCommand 'Test command 2', -1
       expect((project.getCommandByIndex 0).name).toBe 'Test command 2'
-      expect((project.getCommandByIndex 1).name).toBe 'Test command 4'
-      project.moveCommand 'Test command 4', -1
-      expect((project.getCommandByIndex 0).name).toBe 'Test command 4'
-      expect((project.getCommandByIndex 1).name).toBe 'Test command 2'
+      expect((project.getCommandByIndex 1).name).toBe 'Test command'
     it 'can move up', ->
-      project = projects.getProject root2
-      expect(project.commands.length).toBe 2
-      expect((project.getCommandByIndex 0).name).toBe 'Test command 4'
-      expect((project.getCommandByIndex 1).name).toBe 'Test command 2'
-      project.moveCommand 'Test command 4', 1
+      project.moveCommand 'Test command', 1
       expect((project.getCommandByIndex 0).name).toBe 'Test command 2'
-      expect((project.getCommandByIndex 1).name).toBe 'Test command 4'
+      expect((project.getCommandByIndex 1).name).toBe 'Test command'
 
-  xdescribe 'When executing a command', ->
+  describe 'When moving a dependency', ->
+    project = null
+
+    beforeEach ->
+      project = projects.getProject root1
+      expect(project.dependencies.length).toBe 2
+      expect(project.dependencies[0].from.command).toBe 'Test command 2'
+      expect(project.dependencies[1].from.command).toBe 'Test command'
+
+    it 'can move down', ->
+      project.moveDependency 1, -1
+      expect(project.dependencies[0].from.command).toBe 'Test command'
+      expect(project.dependencies[1].from.command).toBe 'Test command 2'
+
+    it 'can move up', ->
+      project.moveDependency 0, 1
+      expect(project.dependencies[0].from.command).toBe 'Test command'
+      expect(project.dependencies[1].from.command).toBe 'Test command 2'
+
+  describe 'When executing a command', ->
     it 'converts all information before giving them to BufferedProcess', ->
       project = projects.getProject root1
       command = project.getCommandByIndex 0
@@ -252,31 +262,50 @@ describe 'Project', ->
       expect(args).toEqual ["Hello World", "test"]
       expect(cwd).toBe (path.join(root1,command.wd))
 
-  xdescribe 'When removing a command', ->
-    it 'removes the command', ->
+  describe 'When removing a command', ->
+    [project, command, dependencies, command_target] = []
+
+    beforeEach ->
       project = projects.getProject root1
-      command = project.getCommand 'Test command 2'
-      expect(command).toBeDefined()
-      expect(projects.getProject(root2).getCommand('Test command 4').targetOf.length).toBe 3
-      project.removeCommand 'Test command 2'
-      expect(project.getCommand 'Test command 2').toBeUndefined()
-      expect(projects.getProject(root2).getCommand('Test command 4').targetOf.length).toBe 1
+      command = project.getCommand 'Test command'
+      dependencies = project.dependencies
+      command_target = projects.getProject(root2).getCommand 'Test command'
+      expect(command_target.targetOf).toContain {
+        project: root1
+        command: 'Test command'
+      }
+      project.removeCommand 'Test command'
 
-  xdescribe 'When removing a dependency', ->
+    it 'removes the command', ->
+      expect(project.commands).not.toContain(command)
+
+    it 'removes the dependencies associated with it', ->
+      expect(project.dependencies).not.toContain(dependencies)
+
+    it 'removes the references in targetOf properties', ->
+      expect(command_target.targetOf).not.toContain {
+        project: root1
+        command: 'Test command'
+      }
+
+  describe 'When removing a dependency', ->
+    [project, dependency, command_target] = []
+
+    beforeEach ->
+      project = projects.getProject root1
+      dependency = project.dependencies[1]
+      command_target = projects.getProject(root2).getCommand 'Test command'
+      expect(command_target.targetOf).toContain {
+        project: root1
+        command: 'Test command'
+      }
+      project.removeDependency 1
+
     it 'removes the dependency', ->
-      project = projects.getProject root2
-      dependency = project.dependencies[0]
-      target = projects.getProject(root2).getCommand 'Test command 4'
-      expect(dependency).toBeDefined()
-      expect(dependency.to.command).toBe 'Test command 4'
-      expect(target.targetOf[0].command).toBe dependency.from.command
-      project.removeDependency 0
-      dependency = project.dependencies[0]
-      expect(dependency).toBeUndefined()
-      expect(target.targetOf.length).toBe 0
+      expect(project.dependencies).not.toContain(dependency)
 
-  xdescribe 'When removing a project', ->
-    it 'removes the project', ->
-      expect(projects.getProject(root1)).toBeDefined()
-      projects.removeProject(root1)
-      expect(projects.getProject(root1)).toBeUndefined()
+    it 'removes the reference in targetOf properties', ->
+      expect(command_target.targetOf).not.toContain {
+        project: root1
+        command: 'Test command'
+      }
