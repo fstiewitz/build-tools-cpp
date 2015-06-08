@@ -253,9 +253,33 @@ describe 'Project', ->
       expect(project.dependencies[1].from.command).toBe 'Test command 2'
 
   describe 'When executing a command', ->
-    it 'converts all information before giving them to BufferedProcess', ->
+    [project, command, command_list] = []
+
+    beforeEach ->
       project = projects.getProject root1
       command = project.getCommandByIndex 0
+      projects.getProject(root2).addDependency {
+        from:
+          command: 'Test command'
+        to:
+          project: root1
+          command: 'Test command 2'
+      }
+      command_list = projects.generateDependencyList command
+
+    afterEach ->
+      command_list = null
+
+    it 'generates a dependency list without any loops', ->
+      expect(command_list.length).toBe 3
+      expect(command_list[0].project).toBe root1
+      expect(command_list[0].name).toBe 'Test command 2'
+      expect(command_list[1].project).toBe root2
+      expect(command_list[1].name).toBe 'Test command'
+      expect(command_list[2].project).toBe root1
+      expect(command_list[2].name).toBe 'Test command'
+
+    it 'converts all information before giving them to BufferedProcess', ->
       expect(command.name).toBe 'Test command'
       {cmd,args,env,cwd} = command.parseCommand()
       expect(cmd).toBe 'pwd'

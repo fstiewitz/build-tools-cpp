@@ -27,6 +27,8 @@ module.exports =
   Projects: null
   projects: null
 
+  command_list: null
+
   createProjectInstance: ->
     @Projects ?= require './projects'
     @projects ?= new @Projects()
@@ -77,12 +79,12 @@ module.exports =
       ev = atom.views.getView(v)
       atom.commands.dispatch(ev, "window:save-all")
 
-  spawn: (res) ->
+  spawn: (res, clear = true) ->
     {cmd,args,env,cwd} = res.parseCommand()
     consoleview?.createOutput res
     consoleview?.showBox()
     consoleview?.setHeader(res.command)
-    consoleview?.clear()
+    consoleview?.clear() if clear
     consoleview?.unlock()
     @process = new BufferedProcess(
       command: cmd
@@ -98,11 +100,13 @@ module.exports =
         consoleview?.setHeader ("#{res.command}: finished with exitcode #{exitcode}")
         consoleview?.finishConsole()
         consoleview?.destroyOutput()
+        @spawn @command_list.splice(0,1)[0], false if @command_list.length isnt 0
       )
     @process.onWillThrowError ({error, handle}) =>
       consoleview?.hideOutput()
       consoleview?.setHeader("#{res.command}: received #{error}")
       consoleview?.lock()
+      @command_list = []
       handle()
 
   execute: (id) ->
@@ -110,7 +114,8 @@ module.exports =
       if (projectpath=@projects.getNextProjectPath path) isnt ''
         project = @projects.getProject projectpath
         if (command = project.getCommandByIndex id)?
-          @spawn command
+          @command_list = @projects.generateDependencyList command
+          @spawn @command_list.splice(0,1)[0]
 
 
   config:

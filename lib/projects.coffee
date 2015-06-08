@@ -106,6 +106,26 @@ module.exports =
             command.targetOf.forEach (value,index) ->
               command.targetOf[index].command = replaced.new.name if value.command is replaced.old.name
 
+    generateDependencyList: (command, omit = []) ->
+      commands = []
+      contains= ->
+        for obj in omit
+          if (obj.project is command.project) and (obj.name is command.name)
+            return true
+        return false
+
+      if not contains()
+        omit.push {
+          project: command.project
+          name: command.name
+        }
+        dependencies = @data[command.project].dependencies.filter (value, index) =>
+          (value.from.command is command.name)
+        for dependency in dependencies
+          commands = commands.concat(@generateDependencyList @data[dependency.to.project].getCommand(dependency.to.command), omit)
+        commands.push(command)
+      commands
+
     touchFile: ->
       if not fs.existsSync @filename
         fs.writeFileSync @filename, '{}'
