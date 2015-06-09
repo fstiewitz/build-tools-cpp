@@ -72,6 +72,13 @@ describe 'Settings page', ->
       button.click()
       expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy
 
+  describe 'On import command click', ->
+    it 'opens the import view', ->
+      button = view.find('#import-command-button')
+      expect(button.length).toBe 1
+      button.click()
+      expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy
+
   describe 'On edit command click', ->
     it 'opens command view', ->
       project.addCommand cmd
@@ -83,6 +90,13 @@ describe 'Settings page', ->
   describe 'On add dependency click', ->
     it 'opens the dependency view', ->
       button = view.find('#add-dependency-button')
+      expect(button.length).toBe 1
+      button.click()
+      expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy
+
+  describe 'On import dependency click', ->
+    it 'opens the import view', ->
+      button = view.find('#import-dependency-button')
       expect(button.length).toBe 1
       button.click()
       expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy

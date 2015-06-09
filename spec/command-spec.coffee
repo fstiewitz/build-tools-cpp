@@ -38,13 +38,13 @@ describe 'Command panel', ->
 
   describe 'When command is created', ->
     it 'opens the command view with default values', ->
-      view.show(null, projects.getProject fixturesPath)
+      view.show(null, null, projects.getProject fixturesPath)
       expect(view.nameEditor.getText()).toBe ''
       expect(view.commandEditor.getText()).toBe ''
 
   describe 'When command view is cancelled', ->
     it 'detaches the command view', ->
-      view.show(null, projects.getProject fixturesPath)
+      view.show(null, null, projects.getProject fixturesPath)
       expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
       view.find('.btn-error').click()
       expect(atom.workspace.getModalPanels()[0].visible).toBeFalsy()
@@ -52,7 +52,7 @@ describe 'Command panel', ->
 
   describe 'When command view is confirmed with good values', ->
     it 'calls the callback function', ->
-      view.show(null, projects.getProject fixturesPath)
+      view.show(null, null, projects.getProject fixturesPath)
       expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
       view.nameEditor.setText('Test command')
       view.commandEditor.setText('foo')
@@ -78,7 +78,7 @@ describe 'Command panel', ->
 
   describe 'When command view is confirmed with wrong values', ->
     it 'displays an error message and does not call the callback function', ->
-      view.show(null, projects.getProject fixturesPath)
+      view.show(null, null, projects.getProject fixturesPath)
       expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
       view.nameEditor.setText('Test command')
       view.commandEditor.setText('')
@@ -89,7 +89,7 @@ describe 'Command panel', ->
 
   describe 'When command view is created with a preset and confirmed', ->
     it 'displays the preset and calls the callback function on confirm', ->
-      view.show(cmd, projects.getProject fixturesPath)
+      view.show(cmd.name, cmd, projects.getProject fixturesPath)
       expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
       expect(view.nameEditor.getText()).toBe 'Test command'
       expect(view.commandEditor.getText()).toBe 'pwd "Hello World" test'

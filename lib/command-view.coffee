@@ -211,7 +211,7 @@ class CommandView extends View
     else
       return false
 
-  show: (items, @project) ->
+  show: (@oldname, items, @project) ->
     @nameEditor.setText("")
     @commandEditor.setText("")
     @wdEditor.setText("")
@@ -230,9 +230,7 @@ class CommandView extends View
 
     @stdout_highlighting = 'nh'
     @stderr_highlighting = 'nh'
-    @oldname = null
     if items?
-      @oldname = items.name
       @nameEditor.setText(items.name)
       @commandEditor.setText(items.command)
       @wdEditor.setText(items.wd)

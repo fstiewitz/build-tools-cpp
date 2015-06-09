@@ -16,6 +16,9 @@ module.exports =
     DependencyView: null
     dependencyview: null
 
+    ImportView: null
+    importview: null
+
     @content: ->
       @div class:'settings pane-item native-key-bindings', tabindex:-1, =>
         @div class:'project-menu', =>
@@ -26,7 +29,7 @@ module.exports =
             @div =>
               @div class:'section-header', 'Commands'
               @div id:'add-command-button', class:'inline-block btn btn-xs', 'Add command'
-              @div class:'inline-block btn btn-xs', 'Import command'
+              @div id:'import-command-button', class:'inline-block btn btn-xs', 'Import command'
             @div class:'command-container', =>
               @div class:'key-info', =>
                 @div class: 'key-desc text-subtle', =>
@@ -44,7 +47,7 @@ module.exports =
             @div =>
               @div class:'section-header', 'Dependencies'
               @div id:'add-dependency-button', class:'inline-block btn btn-xs', 'Add dependency'
-              @div class:'inline-block btn btn-xs', 'Import dependency'
+              @div id:'import-dependency-button', class:'inline-block btn btn-xs', 'Import dependency'
             @div class:'dependency-list', outlet:'dependency_list', =>
 
     initialize: ({@uri,@projects}) ->
@@ -54,14 +57,24 @@ module.exports =
       @commandview=null
       @DependencyView=null
       @dependencyview=null
+      ImportView=null
+      importview=null
       @on 'click', '#add-command-button', (e) =>
         @CommandView ?= require './command-view'
         @commandview ?= new @CommandView(@editccb)
-        @commandview.show(null, @activeProject)
+        @commandview.show(null, null, @activeProject)
       @on 'click', '#add-dependency-button', (e) =>
         @DependencyView ?= require './dependency-view'
         @dependencyview ?= new @DependencyView(@editdcb, @projects)
         @dependencyview.show(@activeProject.path)
+      @on 'click', '#import-command-button', (e) =>
+        @ImportView ?= require './import-view'
+        @importview ?= new @ImportView(@projects)
+        @importview.show(false, @importccb, @activeProject.path)
+      @on 'click', '#import-dependency-button', (e) =>
+        @ImportView ?= require './import-view'
+        @importview ?= new @ImportView(@projects)
+        @importview.show(true, @importdcb, @activeProject.path)
       return
 
     destroy: ->
@@ -152,9 +165,14 @@ module.exports =
         @commandview.hide()
       if @dependencyview?.visible()
         @dependencyview.hide()
+      if @importview?.visible()
+        @importview.hide()
       @updateProjects()
-      if @projects.getProject(@activeProject)? and (e=@getElement(@activeProject))?
-        @setActiveProject e
+      if @activeProject?
+        if @projects.getProject(@activeProject.path)? and (e=@getElement(@activeProject.path))?
+          @setActiveProject e
+        else
+          @setActiveProject @project_list.children()[0]
       else
         @setActiveProject @project_list.children()[0]
 
@@ -173,6 +191,16 @@ module.exports =
         @activeProject.replaceDependency oldid, items
       else
         @activeProject.addDependency items
+
+    importccb: (command) =>
+      @CommandView ?= require './command-view'
+      @commandview ?= new @CommandView(@editccb)
+      @commandview.show(null, command, @activeProject)
+
+    importdcb: (dependency) =>
+      @DependencyView ?= require './dependency-view'
+      @dependencyview ?= new @DependencyView(@editdcb, @projects)
+      @dependencyview.show(dependency.from.project, dependency, null)
 
     addCommand: (items) ->
       item = $$ ->
@@ -275,7 +303,7 @@ module.exports =
       @commandview ?= new @CommandView(@editccb)
       id = Array.prototype.indexOf.call(target.parentNode.childNodes, target)
       cmd = @activeProject.getCommandByIndex id
-      @commandview.show(cmd, @activeProject)
+      @commandview.show(cmd.name, cmd, @activeProject)
 
     editDependency: (target) ->
       @DependencyView ?= require './dependency-view'
