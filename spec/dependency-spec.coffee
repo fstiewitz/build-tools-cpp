@@ -1,9 +1,7 @@
 DependencyView = require '../lib/dependency-view'
-fs = require 'fs'
 Projects = require '../lib/projects'
-path = require 'path'
 
-describe 'Dependency panel', ->
+describe 'Dependency Panel', ->
   [spy, dep, projects, view, fixturesPath] = []
 
   beforeEach ->

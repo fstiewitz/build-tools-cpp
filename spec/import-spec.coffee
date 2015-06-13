@@ -1,10 +1,9 @@
 ImportView = require '../lib/import-view'
-fs = require 'fs'
 Projects = require '../lib/projects'
 path = require 'path'
 {$} = require 'atom-space-pen-views'
 
-describe 'Import panel', ->
+describe 'Import Panel', ->
   [spy, projects, command, dependency, view, fixturesPath, root1, root2] = []
 
   beforeEach ->

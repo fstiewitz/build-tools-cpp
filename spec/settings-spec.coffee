@@ -1,10 +1,8 @@
 {$} = require 'atom-space-pen-views'
 SettingsView = require '../lib/settings-view'
-fs = require 'fs'
 Projects = require '../lib/projects'
-path = require 'path'
 
-describe 'Settings page', ->
+describe 'Settings Page', ->
   [cmd, dep, projects, project, view, fixturesPath] = []
 
   cmd = {

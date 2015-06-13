@@ -1,9 +1,7 @@
 CommandView = require '../lib/command-view'
-fs = require 'fs'
 Projects = require '../lib/projects'
-path = require 'path'
 
-describe 'Command panel', ->
+describe 'Command Panel', ->
   [spy, cmd, projects, view, fixturesPath] = []
 
   cmd = {

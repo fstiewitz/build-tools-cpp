@@ -1,9 +1,8 @@
 Projects = require '../lib/projects'
 path = require 'path'
-fs = require 'fs'
 {$} = require 'atom-space-pen-views'
 
-describe 'Project', ->
+describe 'Projects', ->
   [projects, fixturesPath, root1, root2] = []
 
   beforeEach ->

@@ -2,7 +2,7 @@ SelectionView = require '../lib/selection-view'
 Projects = require '../lib/projects'
 {$} = require 'atom-space-pen-views'
 
-describe 'Command Selection panel', ->
+describe 'Command Selection Panel', ->
   [spy, view, projects, project, fixturesPath] = []
 
   beforeEach ->
