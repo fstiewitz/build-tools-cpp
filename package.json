@@ -13,7 +13,7 @@
       "build-tools-cpp:make",
       "build-tools-cpp:show",
       "build-tools-cpp:settings",
-      "build-tools-cpp:show-commands"
+      "build-tools-cpp:commands"
     ]
   },
   "license": "MIT",

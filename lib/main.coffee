@@ -9,10 +9,18 @@ settingsview= null
 ConsoleView= null
 consoleview= null
 
+SelectionView= null
+selectionview= null
+
 createConsoleView= ->
   ConsoleView ?= require './console'
   consoleview ?= new ConsoleView()
   consoleview
+
+createSelectionView= ->
+  SelectionView ?= require './selection-view.coffee'
+  selectionview ?= new SelectionView
+  selectionview
 
 createSettingsView= (state) ->
   SettingsView ?= require './settings-view'
@@ -43,11 +51,12 @@ module.exports =
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @execute(2)
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:configure': => @execute(1)
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:make': => @execute(0)
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:show': => @show()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:show': @show
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:settings': ->
       atom.workspace.open(settingsviewuri)
-    @subscriptions.add atom.commands.add 'atom-workspace', 'core:cancel': => @cancel()
-    @subscriptions.add atom.commands.add 'atom-workspace', 'core:close': => @cancel()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:commands': => @selection()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'core:cancel': @cancel
+    @subscriptions.add atom.commands.add 'atom-workspace', 'core:close': @cancel
     @subscriptions.add atom.project.onDidChangePaths =>
       settingsview?.reload()
 
@@ -57,17 +66,28 @@ module.exports =
     consoleview?.destroy()
     @projects?.destroy()
 
-  show: ->
+  show: =>
     consoleview?.showBox()
 
   kill: ->
     @process?.kill()
     @process = null
 
-  cancel: ->
+  cancel: =>
     if @process?
       @kill()
     consoleview?.cancel()
+
+  selection: ->
+    if (path=atom.workspace.getActiveTextEditor()?.getPath())?
+      if (projectpath=@projects.getNextProjectPath path) isnt ''
+        project = @projects.getProject projectpath
+        createSelectionView()
+        selectionview.show project, (name) =>
+          if (command = project.getCommand name)?
+            @command_list = @projects.generateDependencyList command
+            @spawn @command_list.splice(0,1)[0]
+
 
   lint: ->
     if (v=atom.workspace.getActiveTextEditor())?
