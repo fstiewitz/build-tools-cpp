@@ -4,12 +4,12 @@
     'submenu': [
       'label': 'Build tools C/C++'
       'submenu': [
-        { 'label': 'Toggle window', 'command': 'build-tools-cpp:toggle' },
+        { 'label': 'Show window', 'command': 'build-tools-cpp:show' },
         { 'label': 'Run pre-configure command', 'command': 'build-tools-cpp:pre-configure'}
         { 'label': 'Run configure command', 'command': 'build-tools-cpp:configure'},
         { 'label': 'Run build command', 'command': 'build-tools-cpp:make'}
         { 'label': 'Show build settings', 'command': 'build-tools-cpp:settings'}
-        { 'label': 'Show all commands', 'command': 'build-tools-cpp:show-commands'}
+        { 'label': 'Show commands', 'command': 'build-tools-cpp:commands'}
       ]
     ]
   }

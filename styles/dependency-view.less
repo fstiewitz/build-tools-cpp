@@ -1,0 +1,43 @@
+@import "ui-variables";
+
+.dependency-view {
+  .small-header {
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+
+  #to {
+    margin: 5px 0 0 0;
+    border-width: 1px 0 0 0;
+    border-color: #1b1b1b;
+    border-style: solid;
+  }
+
+  .buttons {
+    padding: 5px 5px 5px 5px;
+    display: flex;
+    justify-content: space-between;
+    border-width: 1px 0 0 0;
+    border-color: #1b1b1b;
+    border-style: solid;
+  }
+
+  .form-control {
+    color: @text-color;
+    border-color: @button-border-color;
+    background-color: @button-background-color;
+    &:hover,
+    &:focus {
+      box-shadow: none;
+      background-color: @button-background-color-hover;
+    }
+  }
+
+  .error {
+    color: @text-color-error;
+  }
+
+  .hidden {
+    display: none;
+  }
+}

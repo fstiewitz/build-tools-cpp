@@ -1,19 +1,19 @@
 {
   "name": "build-tools-cpp",
-  "main": "./lib/build-tools-cpp",
+  "main": "./lib/main",
   "linter-package": true,
-  "linter-implementation": "build-lint",
+  "linter-implementation": "linter",
   "version": "1.3.0",
-  "description": "Build your autotools / CMake / Makefile project in atom",
+  "description": "Build your projects in atom",
   "repository": "https://github.com/deprint/build-tools-cpp",
   "activationCommands": {
     "atom-workspace": [
       "build-tools-cpp:pre-configure",
       "build-tools-cpp:configure",
       "build-tools-cpp:make",
-      "build-tools-cpp:toggle",
+      "build-tools-cpp:show",
       "build-tools-cpp:settings",
-      "build-tools-cpp:show-commands"
+      "build-tools-cpp:commands"
     ]
   },
   "license": "MIT",
@@ -21,7 +21,17 @@
     "atom": ">=0.197.0 <2.0.0"
   },
   "dependencies": {
-    "atom-space-pen-views": "^1.0.0",
-    "fs-plus": "^2.0.4"
-  }
+    "atom-space-pen-views": "^2.0.0",
+    "fs-plus": "^2.0.4",
+    "season": "^5.2.0"
+  },
+  "keywords": [
+    "build",
+    "compile",
+    "make",
+    "tools",
+    "c",
+    "c++",
+    "projects"
+  ]
 }

@@ -2,4 +2,5 @@
   'ctrl-l ctrl-u': 'build-tools-cpp:pre-configure'
   'ctrl-l ctrl-i': 'build-tools-cpp:configure'
   'ctrl-l ctrl-o': 'build-tools-cpp:make'
-  'ctrl-l ctrl-l': 'build-tools-cpp:show-commands'
+  'ctrl-l ctrl-l': 'build-tools-cpp:commands'
+  'ctrl-l ctrl-,': 'build-tools-cpp:settings'

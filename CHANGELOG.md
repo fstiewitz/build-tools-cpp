@@ -1,3 +1,14 @@
+## 2.0.0 - Per-project settings, Part 2
+* <b> Pre v2.0.0 settings will be erased. Sorry for the inconvenience.
+* This is a large update. I've added jasmine specs with 84 tests and 869 assertions but I can never be sure that everything works. If you encounter any strange package behaviour or bugs, please let me know. </b>
+* Project settings are now saved in `~/.atom/build-tools-cpp.projects` or your OS equivalent.
+* Support for multiple root folders because the settings are not stored via Atom's serializer anymore.
+* Settings are now modified via a settings page similar to Atom's settings-view.
+* Build folder, shell execution and wildcards are now set per-command.
+* File marking, highlighting and linting are now set per-output-stream per-command.
+* Dependencies allow you to chain commands, e.g. the build command of your executable first executes the build command of your required library.
+* Press `ctrl-l ctrl-,` to open the new settings page.
+
 ## 1.2.3 - Ninja support
 * Some build systems and compilers do not use stderr to display error messages ( e.g. Ninja ). This update adds an option to the package's global settings menu that enables error highlighting in stdout. This option is disabled by default and should only be enabled when necessary.
 

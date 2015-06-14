@@ -1,0 +1,48 @@
+@import "ui-variables";
+
+.command {
+  .top {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    background-color: @background-color-highlight;
+    border-radius: 5px 5px 5px 5px;
+
+    .align {
+      display: flex;
+      padding: 0 0 0 5px;
+    }
+
+    #name {
+      color: @text-color-highlight;
+      cursor: default;
+    }
+  }
+
+  .top-expanded {
+    border-radius: 5px 5px 0 0;
+  }
+
+  .info {
+    background-color: @inset-panel-background-color;
+    padding: 0 0 5px 5px;
+
+    #general {
+      display: flex;
+    }
+
+    .streams {
+      display: flex;
+      flex-flow: row wrap;
+
+      .stream {
+        display: flex;
+        padding: 0 5px 0 0;
+      }
+    }
+  }
+
+  .hidden {
+    display: none;
+  }
+}
