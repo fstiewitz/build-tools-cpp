@@ -3,7 +3,7 @@
   "main": "./lib/main",
   "linter-package": true,
   "linter-implementation": "linter",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "description": "Build your projects in atom",
   "repository": "https://github.com/deprint/build-tools-cpp",
   "activationCommands": {
