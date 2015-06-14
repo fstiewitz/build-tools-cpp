@@ -117,7 +117,7 @@ module.exports =
       stderr: (data) =>
         consoleview?.stderr?.in data
       exit: (exitcode) =>
-        consoleview?.finishConsole() if @command_list.length is 0
+        consoleview?.finishConsole() if (@command_list.length is 0) or exitcode isnt 0
         consoleview?.destroyOutput()
         if exitcode is 0
           consoleview?.setHeader ("#{res.name} of #{res.project}: finished with exitcode #{exitcode}")
