@@ -1,6 +1,6 @@
 ## 2.0.0 - Per-project settings, Part 2
 * <b> Pre v2.0.0 settings will be erased. Sorry for the inconvenience.
-* <b> This is a large update. I've added jasmine specs with 84 tests and 869 assertions but I can never be sure that everything works. If you encounter any strange package behaviour or bugs, please let me know.
+* This is a large update. I've added jasmine specs with 84 tests and 869 assertions but I can never be sure that everything works. If you encounter any strange package behaviour or bugs, please let me know. </b>
 * Project settings are now saved in `~/.atom/build-tools-cpp.projects` or your OS equivalent.
 * Support for multiple root folders because the settings are not stored via Atom's serializer anymore.
 * Settings are now modified via a settings page similar to Atom's settings-view.
