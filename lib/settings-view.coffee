@@ -29,27 +29,27 @@ module.exports =
             @div class:'section-header', 'Key bindings'
             @div class:'key-bindings', =>
               @div class:'key-bind', =>
-                @div class:'key-desc', =>
-                  @span 'Make Command'
-                  @span class:'text-highlight', 'Ctrl+L Ctrl+O'
+                @div class:'key-desc text-padded', =>
+                  @span class:'text-subtle', 'Make Command'
+                  @span class:'text-highlight text-padded', 'Ctrl+L Ctrl+O'
                 @div id:'make', class:'key-value', =>
                   @div class:'btn-group', =>
                     @button id:'local', class:'btn selected', 'Local'
                     @button id:'custom-value', class:'btn hidden'
                     @button id:'custom', class:'btn', 'Custom'
               @div class:'key-bind', =>
-                @div class:'key-desc', =>
-                  @span 'Configure Command'
-                  @span class:'text-highlight', 'Ctrl+L Ctrl+I'
+                @div class:'key-desc text-padded', =>
+                  @span class:'text-subtle', 'Configure Command'
+                  @span class:'text-highlight text-padded', 'Ctrl+L Ctrl+I'
                 @div id:'configure', class:'key-value', =>
                   @div class:'btn-group', =>
                     @button id:'local', class:'btn selected', 'Local'
                     @button id:'custom-value', class:'btn hidden'
                     @button id:'custom', class:'btn', 'Custom'
               @div class:'key-bind', =>
-                @div class:'key-desc', =>
-                  @span 'Pre-Configure Command'
-                  @span class:'text-highlight', 'Ctrl+L Ctrl+U'
+                @div class:'key-desc text-padded', =>
+                  @span class:'text-subtle', 'Pre-Configure Command'
+                  @span class:'text-highlight text-padded', 'Ctrl+L Ctrl+U'
                 @div id:'preconfigure', class:'key-value', =>
                   @div class:'btn-group', =>
                     @button id:'local', class:'btn selected', 'Local'
@@ -63,14 +63,14 @@ module.exports =
             @div class:'command-container', =>
               @div class:'key-info', =>
                 @div class: 'key-desc text-subtle', =>
-                  @span 'Make Command'
-                  @span class:'text-highlight', 'Ctrl+L Ctrl+O'
+                  @span class:'text-padded', 'Local Make Command'
+                  @span class:'text-highlight text-padded', 'Ctrl+L Ctrl+O'
                 @div class: 'key-desc text-subtle', =>
-                  @span 'Configure Command'
-                  @span class:'text-highlight', 'Ctrl+L Ctrl+I'
+                  @span class:'text-padded', 'Local Configure Command'
+                  @span class:'text-highlight text-padded', 'Ctrl+L Ctrl+I'
                 @div class: 'key-desc text-subtle', =>
-                  @span 'Pre-Configure Command'
-                  @span class:'text-highlight', 'Ctrl+L Ctrl+U'
+                  @span class:'text-padded', 'Local Pre-Configure Command'
+                  @span class:'text-highlight text-padded', 'Ctrl+L Ctrl+U'
               @div class:'command-menu', =>
                 @div class:'command-list', outlet: 'command_list', =>
           @div class:'section', =>
@@ -286,35 +286,35 @@ module.exports =
               @div class:'icon-close'
           @div class:'info hidden', =>
             @div id:'general', =>
-              @div class:'keys', =>
-                @div "Command"
-                @div "Working Directory"
-                @div "Shell"
-                @div "Wildcards"
+              @div =>
+                @div class:'text-padded', "Command"
+                @div class:'text-padded', "Working Directory"
+                @div class:'text-padded', "Shell"
+                @div class:'text-padded', "Wildcards"
               @div class:'values', =>
-                @div class:'text-highlight', items.command
-                @div class:'text-highlight', items.wd
-                @div class:'text-highlight', items.shell.toString()
-                @div class:'text-highlight', items.wildcards.toString()
+                @div class:'text-highlight text-padded', items.command
+                @div class:'text-highlight text-padded', items.wd
+                @div class:'text-highlight text-padded', items.shell.toString()
+                @div class:'text-highlight text-padded', items.wildcards.toString()
             @div class:'streams', =>
               @div id:'stdout', class:'stream', =>
-                @div class:'keys', =>
-                  @div "Mark paths (stdout)"
-                  @div "Highlighting (stdout)"
-                  @div "Use Linter (stdout)"
+                @div =>
+                  @div class:'text-padded', "Mark paths (stdout)"
+                  @div class:'text-padded', "Highlighting (stdout)"
+                  @div class:'text-padded', "Use Linter (stdout)"
                 @div class:'values', =>
-                  @div class:'text-highlight', items.stdout.file.toString()
-                  @div class:'text-highlight', highlight_translation[items.stdout.highlighting]
-                  @div class:'text-highlight', if /ht|hc/.test(items.stdout.highlighting) then items.stdout.lint.toString() else 'Disabled'
+                  @div class:'text-highlight text-padded', items.stdout.file.toString()
+                  @div class:'text-highlight text-padded', highlight_translation[items.stdout.highlighting]
+                  @div class:'text-highlight text-padded', if /ht|hc/.test(items.stdout.highlighting) then items.stdout.lint.toString() else 'Disabled'
               @div id:'stderr', class:'stream', =>
-                @div class:'keys', =>
-                  @div "Mark paths (stderr)"
-                  @div "Highlighting (stderr)"
-                  @div "Use Linter (stderr)"
+                @div =>
+                  @div class:'text-padded', "Mark paths (stderr)"
+                  @div class:'text-padded', "Highlighting (stderr)"
+                  @div class:'text-padded', "Use Linter (stderr)"
                 @div class:'values', =>
-                  @div class:'text-highlight', items.stderr.file.toString()
-                  @div class:'text-highlight', highlight_translation[items.stderr.highlighting]
-                  @div class:'text-highlight', if /ht|hc/.test(items.stderr.highlighting) then items.stderr.lint.toString() else 'Disabled'
+                  @div class:'text-highlight text-padded', items.stderr.file.toString()
+                  @div class:'text-highlight text-padded', highlight_translation[items.stderr.highlighting]
+                  @div class:'text-highlight text-padded', if /ht|hc/.test(items.stderr.highlighting) then items.stderr.lint.toString() else 'Disabled'
       item.on 'click', '.icon-expand', (e) =>
         @reduceAll e.currentTarget.parentNode.parentNode.parentNode.parentNode
         @expandCommand e.currentTarget
