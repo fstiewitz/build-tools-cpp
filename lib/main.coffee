@@ -132,7 +132,16 @@ module.exports =
     if (path=atom.workspace.getActiveTextEditor()?.getPath())?
       if (projectpath=@projects.getNextProjectPath path) isnt ''
         project = @projects.getProject projectpath
-        if (command = project.getCommandByIndex id)?
+        bindings = ['make','configure','preconfigure']
+        if (b = bindings[id])?
+          if (key = project.key[b])?
+            project = @projects.getProject key.project
+            command = project.getCommand key.command
+          else
+            command = project.getCommandByIndex id
+        else
+          command = project.getCommandByIndex id
+        if command?
           @command_list = @projects.generateDependencyList command
           @spawn @command_list.splice(0,1)[0]
 
