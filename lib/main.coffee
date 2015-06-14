@@ -118,6 +118,7 @@ module.exports =
         consoleview?.stderr?.in data
       exit: (exitcode) =>
         consoleview?.finishConsole() if (@command_list.length is 0) or exitcode isnt 0
+        @lint() if (@command_list.length is 0) or exitcode isnt 0
         consoleview?.destroyOutput()
         if exitcode is 0
           consoleview?.setHeader ("#{res.name} of #{res.project}: finished with exitcode #{exitcode}")
@@ -133,6 +134,7 @@ module.exports =
       handle()
 
   execute: (id) ->
+    @saveall() if atom.config.get('build-tools-cpp.SaveAll')
     if (path=atom.workspace.getActiveTextEditor()?.getPath())?
       if (projectpath=@projects.getNextProjectPath path) isnt ''
         project = @projects.getProject projectpath
