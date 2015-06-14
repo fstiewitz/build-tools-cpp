@@ -116,10 +116,13 @@ module.exports =
       stderr: (data) =>
         consoleview?.stderr?.in data
       exit: (exitcode) =>
-        consoleview?.setHeader ("#{res.command}: finished with exitcode #{exitcode}")
         consoleview?.finishConsole()
         consoleview?.destroyOutput()
-        @spawn @command_list.splice(0,1)[0], false if @command_list.length isnt 0
+        if exitcode is 0
+          consoleview?.setHeader ("#{res.command}: finished with exitcode #{exitcode}")
+          @spawn @command_list.splice(0,1)[0], false if (@command_list.length isnt 0)
+        else
+          consoleview?.setHeader("#{res.command}: <span class='error'>finished with exitcode #{exitcode}</span>")
       )
     @process.onWillThrowError ({error, handle}) =>
       consoleview?.hideOutput()
