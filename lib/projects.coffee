@@ -42,9 +42,12 @@ module.exports =
       @emitter.on 'file-change', callback
 
     getData: ->
-      data = CSON.readFileSync @filename
-      Object.keys(data).forEach (key) =>
-        @data[key] = new Project(key, data[key], @setData, @checkDependencies)
+      try
+        data = CSON.readFileSync @filename
+        Object.keys(data).forEach (key) =>
+          @data[key] = new Project(key, data[key], @setData, @checkDependencies)
+      catch error
+        @notify 'Error while reading settings from file'
 
     setData: =>
       if @filename?
