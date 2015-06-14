@@ -26,6 +26,36 @@ module.exports =
         @div class:'panel', =>
           @div class:'project-header', outlet: 'title'
           @div class:'section', =>
+            @div class:'section-header', 'Key bindings'
+            @div class:'key-bindings', =>
+              @div class:'key-bind', =>
+                @div class:'key-desc', =>
+                  @span 'Make Command'
+                  @span class:'text-highlight', 'Ctrl+L Ctrl+O'
+                @div id:'make', class:'key-value', =>
+                  @div class:'btn-group', =>
+                    @button id:'local', class:'btn selected', 'Local'
+                    @button id:'custom-value', class:'btn hidden'
+                    @button id:'custom', class:'btn', 'Custom'
+              @div class:'key-bind', =>
+                @div class:'key-desc', =>
+                  @span 'Configure Command'
+                  @span class:'text-highlight', 'Ctrl+L Ctrl+I'
+                @div id:'configure', class:'key-value', =>
+                  @div class:'btn-group', =>
+                    @button id:'local', class:'btn selected', 'Local'
+                    @button id:'custom-value', class:'btn hidden'
+                    @button id:'custom', class:'btn', 'Custom'
+              @div class:'key-bind', =>
+                @div class:'key-desc', =>
+                  @span 'Pre-Configure Command'
+                  @span class:'text-highlight', 'Ctrl+L Ctrl+U'
+                @div id:'pre-configure', class:'key-value', =>
+                  @div class:'btn-group', =>
+                    @button id:'local', class:'btn selected', 'Local'
+                    @button id:'custom-value', class:'btn hidden'
+                    @button id:'custom', class:'btn', 'Custom'
+          @div class:'section', =>
             @div =>
               @div class:'section-header', 'Commands'
               @div id:'add-command-button', class:'inline-block btn btn-xs', 'Add command'
@@ -75,6 +105,24 @@ module.exports =
         @ImportView ?= require './import-view'
         @importview ?= new @ImportView(@projects)
         @importview.show(true, @importdcb, @activeProject.path)
+      @on 'click', '.key-value .btn-group .btn', (e) =>
+        key = e.currentTarget.parentNode.parentNode.id
+        if e.currentTarget.id is 'local'
+          @activeProject.clearKey key
+          group = $(e.currentTarget.parentNode)
+          group.find('.selected').removeClass('selected')
+          e.currentTarget.classList.add('selected')
+          @activeProject.clearKey key
+        else if e.currentTarget.id is 'custom'
+          @ImportView ?= require './import-view'
+          @importview ?= new @ImportView(@projects)
+          @importview.show(false, (command) =>
+            @selectccb(key, command)
+          , @activeProject.path)
+        else
+          group = $(e.currentTarget.parentNode)
+          group.find('.selected').removeClass('selected')
+          e.currentTarget.classList.add('selected')
       return
 
     destroy: ->
@@ -148,10 +196,27 @@ module.exports =
       @clearAll()
       @title.html name
       if (project = @projects.getProject(path))?
+        @setKeybinding 'make', project.key.make
+        @setKeybinding 'configure', project.key.configure
+        @setKeybinding 'pre-configure', project.key.preconfigure
         for command in project.commands
           @addCommand command
         for dependency in project.dependencies
           @addDependency dependency
+
+    setKeybinding: (key, binding) ->
+      if binding?
+        btn_group = @find("\##{key}")
+        btn = btn_group.find('#custom-value')
+        btn.html("#{binding.project}:#{binding.command}")
+        btn_group.find('.selected').removeClass('selected')
+        btn.removeClass('hidden')
+        btn.addClass('selected')
+      else
+        btn_group = @find("\##{key}")
+        btn_group.find('#custom-value').addClass('hidden')
+        btn_group.find('.selected').removeClass('selected')
+        btn_group.find('#local').addClass('selected')
 
     clearAll: ->
       @command_list.empty()
@@ -201,6 +266,11 @@ module.exports =
       @DependencyView ?= require './dependency-view'
       @dependencyview ?= new @DependencyView(@editdcb, @projects)
       @dependencyview.show(dependency.from.project, dependency, null)
+
+    selectccb: (key, command) =>
+      @activeProject.setKey key,
+        project: command.project
+        command: command.name
 
     addCommand: (items) ->
       item = $$ ->

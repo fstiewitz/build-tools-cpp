@@ -15,12 +15,10 @@ selectionview= null
 createConsoleView= ->
   ConsoleView ?= require './console'
   consoleview ?= new ConsoleView()
-  consoleview
 
 createSelectionView= ->
   SelectionView ?= require './selection-view.coffee'
   selectionview ?= new SelectionView
-  selectionview
 
 createSettingsView= (state) ->
   SettingsView ?= require './settings-view'
@@ -64,6 +62,7 @@ module.exports =
     @process?.kill()
     @subscriptions.dispose()
     consoleview?.destroy()
+    selectionview?.destroy()
     @projects?.destroy()
 
   show: =>

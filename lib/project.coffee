@@ -8,8 +8,16 @@ module.exports =
     dependencies: []
     save: null
     check: null
+    key: {}
 
-    constructor: (@path,{commands,dependencies},@save,@check) ->
+    constructor: (@path,{commands,dependencies,key},@save,@check) ->
+      if key?
+        @key = key
+      else
+        @key =
+          make: null
+          configure: null
+          preconfigure: null
       @commands = []
       for command in commands
         @commands.push(new Command(command))
@@ -21,6 +29,19 @@ module.exports =
     notify: (message) ->
       atom.notifications?.addError message
       console.log('build-tools-cpp: ' + message)
+
+    setKey: (key, command) ->
+      @key[key] = command
+      @check(added: {
+        key: @path,
+        command
+        })
+      @save()
+
+    clearKey: (key) ->
+      if @key[key]?
+        @key[key] = null
+        @save()
 
     addCommand: (item) ->
       if @getCommandIndex(item.name) is -1

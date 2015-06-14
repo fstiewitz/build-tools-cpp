@@ -75,9 +75,14 @@ module.exports =
         else
           #Removed command
           for target in removed.targetOf
-            project = @data[target.project]
-            project.dependencies = project.dependencies.filter (value) =>
-              not ((value.from.project is target.project) and (value.from.command is target.command))
+            if target.command?
+              project = @data[target.project]
+              project.dependencies = project.dependencies.filter (value) =>
+                not ((value.from.project is target.project) and (value.from.command is target.command))
+            else
+              project = @data[target.project]
+              for key in ['make','configure','preconfigure']
+                project.key[key] = null if (project.key[key]?.project is removed.project) and (project.key[key]?.command is removed.name)
           project = @data[removed.project]
           omit = []
           project.dependencies = project.dependencies.filter (value) =>
@@ -86,17 +91,28 @@ module.exports =
           for dep in omit
             @checkDependencies(removed: dep)
       if added?
-        #Add dependency
-        @data[added.to.project].getCommand(added.to.command).targetOf.push(added.from)
+        if added['key']?
+          #Add key binding
+          @data[added.command.project].getCommand(added.command.command).targetOf.push(
+            project: added.key,
+            command: null
+          )
+        else
+          #Add dependency
+          @data[added.to.project].getCommand(added.to.command).targetOf.push(added.from)
       if replaced?
         #Replaced command
         replaced.new['targetOf'] = []
         for target in replaced.old.targetOf
           replaced.new.targetOf.push(target)
-
-          project = @data[target.project]
-          project.dependencies.forEach (value,index) ->
-            project.dependencies[index].to.command = replaced.new.name if (value.from.project is target.project) and (value.from.command is target.command)
+          if target.command?
+            project = @data[target.project]
+            project.dependencies.forEach (value,index) ->
+              project.dependencies[index].to.command = replaced.new.name if (value.from.project is target.project) and (value.from.command is target.command)
+          else
+            project = @data[target.project]
+            for key in ['make','configure','preconfigure']
+              project.key[key].command = replaced.new.name if (project.key[key]?.project is replaced.old.project) and (project.key[key]?.command is replaced.old.name)
 
         project = @data[replaced.old.project]
         project.dependencies.forEach (value,index) =>
