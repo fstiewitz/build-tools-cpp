@@ -57,14 +57,27 @@ describe 'Projects', ->
     dependency.from.command = 'Test command'
     dependency.to.project = root2
     projects.getProject(root1).addDependency dependency
+    projects.getProject(root1).setKey 'make', {
+      project: root1,
+      command: 'Test command'
+    }
 
     expect(projects.getProject(root1).commands.length).toBe 2
     expect(projects.getProject(root1).dependencies.length).toBe 2
     expect(projects.getProject(root2).commands.length).toBe 1
     expect(projects.getProject(root2).dependencies.length).toBe 0
-    expect(projects.getProject(root1).commands[0].targetOf.length).toBe 1
+    expect(projects.getProject(root1).commands[0].targetOf.length).toBe 2
     expect(projects.getProject(root1).commands[1].targetOf.length).toBe 0
     expect(projects.getProject(root2).commands[0].targetOf.length).toBe 1
+    expect(projects.getProject(root1).key.make).toEqual {
+      project: root1,
+      command: 'Test command'
+    }
+    expect(projects.getProject(root1).key.configure).toBeNull()
+    expect(projects.getProject(root1).key.preconfigure).toBeNull()
+    expect(projects.getProject(root2).key.make).toBeNull()
+    expect(projects.getProject(root2).key.configure).toBeNull()
+    expect(projects.getProject(root2).key.preconfigure).toBeNull()
 
   afterEach ->
     projects.destroy()
@@ -110,6 +123,45 @@ describe 'Projects', ->
       expect(project['commands'][1].project).toBe root2
       expect(project['commands'][1].name).toBe 'Test command 2'
 
+  describe 'When assigning a custom key binding', ->
+    project = null
+
+    beforeEach ->
+      project = projects.getProject root2
+      command = projects.getProject(root1).commands[0]
+      project.setKey 'make', {
+        project: command.project
+        command: command.name
+      }
+
+    it 'sets the key binding', ->
+      expect(project.key.make).toEqual {
+        project: root1
+        command: 'Test command'
+      }
+
+    it 'links the command to the project', ->
+      expect(projects.getProject(root1).commands[0].targetOf).toContain {
+        project: root2
+        command: null
+      }
+
+    describe 'When removing the custom key binding', ->
+      project = null
+
+      beforeEach ->
+        project = projects.getProject root2
+        project.clearKey 'make'
+
+      it 'removes the key binding', ->
+        expect(project.key.make).toBeNull()
+
+      it 'removes the link', ->
+        expect(projects.getProject(root1).commands[0].targetOf).not.toContain {
+          project: root2
+          command: null
+        }
+
   describe 'When adding a dependency', ->
     project = null
 
@@ -135,13 +187,13 @@ describe 'Projects', ->
     it 'links the target to the source command', ->
       targetOf = projects.getProject(root2).getCommand('Test command').targetOf
       expect(targetOf.length).toBe 2
-      expect(targetOf[1]).toEqual {
+      expect(targetOf).toContain {
         project: root1
         command: 'Test command 2'
       }
 
   describe 'When editing a command', ->
-    [command_src, command_target, dependency] = []
+    [command_src, command_target, dependency, project] = []
 
     beforeEach ->
       project = projects.getProject root1
@@ -172,7 +224,7 @@ describe 'Projects', ->
       expect(command_src.name).toBe 'Test command 3'
 
     it 'copies the targetOf property', ->
-      expect(command_src.targetOf.length).toBe 1
+      expect(command_src.targetOf.length).toBe 2
       expect(command_src.targetOf[0].project).toBe root1
       expect(command_src.targetOf[0].command).toBe 'Test command 2'
 
@@ -182,6 +234,12 @@ describe 'Projects', ->
     it 'changes the targetOf property of its targets', ->
       expect(command_target.targetOf.length).toBe 1
       expect(command_target.targetOf[0].command).toBe 'Test command 3'
+
+    it 'changes its key binding', ->
+      expect(project.key.make).toEqual {
+        project: root1,
+        command: 'Test command 3'
+      }
 
   describe 'When editing a dependency', ->
     [dependency, command_old, command_new] = []
@@ -206,7 +264,7 @@ describe 'Projects', ->
       expect(dependency.to.project).toBe root2
 
     it 'removes the reference in the old target command', ->
-      expect(command_old.targetOf.length).toBe 0
+      expect(command_old.targetOf.length).toBe 1
 
     it 'adds a reference to the new target command', ->
       expect(command_new.targetOf).toContain {
@@ -310,6 +368,9 @@ describe 'Projects', ->
         project: root1
         command: 'Test command'
       }
+
+    it 'removes its key binding', ->
+      expect(project.key.make).toBeNull()
 
   describe 'When removing a dependency', ->
     [project, dependency, command_target] = []

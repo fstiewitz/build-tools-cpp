@@ -72,7 +72,7 @@ module.exports =
             if (removed.from.project is target.project) and (removed.from.command is target.command)
               command.targetOf.splice(i,1)
               break
-        else
+        else if removed['targetOf']?
           #Removed command
           for target in removed.targetOf
             if target.command?
@@ -90,6 +90,13 @@ module.exports =
             not res
           for dep in omit
             @checkDependencies(removed: dep)
+        else
+          #Removed key binding
+          command = @data[removed.key.project].getCommand(removed.key.command).targetOf
+          for c,i in command
+            if (c.project is removed.project) and (c.command is null)
+              command.splice(i,1)
+              break
       if added?
         if added['key']?
           #Add key binding

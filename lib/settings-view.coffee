@@ -50,7 +50,7 @@ module.exports =
                 @div class:'key-desc', =>
                   @span 'Pre-Configure Command'
                   @span class:'text-highlight', 'Ctrl+L Ctrl+U'
-                @div id:'pre-configure', class:'key-value', =>
+                @div id:'preconfigure', class:'key-value', =>
                   @div class:'btn-group', =>
                     @button id:'local', class:'btn selected', 'Local'
                     @button id:'custom-value', class:'btn hidden'
@@ -198,7 +198,7 @@ module.exports =
       if (project = @projects.getProject(path))?
         @setKeybinding 'make', project.key.make
         @setKeybinding 'configure', project.key.configure
-        @setKeybinding 'pre-configure', project.key.preconfigure
+        @setKeybinding 'preconfigure', project.key.preconfigure
         for command in project.commands
           @addCommand command
         for dependency in project.dependencies

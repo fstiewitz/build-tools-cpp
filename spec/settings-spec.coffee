@@ -50,6 +50,13 @@ describe 'Settings Page', ->
       project.addCommand cmd
       expect(view.find('.command #name').html()).toBe 'Test command'
 
+  describe 'When setting a custom key binding', ->
+    it 'opens the import view', ->
+      btn = view.find('#make').find('#custom')
+      btn.click()
+      expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
+      expect(btn.hasClass('selected')).toBeFalsy()
+
   describe 'When a dependency is added', ->
     it 'adds the dependency to the dependency menu', ->
       cmd.name = 'Test command'

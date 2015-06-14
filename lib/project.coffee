@@ -31,15 +31,25 @@ module.exports =
       console.log('build-tools-cpp: ' + message)
 
     setKey: (key, command) ->
-      @key[key] = command
-      @check(added: {
-        key: @path,
-        command
-        })
-      @save()
+      if @key[key] is null or not ((@key[key].project is command.project) and (@key[key].command is command.name))
+        if @key[key]?
+          @check(removed: {
+            project: @path
+            key: @key[key]
+            })
+        @key[key] = command
+        @check(added: {
+          key: @path
+          command
+          })
+        @save()
 
     clearKey: (key) ->
       if @key[key]?
+        @check(removed: {
+          project: @path
+          key: @key[key]
+          })
         @key[key] = null
         @save()
 
