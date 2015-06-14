@@ -26,7 +26,7 @@ build-tools-cpp
 ### Dependencies
 ![Dependency](https://cloud.githubusercontent.com/assets/7817714/8149559/7944540a-12c7-11e5-8668-212e7e3d1e10.png)
 * Dependencies are executed in descending order
-* <b>Commands are not executed twice
+* <b>Commands are not executed twice</b>
 * Build fails if one of the dependencies returns a non-zero exit code
 
 ### Key bindings
