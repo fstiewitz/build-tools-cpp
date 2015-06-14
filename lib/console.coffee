@@ -1,5 +1,4 @@
 {$,View} = require 'atom-space-pen-views'
-ll = require './linter-list'
 output = require './output'
 
 module.exports =
@@ -97,7 +96,6 @@ module.exports =
       @stderr.destroy() if @stdout?
       @stdout = new @Output(cmd, 'stdout', @printLine)
       @stderr = new @Output(cmd, 'stderr', @printLine)
-      ll.messages = {}
 
     destroyOutput: ->
       @stdout.destroy() if @stdout?

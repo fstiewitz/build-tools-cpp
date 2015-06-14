@@ -1,4 +1,5 @@
 command = require './command'
+ll = require './linter-list'
 
 {CompositeDisposable, BufferedProcess} = require 'atom'
 
@@ -146,6 +147,7 @@ module.exports =
           command = project.getCommandByIndex id
         if command?
           @command_list = @projects.generateDependencyList command
+          ll.messages = {}
           @spawn @command_list.splice(0,1)[0]
 
 
