@@ -227,6 +227,5 @@ describe 'Import Panel', ->
             expect(spy).toHaveBeenCalled()
             args = spy.mostRecentCall.args[0]
             dependency.from.project = root1
-            dependency.to.project = root1
             expect(args.from).toEqual dependency.from
             expect(args.to).toEqual dependency.to

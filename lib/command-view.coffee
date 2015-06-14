@@ -222,6 +222,8 @@ class CommandView extends View
     @find('#mark_paths_stderr').prop('checked', true)
     @find('#lint_stdout').prop('checked', false)
     @find('#lint_stderr').prop('checked', false)
+    @stdout_lint.addClass('hidden')
+    @stderr_lint.addClass('hidden')
 
     @stdout_highlights.find('.selected').removeClass('selected')
     @stderr_highlights.find('.selected').removeClass('selected')

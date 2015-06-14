@@ -2,6 +2,7 @@ Project = require './project'
 path = require 'path'
 fs = require 'fs'
 {Emitter} = require 'atom'
+CSON = require 'season'
 
 module.exports =
   class Projects
@@ -41,14 +42,12 @@ module.exports =
       @emitter.on 'file-change', callback
 
     getData: ->
-      CSON = require 'season'
       data = CSON.readFileSync @filename
       Object.keys(data).forEach (key) =>
         @data[key] = new Project(key, data[key], @setData, @checkDependencies)
 
     setData: =>
       if @filename?
-        CSON = require 'season'
         try
           @writing = true
           CSON.writeFileSync @filename, @data

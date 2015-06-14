@@ -42,7 +42,6 @@ module.exports =
           event.stopPropagation()
           dependency = $.extend(true, {}, @projects.data[project].dependencies[dependency])
           dependency.from.project = @project
-          dependency.to.project = @project
           @callback(dependency)
       else
         @find('#error-none').removeClass 'hidden'
