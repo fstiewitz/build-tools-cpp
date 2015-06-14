@@ -4,7 +4,7 @@
   "linter-package": true,
   "linter-implementation": "linter",
   "version": "1.3.0",
-  "description": "Build your autotools / CMake / Makefile project in atom",
+  "description": "Build your projects in atom",
   "repository": "https://github.com/deprint/build-tools-cpp",
   "activationCommands": {
     "atom-workspace": [
@@ -29,6 +29,9 @@
     "build",
     "compile",
     "make",
+    "tools",
+    "c",
+    "c++",
     "projects"
   ]
 }

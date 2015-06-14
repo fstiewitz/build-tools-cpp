@@ -14,7 +14,7 @@ class CommandView extends View
           @div class:'settings-name', 'Command Name'
           @div =>
             @span class:'inline-block text-subtle', 'Name of command when using '
-            @span class:'inline-block highlight', 'build-tools-cpp:show-commands'
+            @span class:'inline-block highlight', 'build-tools-cpp:commands'
         @subview 'command_name', new TextEditorView(mini:true)
         @div id:'name-error-none' ,class:'error hidden', 'This field cannot be empty'
         @div id:'name-error-used' ,class:'error hidden', 'Name already used in this project'
