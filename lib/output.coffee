@@ -19,13 +19,14 @@ module.exports =
         shell: command.shell
         stream: command[stream]
       @printfunc = printfunc
+      @nostatuslines = ''
+      @nolintlines = []
 
     destroy: ->
       for l in @nostatuslines.split("\n")
         if l isnt ''
           item = @buildHTML l, ''
           @printfunc item
-      @nostatuslines = ''
 
     in: (message) ->
       lines = message.split('\n')
