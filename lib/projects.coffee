@@ -24,8 +24,14 @@ module.exports =
       @emitter = new Emitter
 
     destroy: ->
+      Object.keys(@data).forEach (key) =>
+        project = @data[key]
+        if (project.commands.length is 0) and (project.dependencies.length is 0)
+          if not (project.key.make? or project.key.configure? or project.key.preconfigure?)
+            delete @data[key]
       @watcher?.close()
       @emitter.dispose()
+      @setData(false)
       @data = {}
 
     reload: (event,filename) =>
@@ -49,12 +55,12 @@ module.exports =
       catch error
         @notify 'Error while reading settings from file'
 
-    setData: =>
+    setData: (emit = true)=>
       if @filename?
         try
           @writing = true
           CSON.writeFileSync @filename, @data
-          @emitter.emit 'file-change'
+          @emitter.emit 'file-change' if emit
         catch error
           @notify "Settings could not be written to #{@filename}"
       else
