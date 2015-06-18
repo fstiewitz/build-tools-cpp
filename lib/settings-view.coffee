@@ -127,12 +127,23 @@ module.exports =
 
     destroy: ->
       @detach()
+      @commandview?.destroy()
+      @CommandView=null
+      @commandview=null
+      @dependencyview?.destroy()
+      @DependencyView=null
+      @dependencyview=null
+      importview?.destroy()
+      ImportView=null
+      importview=null
+      @projects = null
 
     attached: ->
       @filechange = @projects.onFileChange @reload
 
     detached: ->
-      @filechange.dispose()
+      @filechange?.dispose()
+      @filechange = null
 
     getURI: ->
       @uri

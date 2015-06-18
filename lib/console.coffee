@@ -24,10 +24,16 @@ module.exports =
     serialize: ->
 
     destroy: ->
-      @detach()
+      @hideBox()
+      @panel?.destroy()
+      @panel = null
+
+    detach: ->
+      @panel?.hide()
 
     attach: ->
-      atom.workspace.addBottomPanel({item: this})
+      @panel ?= atom.workspace.addBottomPanel({item: this})
+      @panel.show()
 
     hideBox: ->
       @detach() if @visible_items.header

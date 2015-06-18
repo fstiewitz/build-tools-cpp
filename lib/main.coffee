@@ -61,10 +61,20 @@ module.exports =
 
   deactivate: ->
     @process?.kill()
+    @process = null
     @subscriptions.dispose()
     consoleview?.destroy()
+    consoleview = null
+    ConsoleView = null
     selectionview?.destroy()
+    selectionview = null
+    SelectionView = null
+    settingsview?.destroy()
+    settingsview = null
+    SettingsView = null
     @projects?.destroy()
+    @Projects = null
+    @projects = null
 
   show: =>
     consoleview?.showBox()
