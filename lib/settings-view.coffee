@@ -139,7 +139,7 @@ module.exports =
       @projects = null
 
     attached: ->
-      @filechange = @projects.onFileChange @reload
+      @filechange = @projects?.onFileChange @reload
 
     detached: ->
       @filechange?.dispose()
