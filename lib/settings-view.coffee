@@ -237,6 +237,7 @@ module.exports =
       @dependency_list.empty()
 
     reload: =>
+      return unless @projects?
       if @commandview?.visible()
         @commandview.hide()
       if @dependencyview?.visible()

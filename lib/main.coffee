@@ -23,7 +23,7 @@ createSelectionView= ->
 
 createSettingsView= (state) ->
   SettingsView ?= require './settings-view'
-  settingsview ?= new SettingsView(state)
+  settingsview = new SettingsView(state)
   settingsview
 
 module.exports =
