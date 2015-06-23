@@ -1,3 +1,7 @@
+## 2.0.5 - Linter 1.0.0
+* Use new [Linter](https://github.com/AtomLinter/Linter) API
+* <b>Update to linter@v1.0.0 or linting won't work</b>
+
 ## 2.0.0 - Per-project settings, Part 2
 * <b> Pre v2.0.0 settings will be erased. Sorry for the inconvenience.
 * This is a large update. I've added jasmine specs with 84 tests and 869 assertions but I can never be sure that everything works. If you encounter any strange package behaviour or bugs, please let me know. </b>
