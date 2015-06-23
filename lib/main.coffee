@@ -98,12 +98,6 @@ module.exports =
             @command_list = @projects.generateDependencyList command
             @spawn @command_list.splice(0,1)[0]
 
-
-  lint: ->
-    if (v=atom.workspace.getActiveTextEditor())?
-      ev = atom.views.getView(v)
-      atom.commands.dispatch(ev, "linter:lint")
-
   saveall: ->
     if (v=atom.workspace.getActiveTextEditor())?
       ev = atom.views.getView(v)
@@ -128,7 +122,6 @@ module.exports =
         consoleview?.stderr?.in data
       exit: (exitcode) =>
         consoleview?.finishConsole() if (@command_list.length is 0) or exitcode isnt 0
-        @lint() if (@command_list.length is 0) or exitcode isnt 0
         consoleview?.destroyOutput()
         if exitcode is 0
           consoleview?.setHeader ("#{res.name} of #{res.project}: finished with exitcode #{exitcode}")
@@ -161,6 +154,26 @@ module.exports =
           @command_list = @projects.generateDependencyList command
           ll.messages = {}
           @spawn @command_list.splice(0,1)[0]
+
+  provideLinter: ->
+    grammarScopes: ['source.c++', 'source.cpp', 'source.c']
+    scope: 'file'
+    lintOnFly: false
+    lint: (editor) =>
+      filePath = editor.getPath()
+      messages = []
+      if (m=ll.messages[ll.path.basename(filePath)])?
+        for item in m
+          messages.push(
+            type: item[4]
+            text: item[5]
+            filePath: filePath
+            range: [
+              [item[2]-1,0]
+              [item[2]-1,if item[3]? then item[3]-1 else 9999]
+            ]
+          )
+      messages
 
 
   config:

@@ -1,8 +1,6 @@
 {
   "name": "build-tools-cpp",
   "main": "./lib/main",
-  "linter-package": true,
-  "linter-implementation": "linter",
   "version": "2.0.4",
   "description": "Build your projects in atom",
   "repository": "https://github.com/deprint/build-tools-cpp",
@@ -33,5 +31,12 @@
     "c",
     "c++",
     "projects"
-  ]
+  ],
+  "providedServices": {
+    "linter": {
+      "versions": {
+        "1.0.0": "provideLinter"
+      }
+  }
+}
 }

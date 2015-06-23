@@ -131,14 +131,14 @@ module.exports =
       msgs = require './linter-list'
       extensions = atom.config.get('build-tools-cpp.SourceFileExtensions').sort().reverse().join('|')
       extensions = extensions.replace(/\./g,"\\.")
-      regstring = "([\\S]+(?:" + extensions + ")):([\\d]+)(?::[\\d]+)?:[\\w\\s]*(error|warning):([\\S\\s]+)"
+      regstring = "([\\S]+(?:" + extensions + "))(?::([\\d]+)(?::([\\d]+))?)?:[\\w\\s]*(error|warning):([\\S\\s]+)"
       regstring_file_included = "(?:In file included from|from) ([\\S]+(?:" + extensions + ")):([\\d]+)(?::[\\d]+)?[:,]"
       regex = new RegExp(regstring)
       regex_file_included = new RegExp(regstring_file_included)
       if ( r = regex.exec(line))?
         if @nolintlines?
           for line in @nolintlines
-            match = [line[0],line[1],line[2],r[3],r[4]]
+            match = [line[0],line[1],line[2], line[3],r[3],r[4]]
             if msgs.messages[path.basename(match[1])]?
               msgs.messages[path.basename(match[1])].push(match)
             else
