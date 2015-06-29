@@ -1,7 +1,6 @@
 Profiles = require '../lib/profiles/profiles'
 
 describe 'Profiles', ->
-  activationPromise = null
 
   beforeEach ->
     activationPromise = atom.packages.activatePackage('language-c')

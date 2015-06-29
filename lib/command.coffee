@@ -11,9 +11,16 @@ module.exports =
     stdout: {}
     stderr: {}
     targetOf: []
+    version: null
 
-    constructor: ({@project,@name,@command,@wd,@shell,@wildcards,@stdout,@stderr,@targetOf}) ->
+    constructor: ({@project,@name,@command,@wd,@shell,@wildcards,@stdout,@stderr,@targetOf,@version}) ->
       @targetOf = [] if not @targetOf?
+      if not @version?
+        @version = 1
+        if @stdout.highlighting is 'hc'
+          @stdout.profile = 'gcc_clang'
+        if @stderr.highlighting is 'hc'
+          @stderr.profile = 'gcc_clang'
       return
 
     getProject: ->

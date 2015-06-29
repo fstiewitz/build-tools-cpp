@@ -19,6 +19,9 @@ describe 'Console View', ->
   ]
 
   beforeEach ->
+    activationPromise = atom.packages.activatePackage('language-c')
+    waitsForPromise -> activationPromise
+
     view = new ConsoleOutput()
     jasmine.attachToDOM(view.element)
     expect(view.hasClass('console')).toBeTruthy()
@@ -39,6 +42,7 @@ describe 'Console View', ->
       stderr: {
         file: true,
         highlighting: 'hc',
+        profile: 'gcc_clang',
         lint: false
       }
     }
