@@ -21,6 +21,8 @@ module.exports =
       extensions = '(' + extensions.sort().reverse().join('|') + ')'
       @regex_string = @regex_string.replace('(?extensions)', extensions)
       @regex = new XRegExp(@regex_string,'xni')
+      @file_string = @file_string.replace('(?extensions)', extensions)
+      @regex_file = new XRegExp(@file_string,'xni')
 
     in: (line) ->
       if @regex?

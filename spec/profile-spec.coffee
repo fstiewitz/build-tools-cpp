@@ -13,6 +13,7 @@ describe 'Profiles', ->
 
     beforeEach ->
       profile = new Profiles.gcc_clang
+      profile.clear()
       expect(profile).toBeDefined()
 
     afterEach ->
@@ -30,68 +31,42 @@ describe 'Profiles', ->
     it 'has a regex', ->
       expect(profile.regex).toBeDefined()
 
-    describe 'on ::in with full match', ->
-      string = 'something.cpp:12:23: fatal error: Hello World'
-      match = null
-
-      beforeEach ->
-        match = profile.in string
-
-      it 'returns a file name', ->
-        expect(match.file).toBe 'something.cpp'
-
-      it 'returns a line number', ->
-        expect(match.row).toBe '12'
-
-      it 'returns a column number', ->
-        expect(match.col).toBe '23'
-
-      it 'returns a type', ->
-        expect(match.type).toBe 'error'
-
-      it 'returns a message', ->
-        expect(match.message).toBe 'Hello World'
-
-    describe 'on ::in with file match', ->
-      string = 'something.cpp:12'
-      match = null
-
-      beforeEach ->
-        match = profile.in string
-
-      it 'returns a file name', ->
-        expect(match.file).toBe 'something.cpp'
-
-      it 'returns a line number', ->
-        expect(match.row).toBe '12'
-
-      it 'returns no column number', ->
-        expect(match.col).toBeUndefined()
-
-      it 'returns no type', ->
-        expect(match.type).toBeUndefined()
-
-      it 'returns no message', ->
-        expect(match.message).toBeUndefined()
-
     describe 'on ::in with multi line match', ->
       strings = [
+        'In file included from test/src/def.h:32:0,',
+        '                 from test/src/gen.h:31,',
+        '                 from test/src/gen.c:27:',
+        'should be traced too',
         '/usr/include/stdlib.h:483:13: note: expected ‘void *’ but argument is of type ‘const void *’',
         ' extern void free (void *__ptr) __THROW;',
         '             ^',
+        'test/src/gen.c:126:6: error: implicit declaration of function ‘print_element’ [-Wimplicit-function-declaration]',
+        '      print_element(input);',
+        '      ^'
+      ]
+
+      expectations = [
+        {file: 'test/src/def.h'       , row:'32' , col:'0'      , type:'trace'  , highlighting:'warning', message: 'expected ‘void *’ but argument is of type ‘const void *’'                          },
+        {file: 'test/src/gen.h'       , row:'31' , col:undefined, type:'trace'  , highlighting:'warning', message: 'expected ‘void *’ but argument is of type ‘const void *’'                          },
+        {file: 'test/src/gen.c'       , row:'27' , col:undefined, type:'trace'  , highlighting:'warning', message: 'expected ‘void *’ but argument is of type ‘const void *’'                          },
+        {                                                                       , highlighting:'warning', message: 'expected ‘void *’ but argument is of type ‘const void *’'                          },
+        {file: '/usr/include/stdlib.h', row:'483', col:'13'     , type:'warning',                         message: 'expected ‘void *’ but argument is of type ‘const void *’'                          },
+        {                                                         type:'warning'                                                                                                                       },
+        {                                                         type:'warning'                                                                                                                       },
+        {file: 'test/src/gen.c'       , row:'126', col:'6'      , type:'error'  ,                         message: 'implicit declaration of function ‘print_element’ [-Wimplicit-function-declaration]'},
+        {                                                         type:'error'                                                                                                                         },
+        {                                                         type:'error'                                                                                                                         }
       ]
 
       matches = []
 
       beforeEach ->
         for string in strings
-          matches.push profile.in(string)
+          matches = matches.concat profile.in(string)
 
       it 'correctly sets warnings', ->
-        expect(matches[0].file).toBe '/usr/include/stdlib.h'
-        expect(matches[0].row).toBe '483'
-        expect(matches[0].col).toBe '13'
-        expect(matches[0].type).toBe 'warning'
-        expect(matches[0].message).toBe 'expected ‘void *’ but argument is of type ‘const void *’'
-        expect(matches[1].type).toBe 'warning'
-        expect(matches[2].type).toBe 'warning'
+        expect(matches.length).toBe 10
+        for match, index in matches
+          expectation = expectations[index]
+          for key in Object.keys(expectation)
+            expect(match[key]).toBe expectation[key]

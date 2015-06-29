@@ -10,10 +10,18 @@ module.exports =
     regex_string: '
     (?<file> [\\S]+\\.(?extensions)): #File \n
     ((?<row> [\\d]+)(:(?<col> [\\d]+))?)? #Row and column \n
-    (:[\\w\\s]* (?<type> error|warning|note): [\\s]* (?<message> [\\S\\s]+))? #Type and Message \n
+    :\\s(fatal \\s)? (?<type> error|warning|note): [\\s]* (?<message> [\\S\\s]+) #Type and Message \n
     '
 
     regex_end: /^[\^\s~]+$/
+
+    file_string: '
+    (?<file> [\\S]+\\.(?extensions)): #File \n
+    ((?<row> [\\d]+)(:(?<col> [\\d]+))?)? #Row and column \n
+    '
+
+    finish: ->
+      @prebuffer
 
     in: (line) ->
       if @regex? and @regex_end?
@@ -21,18 +29,31 @@ module.exports =
           if m.type?
             m.type = 'warning' if m.type is 'note'
             @status = m.type
-            if m.message?
-              if @continue_status
-                m.type = 'trace'
-              else
-                @continue_status = true
-          return m
+            @continue_status = true
+          out = []
+          for line in @prebuffer
+            line.status = 'trace'
+            line.highlighting = @status
+            line.message = m.message
+            out.push line
+          @prebuffer = []
+          out.push m
+          return out
         else if @regex_end.test(line)
           @continue_status = false
-          return type: @status
+          return [{input: line, type: @status}]
         else if @continue_status
-          return type: @status
+          return [{input: line, type: @status}]
+        else
+          if (m = XRegExp.exec line, @regex_file)?
+            m.type = 'trace'
+            @prebuffer.push m
+          else
+            @prebuffer.push {input: line}
+          return []
+      return []
 
     clear: ->
       @continue_status = false
       @status = null
+      @prebuffer = []
