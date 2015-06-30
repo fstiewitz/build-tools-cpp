@@ -19,7 +19,7 @@ describe 'Profiles', ->
       profile.clear()
 
     it 'has a name', ->
-      expect(profile.name).toBe 'GCC/Clang'
+      expect(profile.constructor.profile_name).toBe 'GCC/Clang'
 
     it 'has scopes', ->
       expect(profile.scopes).toEqual ['source.c++', 'source.cpp', 'source.c']

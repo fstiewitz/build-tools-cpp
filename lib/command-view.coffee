@@ -300,7 +300,7 @@ class CommandView extends View
     select.empty()
     gcc_index = 0
     for key, id in Object.keys @profiles
-      select.append createitem(key, @profiles[key].name)
+      select.append createitem(key, @profiles[key].profile_name)
       gcc_index = id if key is 'gcc_clang'
     select[0].selectedIndex = gcc_index
 

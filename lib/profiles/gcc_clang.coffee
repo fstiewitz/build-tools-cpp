@@ -3,7 +3,7 @@ XRegExp = require('xregexp').XRegExp
 
 module.exports =
   class GCCClang extends Profile
-    name: 'GCC/Clang'
+    @profile_name: 'GCC/Clang'
 
     scopes: ['source.c++', 'source.cpp', 'source.c']
 

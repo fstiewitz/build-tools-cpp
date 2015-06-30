@@ -6,7 +6,6 @@ highlight_translation =
   "nh": "No highlighting"
   "ha": "Highlight all"
   "ht": "Highlight tags"
-  "hc": "GCC/Clang highlighting"
 
 module.exports =
   class SettingsView extends ScrollView
@@ -285,6 +284,7 @@ module.exports =
         command: command.name
 
     addCommand: (items) ->
+      profiles = @profiles
       item = $$ ->
         @div class:'command', =>
           @div class:'top', =>
@@ -311,22 +311,22 @@ module.exports =
             @div class:'streams', =>
               @div id:'stdout', class:'stream', =>
                 @div =>
-                  @div class:'text-padded', "Mark paths (stdout)"
                   @div class:'text-padded', "Highlighting (stdout)"
+                  @div class:'text-padded', "Mark paths (stdout)"
                   @div class:'text-padded', "Use Linter (stdout)"
                 @div class:'values', =>
-                  @div class:'text-highlight text-padded', items.stdout.file.toString()
-                  @div class:'text-highlight text-padded', highlight_translation[items.stdout.highlighting]
-                  @div class:'text-highlight text-padded', if /ht|hc/.test(items.stdout.highlighting) then items.stdout.lint.toString() else 'Disabled'
+                  @div class:'text-highlight text-padded', if items.stdout.highlighting is 'hc' then profiles[items.stdout.profile].profile_name else highlight_translation[items.stdout.highlighting]
+                  @div class:'text-highlight text-padded', if items.stdout.highlighting is 'hc' then items.stdout.file.toString() else 'Disabled'
+                  @div class:'text-highlight text-padded', if items.stdout.highlighting is 'hc' then items.stdout.lint.toString() else 'Disabled'
               @div id:'stderr', class:'stream', =>
                 @div =>
-                  @div class:'text-padded', "Mark paths (stderr)"
                   @div class:'text-padded', "Highlighting (stderr)"
+                  @div class:'text-padded', "Mark paths (stderr)"
                   @div class:'text-padded', "Use Linter (stderr)"
                 @div class:'values', =>
-                  @div class:'text-highlight text-padded', items.stderr.file.toString()
-                  @div class:'text-highlight text-padded', highlight_translation[items.stderr.highlighting]
-                  @div class:'text-highlight text-padded', if /ht|hc/.test(items.stderr.highlighting) then items.stderr.lint.toString() else 'Disabled'
+                  @div class:'text-highlight text-padded', if items.stderr.highlighting is 'hc' then profiles[items.stderr.profile].profile_name else highlight_translation[items.stderr.highlighting]
+                  @div class:'text-highlight text-padded', if items.stderr.highlighting is 'hc' then items.stderr.file.toString() else 'Disabled'
+                  @div class:'text-highlight text-padded', if items.stderr.highlighting is 'hc' then items.stderr.lint.toString() else 'Disabled'
       item.on 'click', '.icon-expand', (e) =>
         @reduceAll e.currentTarget.parentNode.parentNode.parentNode.parentNode
         @expandCommand e.currentTarget
