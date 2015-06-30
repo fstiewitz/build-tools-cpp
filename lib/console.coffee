@@ -86,6 +86,7 @@ module.exports =
       @showOutput() if !@lockoutput
       @output.append(message)
       @output.scrollTop(@output[0].scrollHeight)
+      @output[0].children[@output[0].children.length-1]
 
     setHeader: (name) ->
       @name.html(name)
@@ -98,11 +99,5 @@ module.exports =
 
     createOutput: (cmd) ->
       @Output ?= require './output'
-      @stdout.destroy() if @stdout?
-      @stderr.destroy() if @stdout?
       @stdout = new @Output(cmd, 'stdout', @printLine)
       @stderr = new @Output(cmd, 'stderr', @printLine)
-
-    destroyOutput: ->
-      @stdout.destroy() if @stdout?
-      @stderr.destroy() if @stderr?

@@ -23,9 +23,6 @@ module.exports =
     constructor: ->
       super
 
-    finish: ->
-      @prebuffer
-
     files: (line) ->
       start = 0
       out = []
@@ -49,6 +46,7 @@ module.exports =
             line.status = 'trace'
             line.highlighting = @status
             line.message = m.message
+            line.wait = false
             out.push line
           @prebuffer = []
           out.push m
@@ -64,8 +62,8 @@ module.exports =
             @prebuffer.push m
           else
             @prebuffer.push {input: line}
-          return []
-      return []
+          return [{input: line, wait: true}]
+      return [{input: line}]
 
     clear: ->
       @continue_status = false

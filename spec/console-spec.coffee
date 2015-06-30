@@ -90,7 +90,6 @@ describe 'Console View', ->
           view.stdout.in input_stdout[i]
         for i in [0..4]
           view.stderr.in input_stderr[i]
-        view.destroyOutput()
         content = view.find('.output').children()
         expect(content.length).toBe 8
         expect(content[0].classList.contains('text-warning')).toBeTruthy()

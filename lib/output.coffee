@@ -1,4 +1,4 @@
-{$$} = require 'atom-space-pen-views'
+{$,$$} = require 'atom-space-pen-views'
 fs = require 'fs'
 path = require 'path'
 Profiles = require './profiles/profiles'
@@ -6,10 +6,7 @@ Profiles = require './profiles/profiles'
 module.exports =
   class Output
     settings: null
-    status: ''
-    nostatuslines: ''
-    continue_status: ''
-    nolintlines: []
+    nostatuslines: []
     printfunc: null
 
     constructor: (command, stream, printfunc) ->
@@ -20,15 +17,10 @@ module.exports =
         shell: command.shell
         stream: command[stream]
       @printfunc = printfunc
+      @nostatuslines = []
       if @settings.stream.profile?
         @profile = new Profiles[@settings.stream.profile]
         @profile.clear()
-
-    destroy: ->
-      if @profile?
-        matches = @profile.finish()
-        for match in matches
-          @printfunc(@buildHTML match.input, if match.highlighting? then match.highlighting else match.type)
 
     in: (message) ->
       lines = message.split('\n')
@@ -45,7 +37,14 @@ module.exports =
       else if format is 'hc' and @profile?
         matches = @profile.in line
         for match in matches
-          @printfunc @buildHTML match.input, if match.highlighting? then match.highlighting else match.type
+          if match.wait is false
+            line = @nostatuslines.splice(0,1)
+            new_line = @buildHTML match.input, if match.highlighting? then match.highlighting else match.type
+            $(line).prop('class', $(new_line).prop('class'))
+            $(line).html($(new_line).html())
+          else
+            line = @printfunc @buildHTML match.input, if match.highlighting? then match.highlighting else match.type
+            @nostatuslines.push line if match.wait is true
       else
         @printfunc @buildHTML line
 

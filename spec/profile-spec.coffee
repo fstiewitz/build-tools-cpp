@@ -61,7 +61,8 @@ describe 'Profiles', ->
 
       beforeEach ->
         for string in strings
-          matches = matches.concat profile.in(string)
+          for match in profile.in(string)
+            matches.push match if (not match.wait? or match.wait is false)
 
       it 'correctly sets warnings', ->
         expect(matches.length).toBe 10
