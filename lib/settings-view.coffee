@@ -80,7 +80,7 @@ module.exports =
               @div id:'import-dependency-button', class:'inline-block btn btn-xs', 'Import dependency'
             @div class:'dependency-list', outlet:'dependency_list', =>
 
-    initialize: ({@uri,@projects}) ->
+    initialize: ({@uri,@projects,@profiles}) ->
       super
       @reload()
       @CommandView=null
@@ -92,7 +92,7 @@ module.exports =
       @on 'click', '#add-command-button', (e) =>
         @CommandView ?= require './command-view'
         @commandview ?= new @CommandView(@editccb)
-        @commandview.show(null, null, @activeProject)
+        @commandview.show(null, null, @activeProject, @profiles)
       @on 'click', '#add-dependency-button', (e) =>
         @DependencyView ?= require './dependency-view'
         @dependencyview ?= new @DependencyView(@editdcb, @projects)
@@ -272,7 +272,7 @@ module.exports =
     importccb: (command) =>
       @CommandView ?= require './command-view'
       @commandview ?= new @CommandView(@editccb)
-      @commandview.show(null, command, @activeProject)
+      @commandview.show(null, command, @activeProject, @profiles)
 
     importdcb: (dependency) =>
       @DependencyView ?= require './dependency-view'
@@ -385,7 +385,7 @@ module.exports =
       @commandview ?= new @CommandView(@editccb)
       id = Array.prototype.indexOf.call(target.parentNode.childNodes, target)
       cmd = @activeProject.getCommandByIndex id
-      @commandview.show(cmd.name, cmd, @activeProject)
+      @commandview.show(cmd.name, cmd, @activeProject, @profiles)
 
     editDependency: (target) ->
       @DependencyView ?= require './dependency-view'

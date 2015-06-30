@@ -1,5 +1,6 @@
 command = require './command'
 ll = require './linter-list'
+Profiles = require './profiles/profiles'
 
 {CompositeDisposable, BufferedProcess} = require 'atom'
 
@@ -44,7 +45,7 @@ module.exports =
     @createProjectInstance()
     createConsoleView()
     atom.workspace.addOpener (uritoopen) =>
-      createSettingsView({uri: uritoopen, @projects}) if uritoopen is settingsviewuri
+      createSettingsView({uri: uritoopen, @projects, profiles: Profiles}) if uritoopen is settingsviewuri
 
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @execute(2)

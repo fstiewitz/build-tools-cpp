@@ -59,13 +59,13 @@ module.exports =
           match.file = @getAbsPath(match.file)
           filenames.push match
       $$ ->
-        stat = if status? then "text-#{status}" else ""
-        @div class:"bold #{stat}", =>
+        status = '' if not status?
+        @div class:"bold text-#{status}", =>
           if filenames? and filenames.length isnt 0
             prev = -1
             for {file, row, col, start, end} in filenames
               @span message.substr(prev+1,start - (prev + 1))
-              @span class:"filelink highlight-#{stat}", name:file, row:row, col:col, message.substr(start,end - start + 1)
+              @span class:"filelink highlight-#{status}", name:file, row:row, col:col, message.substr(start,end - start + 1)
               prev = end
             @span message.substr(prev+1) if prev isnt message.length - 1
           else

@@ -16,8 +16,8 @@ module.exports =
     regex_end: /^[\^\s~]+$/
 
     file_string: '
-    (?<file> [\\S]+\\.(?extensions)) #File \n
-    (:(?<row> [\\d]+)(:(?<col> [\\d]+))?)? #Row and column \n
+    (?<file> [\\S]+\\.(?extensions)): #File \n
+    ((?<row> [\\d]+)(:(?<col> [\\d]+))?)? #Row and column \n
     '
 
     constructor: ->
@@ -32,7 +32,7 @@ module.exports =
       while (m = XRegExp.exec line.substr(start), @regex_file)?
         start += m.index
         m.start = start
-        m.end = start + m.file.length + (if m.row? then m.row.length + 1) + (if m.col? then m.col.length)
+        m.end = start + m.file.length + (if m.row? then m.row.length + 1 else 0) + (if m.col? then m.col.length else -1)
         start = m.end + 1
         out.push m
       out
