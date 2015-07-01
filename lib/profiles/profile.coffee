@@ -1,4 +1,5 @@
 XRegExp = require('xregexp').XRegExp
+ll = require('../linter-list')
 
 module.exports =
   class Profile
@@ -29,6 +30,13 @@ module.exports =
     in: (line) ->
       if @regex?
         XRegExp.exec(line, @regex)
+
+    lint: (path, match) ->
+      if match? and match.row? and match.type? and match.message?
+        if ll.messages[path]?
+          ll.messages[path].push match
+        else
+          ll.messages[path] = [match]
 
     clear: ->
       return

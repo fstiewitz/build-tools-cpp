@@ -42,9 +42,11 @@ module.exports =
             new_line = @buildHTML match.input, if match.highlighting? then match.highlighting else match.type
             $(line).prop('class', $(new_line).prop('class'))
             $(line).html($(new_line).html())
+            @profile.lint @getAbsPath(match.file), match if @settings.stream.lint and match.file?
           else
             line = @printfunc @buildHTML match.input, if match.highlighting? then match.highlighting else match.type
             @nostatuslines.push line if match.wait is true
+            @profile.lint @getAbsPath(match.file), match if @settings.stream.lint and not match.wait? and match.file?
       else
         @printfunc @buildHTML line
 

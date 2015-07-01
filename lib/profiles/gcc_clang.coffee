@@ -43,7 +43,7 @@ module.exports =
             @continue_status = true
           out = []
           for line in @prebuffer
-            line.status = 'trace'
+            line.type = 'trace'
             line.highlighting = @status
             line.message = m.message
             line.wait = false

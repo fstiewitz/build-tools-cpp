@@ -110,6 +110,7 @@ module.exports =
     consoleview?.showBox()
     consoleview?.setHeader("#{res.name} of #{res.project}")
     consoleview?.clear() if clear
+    ll.messages = {} if clear
     consoleview?.unlock()
     @process = new BufferedProcess(
       command: cmd
@@ -162,15 +163,17 @@ module.exports =
     lint: (editor) =>
       filePath = editor.getPath()
       messages = []
-      if (m=ll.messages[ll.path.basename(filePath)])?
+      if (m=ll.messages[filePath])?
         for item in m
+          row = parseInt(item.row)
+          col = parseInt(item.col) if item.col?
           messages.push(
-            type: item[4]
-            text: item[5]
+            type: item.type
+            text: item.message
             filePath: filePath
             range: [
-              [item[2]-1,0]
-              [item[2]-1,if item[3]? then item[3]-1 else 9999]
+              [row-1,0]
+              [row-1,if item.col? then col-1 else 9999]
             ]
           )
       messages
