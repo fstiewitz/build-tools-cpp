@@ -103,6 +103,9 @@ module.exports =
       ev = atom.views.getView(v)
       atom.commands.dispatch(ev, "window:save-all")
 
+  lint: ->
+    atom.commands.dispatch(atom.views.getView(atom.workspace), "linter:lint")
+
   spawn: (res, clear = true) ->
     {cmd,args,env,cwd} = res.parseCommand()
     consoleview?.createOutput res
@@ -128,6 +131,7 @@ module.exports =
           @spawn @command_list.splice(0,1)[0], false if (@command_list.length isnt 0)
         else
           consoleview?.setHeader("#{res.name} of #{res.project}: <span class='error'>finished with exitcode #{exitcode}</span>")
+        @lint() if (@command_list.length is 0) or exitcode isnt 0
       )
     @process.onWillThrowError ({error, handle}) =>
       consoleview?.hideOutput()
