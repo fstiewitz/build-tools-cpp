@@ -1,4 +1,5 @@
 Profiles = require '../lib/profiles/profiles'
+ll = require '../lib/linter-list'
 
 describe 'Profiles', ->
 
@@ -111,3 +112,20 @@ describe 'Profiles', ->
           for item, index in expectation
             for key in Object.keys(item)
               expect(match[index][key]).toBe item[key]
+
+    describe 'on ::lint with an invalid match', ->
+      it 'saves the match', ->
+        profile.lint
+          row:'12'
+          type:'error'
+          file:'something.c'
+        expect(ll.messages['something.c']).toBeUndefined()
+
+    describe 'on ::lint with a valid match', ->
+      it 'does not save the match', ->
+        profile.lint
+          row:'12'
+          type:'error'
+          file:'something.c'
+          message: 'message'
+        expect(ll.messages['something.c']).toBeUndefined()
