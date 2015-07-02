@@ -22,6 +22,8 @@ module.exports =
 
     constructor: ->
       super
+      @regex = @createRegex @regex_string
+      @regex_file = @createRegex @file_string
 
     files: (line) ->
       start = 0

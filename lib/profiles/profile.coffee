@@ -11,7 +11,7 @@ module.exports =
 
     constructor: ->
       extensions_raw = []
-      extensions = []
+      @extensions = []
       @scopes.forEach (scope) =>
         if (grammar = atom.grammars.grammarForScopeName(scope))?
           extensions_raw = extensions_raw.concat(grammar.fileTypes)
@@ -19,13 +19,13 @@ module.exports =
       extensions_raw = extensions_raw.sort().reverse()
 
       for extension in extensions_raw
-        extensions.push extension.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&')
+        @extensions.push extension.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&')
 
-      extensions = '(' + extensions.join('|') + ')'
-      @regex_string = @regex_string.replace('(?extensions)', extensions)
-      @regex = new XRegExp(@regex_string,'xni')
-      @file_string = @file_string.replace('(?extensions)', extensions)
-      @regex_file = new XRegExp(@file_string,'xni')
+      @extensions = '(' + @extensions.join('|') + ')'
+
+    createRegex: (content) ->
+      content = content.replace('(?extensions)', @extensions)
+      new XRegExp(content, 'xni')
 
     in: (line) ->
       if @regex?

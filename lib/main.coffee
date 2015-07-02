@@ -157,7 +157,7 @@ module.exports =
           @spawn @command_list.splice(0,1)[0]
 
   provideLinter: ->
-    grammarScopes: ['source.c++', 'source.cpp', 'source.c']
+    grammarScopes: ['source.c++', 'source.cpp', 'source.c', 'source.coffee', 'source.js']
     scope: 'file'
     lintOnFly: false
     lint: (editor) =>

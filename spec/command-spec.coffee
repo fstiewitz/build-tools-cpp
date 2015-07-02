@@ -61,6 +61,7 @@ describe 'Command Panel', ->
       view.find('.btn-primary').click()
       expect(atom.workspace.getModalPanels()[0].visible).toBeFalsy()
       expect(spy).toHaveBeenCalledWith(null, {
+        version: 1,
         name: 'Test command',
         command: 'foo',
         wd: '.',
@@ -115,6 +116,7 @@ describe 'Command Panel', ->
       view.find('.btn-primary').click()
       expect(atom.workspace.getModalPanels()[0].visible).toBeFalsy()
       expect(spy).toHaveBeenCalledWith('Test command', {
+        version: 1,
         name: 'Test command 2',
         command: 'foo',
         wd: 'sub0',

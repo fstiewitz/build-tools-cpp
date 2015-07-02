@@ -195,6 +195,7 @@ class CommandView extends View
         @find('#command-error-none').removeClass('hidden')
     else
       @callback(@oldname,
+        version: 1
         name: @nameEditor.getText()
         command: @commandEditor.getText()
         wd: if (d=@wdEditor.getText()) is '' then '.' else d
