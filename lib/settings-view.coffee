@@ -21,7 +21,7 @@ module.exports =
     @content: ->
       @div class:'settings pane-item native-key-bindings', tabindex:-1, =>
         @div class:'project-menu', =>
-          @ul class:'list-group', outlet:'project_list', =>
+          @ul class:'list-group', outlet:'project_list'
         @div class:'panel', =>
           @div class:'project-header', outlet: 'title'
           @div class:'section', =>
@@ -77,7 +77,7 @@ module.exports =
               @div class:'section-header', 'Dependencies'
               @div id:'add-dependency-button', class:'inline-block btn btn-xs', 'Add dependency'
               @div id:'import-dependency-button', class:'inline-block btn btn-xs', 'Import dependency'
-            @div class:'dependency-list', outlet:'dependency_list', =>
+            @div class:'dependency-list', outlet:'dependency_list'
 
     initialize: ({@uri,@projects,@profiles}) ->
       super

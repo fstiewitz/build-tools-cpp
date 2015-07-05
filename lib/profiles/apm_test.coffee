@@ -50,7 +50,9 @@ module.exports =
         start += m.index
         start += (if line[start] is '(' or line[start] is '"' then 1 else 0)
         m.start = start
-        m.end = start + m.file.length + (if m.row? then m.row.length + 1 else 0) + (if m.col? then m.col.length else -1)
+        m.end = start + m.file.length +
+          (if m.row? then m.row.length + 1 else 0) +
+          (if m.col? then m.col.length else -1)
         start = m.end + 1
         out.push m
       out

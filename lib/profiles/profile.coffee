@@ -12,7 +12,7 @@ module.exports =
     constructor: ->
       extensions_raw = []
       @extensions = []
-      @scopes.forEach (scope) =>
+      @scopes.forEach (scope) ->
         if (grammar = atom.grammars.grammarForScopeName(scope))?
           extensions_raw = extensions_raw.concat(grammar.fileTypes)
 
