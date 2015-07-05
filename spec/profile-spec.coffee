@@ -159,7 +159,9 @@ describe 'Profiles', ->
         '          at /home/fabian/Apps/atom-build/Atom/resources/app.asar/node_modules/q/q.js:564:44'
         '          at flush (/home/fabian/Apps/atom-build/Atom/resources/app.asar/node_modules/q/q.js:110:17)'
         '          at process._tickCallback (node.js:357:13)'
-        ''
+        'Linter Service'
+        '  it has all necessary properties'
+        '    Expected Function not to be defined. (spec/linter-spec.coffee:9:31)'
       ]
 
       expectations = [
@@ -180,6 +182,8 @@ describe 'Profiles', ->
         {type: 'trace', message: 'Error: Expected undefined to be \'test/src/def.h\'.', file: '/home/fabian/Apps/atom-build/Atom/resources/app.asar/node_modules/q/q.js', row: '110', col: '17'},
         {type: 'trace', message: 'Error: Expected undefined to be \'test/src/def.h\'.', file: 'node.js'                                                                 , row: '357', col: '13'},
         {type: 'error'}
+        {type: 'error'}
+        {type: 'error', message: 'Expected Function not to be defined'                , file: 'spec/linter-spec.coffee'                                                 , row: '9'  , col: '31'}
       ]
 
       matches = []
@@ -190,7 +194,7 @@ describe 'Profiles', ->
             matches.push match if (not match.wait? or match.wait is false)
 
       it 'correctly sets warnings', ->
-        expect(matches.length).toBe 17
+        expect(matches.length).toBe 19
         for match, index in matches
           expectation = expectations[index]
           for key in Object.keys(expectation)

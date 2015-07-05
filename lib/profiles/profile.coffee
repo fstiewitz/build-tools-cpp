@@ -24,19 +24,27 @@ module.exports =
       @extensions = '(' + @extensions.join('|') + ')'
 
     createRegex: (content) ->
-      content = content.replace('(?extensions)', @extensions)
+      content = content.replace(/\(\?extensions\)/g, @extensions)
       new XRegExp(content, 'xni')
 
     in: (line) ->
       if @regex?
         XRegExp.exec(line, @regex)
 
-    lint: (path, match) ->
+    lint: (abs_path, match) ->
       if match? and match.row? and match.type? and match.message?
-        if ll.messages[path]?
-          ll.messages[path].push match
-        else
-          ll.messages[path] = [match]
+        row = 1
+        col = 10000
+        row = parseInt(match.row)
+        col = parseInt(match.col) if match.col?
+        ll.messages.push
+          type: match.type
+          text: match.message
+          filePath: abs_path
+          range: [
+            [row-1,0]
+            [row-1,if match.col? then col-1 else 9999]
+          ]
 
     clear: ->
       return

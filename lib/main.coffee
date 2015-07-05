@@ -112,7 +112,7 @@ module.exports =
     consoleview?.showBox()
     consoleview?.setHeader("#{res.name} of #{res.project}")
     consoleview?.clear() if clear
-    ll.messages = {} if clear
+    ll.messages = [] if clear
     consoleview?.unlock()
     @process = new BufferedProcess(
       command: cmd
@@ -156,31 +156,15 @@ module.exports =
           command = project.getCommandByIndex id
         if command?
           @command_list = @projects.generateDependencyList command
-          ll.messages = {}
+          ll.messages = []
           @spawn @command_list.splice(0,1)[0]
 
   provideLinter: ->
     grammarScopes: ['source.c++', 'source.cpp', 'source.c', 'source.coffee', 'source.js']
-    scope: 'file'
+    scope: 'project'
     lintOnFly: false
-    lint: (editor) =>
-      filePath = editor.getPath()
-      messages = []
-      if (m=ll.messages[filePath])?
-        for item in m
-          row = parseInt(item.row)
-          col = parseInt(item.col) if item.col?
-          messages.push(
-            type: item.type
-            text: item.message
-            filePath: filePath
-            range: [
-              [row-1,0]
-              [row-1,if item.col? then col-1 else 9999]
-            ]
-          )
-      messages
-
+    lint: =>
+      ll.messages
 
   config:
     SaveAll:

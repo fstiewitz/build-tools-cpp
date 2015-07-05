@@ -7,16 +7,21 @@ module.exports =
 
     scopes: ['source.coffee', 'source.js']
 
-    error_string: '^
+    error_string_file: '^ \n
     [\\s]+ #Indentation \n
     (?<message> .+) #Message \n
-    (\\s\\( #EOL or file
+    \\.\\s\\( #File \n
       (?<file> [\\S]+\\.(?extensions)): #File \n
       ((?<row> [\\d]+)(:(?<col> [\\d]+))?)? #Row and column \n
-    \\))? \n
+    \\) \n
     $'
 
-    at_string: '^
+    error_string_nofile: '^ \n
+    [\\s]+ #Indentation \n
+    (?<message> .+) #Message \n
+    $'
+
+    at_string: '^ \n
     [\\s]+ #Indentation \n
     at\\s #At \n
     (.*\\s)? #Reference \n
@@ -27,14 +32,15 @@ module.exports =
     $'
 
     file_string: '
-    \\(?(?<file> [\\S]+\\.(?extensions)): #File \n
+    (\\(|\")?(?<file> [\\S]+\\.(?extensions)): #File \n
     ((?<row> [\\d]+)(:(?<col> [\\d]+))?)? #Row and column \n
     '
 
     constructor: ->
       super
-      @regex_error = @createRegex @error_string
       @regex_at = @createRegex @at_string
+      @regex_error_file = @createRegex @error_string_file
+      @regex_error_nofile = @createRegex @error_string_nofile
       @regex_file = @createRegex @file_string
 
     files: (line) ->
@@ -42,7 +48,7 @@ module.exports =
       out = []
       while (m = XRegExp.exec line.substr(start), @regex_file)?
         start += m.index
-        start += (if line[start] is '(' then 1 else 0)
+        start += (if line[start] is '(' or line[start] is '"' then 1 else 0)
         m.start = start
         m.end = start + m.file.length + (if m.row? then m.row.length + 1 else 0) + (if m.col? then m.col.length else -1)
         start = m.end + 1
@@ -62,7 +68,9 @@ module.exports =
           return [m]
         else
           return [{input: line, type: 'error'}]
-      else if (m = XRegExp.exec line, @regex_error)?
+      else if (m = XRegExp.exec line, @regex_error_nofile)?
+        if (n = XRegExp.exec line, @regex_error_file)?
+          m = n
         m.type = 'error'
         @lastMatch = m
         @firstAt = true
