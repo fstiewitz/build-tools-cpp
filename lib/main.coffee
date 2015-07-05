@@ -99,9 +99,8 @@ module.exports =
             @spawn @command_list.splice(0,1)[0]
 
   saveall: ->
-    if (v=atom.workspace.getActiveTextEditor())?
-      ev = atom.views.getView(v)
-      atom.commands.dispatch(ev, "window:save-all")
+    for editor in atom.workspace.getTextEditors()
+      editor.save() if editor.isModified()
 
   lint: ->
     atom.commands.dispatch(atom.views.getView(atom.workspace), "linter:lint")
