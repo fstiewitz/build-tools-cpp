@@ -9,7 +9,7 @@ module.exports =
 
     regex_string: null
 
-    constructor: ->
+    constructor: (@output)->
       extensions_raw = []
       @extensions = []
       @scopes.forEach (scope) ->
@@ -31,7 +31,7 @@ module.exports =
       if @regex?
         XRegExp.exec(line, @regex)
 
-    lint: (abs_path, match) ->
+    lint: (match) ->
       if match? and match.row? and match.type? and match.message?
         row = 1
         col = 10000
@@ -40,11 +40,12 @@ module.exports =
         ll.messages.push
           type: match.type
           text: match.message
-          filePath: abs_path
+          filePath: @output.absolutePath match.file
           range: [
             [row-1,0]
             [row-1,if match.col? then col-1 else 9999]
           ]
+          trace: match.trace
 
     clear: ->
       return

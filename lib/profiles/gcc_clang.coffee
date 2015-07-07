@@ -21,8 +21,8 @@ module.exports =
     ((?<row> [\\d]+)(:(?<col> [\\d]+))?)? #Row and column \n
     '
 
-    constructor: ->
-      super
+    constructor: (output) ->
+      super(output)
       @regex = @createRegex @regex_string
       @regex_file = @createRegex @file_string
 
@@ -40,37 +40,35 @@ module.exports =
       out
 
     in: (line) ->
-      if @regex? and @regex_end?
-        if (m = XRegExp.exec line, @regex)?
-          if m.type?
-            m.type = 'warning' if m.type is 'note'
-            @status = m.type
-            @continue_status = true
-          out = []
-          for line in @prebuffer
-            line.type = 'trace'
-            line.highlighting = @status
-            line.message = m.message
-            line.wait = false
-            out.push line
-          @prebuffer = []
-          out.push m
-          return out
-        else if @regex_end.test(line)
-          @continue_status = false
-          return [{input: line, type: @status}]
-        else if @continue_status
-          return [{input: line, type: @status}]
+      if (m = XRegExp.exec line, @regex)? #Start of error message
+        @status = m.type
+        out = []
+        m.trace = []
+        for line in @prebuffer
+          line.type = 'trace'
+          line.highlighting = @status
+          line.message = m.message
+          out.push @output.buildHTML line.input, @status #Message to console
+          @lint line #Message to Linter
+          line.message = 'Referenced'
+          if line? and line.file? and line.row? and line.type? and line.message?
+            m.trace.push @output.createMessage line #Message to Traceback
+        @output.replacePrevious out
+        @prebuffer = []
+        @output.print m
+        @lint m
+      else if @regex_end.test line #End of error message
+        @output.print input: line, type: @status
+        @status = null
+      else if @status? #Inside error message
+        @output.print input: line, type: @status
+      else #Before error message (Traceback)
+        if (m = XRegExp.exec line, @regex_file)?
+          @prebuffer.push m
         else
-          if (m = XRegExp.exec line, @regex_file)?
-            m.type = 'trace'
-            @prebuffer.push m
-          else
-            @prebuffer.push {input: line}
-          return [{input: line, wait: true}]
-      return [{input: line}]
+          @prebuffer.push input: line
+        @output.print input: line
 
     clear: ->
-      @continue_status = false
       @status = null
       @prebuffer = []

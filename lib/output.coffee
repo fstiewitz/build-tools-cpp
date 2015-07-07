@@ -17,9 +17,9 @@ module.exports =
         shell: command.shell
         stream: command[stream]
       @printfunc = printfunc
-      @nostatuslines = []
+      @lines = []
       if @settings.stream.profile?
-        @profile = new Profiles[@settings.stream.profile]
+        @profile = new Profiles[@settings.stream.profile](this)
         @profile.clear()
 
     in: (message) ->
@@ -35,18 +35,7 @@ module.exports =
       else if format is 'ht'
         @printfunc @buildHTML line, @parseTags line
       else if format is 'hc' and @profile?
-        matches = @profile.in line
-        for match in matches
-          if match.wait is false
-            line = @nostatuslines.splice(0,1)
-            new_line = @buildHTML match.input, if match.highlighting? then match.highlighting else match.type
-            $(line).prop('class', $(new_line).prop('class'))
-            $(line).html($(new_line).html())
-            @profile.lint @getAbsPath(match.file), match if @settings.stream.lint and match.file?
-          else
-            line = @printfunc @buildHTML match.input, if match.highlighting? then match.highlighting else match.type
-            @nostatuslines.push line if match.wait is true
-            @profile.lint @getAbsPath(match.file), match if @settings.stream.lint and not match.wait? and match.file?
+        @profile.in line
       else
         @printfunc @buildHTML line
 
@@ -57,7 +46,7 @@ module.exports =
       if @settings.stream.file and @profile?
         filenames = []
         for match in @profile.files message
-          match.file = @getAbsPath(match.file)
+          match.file = @absolutePath(match.file)
           filenames.push match
       $$ ->
         status = '' if not status?
@@ -72,5 +61,30 @@ module.exports =
           else
             @span message
 
-    getAbsPath: (relpath) ->
+    absolutePath: (relpath) ->
       return fp if fs.existsSync(fp=path.resolve(@settings.project, @settings.wd, relpath))
+
+    createMessage: (match) ->
+      row = 1
+      col = 10000
+      row = parseInt(match.row)
+      col = parseInt(match.col) if match.col?
+      return {
+        type: match.type
+        text: match.message
+        filePath: @absolutePath match.file
+        range: [
+          [row-1,0]
+          [row-1,if match.col? then col-1 else 9999]
+        ]
+      }
+
+    replacePrevious: (new_lines) ->
+      start = @lines.length - new_lines.length
+      for line, index in new_lines
+        $(@lines[start + index]).prop('class', $(line).prop('class'))
+        $(@lines[start + index]).html($(line).html())
+
+    print: (match) ->
+      line = @printfunc @buildHTML match.input, if match.highlighting? then match.highlighting else match.type
+      @lines.push line
