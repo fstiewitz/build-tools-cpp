@@ -66,9 +66,6 @@ describe 'Console View', ->
 
   describe 'Output', ->
 
-    beforeEach ->
-      atom.config.set('build-tools-cpp.SourceFileExtensions', ['.c'])
-
     describe 'When :createOutput', ->
       it 'creates output objects', ->
         data['path'] = fixturesPath

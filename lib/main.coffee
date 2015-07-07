@@ -187,13 +187,6 @@ module.exports =
       description: 'Save all files before executing your build command'
       type: 'boolean'
       default: true
-    SourceFileExtensions:
-      title: 'File extensions'
-      description: 'Types of source files'
-      type: 'array'
-      default: ['.cpp','.h','.c','.hpp']
-      items:
-        type: 'string'
     ShellCommand:
       title: 'Shell Command'
       description: 'Shell command to execute when "Execute in Shell" is enabled'
