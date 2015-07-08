@@ -49,7 +49,7 @@ module.exports =
           line.highlighting = @status
           line.message = m.message
           out.push @output.buildHTML line.input, @status #Message to console
-          @lint line #Message to Linter
+          @lint line #Trace message to Linter
           line.message = 'Referenced'
           if line? and line.file? and line.row? and line.type? and line.message?
             m.trace.push @output.createMessage line #Message to Traceback

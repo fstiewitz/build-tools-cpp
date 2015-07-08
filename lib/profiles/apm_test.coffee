@@ -24,10 +24,10 @@ module.exports =
     at_string: '^ \n
     [\\s]+ #Indentation \n
     at\\s #At \n
-    (.*\\s)? #Reference \n
+    (?<message> .*\\s)? #Reference \n
     \\(? #File begin \n
       (?<file> [\\S]+\\.(?extensions)): #File \n
-      ((?<row> [\\d]+)(:(?<col> [\\d]+))?)? #Row and column \n
+      (?<row> [\\d]+)(:(?<col> [\\d]+))? #Row and column \n
     \\)? #File end \n
     $'
 
@@ -36,8 +36,8 @@ module.exports =
     ((?<row> [\\d]+)(:(?<col> [\\d]+))?)? #Row and column \n
     '
 
-    constructor: ->
-      super
+    constructor: (output) ->
+      super(output)
       @regex_at = @createRegex @at_string
       @regex_error_file = @createRegex @error_string_file
       @regex_error_nofile = @createRegex @error_string_nofile
@@ -58,28 +58,39 @@ module.exports =
       out
 
     in: (line) ->
-      if (m = XRegExp.exec line, @regex_at)?
+      if (m = XRegExp.exec line, @regex_at)? #Traceback
         if @lastMatch?
           if @firstAt and not @lastMatch.file?
             m.type = 'error'
+            m.message = @lastMatch.message
+            m.trace = []
+            @lastMatch = m
           else
             m.type = 'trace'
             m.highlighting = 'error'
+            if not m.message? and m.message isnt ' '
+              m.message = 'Referenced'
+            else if m.message.endsWith ' '
+              m.message = m.message.split(0,-1)
+            @lastMatch.trace.push @output.createMessage m #Message to Traceback
+            @lint m if m.message isnt 'Referenced' #Trace message to Linter
+          @output.print m #Message to console
           @firstAt = false
-          m.message = @lastMatch.message
-          return [m]
         else
-          return [{input: line, type: 'error'}]
-      else if (m = XRegExp.exec line, @regex_error_nofile)?
-        if (n = XRegExp.exec line, @regex_error_file)?
+          @output.print m
+      else if (m = XRegExp.exec line, @regex_error_nofile)? #Error message
+        @lint @lastMatch #Lint last message
+        if (n = XRegExp.exec line, @regex_error_file)? #Has file coordinates
           m = n
         m.type = 'error'
         @lastMatch = m
         @firstAt = true
-        return [m]
+        @output.print m
+        @lint m #Lint current message (@lint checks for required fields)
       else
         @firstAt = true
-        return [{input: line, type: 'error'}]
+        @lastMatch = null
+        @output.print {input: line, type: 'error'}
 
     clear: ->
       @lastMatch = null

@@ -32,7 +32,7 @@ module.exports =
         XRegExp.exec(line, @regex)
 
     lint: (match) ->
-      if match? and match.row? and match.type? and match.message?
+      if match? and match.file? and match.row? and match.type? and match.message?
         row = 1
         col = 10000
         row = parseInt(match.row)
