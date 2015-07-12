@@ -50,6 +50,7 @@ module.exports =
           filenames.push match
       $$ ->
         status = '' if not status?
+        status = 'info' if status is 'note'
         @div class:"bold text-#{status}", =>
           if filenames? and filenames.length isnt 0
             prev = -1
