@@ -22,7 +22,7 @@ Profile.profile 'GCC/Clang', {
   {file: 'test/src/gen.h'       , row:'31' , col:undefined, type:'trace'  , highlighting:'note', message: 'expected ‘void *’ but argument is of type ‘const void *’'                          },
   {file: 'test/src/gen.c'       , row:'27' , col:undefined, type:'trace'  , highlighting:'note', message: 'expected ‘void *’ but argument is of type ‘const void *’'                          },
   {file: '/usr/include/stdlib.h', row:'483', col:'13'     , type:'note',                         message: 'expected ‘void *’ but argument is of type ‘const void *’'                          },
-  {file: 'test/src/gen.c'       , row:'126', col:'6'      , type:'error'  ,                         message: 'implicit declaration of function ‘print_element’ [-Wimplicit-function-declaration]'},
+  {file: 'test/src/gen.c'       , row:'126', col:'6'      , type:'error'  ,                      message: 'implicit declaration of function ‘print_element’ [-Wimplicit-function-declaration]'},
 ],
 [
   [{file: 'test/src/def.h'       , row:'32' , col:'0'      , start:22, end:40}],

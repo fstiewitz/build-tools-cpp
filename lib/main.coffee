@@ -169,14 +169,7 @@ module.exports =
           @spawn @command_list.splice(0,1)[0]
 
   provideLinter: ->
-    grammarScopes: [
-      'source.c++'
-      'source.cpp'
-      'source.c'
-      'source.coffee'
-      'source.js'
-      'source.java'
-    ]
+    grammarScopes: ['*']
     scope: 'project'
     lintOnFly: false
     lint: ->
