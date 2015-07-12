@@ -145,6 +145,44 @@ Profile.profile 'Java', {
   [],
   [],
   [],
+  []
+]
+
+Profile.profile 'Python', {
+  stderr:
+    profile: 'python'
+    highlighting: 'hc'
+}, 'stderr', ['language-python'],
+[
+  'Traceback (most recent call last):'
+  '  File "/home/fabian/Projects/sonata/sonata/info.py", line 208, in on_viewport_resize'
+  '    self.on_artwork_changed(None, self._pixbuf)'
+  '  File "/home/fabian/Projects/sonata/sonata/info.py", line 534, in on_artwork_changed'
+  '    (pix2, w, h) = img.aget_pixbuf_of_size(pixbuf, width)'
+  'AttributeError: \'module\' object has no attribute \'aget_pixbuf_of_size\''
+  '  File "./main.py", line 2'
+  '    print "Hello World"'
+  '                      ^'
+  'SyntaxError: Missing parentheses in call to \'print\''
+],
+[
+  {type: 'trace', message: 'AttributeError: \'module\' object has no attribute \'aget_pixbuf_of_size\'', file:'/home/fabian/Projects/sonata/sonata/info.py', row:'208'}
+  {type: 'error', message: 'AttributeError: \'module\' object has no attribute \'aget_pixbuf_of_size\'', file:'/home/fabian/Projects/sonata/sonata/info.py', row:'534', trace: [
+      {type: 'trace', text:'(pix2, w, h) = img.aget_pixbuf_of_size(pixbuf, width)', filePath:'/home/fabian/Projects/sonata/sonata/info.py', range:[[533,0],[533,9999]]}
+      {type: 'trace', text:'self.on_artwork_changed(None, self._pixbuf)'          , filePath:'/home/fabian/Projects/sonata/sonata/info.py', range:[[207,0],[207,9999]]}
+    ]
+  }
+  {type: 'error', message: 'SyntaxError: Missing parentheses in call to \'print\''                     , file:'./main.py', row:'2'}
+],
+[
+  [],
+  [{file:'/home/fabian/Projects/sonata/sonata/info.py', row:'208'}],
+  [],
+  [{file:'/home/fabian/Projects/sonata/sonata/info.py', row:'534'}],
+  [],
+  [],
+  [{file:'./main.py', row:'2'}],
+  [],
   [],
   []
 ]

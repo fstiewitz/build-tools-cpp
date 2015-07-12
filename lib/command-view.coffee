@@ -288,7 +288,7 @@ class CommandView extends View
         @stdout_profile_div.removeClass('hidden')
         @stdout_mark.removeClass('hidden')
         @stdout_lint.removeClass('hidden')
-        @selectProfile @stdout_profile, items.stderr.profile
+        @selectProfile @stdout_profile, items.stdout.profile
 
     @panel ?= atom.workspace.addModalPanel(item: this)
     @panel.show()

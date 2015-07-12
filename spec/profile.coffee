@@ -42,11 +42,13 @@ module.exports =
                 type: match.type
                 highlighting: match.highlighting
                 message: match.message
+                trace: match.trace
 
           for string in strings
             output.in string
 
         it 'correctly sets warnings and errors', ->
+          expect(matches.length).toBe expectations.length
           for match, index in matches
             expectation = expectations[index]
             for key in Object.keys(expectation)
@@ -62,6 +64,7 @@ module.exports =
             matches.push output.profile.files string
 
         it 'correctly returns file descriptors', ->
+          expect(matches.length).toBe files.length
           for match, index in matches
             expectation = files[index]
             for item, index in expectation
