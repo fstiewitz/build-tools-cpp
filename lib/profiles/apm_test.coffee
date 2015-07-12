@@ -73,7 +73,8 @@ module.exports =
             else if m.message.endsWith ' '
               m.message = m.message.split(0,-1)
             @lastMatch.trace.push @output.createMessage m #Message to Traceback
-            @lint m if m.message isnt 'Referenced' #Trace message to Linter
+            m.message = @lastMatch.message
+            @lint m #Trace message to Linter
           @output.print m #Message to console
           @firstAt = false
         else
@@ -88,6 +89,7 @@ module.exports =
         @output.print m
         @lint m #Lint current message (@lint checks for required fields)
       else
+        @lint @lastMatch #Lint last message
         @firstAt = true
         @lastMatch = null
         @output.print {input: line, type: 'error'}
