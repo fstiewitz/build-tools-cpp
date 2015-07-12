@@ -175,6 +175,7 @@ module.exports =
       'source.c'
       'source.coffee'
       'source.js'
+      'source.java'
     ]
     scope: 'project'
     lintOnFly: false
