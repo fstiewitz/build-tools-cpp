@@ -95,3 +95,56 @@ Profile.profile 'apm test', {
   [],
   [{file: 'spec/linter-spec.coffee', row: '9', col: '31', start: 42, end: 69}]
 ]
+
+Profile.profile 'Java', {
+  stderr:
+    profile: 'java'
+    highlighting: 'hc'
+}, 'stderr', ['language-java'],
+[
+  'Buildfile: /home/fabian/Projects/testing/java/build.xml'
+  ''
+  'compile:'
+  '    [javac] /home/fabian/Projects/testing/java/build.xml:9: warning: \'includeantruntime\' was not set, defaulting to build.sysclasspath=last; set to false for repeatable builds'
+  '    [javac] Compiling 1 source file to /home/fabian/Projects/testing/java/build/classes'
+  '    [javac] /home/fabian/Projects/testing/java/src/Factorial.java:12: error: incompatible types'
+  '    [javac]     if (fact)'
+  '    [javac]         ^'
+  '    [javac]   required: boolean'
+  '    [javac]   found:    int'
+  '    [javac] /home/fabian/Projects/testing/java/src/Factorial.java:15: error: array required, but int found'
+  '    [javac]       while (fact[1])'
+  '    [javac]                  ^'
+  '    [javac] 2 errors'
+  ''
+  'BUILD FAILED'
+  '/home/fabian/Projects/testing/java/build.xml:9: Compile failed; see the compiler error output for details.'
+  ''
+  'Total time: 0 seconds'
+],
+[
+  {type: 'error', message: 'incompatible types'           , file:'/home/fabian/Projects/testing/java/src/Factorial.java', row:'12'}
+  {type: 'error', message: 'array required, but int found', file:'/home/fabian/Projects/testing/java/src/Factorial.java', row:'15'}
+],
+[
+  [],
+  [],
+  [],
+  [],
+  [],
+  [{file: '/home/fabian/Projects/testing/java/src/Factorial.java', row:'12', col: '0', start:12, end:67}],
+  [],
+  [],
+  [],
+  [],
+  [{file: '/home/fabian/Projects/testing/java/src/Factorial.java', row:'15', col: '0', start:12, end:67}],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  []
+]

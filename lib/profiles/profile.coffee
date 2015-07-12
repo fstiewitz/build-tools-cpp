@@ -43,7 +43,7 @@ module.exports =
           filePath: @output.absolutePath match.file
           range: [
             [row-1,0]
-            [row-1,if match.col? then col-1 else 9999]
+            [row-1,col-1]
           ]
           trace: match.trace
 

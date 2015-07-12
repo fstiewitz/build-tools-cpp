@@ -14,8 +14,6 @@ module.exports =
     [\\s]* (?<message> [\\S\\s]+) #Type and Message \n
     '
 
-    regex_end: /^[\^\s]+$/
-
     file_string: '
     (?<file> [\\S]+\\.(?extensions)): #File \n
     (?<row> [\\d]+)? #Row\n
@@ -33,8 +31,8 @@ module.exports =
         start += m.index
         m.start = start
         m.end = start + m.file.length + (if m.row? then m.row.length else 0)
-        m.row = 0 if not m.row?
-        m.col = 0 if not m.col?
+        m.row = '0' if not m.row?
+        m.col = '0'
         start = m.end + 1
         out.push m
       out
@@ -42,11 +40,13 @@ module.exports =
     in: (line) ->
       if (m = XRegExp.exec line, @regex)? #Start of error message
         @status = m.type
+        @indentation= line.indexOf(m.file)
         @output.print m
         @lint m
-      else if @regex_end.test line #End of error message
-        @output.print input: line, type: @status
+      else if @indentation? and line.slice(@indentation)[0] isnt ' ' #End of error message
+        @output.print input: line
         @status = null
+        @indentation = null
       else if @status? #Inside error message
         @output.print input: line, type: @status
       else #Rest
@@ -54,3 +54,4 @@ module.exports =
 
     clear: ->
       @status = null
+      @indentation = null
