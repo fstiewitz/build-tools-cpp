@@ -50,9 +50,9 @@ module.exports =
 
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace',
-      'build-tools-cpp:pre-configure': => @execute(2)
-      'build-tools-cpp:configure': => @execute(1)
-      'build-tools-cpp:make': => @execute(0)
+      'build-tools-cpp:third-command': => @execute(2)
+      'build-tools-cpp:second-command': => @execute(1)
+      'build-tools-cpp:first-command': => @execute(0)
       'build-tools-cpp:show': @show
       'build-tools-cpp:settings': ->
         atom.workspace.open(settingsviewuri)

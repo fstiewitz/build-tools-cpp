@@ -5,9 +5,9 @@
       'label': 'Build tools C/C++'
       'submenu': [
         { 'label': 'Show console', 'command': 'build-tools-cpp:show' },
-        { 'label': 'Run pre-configure command', 'command': 'build-tools-cpp:pre-configure'}
-        { 'label': 'Run configure command', 'command': 'build-tools-cpp:configure'},
-        { 'label': 'Run build command', 'command': 'build-tools-cpp:make'}
+        { 'label': 'Run first command', 'command': 'build-tools-cpp:first-command'}
+        { 'label': 'Run second command', 'command': 'build-tools-cpp:second-command'}
+        { 'label': 'Run third command', 'command': 'build-tools-cpp:third-command'}
         { 'label': 'Show build settings', 'command': 'build-tools-cpp:settings'}
         { 'label': 'Show commands', 'command': 'build-tools-cpp:commands'}
       ]

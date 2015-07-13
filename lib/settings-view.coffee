@@ -36,7 +36,7 @@ module.exports =
             @div class:'key-bindings', =>
               @div class:'key-bind', =>
                 @div class:'key-desc text-padded', =>
-                  @span class:'text-subtle', 'Make Command'
+                  @span class:'text-subtle', 'First Command'
                 @div id:'make', class:'key-value', =>
                   @div class:'btn-group', =>
                     @button id:'local', class:'btn selected', 'Local'
@@ -44,7 +44,7 @@ module.exports =
                     @button id:'custom', class:'btn', 'Custom'
               @div class:'key-bind', =>
                 @div class:'key-desc text-padded', =>
-                  @span class:'text-subtle', 'Configure Command'
+                  @span class:'text-subtle', 'Second Command'
                 @div id:'configure', class:'key-value', =>
                   @div class:'btn-group', =>
                     @button id:'local', class:'btn selected', 'Local'
@@ -52,7 +52,7 @@ module.exports =
                     @button id:'custom', class:'btn', 'Custom'
               @div class:'key-bind', =>
                 @div class:'key-desc text-padded', =>
-                  @span class:'text-subtle', 'Pre-Configure Command'
+                  @span class:'text-subtle', 'Third Command'
                 @div id:'preconfigure', class:'key-value', =>
                   @div class:'btn-group', =>
                     @button id:'local', class:'btn selected', 'Local'
@@ -66,11 +66,11 @@ module.exports =
             @div class:'command-container', =>
               @div class:'key-info', =>
                 @div class: 'key-desc text-subtle', =>
-                  @span class:'text-padded', 'Local Make Command'
+                  @span class:'text-padded', 'First Local Command'
                 @div class: 'key-desc text-subtle', =>
-                  @span class:'text-padded', 'Local Configure Command'
+                  @span class:'text-padded', 'Second Local Command'
                 @div class: 'key-desc text-subtle', =>
-                  @span class:'text-padded', 'Local Pre-Configure Command'
+                  @span class:'text-padded', 'Third Local Command'
               @div class:'command-menu', =>
                 @div class:'command-list', outlet: 'command_list', =>
           @div class:'section', =>
