@@ -170,6 +170,10 @@ class CommandView extends View
           @stderr_mark.addClass('hidden')
           @stderr_lint.addClass('hidden')
 
+    @on 'click', '.checkbox label', (e) =>
+      item = $(e.currentTarget.parentNode.children[0])
+      item.prop('checked', not item.prop('checked'))
+
     @on 'click', '.buttons .icon-close', @cancel
     @on 'click', '.buttons .icon-check', @accept
 

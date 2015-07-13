@@ -18,10 +18,17 @@ module.exports =
     ImportView: null
     importview: null
 
+    show_all: false
+
     @content: ->
       @div class:'settings pane-item native-key-bindings', tabindex:-1, =>
         @div class:'project-menu', =>
           @ul class:'list-group', outlet:'project_list'
+          @div class:'project-menu-options', =>
+            @div class:'block checkbox', =>
+              @input id:'show-all', type:'checkbox'
+              @label =>
+                @div class:'settings-name', 'Show all projects'
         @div class:'panel', =>
           @div class:'project-header', outlet: 'title'
           @div class:'section', =>
@@ -30,7 +37,6 @@ module.exports =
               @div class:'key-bind', =>
                 @div class:'key-desc text-padded', =>
                   @span class:'text-subtle', 'Make Command'
-                  @span class:'text-highlight text-padded', 'Ctrl+L Ctrl+O'
                 @div id:'make', class:'key-value', =>
                   @div class:'btn-group', =>
                     @button id:'local', class:'btn selected', 'Local'
@@ -39,7 +45,6 @@ module.exports =
               @div class:'key-bind', =>
                 @div class:'key-desc text-padded', =>
                   @span class:'text-subtle', 'Configure Command'
-                  @span class:'text-highlight text-padded', 'Ctrl+L Ctrl+I'
                 @div id:'configure', class:'key-value', =>
                   @div class:'btn-group', =>
                     @button id:'local', class:'btn selected', 'Local'
@@ -48,7 +53,6 @@ module.exports =
               @div class:'key-bind', =>
                 @div class:'key-desc text-padded', =>
                   @span class:'text-subtle', 'Pre-Configure Command'
-                  @span class:'text-highlight text-padded', 'Ctrl+L Ctrl+U'
                 @div id:'preconfigure', class:'key-value', =>
                   @div class:'btn-group', =>
                     @button id:'local', class:'btn selected', 'Local'
@@ -63,13 +67,10 @@ module.exports =
               @div class:'key-info', =>
                 @div class: 'key-desc text-subtle', =>
                   @span class:'text-padded', 'Local Make Command'
-                  @span class:'text-highlight text-padded', 'Ctrl+L Ctrl+O'
                 @div class: 'key-desc text-subtle', =>
                   @span class:'text-padded', 'Local Configure Command'
-                  @span class:'text-highlight text-padded', 'Ctrl+L Ctrl+I'
                 @div class: 'key-desc text-subtle', =>
                   @span class:'text-padded', 'Local Pre-Configure Command'
-                  @span class:'text-highlight text-padded', 'Ctrl+L Ctrl+U'
               @div class:'command-menu', =>
                 @div class:'command-list', outlet: 'command_list', =>
           @div class:'section', =>
@@ -88,6 +89,8 @@ module.exports =
       @dependencyview=null
       ImportView=null
       importview=null
+      @show_all = false
+      @find('#show_all').prop('checked', false)
       @on 'click', '#add-command-button', (e) =>
         @CommandView ?= require './command-view'
         @commandview ?= new @CommandView(@editccb)
@@ -122,6 +125,14 @@ module.exports =
           group = $(e.currentTarget.parentNode)
           group.find('.selected').removeClass('selected')
           e.currentTarget.classList.add('selected')
+      @on 'change', '#show-all', (e) =>
+        @show_all = $(e.currentTarget).prop('checked')
+        @reload()
+      @on 'click', '.checkbox label', (e) =>
+        item = $(e.currentTarget.parentNode.children[0])
+        item.prop('checked', not item.prop('checked'))
+        @show_all = item.prop('checked')
+        @reload()
       return
 
     destroy: ->
@@ -154,7 +165,10 @@ module.exports =
       'tools'
 
     updateProjects: ->
-      paths = atom.project.getPaths()
+      if @show_all
+        paths = @projects.getProjects()
+      else
+        paths = atom.project.getPaths()
       @project_list.empty()
       small_paths = @removeSharedPath paths
       for name,i in small_paths

@@ -179,7 +179,4 @@ module.exports =
       @data[path]
 
     getProjects: ->
-      p = []
-      Object.keys(@data).forEach (key) ->
-        p.push(key)
-      p
+      Object.keys(@data)
