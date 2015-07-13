@@ -1,3 +1,16 @@
+## 3.0.0 - Profiles
+* <b> build-tools-cpp is now build-tools
+* Same disclaimer as v2.0.0: This is a large update. I've added more jasmine specs but I can never be sure that everything works. If you encounter any strange package behaviour or bugs, please let me know.
+</b>
+* Key bindings are now called `First/Second/Third Command` and not `Make/Configure/PreConfigure Command`
+* Added highlighting profiles for Java, Python and apm test.
+* Linter plugin now supports stack traces.
+* New option to hide console output on success.
+* New option to show all projects in Build Tools Settings
+* Added scroll bars to modal panels (if necessary)
+* Small UI improvements
+* Bug fixes
+
 ## 2.0.5 - Linter 1.0.0
 * Use new [Linter](https://github.com/AtomLinter/Linter) API
 * <b>Update to linter@v1.0.0 or linting won't work</b>
