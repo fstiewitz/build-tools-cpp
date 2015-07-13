@@ -41,6 +41,7 @@ module.exports =
 
     showBox: ->
       @attach() if not @visible_items.header
+      @showOutput() if @find('.output').text() isnt ''
       @visible_items.header = true
 
     cancel: ->
@@ -79,8 +80,15 @@ module.exports =
           initialColumn: linecol-1
           )
 
-    finishConsole: ->
+    finishConsole: (exitcode) ->
       @find('.filelink').on 'click', @openFile
+      if (t = atom.config.get('build-tools-cpp.CloseOnSuccess')) > -1 and exitcode is 0
+        if t is 0
+          @hideBox()
+        else
+          setTimeout( =>
+            @hideBox()
+          ,t * 1000)
 
     printLine: (message) =>
       @showOutput() if !@lockoutput

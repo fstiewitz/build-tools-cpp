@@ -4,7 +4,7 @@
     'submenu': [
       'label': 'Build tools C/C++'
       'submenu': [
-        { 'label': 'Show window', 'command': 'build-tools-cpp:show' },
+        { 'label': 'Show console', 'command': 'build-tools-cpp:show' },
         { 'label': 'Run pre-configure command', 'command': 'build-tools-cpp:pre-configure'}
         { 'label': 'Run configure command', 'command': 'build-tools-cpp:configure'},
         { 'label': 'Run build command', 'command': 'build-tools-cpp:make'}

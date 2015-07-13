@@ -23,6 +23,7 @@ describe 'Console View', ->
     waitsForPromise -> activationPromise
 
     view = new ConsoleOutput()
+    view.showBox()
     jasmine.attachToDOM(view.element)
     expect(view.hasClass('console')).toBeTruthy()
     expect(view.find('.output').hasClass('hidden')).toBeTruthy()
@@ -63,6 +64,35 @@ describe 'Console View', ->
       view.printLine 'Test'
       expect(view.find('.output').html()).toBe 'Test'
       expect(view.find('.output').hasClass('hidden')).toBeFalsy()
+
+  describe 'Timeout', ->
+
+    beforeEach ->
+      view.printLine 'Test'
+
+    describe 'When timeout is disabled (-1)', ->
+      it 'does not close the console pane on success', ->
+        atom.config.set('build-tools-cpp.CloseOnSuccess', -1)
+        view.finishConsole(0)
+        expect(view.visible_items.header).toBeTruthy()
+
+    describe 'When timeout is enabled (0)', ->
+      it 'closes the console pane on success', ->
+        atom.config.set('build-tools-cpp.CloseOnSuccess', 0)
+        view.finishConsole(0)
+        expect(view.visible_items.header).toBeFalsy()
+
+    describe 'When timeout is enabled (3)', ->
+      it 'closes the console pane on success after 3 seconds', ->
+        atom.config.set('build-tools-cpp.CloseOnSuccess', 3)
+        view.finishConsole(0)
+        expect(view.visible_items.header).toBeTruthy()
+
+    describe 'When command fails', ->
+      it 'does not close the console pane', ->
+        atom.config.set('build-tools-cpp.CloseOnSuccess', 3)
+        view.finishConsole(1)
+        expect(view.visible_items.header).toBeTruthy()
 
   describe 'Output', ->
 
