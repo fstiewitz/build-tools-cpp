@@ -33,6 +33,7 @@ describe 'Command Selection Panel', ->
       stderr: {
         file: true,
         highlighting: 'hc',
+        profile: 'python',
         lint: false
       }
     }

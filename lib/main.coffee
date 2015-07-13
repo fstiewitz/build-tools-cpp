@@ -1,5 +1,6 @@
 command = require './command'
 ll = require './linter-list'
+Profiles = require './profiles/profiles'
 
 {CompositeDisposable, BufferedProcess} = require 'atom'
 
@@ -44,19 +45,21 @@ module.exports =
     @createProjectInstance()
     createConsoleView()
     atom.workspace.addOpener (uritoopen) =>
-      createSettingsView({uri: uritoopen, @projects}) if uritoopen is settingsviewuri
+      if uritoopen is settingsviewuri
+        createSettingsView({uri: uritoopen, @projects, profiles: Profiles})
 
     @subscriptions = new CompositeDisposable
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:pre-configure': => @execute(2)
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:configure': => @execute(1)
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:make': => @execute(0)
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:show': @show
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:settings': ->
-      atom.workspace.open(settingsviewuri)
-    @subscriptions.add atom.commands.add 'atom-workspace', 'build-tools-cpp:commands': => @selection()
-    @subscriptions.add atom.commands.add 'atom-workspace', 'core:cancel': @cancel
-    @subscriptions.add atom.commands.add 'atom-workspace', 'core:close': @cancel
-    @subscriptions.add atom.project.onDidChangePaths =>
+    @subscriptions.add atom.commands.add 'atom-workspace',
+      'build-tools-cpp:pre-configure': => @execute(2)
+      'build-tools-cpp:configure': => @execute(1)
+      'build-tools-cpp:make': => @execute(0)
+      'build-tools-cpp:show': @show
+      'build-tools-cpp:settings': ->
+        atom.workspace.open(settingsviewuri)
+      'build-tools-cpp:commands': => @selection()
+      'core:cancel': @cancel
+      'core:close': @cancel
+    @subscriptions.add atom.project.onDidChangePaths ->
       settingsview?.reload()
 
   deactivate: ->
@@ -76,7 +79,7 @@ module.exports =
     @Projects = null
     @projects = null
 
-  show: =>
+  show: ->
     consoleview?.showBox()
 
   kill: ->
@@ -111,6 +114,7 @@ module.exports =
     consoleview?.showBox()
     consoleview?.setHeader("#{res.name} of #{res.project}")
     consoleview?.clear() if clear
+    ll.messages = [] if clear
     consoleview?.unlock()
     @process = new BufferedProcess(
       command: cmd
@@ -118,18 +122,24 @@ module.exports =
       options:
         cwd: cwd,
         env: env
-      stdout: (data) =>
+      stdout: (data) ->
         consoleview?.stdout?.in data
-      stderr: (data) =>
+      stderr: (data) ->
         consoleview?.stderr?.in data
       exit: (exitcode) =>
-        consoleview?.finishConsole() if (@command_list.length is 0) or exitcode isnt 0
-        consoleview?.destroyOutput()
+        if (@command_list.length is 0) or exitcode isnt 0
+          consoleview?.finishConsole()
         if exitcode is 0
-          consoleview?.setHeader ("#{res.name} of #{res.project}: finished with exitcode #{exitcode}")
-          @spawn @command_list.splice(0,1)[0], false if (@command_list.length isnt 0)
+          consoleview?.setHeader(
+            "#{res.name} of #{res.project}: finished with exitcode #{exitcode}"
+          )
+          if (@command_list.length isnt 0)
+            @spawn @command_list.splice(0,1)[0], false
         else
-          consoleview?.setHeader("#{res.name} of #{res.project}: <span class='error'>finished with exitcode #{exitcode}</span>")
+          consoleview?.setHeader(
+            "#{res.name} of #{res.project}:" +
+            "<span class='error'>finished with exitcode #{exitcode}</span>"
+          )
         @lint() if (@command_list.length is 0) or exitcode isnt 0
       )
     @process.onWillThrowError ({error, handle}) =>
@@ -155,29 +165,15 @@ module.exports =
           command = project.getCommandByIndex id
         if command?
           @command_list = @projects.generateDependencyList command
-          ll.messages = {}
+          ll.messages = []
           @spawn @command_list.splice(0,1)[0]
 
   provideLinter: ->
-    grammarScopes: ['source.c++', 'source.cpp', 'source.c']
-    scope: 'file'
+    grammarScopes: ['*']
+    scope: 'project'
     lintOnFly: false
-    lint: (editor) =>
-      filePath = editor.getPath()
-      messages = []
-      if (m=ll.messages[ll.path.basename(filePath)])?
-        for item in m
-          messages.push(
-            type: item[4]
-            text: item[5]
-            filePath: filePath
-            range: [
-              [item[2]-1,0]
-              [item[2]-1,if item[3]? then item[3]-1 else 9999]
-            ]
-          )
-      messages
-
+    lint: ->
+      ll.messages
 
   config:
     SaveAll:
@@ -185,15 +181,8 @@ module.exports =
       description: 'Save all files before executing your build command'
       type: 'boolean'
       default: true
-    SourceFileExtensions:
-      title: 'File extensions'
-      description: 'Types of source files'
-      type: 'array'
-      default: ['.cpp','.h','.c','.hpp']
-      items:
-        type: 'string'
     ShellCommand:
       title: 'Shell Command'
-      description: 'Shell command to execute when "Execute in Shell" is enabled. Command string is appended at the end of this string'
+      description: 'Shell command to execute when "Execute in Shell" is enabled'
       type: 'string'
       default: 'bash -c'

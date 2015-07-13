@@ -6,7 +6,6 @@ highlight_translation =
   "nh": "No highlighting"
   "ha": "Highlight all"
   "ht": "Highlight tags"
-  "hc": "GCC/Clang highlighting"
 
 module.exports =
   class SettingsView extends ScrollView
@@ -22,7 +21,7 @@ module.exports =
     @content: ->
       @div class:'settings pane-item native-key-bindings', tabindex:-1, =>
         @div class:'project-menu', =>
-          @ul class:'list-group', outlet:'project_list', =>
+          @ul class:'list-group', outlet:'project_list'
         @div class:'panel', =>
           @div class:'project-header', outlet: 'title'
           @div class:'section', =>
@@ -78,9 +77,9 @@ module.exports =
               @div class:'section-header', 'Dependencies'
               @div id:'add-dependency-button', class:'inline-block btn btn-xs', 'Add dependency'
               @div id:'import-dependency-button', class:'inline-block btn btn-xs', 'Import dependency'
-            @div class:'dependency-list', outlet:'dependency_list', =>
+            @div class:'dependency-list', outlet:'dependency_list'
 
-    initialize: ({@uri,@projects}) ->
+    initialize: ({@uri,@projects,@profiles}) ->
       super
       @reload()
       @CommandView=null
@@ -92,7 +91,7 @@ module.exports =
       @on 'click', '#add-command-button', (e) =>
         @CommandView ?= require './command-view'
         @commandview ?= new @CommandView(@editccb)
-        @commandview.show(null, null, @activeProject)
+        @commandview.show(null, null, @activeProject, @profiles)
       @on 'click', '#add-dependency-button', (e) =>
         @DependencyView ?= require './dependency-view'
         @dependencyview ?= new @DependencyView(@editdcb, @projects)
@@ -272,7 +271,7 @@ module.exports =
     importccb: (command) =>
       @CommandView ?= require './command-view'
       @commandview ?= new @CommandView(@editccb)
-      @commandview.show(null, command, @activeProject)
+      @commandview.show(null, command, @activeProject, @profiles)
 
     importdcb: (dependency) =>
       @DependencyView ?= require './dependency-view'
@@ -285,6 +284,7 @@ module.exports =
         command: command.name
 
     addCommand: (items) ->
+      profiles = @profiles
       item = $$ ->
         @div class:'command', =>
           @div class:'top', =>
@@ -311,22 +311,22 @@ module.exports =
             @div class:'streams', =>
               @div id:'stdout', class:'stream', =>
                 @div =>
-                  @div class:'text-padded', "Mark paths (stdout)"
                   @div class:'text-padded', "Highlighting (stdout)"
+                  @div class:'text-padded', "Mark paths (stdout)"
                   @div class:'text-padded', "Use Linter (stdout)"
                 @div class:'values', =>
-                  @div class:'text-highlight text-padded', items.stdout.file.toString()
-                  @div class:'text-highlight text-padded', highlight_translation[items.stdout.highlighting]
-                  @div class:'text-highlight text-padded', if /ht|hc/.test(items.stdout.highlighting) then items.stdout.lint.toString() else 'Disabled'
+                  @div class:'text-highlight text-padded', if items.stdout.highlighting is 'hc' then profiles[items.stdout.profile].profile_name else highlight_translation[items.stdout.highlighting]
+                  @div class:'text-highlight text-padded', if items.stdout.highlighting is 'hc' then items.stdout.file.toString() else 'Disabled'
+                  @div class:'text-highlight text-padded', if items.stdout.highlighting is 'hc' then items.stdout.lint.toString() else 'Disabled'
               @div id:'stderr', class:'stream', =>
                 @div =>
-                  @div class:'text-padded', "Mark paths (stderr)"
                   @div class:'text-padded', "Highlighting (stderr)"
+                  @div class:'text-padded', "Mark paths (stderr)"
                   @div class:'text-padded', "Use Linter (stderr)"
                 @div class:'values', =>
-                  @div class:'text-highlight text-padded', items.stderr.file.toString()
-                  @div class:'text-highlight text-padded', highlight_translation[items.stderr.highlighting]
-                  @div class:'text-highlight text-padded', if /ht|hc/.test(items.stderr.highlighting) then items.stderr.lint.toString() else 'Disabled'
+                  @div class:'text-highlight text-padded', if items.stderr.highlighting is 'hc' then profiles[items.stderr.profile].profile_name else highlight_translation[items.stderr.highlighting]
+                  @div class:'text-highlight text-padded', if items.stderr.highlighting is 'hc' then items.stderr.file.toString() else 'Disabled'
+                  @div class:'text-highlight text-padded', if items.stderr.highlighting is 'hc' then items.stderr.lint.toString() else 'Disabled'
       item.on 'click', '.icon-expand', (e) =>
         @reduceAll e.currentTarget.parentNode.parentNode.parentNode.parentNode
         @expandCommand e.currentTarget
@@ -385,7 +385,7 @@ module.exports =
       @commandview ?= new @CommandView(@editccb)
       id = Array.prototype.indexOf.call(target.parentNode.childNodes, target)
       cmd = @activeProject.getCommandByIndex id
-      @commandview.show(cmd.name, cmd, @activeProject)
+      @commandview.show(cmd.name, cmd, @activeProject, @profiles)
 
     editDependency: (target) ->
       @DependencyView ?= require './dependency-view'

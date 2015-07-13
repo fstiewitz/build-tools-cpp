@@ -1,0 +1,15 @@
+@import "ui-variables";
+atom-text-editor::shadow .linter-highlight, .linter-highlight{
+  &.note {
+    &:not(.line-number){
+      background-color: @background-color-info;
+      color: white;
+    }
+    .icon-right::before{
+      color: @background-color-info;
+    }
+    .region {
+      border-bottom: 1px dashed @background-color-info;
+    }
+  }
+}

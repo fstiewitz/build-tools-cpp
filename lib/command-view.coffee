@@ -1,4 +1,4 @@
-{View,TextEditorView} = require 'atom-space-pen-views'
+{$, $$, View,TextEditorView} = require 'atom-space-pen-views'
 {CompositeDisposable} = require 'atom'
 
 module.exports =
@@ -76,12 +76,6 @@ class CommandView extends View
       @div class:'streams', =>
         @div class:'stream', id:'stdout', =>
           @div class:'small-header', 'stdout'
-          @div class:'block checkbox', =>
-            @input id:'mark_paths_stdout', type:'checkbox'
-            @label =>
-              @div class:'settings-name', 'Mark file paths + coordinates'
-              @div =>
-                @span class:'inline-block text-subtle', 'Allows you to click on file paths'
           @div class:'block', =>
             @label =>
               @div class:'settings-name', 'Highlighting'
@@ -91,7 +85,19 @@ class CommandView extends View
               @button id:'nh', class:'btn selected', 'No highlighting'
               @button id:'ha', class:'btn', 'Highlight all'
               @button id:'ht', class:'btn', 'Only lines with error or warning tags'
-              @button id:'hc', class:'btn', 'GCC/Clang-like highlighting'
+              @button id:'hc', class:'btn', 'Custom Profile'
+          @div class:'block hidden', outlet:'stdout_profile_div', =>
+            @label =>
+              @div class:'settings-name', 'Profile'
+              @div =>
+                @span class:'inline-block text-subtle', 'Select Highlighting Profile'
+            @select class:'form-control', outlet: 'stdout_profile'
+          @div class:'block checkbox hidden', outlet:'stdout_mark', =>
+            @input id:'mark_paths_stdout', type:'checkbox'
+            @label =>
+              @div class:'settings-name', 'Mark file paths + coordinates'
+              @div =>
+                @span class:'inline-block text-subtle', 'Allows you to click on file paths'
           @div class:'block checkbox hidden', outlet:'stdout_lint', =>
             @input id:'lint_stdout', type:'checkbox'
             @label =>
@@ -100,12 +106,6 @@ class CommandView extends View
                 @span class:'inline-block text-subtle', 'Use Linter package to highlight errors in your code'
         @div class:'stream', id:'stderr', =>
           @div class:'small-header', 'stderr'
-          @div class:'block checkbox', =>
-            @input id:'mark_paths_stderr', type:'checkbox'
-            @label =>
-              @div class:'settings-name', 'Mark file paths + coordinates'
-              @div =>
-                @span class:'inline-block text-subtle', 'Allows you to click on file paths'
           @div class:'block', =>
             @label =>
               @div class:'settings-name', 'Highlighting'
@@ -115,7 +115,19 @@ class CommandView extends View
               @button id:'nh', class:'btn selected', 'No highlighting'
               @button id:'ha', class:'btn', 'Highlight all'
               @button id:'ht', class:'btn', 'Only lines with error or warning tags'
-              @button id:'hc', class:'btn', 'GCC/Clang-like highlighting'
+              @button id:'hc', class:'btn', 'Custom Profile'
+          @div class:'block hidden', outlet:'stderr_profile_div', =>
+            @label =>
+              @div class:'settings-name', 'Profile'
+              @div =>
+                @span class:'inline-block text-subtle', 'Select Highlighting Profile'
+            @select class:'form-control', outlet: 'stderr_profile'
+          @div class:'block checkbox hidden', outlet:'stderr_mark', =>
+            @input id:'mark_paths_stderr', type:'checkbox'
+            @label =>
+              @div class:'settings-name', 'Mark file paths + coordinates'
+              @div =>
+                @span class:'inline-block text-subtle', 'Allows you to click on file paths'
           @div class:'block checkbox hidden', outlet:'stderr_lint', =>
             @input id:'lint_stderr', type:'checkbox'
             @label =>
@@ -137,17 +149,25 @@ class CommandView extends View
         @stdout_highlighting = e.currentTarget.id
         @stdout_highlights.find('.selected').removeClass('selected')
         e.currentTarget.classList.add('selected')
-        if /ht|hc/.test(@stdout_highlighting)
+        if @stdout_highlighting is 'hc'
+          @stdout_profile_div.removeClass('hidden')
+          @stdout_mark.removeClass('hidden')
           @stdout_lint.removeClass('hidden')
         else
+          @stdout_profile_div.addClass('hidden')
+          @stdout_mark.addClass('hidden')
           @stdout_lint.addClass('hidden')
       else if e.currentTarget.parentNode.id is 'stderr'
         @stderr_highlighting = e.currentTarget.id
         @stderr_highlights.find('.selected').removeClass('selected')
         e.currentTarget.classList.add('selected')
-        if /ht|hc/.test(@stderr_highlighting)
+        if @stderr_highlighting is 'hc'
+          @stderr_profile_div.removeClass('hidden')
+          @stderr_mark.removeClass('hidden')
           @stderr_lint.removeClass('hidden')
         else
+          @stderr_profile_div.addClass('hidden')
+          @stderr_mark.addClass('hidden')
           @stderr_lint.addClass('hidden')
 
     @on 'click', '.buttons .icon-close', @cancel
@@ -175,6 +195,7 @@ class CommandView extends View
         @find('#command-error-none').removeClass('hidden')
     else
       @callback(@oldname,
+        version: 1
         name: @nameEditor.getText()
         command: @commandEditor.getText()
         wd: if (d=@wdEditor.getText()) is '' then '.' else d
@@ -183,10 +204,12 @@ class CommandView extends View
         stdout:
           file: @find('#mark_paths_stdout').prop('checked')
           highlighting: @stdout_highlighting
+          profile: if @stdout_highlighting is 'hc' then $(@stdout_profile.children()[@stdout_profile[0].selectedIndex]).prop('value') else undefined
           lint: if @stdout_lint.hasClass('hidden') then false else @find('#lint_stdout').prop('checked')
         stderr:
           file: @find('#mark_paths_stderr').prop('checked')
           highlighting: @stderr_highlighting
+          profile: if @stderr_highlighting is 'hc' then $(@stderr_profile.children()[@stderr_profile[0].selectedIndex]).prop('value') else undefined
           lint: if @stderr_lint.hasClass('hidden') then false else @find('#lint_stderr').prop('checked')
         )
       @hide()
@@ -211,7 +234,7 @@ class CommandView extends View
     else
       return false
 
-  show: (@oldname, items, @project) ->
+  show: (@oldname, items, @project, @profiles) ->
     @nameEditor.setText("")
     @commandEditor.setText("")
     @wdEditor.setText("")
@@ -222,7 +245,11 @@ class CommandView extends View
     @find('#mark_paths_stderr').prop('checked', true)
     @find('#lint_stdout').prop('checked', false)
     @find('#lint_stderr').prop('checked', false)
+    @stdout_profile_div.addClass('hidden')
+    @stdout_mark.addClass('hidden')
     @stdout_lint.addClass('hidden')
+    @stderr_profile_div.addClass('hidden')
+    @stderr_mark.addClass('hidden')
     @stderr_lint.addClass('hidden')
 
     @stdout_highlights.find('.selected').removeClass('selected')
@@ -232,6 +259,10 @@ class CommandView extends View
 
     @stdout_highlighting = 'nh'
     @stderr_highlighting = 'nh'
+
+    @populateProfiles @stdout_profile
+    @populateProfiles @stderr_profile
+
     if items?
       @nameEditor.setText(items.name)
       @commandEditor.setText(items.command)
@@ -248,15 +279,34 @@ class CommandView extends View
       @stderr_highlighting = items.stderr.highlighting
       @stdout_lint.find('#lint_stdout').prop('checked', items.stdout.lint)
       @stderr_lint.find('#lint_stderr').prop('checked', items.stderr.lint)
-      if /ht|hc/.test(@stdout_highlighting)
-        @stdout_lint.removeClass('hidden')
-      else
-        @stdout_lint.addClass('hidden')
-      if /ht|hc/.test(@stderr_highlighting)
+      if @stderr_highlighting is 'hc'
+        @stderr_profile_div.removeClass('hidden')
+        @stderr_mark.removeClass('hidden')
         @stderr_lint.removeClass('hidden')
-      else
-        @stderr_lint.addClass('hidden')
+        @selectProfile @stderr_profile, items.stderr.profile
+      if @stdout_highlighting is 'hc'
+        @stdout_profile_div.removeClass('hidden')
+        @stdout_mark.removeClass('hidden')
+        @stdout_lint.removeClass('hidden')
+        @selectProfile @stdout_profile, items.stdout.profile
 
     @panel ?= atom.workspace.addModalPanel(item: this)
     @panel.show()
     @command_name.focus()
+
+  populateProfiles: (select) ->
+    createitem = (key, profile) ->
+      $$ ->
+        @option value: key, profile
+    select.empty()
+    gcc_index = 0
+    for key, id in Object.keys @profiles
+      select.append createitem(key, @profiles[key].profile_name)
+      gcc_index = id if key is 'gcc_clang'
+    select[0].selectedIndex = gcc_index
+
+  selectProfile: (select, profile) ->
+    for option, id in select.children()
+      if $(option).prop('value') is profile
+        select[0].selectedIndex = id
+        break

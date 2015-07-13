@@ -44,6 +44,17 @@
     display: none;
   }
 
+  .form-control {
+    color: @text-color;
+    border-color: @button-border-color;
+    background-color: @button-background-color;
+    &:hover,
+    &:focus {
+      box-shadow: none;
+      background-color: @button-background-color-hover;
+    }
+  }
+
   input[type="checkbox"] {
     flex: none;
     -webkit-appearance: none;

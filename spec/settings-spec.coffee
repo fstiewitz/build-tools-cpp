@@ -1,6 +1,7 @@
 {$} = require 'atom-space-pen-views'
 SettingsView = require '../lib/settings-view'
 Projects = require '../lib/projects'
+Profiles = require '../lib/profiles/profiles'
 
 describe 'Settings Page', ->
   [cmd, dep, projects, project, view, fixturesPath] = []
@@ -19,6 +20,7 @@ describe 'Settings Page', ->
     stderr: {
       file: true,
       highlighting: 'hc',
+      profile: 'apm_test',
       lint: false
     }
   }
@@ -35,7 +37,7 @@ describe 'Settings Page', ->
       }
     }
     projects = new Projects('')
-    view = new SettingsView({uri: 'atom://build-tools-settings', projects})
+    view = new SettingsView({uri: 'atom://build-tools-settings', projects, profiles: Profiles})
     expect(view.find('.list-group').children().length).toBe 1
     expect(view.find('.list-group').children()[0].children[0].innerHTML).toBe fixturesPath
     project = projects.getProject(fixturesPath)

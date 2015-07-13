@@ -19,6 +19,9 @@ describe 'Console View', ->
   ]
 
   beforeEach ->
+    activationPromise = atom.packages.activatePackage('language-c')
+    waitsForPromise -> activationPromise
+
     view = new ConsoleOutput()
     jasmine.attachToDOM(view.element)
     expect(view.hasClass('console')).toBeTruthy()
@@ -39,6 +42,7 @@ describe 'Console View', ->
       stderr: {
         file: true,
         highlighting: 'hc',
+        profile: 'gcc_clang',
         lint: false
       }
     }
@@ -62,9 +66,6 @@ describe 'Console View', ->
 
   describe 'Output', ->
 
-    beforeEach ->
-      atom.config.set('build-tools-cpp.SourceFileExtensions', ['.c'])
-
     describe 'When :createOutput', ->
       it 'creates output objects', ->
         data['path'] = fixturesPath
@@ -86,7 +87,6 @@ describe 'Console View', ->
           view.stdout.in input_stdout[i]
         for i in [0..4]
           view.stderr.in input_stderr[i]
-        view.destroyOutput()
         content = view.find('.output').children()
         expect(content.length).toBe 8
         expect(content[0].classList.contains('text-warning')).toBeTruthy()
