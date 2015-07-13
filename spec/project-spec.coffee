@@ -99,31 +99,39 @@ describe 'Projects', ->
       expect(projects.data[root2]['commands'].length).toBe 1
 
   describe 'When adding a command', ->
-    it 'creates a new command', ->
+    data = {
+      name: 'Test command 2',
+      command: 'pwd',
+      wd: 'sub0',
+      shell: false,
+      wildcards: false,
+      stdout: {
+        file: false,
+        highlighting: 'ha',
+        lint: false
+      }
+      stderr: {
+        file: true,
+        highlighting: 'hc',
+        lint: false
+      }
+    }
+    project = null
+
+    beforeEach ->
       project = projects.getProject root2
       expect(project['commands'].length).toBe 1
-      data = {
-        name: 'Test command 2',
-        command: 'pwd',
-        wd: 'sub0',
-        shell: false,
-        wildcards: false,
-        stdout: {
-          file: false,
-          highlighting: 'ha',
-          lint: false
-        }
-        stderr: {
-          file: true,
-          highlighting: 'hc',
-          profile: 'java',
-          lint: false
-        }
-      }
       project.addCommand data
+
+    it 'creates a new command', ->
       expect(project['commands'].length).toBe 2
       expect(project['commands'][1].project).toBe root2
       expect(project['commands'][1].name).toBe 'Test command 2'
+
+    it 'upgrades the version property if input is pre-3.0', ->
+      expect(project['commands'][1].version).toBe 1
+      expect(project['commands'][1].stderr.highlighting).toBe 'hc'
+      expect(project['commands'][1].stderr.profile).toBe 'gcc_clang'
 
   describe 'When assigning a custom key binding', ->
     project = null
