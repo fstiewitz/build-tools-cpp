@@ -50,9 +50,9 @@ module.exports =
 
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace',
-      'build-tools-cpp:pre-configure': => @execute(2)
-      'build-tools-cpp:configure': => @execute(1)
-      'build-tools-cpp:make': => @execute(0)
+      'build-tools-cpp:third-command': => @execute(2)
+      'build-tools-cpp:second-command': => @execute(1)
+      'build-tools-cpp:first-command': => @execute(0)
       'build-tools-cpp:show': @show
       'build-tools-cpp:settings': ->
         atom.workspace.open(settingsviewuri)
@@ -128,7 +128,7 @@ module.exports =
         consoleview?.stderr?.in data
       exit: (exitcode) =>
         if (@command_list.length is 0) or exitcode isnt 0
-          consoleview?.finishConsole()
+          consoleview?.finishConsole(exitcode)
         if exitcode is 0
           consoleview?.setHeader(
             "#{res.name} of #{res.project}: finished with exitcode #{exitcode}"
@@ -186,3 +186,8 @@ module.exports =
       description: 'Shell command to execute when "Execute in Shell" is enabled'
       type: 'string'
       default: 'bash -c'
+    CloseOnSuccess:
+      title: 'Close console on success'
+      description: '-1 to keep console pane, 0 to hide console on success, >0 to hide console after x seconds'
+      type: 'integer'
+      default: -1

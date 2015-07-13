@@ -170,6 +170,10 @@ class CommandView extends View
           @stderr_mark.addClass('hidden')
           @stderr_lint.addClass('hidden')
 
+    @on 'click', '.checkbox label', (e) =>
+      item = $(e.currentTarget.parentNode.children[0])
+      item.prop('checked', not item.prop('checked'))
+
     @on 'click', '.buttons .icon-close', @cancel
     @on 'click', '.buttons .icon-check', @accept
 
@@ -291,6 +295,11 @@ class CommandView extends View
         @selectProfile @stdout_profile, items.stdout.profile
 
     @panel ?= atom.workspace.addModalPanel(item: this)
+    @parent('.modal').css(
+      'max-height': '100%'
+      display: 'flex'
+      'flex-direction': 'column'
+    )
     @panel.show()
     @command_name.focus()
 

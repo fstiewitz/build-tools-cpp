@@ -144,6 +144,11 @@ class DependencyView extends View
       @command_to[0].selectedIndex = if e? then Array.prototype.indexOf.call(e.parentNode.childNodes, e) else 0
 
     @panel ?= atom.workspace.addModalPanel(item: this)
+    @parent('.modal').css(
+      'max-height': '100%'
+      display: 'flex'
+      'flex-direction': 'column'
+    )
     @panel.show()
     @project_from.focus()
 

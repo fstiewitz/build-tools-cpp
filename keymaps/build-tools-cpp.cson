@@ -1,6 +1,7 @@
 'atom-workspace':
-  'ctrl-l ctrl-u': 'build-tools-cpp:pre-configure'
-  'ctrl-l ctrl-i': 'build-tools-cpp:configure'
-  'ctrl-l ctrl-o': 'build-tools-cpp:make'
+  'ctrl-l ctrl-u': 'build-tools-cpp:third-command'
+  'ctrl-l ctrl-i': 'build-tools-cpp:second-command'
+  'ctrl-l ctrl-o': 'build-tools-cpp:first-command'
   'ctrl-l ctrl-l': 'build-tools-cpp:commands'
   'ctrl-l ctrl-,': 'build-tools-cpp:settings'
+  'ctrl-l ctrl-s': 'build-tools-cpp:show'
