@@ -291,6 +291,11 @@ class CommandView extends View
         @selectProfile @stdout_profile, items.stdout.profile
 
     @panel ?= atom.workspace.addModalPanel(item: this)
+    @parent('.modal').css(
+      'max-height': '100%'
+      display: 'flex'
+      'flex-direction': 'column'
+    )
     @panel.show()
     @command_name.focus()
 

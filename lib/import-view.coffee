@@ -77,6 +77,11 @@ module.exports =
         @addProject @projects.data[project]
       @tree.on 'click', '.project', (e) => @collapse e.currentTarget
       @panel ?= atom.workspace.addModalPanel(item: this)
+      @parent('.modal').css(
+        'max-height': '100%'
+        display: 'flex'
+        'flex-direction': 'column'
+      )
       @panel.show()
 
     addProject: (project) ->
