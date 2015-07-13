@@ -15,7 +15,8 @@ describe 'Command Panel', ->
     wildcards: false,
     stdout: {
       file: false,
-      highlighting: 'ha',
+      highlighting: 'hc',
+      profile: 'java',
       lint: false
     }
     stderr: {
@@ -102,15 +103,17 @@ describe 'Command Panel', ->
       expect(view.find('#command_in_shell').prop('checked')).toBeFalsy()
       expect(view.find('#wildcards').prop('checked')).toBeFalsy()
       expect(view.find('#mark_paths_stdout').prop('checked')).toBeFalsy()
-      expect(view.find('#stdout #ha').hasClass('selected')).toBeTruthy()
+      expect(view.find('#stdout #hc').hasClass('selected')).toBeTruthy()
       expect(view.find('#lint_stdout').prop('checked')).toBeFalsy()
       expect(view.find('#mark_paths_stderr').prop('checked')).toBeTruthy()
       expect(view.find('#stderr #hc').hasClass('selected')).toBeTruthy()
       expect(view.find('#lint_stderr').prop('checked')).toBeFalsy()
       expect(view.stdout_profile.children().length).toBe Object.keys(Profiles).length
-      expect($(view.stdout_profile.children()[view.stdout_profile[0].selectedIndex]).prop('value')).toBe 'gcc_clang'
+      expect($(view.stdout_profile.children()[view.stdout_profile[0].selectedIndex]).prop('value')).toBe 'java'
+      expect($(view.stdout_profile_div).hasClass('hidden')).toBe false
       expect(view.stderr_profile.children().length).toBe Object.keys(Profiles).length
       expect($(view.stderr_profile.children()[view.stderr_profile[0].selectedIndex]).prop('value')).toBe 'gcc_clang'
+      expect($(view.stderr_profile_div).hasClass('hidden')).toBe false
       view.nameEditor.setText('Test command 2')
       view.commandEditor.setText('foo')
       view.find('.btn-primary').click()
@@ -124,8 +127,8 @@ describe 'Command Panel', ->
         wildcards: false,
         stdout: {
           file: false,
-          highlighting: 'ha',
-          profile: undefined,
+          highlighting: 'hc',
+          profile: 'java',
           lint: false
         }
         stderr: {

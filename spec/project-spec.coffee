@@ -29,6 +29,7 @@ describe 'Projects', ->
       stderr: {
         file: true,
         highlighting: 'hc',
+        profile: 'apm_test',
         lint: false
       }
     }
@@ -115,6 +116,7 @@ describe 'Projects', ->
         stderr: {
           file: true,
           highlighting: 'hc',
+          profile: 'java',
           lint: false
         }
       }

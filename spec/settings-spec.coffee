@@ -20,6 +20,7 @@ describe 'Settings Page', ->
     stderr: {
       file: true,
       highlighting: 'hc',
+      profile: 'apm_test',
       lint: false
     }
   }

@@ -26,6 +26,7 @@ describe 'Console View', ->
       stderr: {
         file: true,
         highlighting: 'hc',
+        profile: 'gcc_clang',
         lint: false
       }
     }
