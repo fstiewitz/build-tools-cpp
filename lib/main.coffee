@@ -50,13 +50,13 @@ module.exports =
 
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace',
-      'build-tools-cpp:third-command': => @execute(2)
-      'build-tools-cpp:second-command': => @execute(1)
-      'build-tools-cpp:first-command': => @execute(0)
-      'build-tools-cpp:show': @show
-      'build-tools-cpp:settings': ->
+      'build-tools:third-command': => @execute(2)
+      'build-tools:second-command': => @execute(1)
+      'build-tools:first-command': => @execute(0)
+      'build-tools:show': @show
+      'build-tools:settings': ->
         atom.workspace.open(settingsviewuri)
-      'build-tools-cpp:commands': => @selection()
+      'build-tools:commands': => @selection()
       'core:cancel': @cancel
       'core:close': @cancel
     @subscriptions.add atom.project.onDidChangePaths ->
@@ -150,7 +150,7 @@ module.exports =
       handle()
 
   execute: (id) ->
-    @saveall() if atom.config.get('build-tools-cpp.SaveAll')
+    @saveall() if atom.config.get('build-tools.SaveAll')
     if (path=atom.workspace.getActiveTextEditor()?.getPath())?
       if (projectpath=@projects.getNextProjectPath path) isnt ''
         project = @projects.getProject projectpath

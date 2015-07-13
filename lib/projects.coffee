@@ -68,7 +68,7 @@ module.exports =
 
     notify: (message) ->
       atom.notifications?.addError message
-      console.log('build-tools-cpp: ' + message)
+      console.log('build-tools: ' + message)
 
     checkDependencies: ({added, removed, replaced}) =>
       if removed?

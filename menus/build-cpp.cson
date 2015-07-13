@@ -2,14 +2,14 @@
   {
     'label': 'Packages'
     'submenu': [
-      'label': 'Build tools C/C++'
+      'label': 'Build Tools'
       'submenu': [
-        { 'label': 'Show console', 'command': 'build-tools-cpp:show' },
-        { 'label': 'Run first command', 'command': 'build-tools-cpp:first-command'}
-        { 'label': 'Run second command', 'command': 'build-tools-cpp:second-command'}
-        { 'label': 'Run third command', 'command': 'build-tools-cpp:third-command'}
-        { 'label': 'Show build settings', 'command': 'build-tools-cpp:settings'}
-        { 'label': 'Show commands', 'command': 'build-tools-cpp:commands'}
+        { 'label': 'Show console', 'command': 'build-tools:show' },
+        { 'label': 'Run first command', 'command': 'build-tools:first-command'}
+        { 'label': 'Run second command', 'command': 'build-tools:second-command'}
+        { 'label': 'Run third command', 'command': 'build-tools:third-command'}
+        { 'label': 'Show build settings', 'command': 'build-tools:settings'}
+        { 'label': 'Show commands', 'command': 'build-tools:commands'}
       ]
     ]
   }

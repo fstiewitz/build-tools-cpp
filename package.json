@@ -6,12 +6,12 @@
   "repository": "https://github.com/deprint/build-tools-cpp",
   "activationCommands": {
     "atom-workspace": [
-      "build-tools-cpp:first-command",
-      "build-tools-cpp:second-command",
-      "build-tools-cpp:third-command",
-      "build-tools-cpp:show",
-      "build-tools-cpp:settings",
-      "build-tools-cpp:commands"
+      "build-tools:first-command",
+      "build-tools:second-command",
+      "build-tools:third-command",
+      "build-tools:show",
+      "build-tools:settings",
+      "build-tools:commands"
     ]
   },
   "license": "MIT",
@@ -27,10 +27,7 @@
   "keywords": [
     "build",
     "compile",
-    "make",
     "tools",
-    "c",
-    "c++",
     "projects"
   ],
   "providedServices": {

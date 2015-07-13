@@ -28,7 +28,7 @@ module.exports =
 
     notify: (message) ->
       atom.notifications?.addError message
-      console.log('build-tools-cpp: ' + message)
+      console.log('build-tools: ' + message)
 
     setKey: (key, command) ->
       if @key[key] is null or not ((@key[key].project is command.project) and (@key[key].command is command.name))

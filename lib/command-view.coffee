@@ -14,7 +14,7 @@ class CommandView extends View
           @div class:'settings-name', 'Command Name'
           @div =>
             @span class:'inline-block text-subtle', 'Name of command when using '
-            @span class:'inline-block highlight', 'build-tools-cpp:commands'
+            @span class:'inline-block highlight', 'build-tools:commands'
         @subview 'command_name', new TextEditorView(mini:true)
         @div id:'name-error-none' ,class:'error hidden', 'This field cannot be empty'
         @div id:'name-error-used' ,class:'error hidden', 'Name already used in this project'
@@ -66,7 +66,7 @@ class CommandView extends View
         @label =>
           @div class:'settings-name', 'Execute in shell'
           @div =>
-            @span class:'inline-block text-subtle', 'Execute the command in your OS\'s shell. Change "Shell Command" in build-tools-cpp\'s settings if you are not using bash or use windows'
+            @span class:'inline-block text-subtle', 'Execute the command in your OS\'s shell. Change "Shell Command" in build-tools\'s settings if you are not using bash or use windows'
       @div class:'block checkbox', =>
         @input id:'wildcards', type:'checkbox'
         @label =>

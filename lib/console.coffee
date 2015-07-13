@@ -82,7 +82,7 @@ module.exports =
 
     finishConsole: (exitcode) ->
       @find('.filelink').on 'click', @openFile
-      if (t = atom.config.get('build-tools-cpp.CloseOnSuccess')) > -1 and exitcode is 0
+      if (t = atom.config.get('build-tools.CloseOnSuccess')) > -1 and exitcode is 0
         if t is 0
           @hideBox()
         else

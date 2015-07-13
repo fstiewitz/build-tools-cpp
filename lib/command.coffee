@@ -82,7 +82,7 @@ module.exports =
     parseCommand: ->
       {command,wd} = @replaceWildcards()
       if @shell
-        sh = atom.config.get('build-tools-cpp.ShellCommand')
+        sh = atom.config.get('build-tools.ShellCommand')
         sha = sh.split(' ')
         args = sha.slice(1)
         args.push(command)
