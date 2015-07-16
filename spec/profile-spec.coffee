@@ -59,20 +59,21 @@ Profile.profile 'apm test', {
   '          at /home/fabian/Apps/atom-build/Atom/resources/app.asar/node_modules/q/q.js:564:44'
   '          at flush (/home/fabian/Apps/atom-build/Atom/resources/app.asar/node_modules/q/q.js:110:17)'
   '          at process._tickCallback (node.js:357:13)'
-  'Linter Service'
-  '  it has all necessary properties'
-  '    Expected Function not to be defined. (spec/linter-spec.coffee:9:31)'
+  'RegExp tests'
+  '  Simple regex'
+  '    it returns the correct match'
+  '      TypeError: Cannot read property \'groups\' of undefined (spec/regex-spec.coffee:16:18)'
 ],
 [
-  {type: 'trace', message: 'Error: Expected undefined to be \'test/src/def.h\'.', file: '/home/fabian/.atom/packages/build-tools-cpp/spec/profile-spec.coffee'    , row: '340', col: '15' },
-  {type: 'trace', message: 'Error: Expected undefined to be \'test/src/def.h\'.', file: '/home/fabian/Apps/atom-build/Atom/resources/app.asar/node_modules/q/q.js', row: '794', col: '54' },
-  {type: 'trace', message: 'Error: Expected undefined to be \'test/src/def.h\'.', file: '/home/fabian/Apps/atom-build/Atom/resources/app.asar/node_modules/q/q.js', row: '823', col: '30'},
-  {type: 'trace', message: 'Error: Expected undefined to be \'test/src/def.h\'.', file: '/home/fabian/Apps/atom-build/Atom/resources/app.asar/node_modules/q/q.js', row: '756', col: '13'},
-  {type: 'trace', message: 'Error: Expected undefined to be \'test/src/def.h\'.', file: '/home/fabian/Apps/atom-build/Atom/resources/app.asar/node_modules/q/q.js', row: '564', col: '44'},
-  {type: 'trace', message: 'Error: Expected undefined to be \'test/src/def.h\'.', file: '/home/fabian/Apps/atom-build/Atom/resources/app.asar/node_modules/q/q.js', row: '110', col: '17'},
-  {type: 'trace', message: 'Error: Expected undefined to be \'test/src/def.h\'.', file: 'node.js'                                                                 , row: '357', col: '13'},
-  {type: 'error', message: 'Error: Expected undefined to be \'test/src/def.h\'.', file: '/home/fabian/.atom/packages/build-tools-cpp/spec/profile-spec.coffee'    , row: '183', col: '32' }
-  {type: 'error', message: 'Expected Function not to be defined'                , file: 'spec/linter-spec.coffee'                                                 , row: '9'  , col: '31'}
+  {type: 'trace', message: 'Error: Expected undefined to be \'test/src/def.h\'.'    , file: '/home/fabian/.atom/packages/build-tools-cpp/spec/profile-spec.coffee'    , row: '340', col: '15' },
+  {type: 'trace', message: 'Error: Expected undefined to be \'test/src/def.h\'.'    , file: '/home/fabian/Apps/atom-build/Atom/resources/app.asar/node_modules/q/q.js', row: '794', col: '54' },
+  {type: 'trace', message: 'Error: Expected undefined to be \'test/src/def.h\'.'    , file: '/home/fabian/Apps/atom-build/Atom/resources/app.asar/node_modules/q/q.js', row: '823', col: '30'},
+  {type: 'trace', message: 'Error: Expected undefined to be \'test/src/def.h\'.'    , file: '/home/fabian/Apps/atom-build/Atom/resources/app.asar/node_modules/q/q.js', row: '756', col: '13'},
+  {type: 'trace', message: 'Error: Expected undefined to be \'test/src/def.h\'.'    , file: '/home/fabian/Apps/atom-build/Atom/resources/app.asar/node_modules/q/q.js', row: '564', col: '44'},
+  {type: 'trace', message: 'Error: Expected undefined to be \'test/src/def.h\'.'    , file: '/home/fabian/Apps/atom-build/Atom/resources/app.asar/node_modules/q/q.js', row: '110', col: '17'},
+  {type: 'trace', message: 'Error: Expected undefined to be \'test/src/def.h\'.'    , file: 'node.js'                                                                 , row: '357', col: '13'},
+  {type: 'error', message: 'Error: Expected undefined to be \'test/src/def.h\'.'    , file: '/home/fabian/.atom/packages/build-tools-cpp/spec/profile-spec.coffee'    , row: '183', col: '32' }
+  {type: 'error', message: 'TypeError: Cannot read property \'groups\' of undefined', file: 'spec/regex-spec.coffee'                                                  , row: '16'  , col: '18'}
 ],
 [
   [],
@@ -93,7 +94,8 @@ Profile.profile 'apm test', {
   [{file: 'node.js'                                                                 , row: '357', col: '13', start: 36, end: 49}],
   [],
   [],
-  [{file: 'spec/linter-spec.coffee', row: '9', col: '31', start: 42, end: 69}]
+  [],
+  [{file: 'spec/regex-spec.coffee', row: '16', col: '18', start: 61, end: 88}]
 ]
 
 Profile.profile 'Java', {

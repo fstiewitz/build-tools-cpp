@@ -10,7 +10,7 @@ module.exports =
     error_string_file: '^ \n
     [\\s]+ #Indentation \n
     (?<message> .+) #Message \n
-    \\.\\s\\( #File \n
+    \\.?\\s\\( #File \n
       (?<file> [\\S]+\\.(?extensions)): #File \n
       ((?<row> [\\d]+)(:(?<col> [\\d]+))?)? #Row and column \n
     \\) \n
