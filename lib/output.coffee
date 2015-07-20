@@ -24,20 +24,19 @@ module.exports =
 
     in: (message) ->
       lines = message.split('\n')
-      for line in lines
-        if line isnt ''
+      for line,index in lines
+        if line isnt '' or (line is '' and index isnt lines.length - 1)
+          @lines.push @printfunc @buildHTML line, ''
           @parse line
 
     parse: (line) ->
       format = @settings.stream.highlighting
       if format is 'ha'
-        @printfunc @buildHTML line, 'warning'
+        @print input: line, type: 'warning'
       else if format is 'ht'
-        @printfunc @buildHTML line, @parseTags line
+        @print input: line, type: @parseTags line
       else if format is 'hc' and @profile?
         @profile.in line
-      else
-        @printfunc @buildHTML line
 
     parseTags: (line) ->
       if (r=/(error|warning):/g.exec(line))? then r[1] else ''
@@ -60,7 +59,7 @@ module.exports =
               prev = end
             @span message.substr(prev+1) if prev isnt message.length - 1
           else
-            @span message
+            @span if message is '' then ' ' else message
 
     absolutePath: (relpath) =>
       return fp if fs.existsSync(fp=path.resolve(@settings.project, @settings.wd, relpath))
@@ -81,12 +80,14 @@ module.exports =
       }
 
     replacePrevious: (new_lines) =>
-      start = @lines.length - new_lines.length
+      start = @lines.length - new_lines.length - 1
       for line, index in new_lines
-        item = @buildHTML line.input, line.highlighting
+        item = @buildHTML line.input, if line.highlighting? then line.highlighting else line.type
         $(@lines[start + index]).prop('class', item.prop('class'))
         $(@lines[start + index]).html(item.html())
 
     print: (match) =>
-      line = @printfunc @buildHTML match.input, if match.highlighting? then match.highlighting else match.type
-      @lines.push line
+      line = @buildHTML match.input, if match.highlighting? then match.highlighting else match.type
+      id = @lines.length - 1
+      $(@lines[id]).prop('class', line.prop('class'))
+      $(@lines[id]).html(line.html())
