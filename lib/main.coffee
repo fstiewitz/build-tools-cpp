@@ -103,7 +103,7 @@ module.exports =
 
   saveall: ->
     for editor in atom.workspace.getTextEditors()
-      editor.save() if editor.isModified()
+      editor.save() if editor.isModified() and editor.getPath()?
 
   lint: ->
     atom.commands.dispatch(atom.views.getView(atom.workspace), "linter:lint")
