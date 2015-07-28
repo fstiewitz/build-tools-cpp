@@ -19,7 +19,7 @@ module.exports =
       @on 'click','.icon-close', =>
         @hideBox()
       @on 'mousedown', '.header', @startResize
-      return
+      @timeout = null
 
     serialize: ->
 
@@ -27,6 +27,7 @@ module.exports =
       @hideBox()
       @panel?.destroy()
       @panel = null
+      @timeout = null
 
     detach: ->
       @panel?.hide()
@@ -70,6 +71,7 @@ module.exports =
 
     clear: ->
       @find('.output').text('')
+      clearTimeout @timeout if @timeout?
 
     openFile: (element) ->
       lineno = parseInt($(this).attr('row'))
@@ -86,8 +88,9 @@ module.exports =
         if t is 0
           @hideBox()
         else
-          setTimeout( =>
+          @timeout = setTimeout( =>
             @hideBox()
+            @timeout = null
           ,t * 1000)
 
     printLine: (message) =>
