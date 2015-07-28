@@ -57,8 +57,8 @@ module.exports =
       'build-tools:settings': ->
         atom.workspace.open(settingsviewuri)
       'build-tools:commands': => @selection()
-      'core:cancel': @cancel
-      'core:close': @cancel
+      'core:cancel': => @cancel()
+      'core:close': => @cancel()
     @subscriptions.add atom.project.onDidChangePaths ->
       settingsview?.reload()
 
@@ -86,9 +86,8 @@ module.exports =
     @process?.kill()
     @process = null
 
-  cancel: =>
-    if @process?
-      @kill()
+  cancel: ->
+    @kill()
     consoleview?.cancel()
 
   selection: ->
@@ -116,6 +115,7 @@ module.exports =
     consoleview?.clear() if clear
     ll.messages = [] if clear
     consoleview?.unlock()
+    @kill()
     @process = new BufferedProcess(
       command: cmd
       args: args
@@ -141,12 +141,14 @@ module.exports =
             "<span class='error'>finished with exitcode #{exitcode}</span>"
           )
         @lint() if (@command_list.length is 0) or exitcode isnt 0
+        @process = null
       )
     @process.onWillThrowError ({error, handle}) =>
       consoleview?.hideOutput()
       consoleview?.setHeader("#{res.name} of #{res.project}: received #{error}")
       consoleview?.lock()
       @command_list = []
+      @process = null
       handle()
 
   execute: (id) ->
