@@ -13,7 +13,8 @@ module.exports =
     targetOf: []
     version: null
 
-    constructor: ({@project,@name,@command,@wd,@shell,@wildcards,@stdout,@stderr,@targetOf,@version}) ->
+    constructor: ({@project,@name,@command,@wd,@shell,@wildcards,@stdout,@stderr,@targetOf,@version}, _command) ->
+      @command = _command if _command?
       @targetOf = [] if not @targetOf?
       if not @version?
         @version = 1

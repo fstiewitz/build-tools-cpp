@@ -8,6 +8,9 @@
         { 'label': 'Run first command', 'command': 'build-tools:first-command'}
         { 'label': 'Run second command', 'command': 'build-tools:second-command'}
         { 'label': 'Run third command', 'command': 'build-tools:third-command'}
+        { 'label': 'Run first command and ask for arguments', 'command': 'build-tools:first-command-ask'}
+        { 'label': 'Run second command and ask for arguments', 'command': 'build-tools:second-command-ask'}
+        { 'label': 'Run third command and ask for arguments', 'command': 'build-tools:third-command-ask'}
         { 'label': 'Show build settings', 'command': 'build-tools:settings'}
         { 'label': 'Show commands', 'command': 'build-tools:commands'}
       ]

@@ -9,6 +9,9 @@
       "build-tools:first-command",
       "build-tools:second-command",
       "build-tools:third-command",
+      "build-tools:first-command-ask",
+      "build-tools:second-command-ask",
+      "build-tools:third-command-ask",
       "build-tools:show",
       "build-tools:settings",
       "build-tools:commands"
