@@ -1,4 +1,4 @@
-command = require './command'
+Command = require './command'
 ll = require './linter-list'
 Profiles = require './profiles/profiles'
 
@@ -13,6 +13,13 @@ consoleview= null
 
 SelectionView= null
 selectionview= null
+
+AskView = null
+askview = null
+
+createAskView = ->
+  AskView ?= require './ask-view'
+  askview ?= new AskView
 
 createConsoleView= ->
   ConsoleView ?= require './console'
@@ -53,6 +60,9 @@ module.exports =
       'build-tools:third-command': => @execute(2)
       'build-tools:second-command': => @execute(1)
       'build-tools:first-command': => @execute(0)
+      'build-tools:third-command-ask': => @execute(2, true)
+      'build-tools:second-command-ask': => @execute(1, true)
+      'build-tools:first-command-ask': => @execute(0, true)
       'build-tools:show': @show
       'build-tools:settings': ->
         atom.workspace.open(settingsviewuri)
@@ -69,6 +79,9 @@ module.exports =
     consoleview?.destroy()
     consoleview = null
     ConsoleView = null
+    askview?.destroy()
+    askview = null
+    AskView = null
     selectionview?.destroy()
     selectionview = null
     SelectionView = null
@@ -151,7 +164,7 @@ module.exports =
       @process = null
       handle()
 
-  execute: (id) ->
+  execute: (id, ask = false) ->
     @saveall() if atom.config.get('build-tools.SaveAll')
     if (path=atom.workspace.getActiveTextEditor()?.getPath())?
       if (projectpath=@projects.getNextProjectPath path) isnt ''
@@ -166,9 +179,17 @@ module.exports =
         else
           command = project.getCommandByIndex id
         if command?
-          @command_list = @projects.generateDependencyList command
-          ll.messages = []
-          @spawn @command_list.splice(0,1)[0]
+          if ask
+            createAskView()
+            askview.show command.command, (c) =>
+              _command = new Command(command, c)
+              @command_list = @projects.generateDependencyList _command
+              ll.messages = []
+              @spawn @command_list.splice(0,1)[0]
+          else
+            @command_list = @projects.generateDependencyList command
+            ll.messages = []
+            @spawn @command_list.splice(0,1)[0]
 
   provideLinter: ->
     grammarScopes: ['*']
