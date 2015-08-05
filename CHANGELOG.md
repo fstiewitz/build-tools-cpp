@@ -1,3 +1,7 @@
+## 3.1.0 - Ask before execution
+* Added 3 new commands (`first/second/third-command-ask`, `ctrl+l o/i/u`) that let you change the command before executing it (e.g. to enter `make` targets)
+* Fix small visual bug in modal panels
+
 ## 3.0.0 - Profiles
 * <b> build-tools-cpp is now build-tools
 * Same disclaimer as v2.0.0: This is a large update. I've added more jasmine specs but I can never be sure that everything works. If you encounter any strange package behaviour or bugs, please let me know.

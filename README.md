@@ -20,6 +20,7 @@ build-tools (prev. build-tools-cpp)
 * `ctrl+l ctrl+l` to list all commands of a project
 * `ctrl+l ctrl+,` to open per-project settings
 * `ctrl+l ctrl+s` to show console output
+* `ctrl+l u/i/o` lets you view and change the command before executing it
 
 ## Settings
 ### Commands
