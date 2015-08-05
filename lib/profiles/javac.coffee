@@ -10,7 +10,7 @@ module.exports =
     regex_string: '
     (?<file> [\\S]+\\.(?extensions)): #File \n
     (?<row> [\\d]+)? #Row \n
-    :\\s(?<type> error): \n
+    :\\s(?<type> error|warning): \n
     [\\s]* (?<message> [\\S\\s]+) #Type and Message \n
     '
 
@@ -40,13 +40,11 @@ module.exports =
     in: (line) ->
       if (m = XRegExp.exec line, @regex)? #Start of error message
         @status = m.type
-        @indentation= line.indexOf(m.file)
         @output.print m
         @lint m
-      else if @indentation? and line.slice(@indentation)[0] isnt ' ' #End of error message
-        @output.print input: line
+      else if /\s+\^\s*/.test(line) #End of error message
+        @output.print input: line, type: @status
         @status = null
-        @indentation = null
       else if @status? #Inside error message
         @output.print input: line, type: @status
       else #Rest
