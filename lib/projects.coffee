@@ -34,7 +34,7 @@ module.exports =
       @setData(false)
       @data = {}
 
-    reload: (event,filename) =>
+    reload: (event, filename) =>
       if not @writing
         @getData() if @filename?
         @emitter.emit 'file-change'
@@ -42,7 +42,7 @@ module.exports =
         @writing = false
 
     getFileName: ->
-      @filename = path.join(path.dirname(atom.config.getUserConfigPath()),"build-tools-cpp.projects")
+      @filename = path.join(path.dirname(atom.config.getUserConfigPath()), 'build-tools-cpp.projects')
 
     onFileChange: (callback) ->
       @emitter.on 'file-change', callback
@@ -55,7 +55,7 @@ module.exports =
       catch error
         @notify 'Error while reading settings from file'
 
-    setData: (emit = true)=>
+    setData: (emit = true) =>
       if @filename?
         try
           @writing = true
@@ -76,24 +76,24 @@ module.exports =
           #Removed dependency
           project = @data[removed.to.project]
           command = project.getCommand removed.to.command
-          for target,i in command.targetOf
+          for target, i in command.targetOf
             if (removed.from.project is target.project) and (removed.from.command is target.command)
-              command.targetOf.splice(i,1)
+              command.targetOf.splice(i, 1)
               break
         else if removed['targetOf']?
           #Removed command
           for target in removed.targetOf
             if target.command?
               project = @data[target.project]
-              project.dependencies = project.dependencies.filter (value) =>
+              project.dependencies = project.dependencies.filter (value) ->
                 not ((value.from.project is target.project) and (value.from.command is target.command))
             else
               project = @data[target.project]
-              for key in ['make','configure','preconfigure']
+              for key in ['make', 'configure', 'preconfigure']
                 project.key[key] = null if (project.key[key]?.project is removed.project) and (project.key[key]?.command is removed.name)
           project = @data[removed.project]
           omit = []
-          project.dependencies = project.dependencies.filter (value) =>
+          project.dependencies = project.dependencies.filter (value) ->
             omit.push(value) if (res = (value.from.command is removed.name))
             not res
           for dep in omit
@@ -101,9 +101,9 @@ module.exports =
         else
           #Removed key binding
           command = @data[removed.key.project].getCommand(removed.key.command).targetOf
-          for c,i in command
+          for c, i in command
             if (c.project is removed.project) and (c.command is null)
-              command.splice(i,1)
+              command.splice(i, 1)
               break
       if added?
         if added['key']?
@@ -122,24 +122,24 @@ module.exports =
           replaced.new.targetOf.push(target)
           if target.command?
             project = @data[target.project]
-            project.dependencies.forEach (value,index) ->
+            project.dependencies.forEach (value, index) ->
               project.dependencies[index].to.command = replaced.new.name if (value.from.project is target.project) and (value.from.command is target.command)
           else
             project = @data[target.project]
-            for key in ['make','configure','preconfigure']
+            for key in ['make', 'configure', 'preconfigure']
               project.key[key].command = replaced.new.name if (project.key[key]?.project is replaced.old.project) and (project.key[key]?.command is replaced.old.name)
 
         project = @data[replaced.old.project]
-        project.dependencies.forEach (value,index) =>
+        project.dependencies.forEach (value, index) =>
           if value.from.command is replaced.old.name
             project.dependencies[index].from.command = replaced.new.name
             command = @data[value.to.project].getCommand(value.to.command)
-            command.targetOf.forEach (value,index) ->
+            command.targetOf.forEach (value, index) ->
               command.targetOf[index].command = replaced.new.name if value.command is replaced.old.name
 
     generateDependencyList: (command, omit = []) ->
       commands = []
-      contains= ->
+      contains = ->
         for obj in omit
           if (obj.project is command.project) and (obj.name is command.name)
             return true
@@ -150,7 +150,7 @@ module.exports =
           project: command.project
           name: command.name
         }
-        dependencies = @data[command.project].dependencies.filter (value, index) =>
+        dependencies = @data[command.project].dependencies.filter (value, index) ->
           (value.from.command is command.name)
         for dependency in dependencies
           commands = commands.concat(@generateDependencyList @data[dependency.to.project].getCommand(dependency.to.command), omit)
@@ -171,9 +171,9 @@ module.exports =
     getNextProjectPath: (file) ->
       p = file.split(path.sep)
       i = p.length
-      while (i isnt 0) and (@data[p.slice(0,i).join(path.sep)] is undefined)
-        i=i-1
-      p.slice(0,i).join(path.sep)
+      while (i isnt 0) and (@data[p.slice(0, i).join(path.sep)] is undefined)
+        i = i - 1
+      p.slice(0, i).join(path.sep)
 
     getProject: (path) ->
       @data[path]

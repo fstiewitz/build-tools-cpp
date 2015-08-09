@@ -2,20 +2,28 @@
 
 .settings {
   display: flex;
-  overflow: auto;
   -webkit-user-select: none;
   cursor: default;
 
   .project-menu {
-    flex: 2 none;
+    flex: none;
     border-width: 0 1px 0 0;
-    border-color: #1b1b1b;
+    border-color: @base-border-color;
     border-style: solid;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .list-group {
+      flex: 1;
+      overflow-y: auto;
+    }
 
     .project-item {
       list-style: none;
       padding: 10px 5px 10px 5px;
       cursor: pointer;
+      color: @text-color;
 
       .text-subtle {
         overflow-x: hidden;
@@ -23,19 +31,28 @@
 
       &:hover {
         background-color: @background-color-highlight;
+        color: @text-color-highlight;
       }
     }
 
     .active {
-      background-color: @background-color-highlight;
+      background-color: @background-color-selected;
+      color: @text-color-selected;
+
+      &:hover {
+        background-color: @background-color-selected;
+        color: @text-color-selected;
+      }
     }
   }
 
   .project-menu-options {
     margin: 5px;
     border-width: 1px 0 0 0;
-    border-color: #1b1b1b;
+    border-color: @base-border-color;
     border-style: solid;
+    position: relative;
+    bottom: 0;
   }
 
   .checkbox {
@@ -112,40 +129,15 @@
   }
 
  .panel {
-    flex: 8;
+    flex: 1;
     padding: 5px 20px 5px 20px;
-
-    .project-header {
-      color: @text-color-highlight;
-      font-size: 2em;
-      font-weight: bold;
-      border-width: 0 0 1px 0;
-      border-color: #1b1b1b;
-      border-style: solid;
-    }
-
-    .section {
-      border-width: 0 0 1px 0;
-      border-color: #1b1b1b;
-      border-style: solid;
-    }
-
-    .section-header {
-      display: inline;
-      margin: 0 5px 0 0;
-      color: @text-color-highlight;
-      font-size: 1.75em;
-      font-weight: bold;
-    }
-
-    .key-bindings {
-      padding: 0 0 5px 0;
-    }
+    overflow-y: auto;
 
     .key-bind {
       display: flex;
       flex: none;
       justify-content: space-between;
+      align-items: baseline;
     }
 
     .key-desc {
@@ -162,9 +154,12 @@
       display: none;
     }
 
+    .section-header {
+      margin: 0 5px 0 0;
+    }
+
     .command-container {
       display: flex;
-      padding: 5px 0 0 0;
 
       .key-info {
         flex: none;
@@ -174,7 +169,7 @@
       .command-menu {
         flex: auto;
         border-width: 0 0 0 1px;
-        border-color: #1b1b1b;
+        border-color: @base-border-color;
         border-style: solid;
 
         .command-list {

@@ -4,19 +4,19 @@
 module.exports =
   class AskView extends View
     @content: ->
-      @div class:'ask-view', =>
-        @div class:'block', =>
+      @div class: 'ask-view', =>
+        @div class: 'block', =>
           @label =>
-            @div class:'settings-name', 'Command'
+            @div class: 'settings-name', 'Command'
           @subview 'command', new TextEditorView(mini: true)
-          @div id:'command-none', class:'error hidden', 'Command cannot be empty'
-        @div class:'buttons', =>
-          @div class: 'btn btn-error icon icon-close inline-block-tight', 'Cancel'
+          @div id: 'command-none', class: 'error hidden', 'Command cannot be empty'
+        @div class: 'buttons', =>
+          @div class: 'btn btn-error icon icon-x inline-block-tight', 'Cancel'
           @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
     initialize: ->
       @Command = @command.getModel()
 
-      @on 'click', '.buttons .icon-close', @cancel
+      @on 'click', '.buttons .icon-x', @cancel
       @on 'click', '.buttons .icon-check', @accept
 
       @disposables = new CompositeDisposable

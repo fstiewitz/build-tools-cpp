@@ -71,7 +71,7 @@ module.exports =
             if not m.message? and m.message isnt ' '
               m.message = 'Referenced'
             else if m.message.endsWith ' '
-              m.message = m.message.split(0,-1)
+              m.message = m.message.split(0, -1)
             @lastMatch.trace.push @output.createMessage m #Message to Traceback
             m.message = @lastMatch.message
             @lint m #Trace message to Linter

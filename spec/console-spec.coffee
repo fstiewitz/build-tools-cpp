@@ -6,16 +6,16 @@ describe 'Console View', ->
 
   data = {}
   input_stdout = [
-    "test output",
-    "../src/test.c:3",
-    "test.c: 2: error: Something"
+    'test output',
+    '../src/test.c:3',
+    'test.c: 2: error: Something'
   ]
   input_stderr = [
-    "stderr test",
-    "../src/test.c:4:2: error: Something",
-    "foo",
-    "^",
-    "stderr"
+    'stderr test',
+    '../src/test.c:4:2: error: Something',
+    'foo',
+    '^',
+    'stderr'
   ]
 
   beforeEach ->
@@ -130,7 +130,47 @@ describe 'Console View', ->
         expect(content[1].children[0].innerHTML).toBe '../src/test.c:3'
         link = content[4].children[1]
         expect(link.classList.contains('filelink')).toBeTruthy()
-        expect(link.attributes['name'].value).toBe path.join(fixturesPath,'src','test.c')
+        expect(link.attributes['name'].value).toBe path.join(fixturesPath, 'src', 'test.c')
         expect(link.attributes['row'].value).toBe '4'
         expect(link.attributes['col'].value).toBe '2'
         expect(link.innerHTML).toBe '../src/test.c:4:2'
+
+  describe 'When single command is executed', ->
+    beforeEach ->
+      view.setQueueCount 1
+
+    it 'creates an indeterminate progress bar', ->
+      expect(view.progress.attr('value')).not.toBeDefined()
+
+    describe 'and fails', ->
+      it 'shows an empty progress bar', ->
+        view.setQueueCount(0)
+        expect(view.progress.attr('value')).toBe '0'
+
+    describe 'and succeeds', ->
+      it 'shows a full progress bar', ->
+        view.setQueueLength(0)
+        expect(view.progress.attr('value')).toBe '1'
+
+  describe 'When two commands are executed', ->
+    beforeEach ->
+      view.setQueueCount 2
+
+    it 'creates a determinate progress bar', ->
+      expect(view.progress.attr('value')).toBe '0'
+      expect(view.progress.attr('max')).toBe '2'
+
+    describe 'and the first command fails', ->
+      it 'shows an empty progress bar', ->
+        view.setQueueLength(2)
+        expect(view.progress.attr('value')).toBe '0'
+
+    describe 'and the second command fails', ->
+      it 'shows a 50% progress bar', ->
+        view.setQueueLength(1)
+        expect(view.progress.attr('value')).toBe '1'
+
+    describe 'and both commands succeed', ->
+      it 'shows a full progress bar', ->
+        view.setQueueLength(0)
+        expect(view.progress.attr('value')).toBe '2'

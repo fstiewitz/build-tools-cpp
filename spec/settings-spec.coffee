@@ -66,11 +66,11 @@ describe 'Settings Page', ->
       cmd.name = 'Test command 2'
       project.addCommand cmd
       project.addDependency dep
-      expect(view.find('.dependency .text-success').html()).toBe 'Test command'
+      expect(view.find('.dependency .text-info').html()).toBe 'Test command'
 
   describe 'When multiple projects are open', ->
     it 'removes the shared path', ->
-      expect(view.removeSharedPath ['abc/def','abc/ghj']).toEqual ['def','ghj']
+      expect(view.removeSharedPath ['/abc/def/ghi', '/abc/def/ghj', '/abc/klm/abc']).toEqual ['def/ghi', 'def/ghj', 'klm/abc']
 
   describe 'On add command click', ->
     it 'opens the command view', ->
@@ -89,7 +89,7 @@ describe 'Settings Page', ->
   describe 'On edit command click', ->
     it 'opens command view', ->
       project.addCommand cmd
-      icon = view.find('.command .icon-edit')
+      icon = view.find('.command .icon-pencil')
       expect(icon.length).toBe 1
       icon.click()
       expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
@@ -115,7 +115,7 @@ describe 'Settings Page', ->
       cmd.name = 'Test command 2'
       project.addCommand cmd
       project.addDependency dep
-      icon = view.find('.dependency .icon-edit')
+      icon = view.find('.dependency .icon-pencil')
       expect(icon.length).toBe 1
       icon.click()
       expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()

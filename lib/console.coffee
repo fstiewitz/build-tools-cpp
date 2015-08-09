@@ -1,13 +1,17 @@
-{$,View} = require 'atom-space-pen-views'
+{$, View} = require 'atom-space-pen-views'
 output = require './output'
 
 module.exports =
   class ConsoleOutput extends View
     @content: ->
-      @div class:'console', =>
+      @div class: 'console', =>
         @div class: 'header', =>
-          @div class: 'name bold', outlet: 'name'
-          @div class: 'icon-close'
+          @div class: 'titlebar', =>
+            @progress class: 'inline-block', outlet: 'progress'
+            @div class: 'name bold', outlet: 'name'
+          @div class: 'icons', =>
+            @div class: 'icon-link-external hidden'
+            @div class: 'icon-x'
         @div class: 'output hidden', outlet: 'output'
 
     visible_items:
@@ -16,12 +20,14 @@ module.exports =
     lockoutput: false
 
     initialize: ->
-      @on 'click','.icon-close', =>
+      @on 'click', '.icon-x', =>
         @hideBox()
+      @on 'click', '.icon-link-external', =>
+        @showExternal()
       @on 'mousedown', '.header', @startResize
       @timeout = null
-
-    serialize: ->
+      @progress.prop('max', '100')
+      @progress.prop('value', '100')
 
     destroy: ->
       @hideBox()
@@ -44,6 +50,16 @@ module.exports =
       @attach() if not @visible_items.header
       @showOutput() if @find('.output').text() isnt ''
       @visible_items.header = true
+
+    showExternal: ->
+      atom.workspace.open(null).then (editor) =>
+        editor.setText @buildText()
+
+    buildText: ->
+      s = []
+      for child in @output.children()
+        s.push child.textContent
+      s.join('\n')
 
     cancel: ->
       @hideBox()
@@ -71,18 +87,20 @@ module.exports =
 
     clear: ->
       @find('.output').text('')
+      @find('.icon-link-external').addClass 'hidden'
       clearTimeout @timeout if @timeout?
 
     openFile: (element) ->
       lineno = parseInt($(this).attr('row'))
-      linecol= parseInt($(this).attr('col'))
+      linecol = parseInt($(this).attr('col'))
       if $(this).attr('name') isnt ''
         atom.workspace.open($(this).attr('name'),
-          initialLine: lineno-1
-          initialColumn: linecol-1
+          initialLine: lineno - 1
+          initialColumn: linecol - 1
           )
 
     finishConsole: (exitcode) ->
+      @find('.icon-link-external').removeClass 'hidden'
       @find('.filelink').on 'click', @openFile
       if (t = atom.config.get('build-tools.CloseOnSuccess')) > -1 and exitcode is 0
         if t is 0
@@ -91,13 +109,13 @@ module.exports =
           @timeout = setTimeout( =>
             @hideBox()
             @timeout = null
-          ,t * 1000)
+          , t * 1000)
 
     printLine: (message) =>
-      @showOutput() if !@lockoutput
+      @showOutput() if not @lockoutput
       @output.append(message)
       @output.scrollTop(@output[0].scrollHeight)
-      @output[0].children[@output[0].children.length-1]
+      @output[0].children[@output[0].children.length - 1]
 
     setHeader: (name) ->
       @name.html(name)
@@ -112,3 +130,15 @@ module.exports =
       @Output ?= require './output'
       @stdout = new @Output(cmd, 'stdout', @printLine)
       @stderr = new @Output(cmd, 'stderr', @printLine)
+
+    setQueueCount: (@queue) ->
+      if @queue is 1
+        @progress.prop('max', '1')
+        @progress.removeAttr('value')
+      else
+        @progress.prop('max', "#{@queue}")
+        @progress.prop('value', '0')
+
+    setQueueLength: (length) ->
+      p = @queue - length
+      @progress.prop('value', "#{p}")

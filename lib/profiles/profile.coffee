@@ -9,7 +9,7 @@ module.exports =
 
     regex_string: null
 
-    constructor: (@output)->
+    constructor: (@output) ->
       extensions_raw = []
       @extensions = []
       @scopes.forEach (scope) ->
@@ -42,8 +42,8 @@ module.exports =
           text: match.message
           filePath: @output.absolutePath match.file
           range: [
-            [row-1,0]
-            [row-1,col-1]
+            [row - 1, 0]
+            [row - 1, col - 1]
           ]
           trace: match.trace
 

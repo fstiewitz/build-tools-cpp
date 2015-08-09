@@ -1,8 +1,14 @@
 @import "ui-variables";
 .console {
-  .icon-close {
-    position: absolute;
-    right: 5px;
+  .icons {
+    display: flex;
+    flex: none;
+  }
+
+  .titlebar {
+    display: flex;
+    flex: none;
+    align-items: baseline;
   }
 
   .bold {
@@ -18,9 +24,11 @@
     border: 1px solid @tab-bar-background-color;
     background-color: @tool-panel-background-color;
     display: flex;
+    justify-content: space-between;
   }
 
   .name {
+    margin: 0 0 0 10px;
     cursor: default;
     height: @component-icon-size;
   }
@@ -33,6 +41,7 @@
     overflow-y: scroll;
     font-family: monospace;
     white-space: pre-wrap;
+    background-color: @inset-panel-background-color;
   }
 
   .hidden {

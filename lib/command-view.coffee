@@ -1,4 +1,4 @@
-{$, $$, View,TextEditorView} = require 'atom-space-pen-views'
+{$, $$, View, TextEditorView} = require 'atom-space-pen-views'
 {CompositeDisposable} = require 'atom'
 
 module.exports =
@@ -9,134 +9,138 @@ class CommandView extends View
 
   @content: ->
     @div class: 'commandview', =>
-      @div class:'block', =>
-        @label =>
-          @div class:'settings-name', 'Command Name'
-          @div =>
-            @span class:'inline-block text-subtle', 'Name of command when using '
-            @span class:'inline-block highlight', 'build-tools:commands'
-        @subview 'command_name', new TextEditorView(mini:true)
-        @div id:'name-error-none' ,class:'error hidden', 'This field cannot be empty'
-        @div id:'name-error-used' ,class:'error hidden', 'Name already used in this project'
-      @div class:'block', =>
-        @label =>
-          @div class:'settings-header', =>
-            @div class:'settings-name', 'Command'
-            @div class:'wildcard-info icon-info', =>
-              @div class:'content', =>
-                @div class:'text-highlight bold', 'Wildcards'
-                @div class:'info', =>
-                  @div class:'col', =>
-                    @div class:'text-subtle', 'Current File'
-                    @div class:'text-subtle', 'Base Path'
-                    @div class:'text-subtle', 'Folder (rel.)'
-                    @div class:'text-subtle', 'File (no ext.)'
-                  @div class:'col', =>
-                    @div class:'text-highlight', '%f'
-                    @div class:'text-highlight', '%b'
-                    @div class:'text-highlight', '%d'
-                    @div class:'text-highlight', '%e'
-          @div =>
-            @span class:'inline-block text-subtle', 'Command to execute '
-        @subview 'command_text', new TextEditorView(mini:true)
-        @div id:'command-error-none' ,class:'error hidden', 'This field cannot be empty'
-      @div class:'block', =>
-        @label =>
-          @div class:'settings-header', =>
-            @div class:'settings-name', 'Working Directory'
-            @div class:'wildcard-info icon-info', =>
-              @div class:'content', =>
-                @div class:'text-highlight bold', 'Wildcards'
-                @div class:'info', =>
-                  @div class:'col', =>
-                    @div class:'text-subtle', 'Current File'
-                    @div class:'text-subtle', 'Base Path'
-                    @div class:'text-subtle', 'Folder (rel.)'
-                    @div class:'text-subtle', 'File (no ext.)'
-                  @div class:'col', =>
-                    @div class:'text-highlight', '%f'
-                    @div class:'text-highlight', '%b'
-                    @div class:'text-highlight', '%d'
-                    @div class:'text-highlight', '%e'
-          @div =>
-            @span class:'inline-block text-subtle', 'Directory to execute command in'
-        @subview 'working_directory', new TextEditorView(mini:true, placeholderText: '.')
-      @div class:'block checkbox', =>
-        @input id:'command_in_shell', type:'checkbox'
-        @label =>
-          @div class:'settings-name', 'Execute in shell'
-          @div =>
-            @span class:'inline-block text-subtle', 'Execute the command in your OS\'s shell. Change "Shell Command" in build-tools\'s settings if you are not using bash or use windows'
-      @div class:'block checkbox', =>
-        @input id:'wildcards', type:'checkbox'
-        @label =>
-          @div class:'settings-name', 'Replace Wildcards'
-          @div =>
-            @span class:'inline-block text-subtle', 'Enable if command or working directory contain wildcards'
-      @div class:'streams', =>
-        @div class:'stream', id:'stdout', =>
-          @div class:'small-header', 'stdout'
-          @div class:'block', =>
+      @div class: 'inset-panel', =>
+        @div class: 'panel-heading settings-name icon icon-gear', 'General'
+        @div class: 'panel-body padded', =>
+          @div class: 'block', =>
             @label =>
-              @div class:'settings-name', 'Highlighting'
+              @div class: 'settings-name', 'Command Name'
               @div =>
-                @span class:'inline-block text-subtle', 'How to highlight this stream'
-            @div id:'stdout', class:'btn-group btn-group-sm', outlet:'stdout_highlights', =>
-              @button id:'nh', class:'btn selected', 'No highlighting'
-              @button id:'ha', class:'btn', 'Highlight all'
-              @button id:'ht', class:'btn', 'Lines with error or warning tags'
-              @button id:'hc', class:'btn', 'Custom Profile'
-          @div class:'block hidden', outlet:'stdout_profile_div', =>
+                @span class: 'inline-block text-subtle', 'Name of command when using '
+                @span class: 'inline-block highlight', 'build-tools:commands'
+            @subview 'command_name', new TextEditorView(mini: true)
+            @div id: 'name-error-none', class: 'error hidden', 'This field cannot be empty'
+            @div id: 'name-error-used', class: 'error hidden', 'Name already used in this project'
+          @div class: 'block', =>
             @label =>
-              @div class:'settings-name', 'Profile'
+              @div class: 'settings-header', =>
+                @div class: 'settings-name', 'Command'
+                @div class: 'wildcard-info icon-info', =>
+                  @div class: 'content', =>
+                    @div class: 'text-highlight bold', 'Wildcards'
+                    @div class: 'info', =>
+                      @div class: 'col', =>
+                        @div 'Current File'
+                        @div 'Base Path'
+                        @div 'Folder (rel.)'
+                        @div 'File (no ext.)'
+                      @div class: 'col', =>
+                        @div class: 'text-highlight', '%f'
+                        @div class: 'text-highlight', '%b'
+                        @div class: 'text-highlight', '%d'
+                        @div class: 'text-highlight', '%e'
               @div =>
-                @span class:'inline-block text-subtle', 'Select Highlighting Profile'
-            @select class:'form-control', outlet: 'stdout_profile'
-          @div class:'block checkbox hidden', outlet:'stdout_mark', =>
-            @input id:'mark_paths_stdout', type:'checkbox'
+                @span class: 'inline-block text-subtle', 'Command to execute '
+            @subview 'command_text', new TextEditorView(mini: true)
+            @div id: 'command-error-none', class: 'error hidden', 'This field cannot be empty'
+          @div class: 'block', =>
             @label =>
-              @div class:'settings-name', 'Mark file paths + coordinates'
+              @div class: 'settings-header', =>
+                @div class: 'settings-name', 'Working Directory'
+                @div class: 'wildcard-info icon-info', =>
+                  @div class: 'content', =>
+                    @div class: 'text-highlight bold', 'Wildcards'
+                    @div class: 'info', =>
+                      @div class: 'col', =>
+                        @div 'Current File'
+                        @div 'Base Path'
+                        @div 'Folder (rel.)'
+                        @div 'File (no ext.)'
+                      @div class: 'col', =>
+                        @div class: 'text-highlight', '%f'
+                        @div class: 'text-highlight', '%b'
+                        @div class: 'text-highlight', '%d'
+                        @div class: 'text-highlight', '%e'
               @div =>
-                @span class:'inline-block text-subtle', 'Allows you to click on file paths'
-          @div class:'block checkbox hidden', outlet:'stdout_lint', =>
-            @input id:'lint_stdout', type:'checkbox'
+                @span class: 'inline-block text-subtle', 'Directory to execute command in'
+            @subview 'working_directory', new TextEditorView(mini: true, placeholderText: '.')
+          @div class: 'block checkbox', =>
+            @input id: 'command_in_shell', type: 'checkbox'
             @label =>
-              @div class:'settings-name', 'Lint errors/warnings'
+              @div class: 'settings-name', 'Execute in shell'
               @div =>
-                @span class:'inline-block text-subtle', 'Use Linter package to highlight errors in your code'
-        @div class:'stream', id:'stderr', =>
-          @div class:'small-header', 'stderr'
-          @div class:'block', =>
+                @span class: 'inline-block text-subtle', 'Execute the command in your OS\'s shell. Change "Shell Command" in build-tools\'s settings if you are not using bash or use windows'
+          @div class: 'block checkbox', =>
+            @input id: 'wildcards', type: 'checkbox'
             @label =>
-              @div class:'settings-name', 'Highlighting'
+              @div class: 'settings-name', 'Replace Wildcards'
               @div =>
-                @span class:'inline-block text-subtle', 'How to highlight this stream'
-            @div id:'stderr', class:'btn-group btn-group-sm', outlet:'stderr_highlights', =>
-              @button id:'nh', class:'btn selected', 'No highlighting'
-              @button id:'ha', class:'btn', 'Highlight all'
-              @button id:'ht', class:'btn', 'Lines with error or warning tags'
-              @button id:'hc', class:'btn', 'Custom Profile'
-          @div class:'block hidden', outlet:'stderr_profile_div', =>
+                @span class: 'inline-block text-subtle', 'Enable if command or working directory contain wildcards'
+      @div class: 'inset-panel', =>
+        @div class: 'panel-heading settings-name icon icon-plug', 'stdout'
+        @div class: 'panel-body padded', id: 'stdout', =>
+          @div class: 'block', =>
             @label =>
-              @div class:'settings-name', 'Profile'
+              @div class: 'settings-name', 'Highlighting'
               @div =>
-                @span class:'inline-block text-subtle', 'Select Highlighting Profile'
-            @select class:'form-control', outlet: 'stderr_profile'
-          @div class:'block checkbox hidden', outlet:'stderr_mark', =>
-            @input id:'mark_paths_stderr', type:'checkbox'
+                @span class: 'inline-block text-subtle', 'How to highlight this stream'
+          @div id: 'stdout', class: 'btn-group btn-group-sm', outlet: 'stdout_highlights', =>
+            @button id: 'nh', class: 'btn selected', 'No highlighting'
+            @button id: 'ha', class: 'btn', 'Highlight all'
+            @button id: 'ht', class: 'btn', 'Lines with error tags'
+            @button id: 'hc', class: 'btn', 'Custom Profile'
+          @div class: 'block hidden', outlet: 'stdout_profile_div', =>
             @label =>
-              @div class:'settings-name', 'Mark file paths + coordinates'
+              @div class: 'settings-name', 'Profile'
               @div =>
-                @span class:'inline-block text-subtle', 'Allows you to click on file paths'
-          @div class:'block checkbox hidden', outlet:'stderr_lint', =>
-            @input id:'lint_stderr', type:'checkbox'
+                @span class: 'inline-block text-subtle', 'Select Highlighting Profile'
+            @select class: 'form-control', outlet: 'stdout_profile'
+          @div class: 'block checkbox hidden', outlet: 'stdout_mark', =>
+            @input id: 'mark_paths_stdout', type: 'checkbox'
             @label =>
-              @div class:'settings-name', 'Lint errors/warnings'
+              @div class: 'settings-name', 'Mark file paths + coordinates'
               @div =>
-                @span class:'inline-block text-subtle', 'Use Linter package to highlight errors in your code'
-        @div class:'buttons', =>
-          @div class: 'btn btn-error icon icon-close inline-block-tight', 'Cancel'
-          @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
+                @span class: 'inline-block text-subtle', 'Allows you to click on file paths'
+          @div class: 'block checkbox hidden', outlet: 'stdout_lint', =>
+            @input id: 'lint_stdout', type: 'checkbox'
+            @label =>
+              @div class: 'settings-name', 'Lint errors/warnings'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Use Linter package to highlight errors in your code'
+      @div class: 'inset-panel', =>
+        @div class: 'panel-heading settings-name icon icon-plug', 'stderr'
+        @div class: 'panel-body padded', id: 'stderr', =>
+          @div class: 'block', =>
+            @label =>
+              @div class: 'settings-name', 'Highlighting'
+              @div =>
+                @span class: 'inline-block text-subtle', 'How to highlight this stream'
+          @div id: 'stderr', class: 'btn-group btn-group-sm', outlet: 'stderr_highlights', =>
+            @button id: 'nh', class: 'btn selected', 'No highlighting'
+            @button id: 'ha', class: 'btn', 'Highlight all'
+            @button id: 'ht', class: 'btn', 'Lines with error tags'
+            @button id: 'hc', class: 'btn', 'Custom Profile'
+          @div class: 'block hidden', outlet: 'stderr_profile_div', =>
+            @label =>
+              @div class: 'settings-name', 'Profile'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Select Highlighting Profile'
+            @select class: 'form-control', outlet: 'stderr_profile'
+          @div class: 'block checkbox hidden', outlet: 'stderr_mark', =>
+            @input id: 'mark_paths_stderr', type: 'checkbox'
+            @label =>
+              @div class: 'settings-name', 'Mark file paths + coordinates'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Allows you to click on file paths'
+          @div class: 'block checkbox hidden', outlet: 'stderr_lint', =>
+            @input id: 'lint_stderr', type: 'checkbox'
+            @label =>
+              @div class: 'settings-name', 'Lint errors/warnings'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Use Linter package to highlight errors in your code'
+      @div class: 'buttons', =>
+        @div class: 'btn btn-error icon icon-x inline-block-tight', 'Cancel'
+        @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
 
   initialize: (@callback) ->
     @disposables = new CompositeDisposable
@@ -170,11 +174,11 @@ class CommandView extends View
           @stderr_mark.addClass('hidden')
           @stderr_lint.addClass('hidden')
 
-    @on 'click', '.checkbox label', (e) =>
+    @on 'click', '.checkbox label', (e) ->
       item = $(e.currentTarget.parentNode.children[0])
       item.prop('checked', not item.prop('checked'))
 
-    @on 'click', '.buttons .icon-close', @cancel
+    @on 'click', '.buttons .icon-x', @cancel
     @on 'click', '.buttons .icon-check', @accept
 
     @disposables.add atom.commands.add @element,
@@ -202,7 +206,7 @@ class CommandView extends View
         version: 1
         name: @nameEditor.getText()
         command: @commandEditor.getText()
-        wd: if (d=@wdEditor.getText()) is '' then '.' else d
+        wd: if (d = @wdEditor.getText()) is '' then '.' else d
         shell: @find('#command_in_shell').prop('checked')
         wildcards: @find('#wildcards').prop('checked')
         stdout:
@@ -220,7 +224,7 @@ class CommandView extends View
     event.stopPropagation()
 
   validName: ->
-    ((n=@nameEditor.getText()) isnt '') and ((n is @oldname) or (@project.getCommandIndex(n) is -1))
+    ((n = @nameEditor.getText()) isnt '') and ((n is @oldname) or (@project.getCommandIndex(n) is -1))
 
   validCommand: ->
     @commandEditor.getText() isnt ''
@@ -239,9 +243,9 @@ class CommandView extends View
       return false
 
   show: (@oldname, items, @project, @profiles) ->
-    @nameEditor.setText("")
-    @commandEditor.setText("")
-    @wdEditor.setText("")
+    @nameEditor.setText('')
+    @commandEditor.setText('')
+    @wdEditor.setText('')
 
     @find('#command_in_shell').prop('checked', false)
     @find('#wildcards').prop('checked', false)

@@ -12,7 +12,7 @@ module.exports =
         for p in packages
           promises[p] = atom.packages.activatePackage(p)
           waitsForPromise -> promises[p]
-        output = new Output command, stream, (p) -> p
+        output = new Output(command, stream, (p) -> p)
         expect(output).toBeDefined()
         expect(output.profile).toBeDefined()
 

@@ -10,7 +10,7 @@ module.exports =
     check: null
     key: {}
 
-    constructor: (@path,{commands,dependencies,key},@save,@check) ->
+    constructor: (@path, {commands, dependencies, key}, @save, @check) ->
       if key?
         @key = key
       else
@@ -69,26 +69,26 @@ module.exports =
 
     removeCommand: (name) ->
       if (i = @getCommandIndex name) isnt -1
-        @check(removed: @commands.splice(i,1)[0])
+        @check(removed: @commands.splice(i, 1)[0])
         @save()
       else
         @notify "Command \"#{name}\" not found"
 
     removeDependency: (id) ->
-      @check(removed: @dependencies.splice(id,1)[0])
+      @check(removed: @dependencies.splice(id, 1)[0])
       @save()
 
     replaceCommand: (oldname, item) ->
       if (i = @getCommandIndex oldname) isnt -1
         item['project'] = @path
         if oldname is item.name
-          @commands.splice(i,1,new Command(item))
+          @commands.splice(i, 1, new Command(item))
         else
           @check(replaced:
-            old: @commands.splice(i,1)[0]
+            old: @commands.splice(i, 1)[0]
             new: item
             )
-          @commands.splice(i,0,new Command(item))
+          @commands.splice(i, 0, new Command(item))
         @save()
       else
         @notify "Command \"#{oldname}\" not found"
@@ -96,7 +96,7 @@ module.exports =
     replaceDependency: (oldid, item) ->
       item.from['project'] = @path
       @check(
-        removed: @dependencies.splice(oldid,1)[0]
+        removed: @dependencies.splice(oldid, 1)[0]
         added: item
       )
       @dependencies.splice(oldid, 0, new Dependency(item))
@@ -104,13 +104,13 @@ module.exports =
 
     moveCommand: (name, offset) ->
       if (i = @getCommandIndex name) isnt -1
-        @commands.splice(i+offset,0,@commands.splice(i,1)[0])
+        @commands.splice(i + offset, 0, @commands.splice(i, 1)[0])
         @save()
       else
         @notify "Command \"#{name}\" not found"
 
     moveDependency: (id, offset) ->
-      @dependencies.splice(id+offset,0,@dependencies.splice(id,1)[0])
+      @dependencies.splice(id + offset, 0, @dependencies.splice(id, 1)[0])
       @save()
 
     hasCommand: (name) ->
@@ -126,4 +126,4 @@ module.exports =
       @commands[id]
 
     getCommand: (name) ->
-      @commands[id] if (id=@getCommandIndex name) isnt -1
+      @commands[id] if (id = @getCommandIndex name) isnt -1

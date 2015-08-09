@@ -4,15 +4,15 @@ Profiles = require './profiles/profiles'
 
 {CompositeDisposable, BufferedProcess} = require 'atom'
 
-settingsviewuri= 'atom://build-tools-settings'
-SettingsView= null
-settingsview= null
+settingsviewuri = 'atom://build-tools-settings'
+SettingsView = null
+settingsview = null
 
-ConsoleView= null
-consoleview= null
+ConsoleView = null
+consoleview = null
 
-SelectionView= null
-selectionview= null
+SelectionView = null
+selectionview = null
 
 AskView = null
 askview = null
@@ -21,15 +21,15 @@ createAskView = ->
   AskView ?= require './ask-view'
   askview ?= new AskView
 
-createConsoleView= ->
+createConsoleView = ->
   ConsoleView ?= require './console'
   consoleview ?= new ConsoleView()
 
-createSelectionView= ->
+createSelectionView = ->
   SelectionView ?= require './selection-view.coffee'
   selectionview ?= new SelectionView
 
-createSettingsView= (state) ->
+createSettingsView = (state) ->
   SettingsView ?= require './settings-view'
   settingsview = new SettingsView(state)
   settingsview
@@ -104,24 +104,24 @@ module.exports =
     consoleview?.cancel()
 
   selection: ->
-    if (path=atom.workspace.getActiveTextEditor()?.getPath())?
-      if (projectpath=@projects.getNextProjectPath path) isnt ''
+    if (path = atom.workspace.getActiveTextEditor()?.getPath())?
+      if (projectpath = @projects.getNextProjectPath path) isnt ''
         project = @projects.getProject projectpath
         createSelectionView()
         selectionview.show project, (name) =>
           if (command = project.getCommand name)?
             @command_list = @projects.generateDependencyList command
-            @spawn @command_list.splice(0,1)[0]
+            @spawn @command_list.splice(0, 1)[0]
 
   saveall: ->
     for editor in atom.workspace.getTextEditors()
       editor.save() if editor.isModified() and editor.getPath()?
 
   lint: ->
-    atom.commands.dispatch(atom.views.getView(atom.workspace), "linter:lint")
+    atom.commands.dispatch(atom.views.getView(atom.workspace), 'linter:lint')
 
   spawn: (res, clear = true) ->
-    {cmd,args,env,cwd} = res.parseCommand()
+    {cmd, args, env, cwd} = res.parseCommand()
     consoleview?.createOutput res
     consoleview?.showBox()
     consoleview?.setHeader("#{res.name} of #{res.project}")
@@ -143,17 +143,22 @@ module.exports =
         if (@command_list.length is 0) or exitcode isnt 0
           consoleview?.finishConsole(exitcode)
         if exitcode is 0
-          consoleview?.setHeader(
-            "#{res.name} of #{res.project}: finished with exitcode #{exitcode}"
-          )
-          if (@command_list.length isnt 0)
-            @spawn @command_list.splice(0,1)[0], false
+          consoleview?.setQueueLength(@command_list.length)
+          if @command_list.length isnt 0
+            @spawn @command_list.splice(0, 1)[0], false
+          else
+            consoleview?.setHeader(
+              "#{res.name} of #{res.project}: finished with exitcode #{exitcode}"
+            )
         else
+          if consoleview.queue is 1
+            consoleview?.setQueueCount(0)
           consoleview?.setHeader(
             "#{res.name} of #{res.project}:" +
             "<span class='error'>finished with exitcode #{exitcode}</span>"
           )
         @lint() if (@command_list.length is 0) or exitcode isnt 0
+        @command_list = []
         @process = null
       )
     @process.onWillThrowError ({error, handle}) =>
@@ -166,10 +171,10 @@ module.exports =
 
   execute: (id, ask = false) ->
     @saveall() if atom.config.get('build-tools.SaveAll')
-    if (path=atom.workspace.getActiveTextEditor()?.getPath())?
-      if (projectpath=@projects.getNextProjectPath path) isnt ''
+    if (path = atom.workspace.getActiveTextEditor()?.getPath())?
+      if (projectpath = @projects.getNextProjectPath path) isnt ''
         project = @projects.getProject projectpath
-        bindings = ['make','configure','preconfigure']
+        bindings = ['make', 'configure', 'preconfigure']
         if (b = bindings[id])?
           if (key = project.key[b])?
             project = @projects.getProject key.project
@@ -184,12 +189,14 @@ module.exports =
             askview.show command.command, (c) =>
               _command = new Command(command, c)
               @command_list = @projects.generateDependencyList _command
+              consoleview?.setQueueCount(@command_list.length)
               ll.messages = []
-              @spawn @command_list.splice(0,1)[0]
+              @spawn @command_list.splice(0, 1)[0]
           else
             @command_list = @projects.generateDependencyList command
+            consoleview?.setQueueCount(@command_list.length)
             ll.messages = []
-            @spawn @command_list.splice(0,1)[0]
+            @spawn @command_list.splice(0, 1)[0]
 
   provideLinter: ->
     grammarScopes: ['*']

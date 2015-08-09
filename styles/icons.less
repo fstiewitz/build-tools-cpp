@@ -1,46 +1,47 @@
 @import 'ui-variables';
 
-.icon-close {
-  &:before {
-    font-family: 'Octicons Regular';
-    font-weight: normal;
-    font-style: normal;
-    display: inline-block;
-    line-height: 1;
-    -webkit-font-smoothing: antialiased;
-    text-decoration: none;
-    font-size: 12px;
-    width: @component-icon-size;
-    height: @component-icon-size;
-    content: "\f081";
-  }
-
+.icon-link-external {
   &:hover {
     color: #ffffff;
     cursor: pointer;
   }
 }
 
-.icon-expand {
-  &:before {
-    font-family: 'Octicons Regular';
-    font-weight: normal;
-    font-style: normal;
-    display: inline-block;
-    line-height: 1;
-    -webkit-font-smoothing: antialiased;
-    text-decoration: none;
-    font-size: 12px;
-    width: @component-icon-size;
-    height: @component-icon-size;
-    content: "\f05a";
-  }
-
+.icon-x {
   &:hover {
     color: #ffffff;
     cursor: pointer;
   }
 }
+
+.icon-triangle-right {
+  &:hover {
+    color: #ffffff;
+    cursor: pointer;
+  }
+}
+
+.icon-triangle-up {
+  &:hover {
+    color: #ffffff;
+    cursor: pointer;
+  }
+}
+
+.icon-triangle-down {
+  &:hover {
+    color: #ffffff;
+    cursor: pointer;
+  }
+}
+
+.icon-pencil {
+  &:hover {
+    color: #ffffff;
+    cursor: pointer;
+  }
+}
+
 
 .icon-info {
   &:before {
@@ -64,8 +65,9 @@
   &:hover {
     color: #ffffff;
     cursor: pointer;
-    background-color: @base-border-color;
     z-index: 1000;
+    background-color: @overlay-background-color;
+    color: @text-color;
 
     .content {
       display: block;
@@ -80,74 +82,12 @@
 
       .info {
         display: flex;
+        font-family: monospace;
 
         .col {
           padding: 0 2px 0 2px;
         }
       }
     }
-  }
-}
-
-.icon-down {
-  &:before {
-    font-family: 'Octicons Regular';
-    font-weight: normal;
-    font-style: normal;
-    display: inline-block;
-    line-height: 1;
-    -webkit-font-smoothing: antialiased;
-    text-decoration: none;
-    font-size: 12px;
-    width: @component-icon-size;
-    height: @component-icon-size;
-    content: "\f05b";
-  }
-
-  &:hover {
-    color: #ffffff;
-    cursor: pointer;
-  }
-}
-
-.icon-up {
-  &:before {
-    font-family: 'Octicons Regular';
-    font-weight: normal;
-    font-style: normal;
-    display: inline-block;
-    line-height: 1;
-    -webkit-font-smoothing: antialiased;
-    text-decoration: none;
-    font-size: 12px;
-    width: @component-icon-size;
-    height: @component-icon-size;
-    content: "\f0aa";
-  }
-
-  &:hover {
-    color: #ffffff;
-    cursor: pointer;
-  }
-}
-
-.icon-edit {
-  &:before {
-    font-family: 'Octicons Regular';
-    font-weight: normal;
-    font-style: normal;
-    display: inline-block;
-    line-height: 1;
-    -webkit-font-smoothing: antialiased;
-    text-decoration: none;
-    font-size: 12px;
-    width: @component-icon-size;
-    height: @component-icon-size;
-    content: "\f058";
-  }
-
-  &:hover {
-    color: #ffffff;
-    cursor: pointer;
   }
 }

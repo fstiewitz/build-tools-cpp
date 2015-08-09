@@ -8,7 +8,7 @@ module.exports =
     scopes: ['source.python']
 
     file_string: '
-    File\\ "(?<file> [\\S]+\\.(?extensions))",\\ #File \n
+    File\\ "(?<file> [\\S]+\\.(?extensions))", \\ #File \n
     line\\ (?<row> [\\d]+) #Row \n
     '
 
