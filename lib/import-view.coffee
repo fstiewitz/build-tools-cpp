@@ -5,12 +5,15 @@ module.exports =
   class ImportView extends View
     @content: ->
       @div class:'import-view', =>
-        @ul class:'list-tree has-collapsable-children', outlet: 'tree'
-        @div id:'error-none', class:'error hidden', 'Nothing selected'
-        @div class:'block checkbox', =>
-          @input id:'show-all', type:'checkbox'
-          @label =>
-            @div class:'settings-name', 'Show all projects'
+        @div class:'inset-panel', =>
+          @div class:'panel-heading icon icon-cloud-download', 'Import'
+          @div class:'panel-body padded', =>
+            @ul class:'list-tree has-collapsable-children', outlet: 'tree'
+            @div id:'error-none', class:'error hidden', 'Nothing selected'
+            @div class:'block checkbox', =>
+              @input id:'show-all', type:'checkbox'
+              @label =>
+                @div class:'settings-name', 'Show all projects'
         @div class:'buttons', =>
           @div class: 'btn btn-error icon icon-close inline-block-tight', 'Cancel'
           @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
@@ -28,12 +31,12 @@ module.exports =
       @show_all = false
       @on 'change', '#show-all', (e) =>
         @show_all = $(e.currentTarget).prop('checked')
-        @show(@dependencies, @callback, @project)
+        @reload()
       @on 'click', '.checkbox label', (e) =>
         item = $(e.currentTarget.parentNode.children[0])
         item.prop('checked', not item.prop('checked'))
         @show_all = item.prop('checked')
-        @show(@dependencies, @callback, @project)
+        @reload()
 
     destroy: ->
       @disposables.dispose()
@@ -88,6 +91,9 @@ module.exports =
         @show_all = true
       else
         @show_all = false
+      @reload()
+
+    reload: ->
       @find('#error-none').addClass 'hidden'
       @tree.empty()
       @tree.off 'click'

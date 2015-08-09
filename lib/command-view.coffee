@@ -84,11 +84,11 @@ class CommandView extends View
               @div class:'settings-name', 'Highlighting'
               @div =>
                 @span class:'inline-block text-subtle', 'How to highlight this stream'
-            @div id:'stdout', class:'btn-group btn-group-sm', outlet:'stdout_highlights', =>
-              @button id:'nh', class:'btn selected', 'No highlighting'
-              @button id:'ha', class:'btn', 'Highlight all'
-              @button id:'ht', class:'btn', 'Lines with error tags'
-              @button id:'hc', class:'btn', 'Custom Profile'
+          @div id:'stdout', class:'btn-group btn-group-sm', outlet:'stdout_highlights', =>
+            @button id:'nh', class:'btn selected', 'No highlighting'
+            @button id:'ha', class:'btn', 'Highlight all'
+            @button id:'ht', class:'btn', 'Lines with error tags'
+            @button id:'hc', class:'btn', 'Custom Profile'
           @div class:'block hidden', outlet:'stdout_profile_div', =>
             @label =>
               @div class:'settings-name', 'Profile'
@@ -115,11 +115,11 @@ class CommandView extends View
               @div class:'settings-name', 'Highlighting'
               @div =>
                 @span class:'inline-block text-subtle', 'How to highlight this stream'
-            @div id:'stderr', class:'btn-group btn-group-sm', outlet:'stderr_highlights', =>
-              @button id:'nh', class:'btn selected', 'No highlighting'
-              @button id:'ha', class:'btn', 'Highlight all'
-              @button id:'ht', class:'btn', 'Lines with error tags'
-              @button id:'hc', class:'btn', 'Custom Profile'
+          @div id:'stderr', class:'btn-group btn-group-sm', outlet:'stderr_highlights', =>
+            @button id:'nh', class:'btn selected', 'No highlighting'
+            @button id:'ha', class:'btn', 'Highlight all'
+            @button id:'ht', class:'btn', 'Lines with error tags'
+            @button id:'hc', class:'btn', 'Custom Profile'
           @div class:'block hidden', outlet:'stderr_profile_div', =>
             @label =>
               @div class:'settings-name', 'Profile'
