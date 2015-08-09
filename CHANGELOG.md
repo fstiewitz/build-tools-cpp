@@ -1,3 +1,10 @@
+## 3.2.0 - Open output & UI improvements
+* There is a new icon in the top right corner of the console pane that, when clicked on, opens a new untitled editor with the content of the console output
+* UI improvements:
+  * Added a progress bar to the console pane (most useful when working with dependencies)
+  * Import and dependency panel now have "Show all projects" checkboxes (disabled by default)
+  * Settings view and all panels have been modified to look more like Atom's settings view
+
 ## 3.1.0 - Ask before execution
 * Added 3 new commands (`first/second/third-command-ask`, `ctrl+l o/i/u`) that let you change the command before executing it (e.g. to enter `make` targets)
 * Fix small visual bug in modal panels

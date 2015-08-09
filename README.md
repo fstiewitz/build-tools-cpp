@@ -5,7 +5,7 @@ build-tools (prev. build-tools-cpp)
 ### Build your projects in atom
 ![Error highlighting](https://cloud.githubusercontent.com/assets/7817714/9097293/fe5026a0-3bc2-11e5-9893-04b866262e63.gif)
 
-![Settings](https://cloud.githubusercontent.com/assets/7817714/8662384/3e7c78fc-29bf-11e5-9efc-64bce98deea7.png)
+![Settings](https://cloud.githubusercontent.com/assets/7817714/9156632/1aa1876a-3ee1-11e5-9e95-8888a6ca433c.png)
 
 ## Features
 * Execute programs/compilers in Atom
@@ -24,10 +24,10 @@ build-tools (prev. build-tools-cpp)
 
 ## Settings
 ### Commands
-![Command](https://cloud.githubusercontent.com/assets/7817714/8662378/329e3232-29bf-11e5-873d-cd44bb89c286.png)
+![Command](https://cloud.githubusercontent.com/assets/7817714/9156655/bc3e6ce6-3ee1-11e5-9cdf-9d1b37b6ed21.png)
 
 ### Dependencies
-![Dependency](https://cloud.githubusercontent.com/assets/7817714/8662383/39fdfca6-29bf-11e5-885a-a517807e5740.png)
+![Dependency](https://cloud.githubusercontent.com/assets/7817714/9156647/736a56ba-3ee1-11e5-8f38-42fe7400dff6.png)
 * Dependencies are executed in descending order
 * <b>Commands are not executed twice</b>
 * Build fails if one of the dependencies returns a non-zero exit code
