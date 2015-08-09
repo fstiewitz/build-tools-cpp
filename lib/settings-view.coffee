@@ -37,24 +37,21 @@ module.exports =
                 @div class: 'panel-heading icon icon-keyboard', 'Key bindings'
                 @div class: 'panel-body padded', =>
                   @div class: 'key-bind', =>
-                    @div class: 'key-desc text-padded', =>
-                      @span class: 'text-subtle', 'First Command'
+                    @div class: 'key-desc', 'First Command'
                     @div id: 'make', class: 'key-value', =>
                       @div class: 'btn-group', =>
                         @button id: 'local', class: 'btn selected', 'Local'
                         @button id: 'custom-value', class: 'btn hidden'
                         @button id: 'custom', class: 'btn', 'Custom'
                   @div class: 'key-bind', =>
-                    @div class: 'key-desc text-padded', =>
-                      @span class: 'text-subtle', 'Second Command'
+                    @div class: 'key-desc', 'Second Command'
                     @div id: 'configure', class: 'key-value', =>
                       @div class: 'btn-group', =>
                         @button id: 'local', class: 'btn selected', 'Local'
                         @button id: 'custom-value', class: 'btn hidden'
                         @button id: 'custom', class: 'btn', 'Custom'
                   @div class: 'key-bind', =>
-                    @div class: 'key-desc text-padded', =>
-                      @span class: 'text-subtle', 'Third Command'
+                    @div class: 'key-desc', 'Third Command'
                     @div id: 'preconfigure', class: 'key-value', =>
                       @div class: 'btn-group', =>
                         @button id: 'local', class: 'btn selected', 'Local'
@@ -67,12 +64,9 @@ module.exports =
                   @span id: 'import-command-button', class: 'inline-block btn btn-xs icon icon-cloud-download', 'Import command'
                 @div class: 'panel-body padded command-container', =>
                   @div class: 'key-info', =>
-                    @div class: 'key-desc text-subtle', =>
-                      @span class: 'text-padded', 'First Local Command'
-                    @div class: 'key-desc text-subtle', =>
-                      @span class: 'text-padded', 'Second Local Command'
-                    @div class: 'key-desc text-subtle', =>
-                      @span class: 'text-padded', 'Third Local Command'
+                    @div class: 'key-desc', 'First Local Command'
+                    @div class: 'key-desc', 'Second Local Command'
+                    @div class: 'key-desc', 'Third Local Command'
                   @div class: 'command-menu', =>
                     @div class: 'command-list', outlet: 'command_list'
               @div class: 'inset-panel', =>
@@ -306,7 +300,7 @@ module.exports =
         @div class: 'command', =>
           @div class: 'top', =>
             @div id: 'info', class: 'align', =>
-              @div class: 'icon-expand expander'
+              @div class: 'icon-triangle-right expander'
               @div id: 'name', items.name
             @div id: 'options', class: 'align', =>
               @div class: 'icon-pencil'
@@ -344,7 +338,7 @@ module.exports =
                   @div class: 'text-highlight text-padded', if items.stderr.highlighting is 'hc' then profiles[items.stderr.profile].profile_name else highlight_translation[items.stderr.highlighting]
                   @div class: 'text-highlight text-padded', if items.stderr.highlighting is 'hc' then items.stderr.file.toString() else 'Disabled'
                   @div class: 'text-highlight text-padded', if items.stderr.highlighting is 'hc' then items.stderr.lint.toString() else 'Disabled'
-      item.on 'click', '.icon-expand', (e) =>
+      item.on 'click', '.icon-triangle-right', (e) =>
         @reduceAll e.currentTarget.parentNode.parentNode.parentNode.parentNode
         @expandCommand e.currentTarget
       item.on 'click', '.icon-triangle-down', (e) =>
@@ -386,14 +380,14 @@ module.exports =
       @dependency_list.append(item)
 
     expandCommand: (target) ->
-      target.classList.remove 'icon-expand'
+      target.classList.remove 'icon-triangle-right'
       target.classList.add 'icon-triangle-down'
       target.parentNode.parentNode.parentNode.children[1].classList.remove('hidden')
       target.parentNode.parentNode.classList.add('top-expanded')
 
     reduceCommand: (target) ->
       target.classList.remove 'icon-triangle-down'
-      target.classList.add 'icon-expand'
+      target.classList.add 'icon-triangle-right'
       target.parentNode.parentNode.parentNode.children[1].classList.add('hidden')
       target.parentNode.parentNode.classList.remove('top-expanded')
 

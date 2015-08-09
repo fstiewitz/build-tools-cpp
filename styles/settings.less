@@ -7,9 +7,9 @@
   cursor: default;
 
   .project-menu {
-    flex: 2 none;
+    flex: none;
     border-width: 0 1px 0 0;
-    border-color: #1b1b1b;
+    border-color: @base-border-color;
     border-style: solid;
 
     .project-item {
@@ -42,7 +42,7 @@
   .project-menu-options {
     margin: 5px;
     border-width: 1px 0 0 0;
-    border-color: #1b1b1b;
+    border-color: @base-border-color;
     border-style: solid;
   }
 
@@ -120,13 +120,14 @@
   }
 
  .panel {
-    flex: 8;
+    flex: 1;
     padding: 5px 20px 5px 20px;
 
     .key-bind {
       display: flex;
       flex: none;
       justify-content: space-between;
+      align-items: baseline;
     }
 
     .key-desc {
@@ -158,7 +159,7 @@
       .command-menu {
         flex: auto;
         border-width: 0 0 0 1px;
-        border-color: #1b1b1b;
+        border-color: @base-border-color;
         border-style: solid;
 
         .command-list {
