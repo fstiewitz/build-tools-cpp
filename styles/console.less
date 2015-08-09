@@ -1,8 +1,14 @@
 @import "ui-variables";
 .console {
-  .icon-close {
-    position: absolute;
-    right: 5px;
+  .icons {
+    display: flex;
+    flex: none;
+  }
+
+  .titlebar {
+    display: flex;
+    flex: none;
+    align-items: baseline;
   }
 
   .bold {
@@ -18,6 +24,7 @@
     border: 1px solid @tab-bar-background-color;
     background-color: @tool-panel-background-color;
     display: flex;
+    justify-content: space-between;
   }
 
   .name {

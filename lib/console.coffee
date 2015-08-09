@@ -6,10 +6,12 @@ module.exports =
     @content: ->
       @div class:'console', =>
         @div class: 'header', =>
-          @div =>
+          @div class: 'titlebar', =>
             @progress class: 'inline-block', outlet: 'progress'
-          @div class: 'name bold', outlet: 'name'
-          @div class: 'icon-close'
+            @div class: 'name bold', outlet: 'name'
+          @div class: 'icons', =>
+            @div class: 'icon-link-external'
+            @div class: 'icon-x'
         @div class: 'output hidden', outlet: 'output'
 
     visible_items:
@@ -18,7 +20,7 @@ module.exports =
     lockoutput: false
 
     initialize: ->
-      @on 'click','.icon-close', =>
+      @on 'click','.icon-x', =>
         @hideBox()
       @on 'mousedown', '.header', @startResize
       @timeout = null

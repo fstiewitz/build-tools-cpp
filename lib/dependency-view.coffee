@@ -51,7 +51,7 @@ class DependencyView extends View
         @label =>
           @div class:'settings-name', 'Show all projects'
       @div class:'buttons', =>
-        @div class: 'btn btn-error icon icon-close inline-block-tight', 'Cancel'
+        @div class: 'btn btn-error icon icon-x inline-block-tight', 'Cancel'
         @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
 
   initialize: (@callback,@projects) ->
@@ -59,7 +59,7 @@ class DependencyView extends View
     @on 'change', '.project', (e) =>
       @selectedProject e.currentTarget
 
-    @on 'click', '.buttons .icon-close', @cancel
+    @on 'click', '.buttons .icon-x', @cancel
     @on 'click', '.buttons .icon-check', @accept
 
     @disposables.add atom.commands.add @element,

@@ -89,7 +89,7 @@ describe 'Settings Page', ->
   describe 'On edit command click', ->
     it 'opens command view', ->
       project.addCommand cmd
-      icon = view.find('.command .icon-edit')
+      icon = view.find('.command .icon-pencil')
       expect(icon.length).toBe 1
       icon.click()
       expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
@@ -115,7 +115,7 @@ describe 'Settings Page', ->
       cmd.name = 'Test command 2'
       project.addCommand cmd
       project.addDependency dep
-      icon = view.find('.dependency .icon-edit')
+      icon = view.find('.dependency .icon-pencil')
       expect(icon.length).toBe 1
       icon.click()
       expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()

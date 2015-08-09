@@ -139,7 +139,7 @@ class CommandView extends View
               @div =>
                 @span class:'inline-block text-subtle', 'Use Linter package to highlight errors in your code'
       @div class:'buttons', =>
-        @div class: 'btn btn-error icon icon-close inline-block-tight', 'Cancel'
+        @div class: 'btn btn-error icon icon-x inline-block-tight', 'Cancel'
         @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
 
   initialize: (@callback) ->
@@ -178,7 +178,7 @@ class CommandView extends View
       item = $(e.currentTarget.parentNode.children[0])
       item.prop('checked', not item.prop('checked'))
 
-    @on 'click', '.buttons .icon-close', @cancel
+    @on 'click', '.buttons .icon-x', @cancel
     @on 'click', '.buttons .icon-check', @accept
 
     @disposables.add atom.commands.add @element,

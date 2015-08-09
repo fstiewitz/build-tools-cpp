@@ -309,10 +309,10 @@ module.exports =
               @div class:'icon-expand expander'
               @div id:'name', items.name
             @div id:'options', class:'align', =>
-              @div class:'icon-edit'
-              @div class:'icon-up'
-              @div class:'icon-down'
-              @div class:'icon-close'
+              @div class:'icon-pencil'
+              @div class:'icon-triangle-up'
+              @div class:'icon-triangle-down'
+              @div class:'icon-x'
           @div class:'info hidden', =>
             @div id:'general', =>
               @div =>
@@ -347,17 +347,17 @@ module.exports =
       item.on 'click', '.icon-expand', (e) =>
         @reduceAll e.currentTarget.parentNode.parentNode.parentNode.parentNode
         @expandCommand e.currentTarget
-      item.on 'click', '.icon-down', (e) =>
+      item.on 'click', '.icon-triangle-down', (e) =>
         target = e.currentTarget
         if target.classList.contains('expander')
           @reduceCommand target
         else
           @moveCommandDown target.parentNode.parentNode.parentNode
-      item.on 'click', '.icon-up', (e) =>
+      item.on 'click', '.icon-triangle-up', (e) =>
         @moveCommandUp e.currentTarget.parentNode.parentNode.parentNode
-      item.on 'click', '.icon-close', (e) =>
+      item.on 'click', '.icon-x', (e) =>
         @removeCommand e.currentTarget.parentNode.parentNode.parentNode
-      item.on 'click', '.icon-edit', (e) =>
+      item.on 'click', '.icon-pencil', (e) =>
         @editCommand e.currentTarget.parentNode.parentNode.parentNode
       @command_list.append(item)
 
@@ -371,28 +371,28 @@ module.exports =
             @span ':'
             @span class:'text-info', items.to.command
           @div id:'options', =>
-            @div class:'icon-edit'
-            @div class:'icon-up'
-            @div class:'icon-down'
-            @div class:'icon-close'
-      item.on 'click', '.icon-edit', (e) =>
+            @div class:'icon-pencil'
+            @div class:'icon-triangle-up'
+            @div class:'icon-triangle-down'
+            @div class:'icon-x'
+      item.on 'click', '.icon-pencil', (e) =>
         @editDependency e.currentTarget.parentNode.parentNode
-      item.on 'click', '.icon-up', (e) =>
+      item.on 'click', '.icon-triangle-up', (e) =>
         @moveDependencyUp e.currentTarget.parentNode.parentNode
-      item.on 'click', '.icon-down', (e) =>
+      item.on 'click', '.icon-triangle-down', (e) =>
         @moveDependencyDown e.currentTarget.parentNode.parentNode
-      item.on 'click', '.icon-close', (e) =>
+      item.on 'click', '.icon-x', (e) =>
         @removeDependency e.currentTarget.parentNode.parentNode
       @dependency_list.append(item)
 
     expandCommand: (target) ->
       target.classList.remove 'icon-expand'
-      target.classList.add 'icon-down'
+      target.classList.add 'icon-triangle-down'
       target.parentNode.parentNode.parentNode.children[1].classList.remove('hidden')
       target.parentNode.parentNode.classList.add('top-expanded')
 
     reduceCommand: (target) ->
-      target.classList.remove 'icon-down'
+      target.classList.remove 'icon-triangle-down'
       target.classList.add 'icon-expand'
       target.parentNode.parentNode.parentNode.children[1].classList.add('hidden')
       target.parentNode.parentNode.classList.remove('top-expanded')
