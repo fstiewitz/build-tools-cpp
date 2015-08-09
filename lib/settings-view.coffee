@@ -29,56 +29,59 @@ module.exports =
               @input id:'show-all', type:'checkbox'
               @label =>
                 @div class:'settings-name', 'Show all projects'
-        @div class:'panel', =>
-          @div class:'project-header', outlet: 'title'
-          @div class:'section', =>
-            @div class:'section-header', 'Key bindings'
-            @div class:'key-bindings', =>
-              @div class:'key-bind', =>
-                @div class:'key-desc text-padded', =>
-                  @span class:'text-subtle', 'First Command'
-                @div id:'make', class:'key-value', =>
-                  @div class:'btn-group', =>
-                    @button id:'local', class:'btn selected', 'Local'
-                    @button id:'custom-value', class:'btn hidden'
-                    @button id:'custom', class:'btn', 'Custom'
-              @div class:'key-bind', =>
-                @div class:'key-desc text-padded', =>
-                  @span class:'text-subtle', 'Second Command'
-                @div id:'configure', class:'key-value', =>
-                  @div class:'btn-group', =>
-                    @button id:'local', class:'btn selected', 'Local'
-                    @button id:'custom-value', class:'btn hidden'
-                    @button id:'custom', class:'btn', 'Custom'
-              @div class:'key-bind', =>
-                @div class:'key-desc text-padded', =>
-                  @span class:'text-subtle', 'Third Command'
-                @div id:'preconfigure', class:'key-value', =>
-                  @div class:'btn-group', =>
-                    @button id:'local', class:'btn selected', 'Local'
-                    @button id:'custom-value', class:'btn hidden'
-                    @button id:'custom', class:'btn', 'Custom'
-          @div class:'section', =>
-            @div =>
-              @div class:'section-header', 'Commands'
-              @div id:'add-command-button', class:'inline-block btn btn-xs', 'Add command'
-              @div id:'import-command-button', class:'inline-block btn btn-xs', 'Import command'
-            @div class:'command-container', =>
-              @div class:'key-info', =>
-                @div class: 'key-desc text-subtle', =>
-                  @span class:'text-padded', 'First Local Command'
-                @div class: 'key-desc text-subtle', =>
-                  @span class:'text-padded', 'Second Local Command'
-                @div class: 'key-desc text-subtle', =>
-                  @span class:'text-padded', 'Third Local Command'
-              @div class:'command-menu', =>
-                @div class:'command-list', outlet: 'command_list', =>
-          @div class:'section', =>
-            @div =>
-              @div class:'section-header', 'Dependencies'
-              @div id:'add-dependency-button', class:'inline-block btn btn-xs', 'Add dependency'
-              @div id:'import-dependency-button', class:'inline-block btn btn-xs', 'Import dependency'
-            @div class:'dependency-list', outlet:'dependency_list'
+        @div class:'panel padded', =>
+          @div class:'inset-panel', =>
+            @div class:'panel-heading icon icon-book', outlet: 'title'
+            @div class:'panel-body', =>
+              @div class:'inset-panel', =>
+                @div class:'panel-heading icon icon-keyboard', 'Key bindings'
+                @div class:'panel-body padded', =>
+                  @div class:'key-bind', =>
+                    @div class:'key-desc text-padded', =>
+                      @span class:'text-subtle', 'First Command'
+                    @div id:'make', class:'key-value', =>
+                      @div class:'btn-group', =>
+                        @button id:'local', class:'btn selected', 'Local'
+                        @button id:'custom-value', class:'btn hidden'
+                        @button id:'custom', class:'btn', 'Custom'
+                  @div class:'key-bind', =>
+                    @div class:'key-desc text-padded', =>
+                      @span class:'text-subtle', 'Second Command'
+                    @div id:'configure', class:'key-value', =>
+                      @div class:'btn-group', =>
+                        @button id:'local', class:'btn selected', 'Local'
+                        @button id:'custom-value', class:'btn hidden'
+                        @button id:'custom', class:'btn', 'Custom'
+                  @div class:'key-bind', =>
+                    @div class:'key-desc text-padded', =>
+                      @span class:'text-subtle', 'Third Command'
+                    @div id:'preconfigure', class:'key-value', =>
+                      @div class:'btn-group', =>
+                        @button id:'local', class:'btn selected', 'Local'
+                        @button id:'custom-value', class:'btn hidden'
+                        @button id:'custom', class:'btn', 'Custom'
+              @div class:'inset-panel', =>
+                @div class:'panel-heading icon icon-code', =>
+                  @span class:'section-header', 'Commands'
+                  @span id:'add-command-button', class:'inline-block btn btn-xs icon icon-plus', 'Add command'
+                  @span id:'import-command-button', class:'inline-block btn btn-xs icon icon-cloud-download', 'Import command'
+                @div class:'panel-body padded command-container', =>
+                  @div class:'key-info', =>
+                    @div class: 'key-desc text-subtle', =>
+                      @span class:'text-padded', 'First Local Command'
+                    @div class: 'key-desc text-subtle', =>
+                      @span class:'text-padded', 'Second Local Command'
+                    @div class: 'key-desc text-subtle', =>
+                      @span class:'text-padded', 'Third Local Command'
+                  @div class:'command-menu', =>
+                    @div class:'command-list', outlet: 'command_list'
+              @div class:'inset-panel', =>
+                @div class:'panel-heading icon icon-circuit-board', =>
+                  @span class:'section-header', 'Dependencies'
+                  @span id:'add-dependency-button', class:'inline-block btn btn-xs icon icon-plus', 'Add dependency'
+                  @span id:'import-dependency-button', class:'inline-block btn btn-xs icon icon-cloud-download', 'Import dependency'
+                @div class:'panel-body padded', =>
+                  @div class:'dependency-list', outlet:'dependency_list'
 
     initialize: ({@uri,@projects,@profiles}) ->
       super
@@ -362,11 +365,11 @@ module.exports =
       item = $$ ->
         @div class:'dependency', =>
           @div class:'align', =>
-            @span class:'text-success', items.from.command
+            @span class:'text-info', items.from.command
             @span class:'dep', ' depends on '
-            @span class:'text-success', items.to.project
+            @span class:'text-info', items.to.project
             @span ':'
-            @span class:'text-success', items.to.command
+            @span class:'text-info', items.to.command
           @div id:'options', =>
             @div class:'icon-edit'
             @div class:'icon-up'

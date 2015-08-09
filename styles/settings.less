@@ -16,6 +16,7 @@
       list-style: none;
       padding: 10px 5px 10px 5px;
       cursor: pointer;
+      color: @text-color;
 
       .text-subtle {
         overflow-x: hidden;
@@ -23,11 +24,18 @@
 
       &:hover {
         background-color: @background-color-highlight;
+        color: @text-color-highlight;
       }
     }
 
     .active {
-      background-color: @background-color-highlight;
+      background-color: @background-color-selected;
+      color: @text-color-selected;
+
+      &:hover {
+        background-color: @background-color-selected;
+        color: @text-color-selected;
+      }
     }
   }
 
@@ -115,33 +123,6 @@
     flex: 8;
     padding: 5px 20px 5px 20px;
 
-    .project-header {
-      color: @text-color-highlight;
-      font-size: 2em;
-      font-weight: bold;
-      border-width: 0 0 1px 0;
-      border-color: #1b1b1b;
-      border-style: solid;
-    }
-
-    .section {
-      border-width: 0 0 1px 0;
-      border-color: #1b1b1b;
-      border-style: solid;
-    }
-
-    .section-header {
-      display: inline;
-      margin: 0 5px 0 0;
-      color: @text-color-highlight;
-      font-size: 1.75em;
-      font-weight: bold;
-    }
-
-    .key-bindings {
-      padding: 0 0 5px 0;
-    }
-
     .key-bind {
       display: flex;
       flex: none;
@@ -162,9 +143,12 @@
       display: none;
     }
 
+    .section-header {
+      margin: 0 5px 0 0;
+    }
+
     .command-container {
       display: flex;
-      padding: 5px 0 0 0;
 
       .key-info {
         flex: none;

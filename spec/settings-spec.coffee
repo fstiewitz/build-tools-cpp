@@ -66,7 +66,7 @@ describe 'Settings Page', ->
       cmd.name = 'Test command 2'
       project.addCommand cmd
       project.addDependency dep
-      expect(view.find('.dependency .text-success').html()).toBe 'Test command'
+      expect(view.find('.dependency .text-info').html()).toBe 'Test command'
 
   describe 'When multiple projects are open', ->
     it 'removes the shared path', ->

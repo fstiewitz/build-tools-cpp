@@ -9,73 +9,76 @@ class CommandView extends View
 
   @content: ->
     @div class: 'commandview', =>
-      @div class:'block', =>
-        @label =>
-          @div class:'settings-name', 'Command Name'
-          @div =>
-            @span class:'inline-block text-subtle', 'Name of command when using '
-            @span class:'inline-block highlight', 'build-tools:commands'
-        @subview 'command_name', new TextEditorView(mini:true)
-        @div id:'name-error-none' ,class:'error hidden', 'This field cannot be empty'
-        @div id:'name-error-used' ,class:'error hidden', 'Name already used in this project'
-      @div class:'block', =>
-        @label =>
-          @div class:'settings-header', =>
-            @div class:'settings-name', 'Command'
-            @div class:'wildcard-info icon-info', =>
-              @div class:'content', =>
-                @div class:'text-highlight bold', 'Wildcards'
-                @div class:'info', =>
-                  @div class:'col', =>
-                    @div class:'text-subtle', 'Current File'
-                    @div class:'text-subtle', 'Base Path'
-                    @div class:'text-subtle', 'Folder (rel.)'
-                    @div class:'text-subtle', 'File (no ext.)'
-                  @div class:'col', =>
-                    @div class:'text-highlight', '%f'
-                    @div class:'text-highlight', '%b'
-                    @div class:'text-highlight', '%d'
-                    @div class:'text-highlight', '%e'
-          @div =>
-            @span class:'inline-block text-subtle', 'Command to execute '
-        @subview 'command_text', new TextEditorView(mini:true)
-        @div id:'command-error-none' ,class:'error hidden', 'This field cannot be empty'
-      @div class:'block', =>
-        @label =>
-          @div class:'settings-header', =>
-            @div class:'settings-name', 'Working Directory'
-            @div class:'wildcard-info icon-info', =>
-              @div class:'content', =>
-                @div class:'text-highlight bold', 'Wildcards'
-                @div class:'info', =>
-                  @div class:'col', =>
-                    @div class:'text-subtle', 'Current File'
-                    @div class:'text-subtle', 'Base Path'
-                    @div class:'text-subtle', 'Folder (rel.)'
-                    @div class:'text-subtle', 'File (no ext.)'
-                  @div class:'col', =>
-                    @div class:'text-highlight', '%f'
-                    @div class:'text-highlight', '%b'
-                    @div class:'text-highlight', '%d'
-                    @div class:'text-highlight', '%e'
-          @div =>
-            @span class:'inline-block text-subtle', 'Directory to execute command in'
-        @subview 'working_directory', new TextEditorView(mini:true, placeholderText: '.')
-      @div class:'block checkbox', =>
-        @input id:'command_in_shell', type:'checkbox'
-        @label =>
-          @div class:'settings-name', 'Execute in shell'
-          @div =>
-            @span class:'inline-block text-subtle', 'Execute the command in your OS\'s shell. Change "Shell Command" in build-tools\'s settings if you are not using bash or use windows'
-      @div class:'block checkbox', =>
-        @input id:'wildcards', type:'checkbox'
-        @label =>
-          @div class:'settings-name', 'Replace Wildcards'
-          @div =>
-            @span class:'inline-block text-subtle', 'Enable if command or working directory contain wildcards'
-      @div class:'streams', =>
-        @div class:'stream', id:'stdout', =>
-          @div class:'small-header', 'stdout'
+      @div class:'inset-panel', =>
+        @div class:'panel-heading settings-name icon icon-gear', 'General'
+        @div class:'panel-body padded', =>
+          @div class:'block', =>
+            @label =>
+              @div class:'settings-name', 'Command Name'
+              @div =>
+                @span class:'inline-block text-subtle', 'Name of command when using '
+                @span class:'inline-block highlight', 'build-tools:commands'
+            @subview 'command_name', new TextEditorView(mini:true)
+            @div id:'name-error-none' ,class:'error hidden', 'This field cannot be empty'
+            @div id:'name-error-used' ,class:'error hidden', 'Name already used in this project'
+          @div class:'block', =>
+            @label =>
+              @div class:'settings-header', =>
+                @div class:'settings-name', 'Command'
+                @div class:'wildcard-info icon-info', =>
+                  @div class:'content', =>
+                    @div class:'text-highlight bold', 'Wildcards'
+                    @div class:'info', =>
+                      @div class:'col', =>
+                        @div 'Current File'
+                        @div 'Base Path'
+                        @div 'Folder (rel.)'
+                        @div 'File (no ext.)'
+                      @div class:'col', =>
+                        @div class:'text-highlight', '%f'
+                        @div class:'text-highlight', '%b'
+                        @div class:'text-highlight', '%d'
+                        @div class:'text-highlight', '%e'
+              @div =>
+                @span class:'inline-block text-subtle', 'Command to execute '
+            @subview 'command_text', new TextEditorView(mini:true)
+            @div id:'command-error-none' ,class:'error hidden', 'This field cannot be empty'
+          @div class:'block', =>
+            @label =>
+              @div class:'settings-header', =>
+                @div class:'settings-name', 'Working Directory'
+                @div class:'wildcard-info icon-info', =>
+                  @div class:'content', =>
+                    @div class:'text-highlight bold', 'Wildcards'
+                    @div class:'info', =>
+                      @div class:'col', =>
+                        @div 'Current File'
+                        @div 'Base Path'
+                        @div 'Folder (rel.)'
+                        @div 'File (no ext.)'
+                      @div class:'col', =>
+                        @div class:'text-highlight', '%f'
+                        @div class:'text-highlight', '%b'
+                        @div class:'text-highlight', '%d'
+                        @div class:'text-highlight', '%e'
+              @div =>
+                @span class:'inline-block text-subtle', 'Directory to execute command in'
+            @subview 'working_directory', new TextEditorView(mini:true, placeholderText: '.')
+          @div class:'block checkbox', =>
+            @input id:'command_in_shell', type:'checkbox'
+            @label =>
+              @div class:'settings-name', 'Execute in shell'
+              @div =>
+                @span class:'inline-block text-subtle', 'Execute the command in your OS\'s shell. Change "Shell Command" in build-tools\'s settings if you are not using bash or use windows'
+          @div class:'block checkbox', =>
+            @input id:'wildcards', type:'checkbox'
+            @label =>
+              @div class:'settings-name', 'Replace Wildcards'
+              @div =>
+                @span class:'inline-block text-subtle', 'Enable if command or working directory contain wildcards'
+      @div class:'inset-panel', =>
+        @div class:'panel-heading settings-name icon icon-plug', 'stdout'
+        @div class:'panel-body padded', id:'stdout', =>
           @div class:'block', =>
             @label =>
               @div class:'settings-name', 'Highlighting'
@@ -104,8 +107,9 @@ class CommandView extends View
               @div class:'settings-name', 'Lint errors/warnings'
               @div =>
                 @span class:'inline-block text-subtle', 'Use Linter package to highlight errors in your code'
-        @div class:'stream', id:'stderr', =>
-          @div class:'small-header', 'stderr'
+      @div class:'inset-panel', =>
+        @div class:'panel-heading settings-name icon icon-plug', 'stderr'
+        @div class:'panel-body padded', id:'stderr', =>
           @div class:'block', =>
             @label =>
               @div class:'settings-name', 'Highlighting'
@@ -134,9 +138,9 @@ class CommandView extends View
               @div class:'settings-name', 'Lint errors/warnings'
               @div =>
                 @span class:'inline-block text-subtle', 'Use Linter package to highlight errors in your code'
-        @div class:'buttons', =>
-          @div class: 'btn btn-error icon icon-close inline-block-tight', 'Cancel'
-          @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
+      @div class:'buttons', =>
+        @div class: 'btn btn-error icon icon-close inline-block-tight', 'Cancel'
+        @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
 
   initialize: (@callback) ->
     @disposables = new CompositeDisposable

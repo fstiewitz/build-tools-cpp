@@ -64,8 +64,9 @@
   &:hover {
     color: #ffffff;
     cursor: pointer;
-    background-color: @base-border-color;
     z-index: 1000;
+    background-color: @overlay-background-color;
+    color: @text-color;
 
     .content {
       display: block;
@@ -80,6 +81,7 @@
 
       .info {
         display: flex;
+        font-family: monospace;
 
         .col {
           padding: 0 2px 0 2px;
