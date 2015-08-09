@@ -6,6 +6,8 @@ module.exports =
     @content: ->
       @div class:'console', =>
         @div class: 'header', =>
+          @div =>
+            @progress class: 'inline-block', outlet: 'progress'
           @div class: 'name bold', outlet: 'name'
           @div class: 'icon-close'
         @div class: 'output hidden', outlet: 'output'
@@ -20,6 +22,8 @@ module.exports =
         @hideBox()
       @on 'mousedown', '.header', @startResize
       @timeout = null
+      @progress.prop('max', '100')
+      @progress.prop('value', '100')
 
     serialize: ->
 
@@ -112,3 +116,15 @@ module.exports =
       @Output ?= require './output'
       @stdout = new @Output(cmd, 'stdout', @printLine)
       @stderr = new @Output(cmd, 'stderr', @printLine)
+
+    setQueueCount: (@queue) ->
+      if @queue is 1
+        @progress.prop('max', '1')
+        @progress.removeAttr('value')
+      else
+        @progress.prop('max', "#{@queue}")
+        @progress.prop('value', '0')
+
+    setQueueLength: (length) ->
+      p = @queue - length
+      @progress.prop('value', "#{p}")
