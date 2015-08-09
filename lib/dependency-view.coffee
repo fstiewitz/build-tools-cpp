@@ -1,60 +1,60 @@
-{$,$$,View} = require 'atom-space-pen-views'
+{$, $$, View} = require 'atom-space-pen-views'
 {CompositeDisposable} = require 'atom'
 
 module.exports =
 class DependencyView extends View
   defaultproject: ->
     $$ ->
-      @option value:'', 'Select project'
+      @option value: '', 'Select project'
   defaultcommand: ->
     $$ ->
-      @option value:'', 'Select project first'
+      @option value: '', 'Select project first'
 
   nocommand: ->
     $$ ->
-      @option value:'', 'Project has no commands'
+      @option value: '', 'Project has no commands'
 
   @content: ->
-    @div class:'dependency-view', =>
-      @div class:'inset-panel', =>
-        @div class:'panel-heading settings-name', 'Command'
-        @div class:'panel-body padded', id:'from', =>
-          @div class:'block', =>
+    @div class: 'dependency-view', =>
+      @div class: 'inset-panel', =>
+        @div class: 'panel-heading settings-name', 'Command'
+        @div class: 'panel-body padded', id: 'from', =>
+          @div class: 'block', =>
             @label =>
-              @div class:'settings-name', 'Project Name'
+              @div class: 'settings-name', 'Project Name'
               @div =>
-                @span class:'text-subtle', 'Cannot be changed'
-            @select disabled:"yes", class:'project form-control', outlet: 'project_from'
-            @div id:'source-project-none', class:'error hidden', 'Select a project'
-          @div class:'block', =>
+                @span class: 'text-subtle', 'Cannot be changed'
+            @select disabled: 'yes', class: 'project form-control', outlet: 'project_from'
+            @div id: 'source-project-none', class: 'error hidden', 'Select a project'
+          @div class: 'block', =>
             @label =>
-              @div class:'settings-name', 'Command Name'
-            @select class:'command form-control', outlet: 'command_from'
-            @div id:'source-command-select', class:'error hidden', 'Select a command'
-            @div id:'source-command-none', class:'error hidden', 'Project has no command'
-      @div class:'inset-panel', =>
-        @div class:'panel-heading settings-name', 'depends on'
-        @div class:'panel-body padded', id:'to', =>
-          @div class:'block', =>
+              @div class: 'settings-name', 'Command Name'
+            @select class: 'command form-control', outlet: 'command_from'
+            @div id: 'source-command-select', class: 'error hidden', 'Select a command'
+            @div id: 'source-command-none', class: 'error hidden', 'Project has no command'
+      @div class: 'inset-panel', =>
+        @div class: 'panel-heading settings-name', 'depends on'
+        @div class: 'panel-body padded', id: 'to', =>
+          @div class: 'block', =>
             @label =>
-              @div class:'settings-name', 'Project Name'
-            @select class:'project form-control', outlet: 'project_to'
-            @div id:'dest-project-none', class:'error hidden', 'Select a project'
-          @div class:'block', =>
+              @div class: 'settings-name', 'Project Name'
+            @select class: 'project form-control', outlet: 'project_to'
+            @div id: 'dest-project-none', class: 'error hidden', 'Select a project'
+          @div class: 'block', =>
             @label =>
-              @div class:'settings-name', 'Command Name'
-            @select class:'command form-control', outlet: 'command_to'
-            @div id:'dest-command-select', class:'error hidden', 'Select a command'
-            @div id:'dest-command-none', class:'error hidden', 'Project has no command'
-      @div class:'block checkbox', =>
-        @input id:'show-all', type:'checkbox'
+              @div class: 'settings-name', 'Command Name'
+            @select class: 'command form-control', outlet: 'command_to'
+            @div id: 'dest-command-select', class: 'error hidden', 'Select a command'
+            @div id: 'dest-command-none', class: 'error hidden', 'Project has no command'
+      @div class: 'block checkbox', =>
+        @input id: 'show-all', type: 'checkbox'
         @label =>
-          @div class:'settings-name', 'Show all projects'
-      @div class:'buttons', =>
+          @div class: 'settings-name', 'Show all projects'
+      @div class: 'buttons', =>
         @div class: 'btn btn-error icon icon-x inline-block-tight', 'Cancel'
         @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
 
-  initialize: (@callback,@projects) ->
+  initialize: (@callback, @projects) ->
     @disposables = new CompositeDisposable
     @on 'change', '.project', (e) =>
       @selectedProject e.currentTarget
@@ -82,8 +82,8 @@ class DependencyView extends View
 
   accept: (event) =>
     @find('.error').addClass('hidden')
-    {sp,sc} = @validSource()
-    {dp,dc} = @validDest()
+    {sp, sc} = @validSource()
+    {dp, dc} = @validDest()
     if (not sp) or (sc isnt 0) or (not dp) or (dc isnt 0)
       @find('#source-project-none').removeClass('hidden') if not sp
       @find('#source-command-select').removeClass('hidden') if sc is 1
@@ -104,7 +104,7 @@ class DependencyView extends View
     event.stopPropagation()
 
   validSource: ->
-    if (sp=@projects.data[@project]?)
+    if (sp = @projects.data[@project]?)
       c = @command_from.children()[@command_from[0].selectedIndex].innerHTML
       if c is 'Project has no commands'
         {sp: true, sc: 2}
@@ -115,7 +115,7 @@ class DependencyView extends View
 
   validDest: ->
     p = @project_to.children()[@project_to[0].selectedIndex].innerHTML
-    if (dp=@projects.data[p]?)
+    if (dp = @projects.data[p]?)
       c = @command_to.children()[@command_to[0].selectedIndex].innerHTML
       if c is 'Project has no commands'
         {dp: true, dc: 2}
@@ -200,7 +200,7 @@ class DependencyView extends View
     for project in projects
       item = ->
         $$ ->
-          @option value:project, project
+          @option value: project, project
       @project_from.append(item())
       @project_to.append(item())
     @project_to[0].selectedIndex = 0
@@ -222,6 +222,6 @@ class DependencyView extends View
       if p.commands.length isnt 0
         for command in p.commands
           c.append $$ ->
-            @option value:command.name, command.name
+            @option value: command.name, command.name
       else
         c.append @nocommand()

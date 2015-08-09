@@ -61,7 +61,7 @@ describe 'Command Selection Panel', ->
 
     describe 'On cancel', ->
       it 'cancels', ->
-        atom.commands.dispatch(view.element,'core:cancel')
+        atom.commands.dispatch(view.element, 'core:cancel')
         expect(atom.workspace.getModalPanels()[0].visible).toBeFalsy()
         expect(spy).not.toHaveBeenCalled()
 
@@ -82,6 +82,6 @@ describe 'Command Selection Panel', ->
 
     describe 'On cancel', ->
       it 'cancels', ->
-        atom.commands.dispatch(view.element,'core:cancel')
+        atom.commands.dispatch(view.element, 'core:cancel')
         expect(atom.workspace.getModalPanels()[0].visible).toBeFalsy()
         expect(spy).not.toHaveBeenCalled()

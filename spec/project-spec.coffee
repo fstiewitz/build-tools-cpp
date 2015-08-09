@@ -9,8 +9,8 @@ describe 'Projects', ->
     fixturesPath = atom.project.getPaths()[0]
     projects = new Projects('')
     expect(projects.data).toEqual {}
-    root1 = path.join(fixturesPath,'root1')
-    root2 = path.join(fixturesPath,'root2')
+    root1 = path.join(fixturesPath, 'root1')
+    root2 = path.join(fixturesPath, 'root2')
 
     projects.addProject root1
     projects.addProject root2
@@ -348,10 +348,10 @@ describe 'Projects', ->
 
     it 'converts all information before giving them to BufferedProcess', ->
       expect(command.name).toBe 'Test command'
-      {cmd,args,env,cwd} = command.parseCommand()
+      {cmd, args, env, cwd} = command.parseCommand()
       expect(cmd).toBe 'pwd'
       expect(args).toEqual ["Hello World", "test"]
-      expect(cwd).toBe (path.join(root1,command.wd))
+      expect(cwd).toBe (path.join(root1, command.wd))
 
   describe 'When removing a command', ->
     [project, command, dependencies, command_target] = []

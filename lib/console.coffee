@@ -1,10 +1,10 @@
-{$,View} = require 'atom-space-pen-views'
+{$, View} = require 'atom-space-pen-views'
 output = require './output'
 
 module.exports =
   class ConsoleOutput extends View
     @content: ->
-      @div class:'console', =>
+      @div class: 'console', =>
         @div class: 'header', =>
           @div class: 'titlebar', =>
             @progress class: 'inline-block', outlet: 'progress'
@@ -20,16 +20,14 @@ module.exports =
     lockoutput: false
 
     initialize: ->
-      @on 'click','.icon-x', =>
+      @on 'click', '.icon-x', =>
         @hideBox()
-      @on 'click','.icon-link-external', =>
+      @on 'click', '.icon-link-external', =>
         @showExternal()
       @on 'mousedown', '.header', @startResize
       @timeout = null
       @progress.prop('max', '100')
       @progress.prop('value', '100')
-
-    serialize: ->
 
     destroy: ->
       @hideBox()
@@ -94,11 +92,11 @@ module.exports =
 
     openFile: (element) ->
       lineno = parseInt($(this).attr('row'))
-      linecol= parseInt($(this).attr('col'))
+      linecol = parseInt($(this).attr('col'))
       if $(this).attr('name') isnt ''
         atom.workspace.open($(this).attr('name'),
-          initialLine: lineno-1
-          initialColumn: linecol-1
+          initialLine: lineno - 1
+          initialColumn: linecol - 1
           )
 
     finishConsole: (exitcode) ->
@@ -111,13 +109,13 @@ module.exports =
           @timeout = setTimeout( =>
             @hideBox()
             @timeout = null
-          ,t * 1000)
+          , t * 1000)
 
     printLine: (message) =>
-      @showOutput() if !@lockoutput
+      @showOutput() if not @lockoutput
       @output.append(message)
       @output.scrollTop(@output[0].scrollHeight)
-      @output[0].children[@output[0].children.length-1]
+      @output[0].children[@output[0].children.length - 1]
 
     setHeader: (name) ->
       @name.html(name)

@@ -1,11 +1,11 @@
-{$, $$, ScrollView,TextEditorView} = require 'atom-space-pen-views'
+{$, $$, ScrollView, TextEditorView} = require 'atom-space-pen-views'
 {CompositeDisposable} = require 'atom'
 _p = require 'path'
 
 highlight_translation =
-  "nh": "No highlighting"
-  "ha": "Highlight all"
-  "ht": "Highlight tags"
+  'nh': 'No highlighting'
+  'ha': 'Highlight all'
+  'ht': 'Highlight tags'
 
 module.exports =
   class SettingsView extends ScrollView
@@ -21,77 +21,77 @@ module.exports =
     show_all: false
 
     @content: ->
-      @div class:'settings pane-item native-key-bindings', tabindex:-1, =>
-        @div class:'project-menu', =>
-          @ul class:'list-group', outlet:'project_list'
-          @div class:'project-menu-options', =>
-            @div class:'block checkbox', =>
-              @input id:'show-all', type:'checkbox'
+      @div class: 'settings pane-item native-key-bindings', tabindex: -1, =>
+        @div class: 'project-menu', =>
+          @ul class: 'list-group', outlet: 'project_list'
+          @div class: 'project-menu-options', =>
+            @div class: 'block checkbox', =>
+              @input id: 'show-all', type: 'checkbox'
               @label =>
-                @div class:'settings-name', 'Show all projects'
-        @div class:'panel padded', =>
-          @div class:'inset-panel', =>
-            @div class:'panel-heading icon icon-book', outlet: 'title'
-            @div class:'panel-body', =>
-              @div class:'inset-panel', =>
-                @div class:'panel-heading icon icon-keyboard', 'Key bindings'
-                @div class:'panel-body padded', =>
-                  @div class:'key-bind', =>
-                    @div class:'key-desc text-padded', =>
-                      @span class:'text-subtle', 'First Command'
-                    @div id:'make', class:'key-value', =>
-                      @div class:'btn-group', =>
-                        @button id:'local', class:'btn selected', 'Local'
-                        @button id:'custom-value', class:'btn hidden'
-                        @button id:'custom', class:'btn', 'Custom'
-                  @div class:'key-bind', =>
-                    @div class:'key-desc text-padded', =>
-                      @span class:'text-subtle', 'Second Command'
-                    @div id:'configure', class:'key-value', =>
-                      @div class:'btn-group', =>
-                        @button id:'local', class:'btn selected', 'Local'
-                        @button id:'custom-value', class:'btn hidden'
-                        @button id:'custom', class:'btn', 'Custom'
-                  @div class:'key-bind', =>
-                    @div class:'key-desc text-padded', =>
-                      @span class:'text-subtle', 'Third Command'
-                    @div id:'preconfigure', class:'key-value', =>
-                      @div class:'btn-group', =>
-                        @button id:'local', class:'btn selected', 'Local'
-                        @button id:'custom-value', class:'btn hidden'
-                        @button id:'custom', class:'btn', 'Custom'
-              @div class:'inset-panel', =>
-                @div class:'panel-heading icon icon-code', =>
-                  @span class:'section-header', 'Commands'
-                  @span id:'add-command-button', class:'inline-block btn btn-xs icon icon-plus', 'Add command'
-                  @span id:'import-command-button', class:'inline-block btn btn-xs icon icon-cloud-download', 'Import command'
-                @div class:'panel-body padded command-container', =>
-                  @div class:'key-info', =>
+                @div class: 'settings-name', 'Show all projects'
+        @div class: 'panel padded', =>
+          @div class: 'inset-panel', =>
+            @div class: 'panel-heading icon icon-book', outlet: 'title'
+            @div class: 'panel-body', =>
+              @div class: 'inset-panel', =>
+                @div class: 'panel-heading icon icon-keyboard', 'Key bindings'
+                @div class: 'panel-body padded', =>
+                  @div class: 'key-bind', =>
+                    @div class: 'key-desc text-padded', =>
+                      @span class: 'text-subtle', 'First Command'
+                    @div id: 'make', class: 'key-value', =>
+                      @div class: 'btn-group', =>
+                        @button id: 'local', class: 'btn selected', 'Local'
+                        @button id: 'custom-value', class: 'btn hidden'
+                        @button id: 'custom', class: 'btn', 'Custom'
+                  @div class: 'key-bind', =>
+                    @div class: 'key-desc text-padded', =>
+                      @span class: 'text-subtle', 'Second Command'
+                    @div id: 'configure', class: 'key-value', =>
+                      @div class: 'btn-group', =>
+                        @button id: 'local', class: 'btn selected', 'Local'
+                        @button id: 'custom-value', class: 'btn hidden'
+                        @button id: 'custom', class: 'btn', 'Custom'
+                  @div class: 'key-bind', =>
+                    @div class: 'key-desc text-padded', =>
+                      @span class: 'text-subtle', 'Third Command'
+                    @div id: 'preconfigure', class: 'key-value', =>
+                      @div class: 'btn-group', =>
+                        @button id: 'local', class: 'btn selected', 'Local'
+                        @button id: 'custom-value', class: 'btn hidden'
+                        @button id: 'custom', class: 'btn', 'Custom'
+              @div class: 'inset-panel', =>
+                @div class: 'panel-heading icon icon-code', =>
+                  @span class: 'section-header', 'Commands'
+                  @span id: 'add-command-button', class: 'inline-block btn btn-xs icon icon-plus', 'Add command'
+                  @span id: 'import-command-button', class: 'inline-block btn btn-xs icon icon-cloud-download', 'Import command'
+                @div class: 'panel-body padded command-container', =>
+                  @div class: 'key-info', =>
                     @div class: 'key-desc text-subtle', =>
-                      @span class:'text-padded', 'First Local Command'
+                      @span class: 'text-padded', 'First Local Command'
                     @div class: 'key-desc text-subtle', =>
-                      @span class:'text-padded', 'Second Local Command'
+                      @span class: 'text-padded', 'Second Local Command'
                     @div class: 'key-desc text-subtle', =>
-                      @span class:'text-padded', 'Third Local Command'
-                  @div class:'command-menu', =>
-                    @div class:'command-list', outlet: 'command_list'
-              @div class:'inset-panel', =>
-                @div class:'panel-heading icon icon-circuit-board', =>
-                  @span class:'section-header', 'Dependencies'
-                  @span id:'add-dependency-button', class:'inline-block btn btn-xs icon icon-plus', 'Add dependency'
-                  @span id:'import-dependency-button', class:'inline-block btn btn-xs icon icon-cloud-download', 'Import dependency'
-                @div class:'panel-body padded', =>
-                  @div class:'dependency-list', outlet:'dependency_list'
+                      @span class: 'text-padded', 'Third Local Command'
+                  @div class: 'command-menu', =>
+                    @div class: 'command-list', outlet: 'command_list'
+              @div class: 'inset-panel', =>
+                @div class: 'panel-heading icon icon-circuit-board', =>
+                  @span class: 'section-header', 'Dependencies'
+                  @span id: 'add-dependency-button', class: 'inline-block btn btn-xs icon icon-plus', 'Add dependency'
+                  @span id: 'import-dependency-button', class: 'inline-block btn btn-xs icon icon-cloud-download', 'Import dependency'
+                @div class: 'panel-body padded', =>
+                  @div class: 'dependency-list', outlet: 'dependency_list'
 
-    initialize: ({@uri,@projects,@profiles}) ->
+    initialize: ({@uri, @projects, @profiles}) ->
       super
       @reload()
-      @CommandView=null
-      @commandview=null
-      @DependencyView=null
-      @dependencyview=null
-      ImportView=null
-      importview=null
+      @CommandView = null
+      @commandview = null
+      @DependencyView = null
+      @dependencyview = null
+      ImportView = null
+      importview = null
       @show_all = false
       @find('#show_all').prop('checked', false)
       @on 'click', '#add-command-button', (e) =>
@@ -141,14 +141,14 @@ module.exports =
     destroy: ->
       @detach()
       @commandview?.destroy()
-      @CommandView=null
-      @commandview=null
+      @CommandView = null
+      @commandview = null
       @dependencyview?.destroy()
-      @DependencyView=null
-      @dependencyview=null
+      @DependencyView = null
+      @dependencyview = null
       importview?.destroy()
-      ImportView=null
-      importview=null
+      ImportView = null
+      importview = null
       @projects = null
 
     attached: ->
@@ -174,16 +174,16 @@ module.exports =
         paths = atom.project.getPaths()
       @project_list.empty()
       small_paths = @removeSharedPath paths
-      for name,i in small_paths
+      for name, i in small_paths
         @addProject name, paths[i]
       @project_list.on 'click', '.project-item', (e) =>
         @setActiveProject e.currentTarget
 
     addProject: (name, path) ->
       item = $$ ->
-        @li class:'list-item project-item', =>
-          @div class:'icon icon-book', name
-          @div class:'text-subtle', path
+        @li class: 'list-item project-item', =>
+          @div class: 'icon icon-book', name
+          @div class: 'text-subtle', path
       @project_list.append(item)
       @projects.addProject(path) if not @projects.getProject(path)?
 
@@ -194,16 +194,16 @@ module.exports =
       finished = false
 
       while not finished
-        for e,i in path_elements
+        for e, i in path_elements
           if i is 0
-            item = e.splice(0,1)[0]
+            item = e.splice(0, 1)[0]
           else
             if e[0] is item
-              e.splice(0,1)
+              e.splice(0, 1)
             else
               finished = true
-              for j in [0..i-1]
-                path_elements[j].splice(0,1,item)
+              for j in [0..i - 1]
+                path_elements[j].splice(0, 1, item)
               break
       (e.join(_p.sep) for e in path_elements)
 
@@ -262,7 +262,7 @@ module.exports =
         @importview.hide()
       @updateProjects()
       if @activeProject?
-        if @projects.getProject(@activeProject.path)? and (e=@getElement(@activeProject.path))?
+        if @projects.getProject(@activeProject.path)? and (e = @getElement(@activeProject.path))?
           @setActiveProject e
         else
           @setActiveProject @project_list.children()[0]
@@ -303,47 +303,47 @@ module.exports =
     addCommand: (items) ->
       profiles = @profiles
       item = $$ ->
-        @div class:'command', =>
-          @div class:'top', =>
-            @div id:'info', class:'align', =>
-              @div class:'icon-expand expander'
-              @div id:'name', items.name
-            @div id:'options', class:'align', =>
-              @div class:'icon-pencil'
-              @div class:'icon-triangle-up'
-              @div class:'icon-triangle-down'
-              @div class:'icon-x'
-          @div class:'info hidden', =>
-            @div id:'general', =>
+        @div class: 'command', =>
+          @div class: 'top', =>
+            @div id: 'info', class: 'align', =>
+              @div class: 'icon-expand expander'
+              @div id: 'name', items.name
+            @div id: 'options', class: 'align', =>
+              @div class: 'icon-pencil'
+              @div class: 'icon-triangle-up'
+              @div class: 'icon-triangle-down'
+              @div class: 'icon-x'
+          @div class: 'info hidden', =>
+            @div id: 'general', =>
               @div =>
-                @div class:'text-padded', "Command"
-                @div class:'text-padded', "Working Directory"
-                @div class:'text-padded', "Shell"
-                @div class:'text-padded', "Wildcards"
-              @div class:'values', =>
-                @div class:'text-highlight text-padded', items.command
-                @div class:'text-highlight text-padded', items.wd
-                @div class:'text-highlight text-padded', items.shell.toString()
-                @div class:'text-highlight text-padded', items.wildcards.toString()
-            @div class:'streams', =>
-              @div id:'stdout', class:'stream', =>
+                @div class: 'text-padded', 'Command'
+                @div class: 'text-padded', 'Working Directory'
+                @div class: 'text-padded', 'Shell'
+                @div class: 'text-padded', 'Wildcards'
+              @div class: 'values', =>
+                @div class: 'text-highlight text-padded', items.command
+                @div class: 'text-highlight text-padded', items.wd
+                @div class: 'text-highlight text-padded', items.shell.toString()
+                @div class: 'text-highlight text-padded', items.wildcards.toString()
+            @div class: 'streams', =>
+              @div id: 'stdout', class: 'stream', =>
                 @div =>
-                  @div class:'text-padded', "Highlighting (stdout)"
-                  @div class:'text-padded', "Mark paths (stdout)"
-                  @div class:'text-padded', "Use Linter (stdout)"
-                @div class:'values', =>
-                  @div class:'text-highlight text-padded', if items.stdout.highlighting is 'hc' then profiles[items.stdout.profile].profile_name else highlight_translation[items.stdout.highlighting]
-                  @div class:'text-highlight text-padded', if items.stdout.highlighting is 'hc' then items.stdout.file.toString() else 'Disabled'
-                  @div class:'text-highlight text-padded', if items.stdout.highlighting is 'hc' then items.stdout.lint.toString() else 'Disabled'
-              @div id:'stderr', class:'stream', =>
+                  @div class: 'text-padded', 'Highlighting (stdout)'
+                  @div class: 'text-padded', 'Mark paths (stdout)'
+                  @div class: 'text-padded', 'Use Linter (stdout)'
+                @div class: 'values', =>
+                  @div class: 'text-highlight text-padded', if items.stdout.highlighting is 'hc' then profiles[items.stdout.profile].profile_name else highlight_translation[items.stdout.highlighting]
+                  @div class: 'text-highlight text-padded', if items.stdout.highlighting is 'hc' then items.stdout.file.toString() else 'Disabled'
+                  @div class: 'text-highlight text-padded', if items.stdout.highlighting is 'hc' then items.stdout.lint.toString() else 'Disabled'
+              @div id: 'stderr', class: 'stream', =>
                 @div =>
-                  @div class:'text-padded', "Highlighting (stderr)"
-                  @div class:'text-padded', "Mark paths (stderr)"
-                  @div class:'text-padded', "Use Linter (stderr)"
-                @div class:'values', =>
-                  @div class:'text-highlight text-padded', if items.stderr.highlighting is 'hc' then profiles[items.stderr.profile].profile_name else highlight_translation[items.stderr.highlighting]
-                  @div class:'text-highlight text-padded', if items.stderr.highlighting is 'hc' then items.stderr.file.toString() else 'Disabled'
-                  @div class:'text-highlight text-padded', if items.stderr.highlighting is 'hc' then items.stderr.lint.toString() else 'Disabled'
+                  @div class: 'text-padded', 'Highlighting (stderr)'
+                  @div class: 'text-padded', 'Mark paths (stderr)'
+                  @div class: 'text-padded', 'Use Linter (stderr)'
+                @div class: 'values', =>
+                  @div class: 'text-highlight text-padded', if items.stderr.highlighting is 'hc' then profiles[items.stderr.profile].profile_name else highlight_translation[items.stderr.highlighting]
+                  @div class: 'text-highlight text-padded', if items.stderr.highlighting is 'hc' then items.stderr.file.toString() else 'Disabled'
+                  @div class: 'text-highlight text-padded', if items.stderr.highlighting is 'hc' then items.stderr.lint.toString() else 'Disabled'
       item.on 'click', '.icon-expand', (e) =>
         @reduceAll e.currentTarget.parentNode.parentNode.parentNode.parentNode
         @expandCommand e.currentTarget
@@ -363,18 +363,18 @@ module.exports =
 
     addDependency: (items) ->
       item = $$ ->
-        @div class:'dependency', =>
-          @div class:'align', =>
-            @span class:'text-info', items.from.command
-            @span class:'dep', ' depends on '
-            @span class:'text-info', items.to.project
+        @div class: 'dependency', =>
+          @div class: 'align', =>
+            @span class: 'text-info', items.from.command
+            @span class: 'dep', ' depends on '
+            @span class: 'text-info', items.to.project
             @span ':'
-            @span class:'text-info', items.to.command
-          @div id:'options', =>
-            @div class:'icon-pencil'
-            @div class:'icon-triangle-up'
-            @div class:'icon-triangle-down'
-            @div class:'icon-x'
+            @span class: 'text-info', items.to.command
+          @div id: 'options', =>
+            @div class: 'icon-pencil'
+            @div class: 'icon-triangle-up'
+            @div class: 'icon-triangle-down'
+            @div class: 'icon-x'
       item.on 'click', '.icon-pencil', (e) =>
         @editDependency e.currentTarget.parentNode.parentNode
       item.on 'click', '.icon-triangle-up', (e) =>
@@ -411,17 +411,17 @@ module.exports =
       @dependencyview.show(@activeProject.path, @activeProject.dependencies[id], id)
 
     reduceAll: (target) ->
-      $(target).find('.expander').each (i,e) =>
+      $(target).find('.expander').each (i, e) =>
         @reduceCommand e
 
     moveCommandDown: (target) ->
       node = $(target)
-      if node.index() isnt target.parentNode.childElementCount-1
+      if node.index() isnt target.parentNode.childElementCount - 1
         @activeProject.moveCommand $(target).find('#name').html(), 1
 
     moveDependencyDown: (target) ->
       node = $(target)
-      if node.index() isnt target.parentNode.childElementCount-1
+      if node.index() isnt target.parentNode.childElementCount - 1
         id = Array.prototype.indexOf.call(target.parentNode.childNodes, target)
         @activeProject.moveDependency id, 1
 

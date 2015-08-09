@@ -2,7 +2,7 @@
 
 module.exports =
 class CommandSelection extends SelectListView
-  viewForItem: ({name,command}) ->
+  viewForItem: ({name, command}) ->
     $$ ->
       @li class: 'two-lines', =>
         @div class: 'primary-line', =>

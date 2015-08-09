@@ -1,20 +1,20 @@
-{$,$$,View} = require 'atom-space-pen-views'
+{$, $$, View} = require 'atom-space-pen-views'
 {CompositeDisposable} = require 'atom'
 
 module.exports =
   class ImportView extends View
     @content: ->
-      @div class:'import-view', =>
-        @div class:'inset-panel', =>
-          @div class:'panel-heading settings-name icon icon-cloud-download', 'Import'
-          @div class:'panel-body', =>
-            @ul class:'list-tree has-collapsable-children', outlet: 'tree'
-            @div id:'error-none', class:'error hidden', 'Nothing selected'
-        @div class:'block checkbox', =>
-          @input id:'show-all', type:'checkbox'
+      @div class: 'import-view', =>
+        @div class: 'inset-panel', =>
+          @div class: 'panel-heading settings-name icon icon-cloud-download', 'Import'
+          @div class: 'panel-body', =>
+            @ul class: 'list-tree has-collapsable-children', outlet: 'tree'
+            @div id: 'error-none', class: 'error hidden', 'Nothing selected'
+        @div class: 'block checkbox', =>
+          @input id: 'show-all', type: 'checkbox'
           @label =>
-            @div class:'settings-name', 'Show all projects'
-        @div class:'buttons', =>
+            @div class: 'settings-name', 'Show all projects'
+        @div class: 'buttons', =>
           @div class: 'btn btn-error icon icon-x inline-block-tight', 'Cancel'
           @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
 
@@ -115,10 +115,10 @@ module.exports =
 
     addProject: (project) ->
       item = $$ ->
-        @li class:'list-nested-item', =>
-          @div class:'list-item project', =>
-            @span class:'icon icon-repo', project.path
-          @ul class:'list-tree'
+        @li class: 'list-nested-item', =>
+          @div class: 'list-item project', =>
+            @span class: 'icon icon-repo', project.path
+          @ul class: 'list-tree'
       item.addClass 'collapsed' if project.path isnt @project
       if not @dependencies
         for command in project.commands
@@ -131,15 +131,15 @@ module.exports =
 
     addCommand: (item, command) ->
       entry = $$ ->
-        @li class:'list-item item', =>
-          @span class:'icon icon-terminal', command.name
+        @li class: 'list-item item', =>
+          @span class: 'icon icon-terminal', command.name
       item.find('.list-tree').append entry
 
     addDependency: (item, dependency) ->
       entry = $$ ->
-        @li class:'list-item item', =>
-          @span class:'icon icon-link', =>
+        @li class: 'list-item item', =>
+          @span class: 'icon icon-link', =>
             @span dependency.from.command
-            @span class:'icon icon-arrow-right'
+            @span class: 'icon icon-arrow-right'
             @span dependency.to.project + ':' + dependency.to.command
       item.find('.list-tree').append entry

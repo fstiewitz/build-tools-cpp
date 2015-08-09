@@ -10,8 +10,8 @@ describe 'Import Panel', ->
     fixturesPath = atom.project.getPaths()[0]
     projects = new Projects('')
     expect(projects.data).toEqual {}
-    root1 = path.join(fixturesPath,'root1')
-    root2 = path.join(fixturesPath,'root2')
+    root1 = path.join(fixturesPath, 'root1')
+    root2 = path.join(fixturesPath, 'root2')
 
     projects.addProject root1
     projects.addProject root2
@@ -188,7 +188,7 @@ describe 'Import Panel', ->
 
         it 'selects the clicked on dependency', ->
           expect(view.find('.selected').length).toBe 1
-          expect(view.find('.selected').children()[0].innerHTML).toContain root2+':Test command'
+          expect(view.find('.selected').children()[0].innerHTML).toContain root2 + ':Test command'
 
         it 'deselects all other dependencies', ->
           expect($(p[0].parentNode).find('.item')[0].classList.contains 'selected').toBeFalsy()

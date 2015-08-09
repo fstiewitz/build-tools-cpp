@@ -6,16 +6,16 @@ describe 'Console View', ->
 
   data = {}
   input_stdout = [
-    "test output",
-    "../src/test.c:3",
-    "test.c: 2: error: Something"
+    'test output',
+    '../src/test.c:3',
+    'test.c: 2: error: Something'
   ]
   input_stderr = [
-    "stderr test",
-    "../src/test.c:4:2: error: Something",
-    "foo",
-    "^",
-    "stderr"
+    'stderr test',
+    '../src/test.c:4:2: error: Something',
+    'foo',
+    '^',
+    'stderr'
   ]
 
   beforeEach ->
@@ -130,7 +130,7 @@ describe 'Console View', ->
         expect(content[1].children[0].innerHTML).toBe '../src/test.c:3'
         link = content[4].children[1]
         expect(link.classList.contains('filelink')).toBeTruthy()
-        expect(link.attributes['name'].value).toBe path.join(fixturesPath,'src','test.c')
+        expect(link.attributes['name'].value).toBe path.join(fixturesPath, 'src', 'test.c')
         expect(link.attributes['row'].value).toBe '4'
         expect(link.attributes['col'].value).toBe '2'
         expect(link.innerHTML).toBe '../src/test.c:4:2'

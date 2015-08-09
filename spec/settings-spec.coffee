@@ -70,7 +70,7 @@ describe 'Settings Page', ->
 
   describe 'When multiple projects are open', ->
     it 'removes the shared path', ->
-      expect(view.removeSharedPath ['abc/def','abc/ghj']).toEqual ['def','ghj']
+      expect(view.removeSharedPath ['abc/def', 'abc/ghj']).toEqual ['def', 'ghj']
 
   describe 'On add command click', ->
     it 'opens the command view', ->

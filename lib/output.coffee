@@ -1,4 +1,4 @@
-{$,$$} = require 'atom-space-pen-views'
+{$, $$} = require 'atom-space-pen-views'
 fs = require 'fs'
 path = require 'path'
 Profiles = require './profiles/profiles'
@@ -24,7 +24,7 @@ module.exports =
 
     in: (message) ->
       lines = message.split('\n')
-      for line,index in lines
+      for line, index in lines
         if line isnt '' or (line is '' and index isnt lines.length - 1)
           @lines.push @printfunc @buildHTML line, ''
           @parse line
@@ -39,7 +39,7 @@ module.exports =
         @profile.in line
 
     parseTags: (line) ->
-      if (r=/(error|warning):/g.exec(line))? then r[1] else ''
+      if (r = /(error|warning):/g.exec(line))? then r[1] else ''
 
     buildHTML: (message, status) ->
       if @settings.stream.file and @profile?
@@ -50,19 +50,19 @@ module.exports =
       $$ ->
         status = '' if not status?
         status = 'info' if status is 'note'
-        @div class:"bold text-#{status}", =>
+        @div class: "bold text-#{status}", =>
           if filenames? and filenames.length isnt 0
             prev = -1
             for {file, row, col, start, end} in filenames
-              @span message.substr(prev+1,start - (prev + 1))
-              @span class:"filelink highlight-#{status}", name:file, row:row, col:col, message.substr(start,end - start + 1)
+              @span message.substr(prev + 1, start - (prev + 1))
+              @span class: "filelink highlight-#{status}", name: file, row: row, col: col, message.substr(start, end - start + 1)
               prev = end
-            @span message.substr(prev+1) if prev isnt message.length - 1
+            @span message.substr(prev + 1) if prev isnt message.length - 1
           else
             @span if message is '' then ' ' else message
 
     absolutePath: (relpath) =>
-      return fp if fs.existsSync(fp=path.resolve(@settings.project, @settings.wd, relpath))
+      return fp if fs.existsSync(fp = path.resolve(@settings.project, @settings.wd, relpath))
 
     createMessage: (match) =>
       row = 1
@@ -74,8 +74,8 @@ module.exports =
         text: match.message
         filePath: @absolutePath match.file
         range: [
-          [row-1,0]
-          [row-1,if match.col? then col-1 else 9999]
+          [row - 1, 0]
+          [row - 1, if match.col? then col - 1 else 9999]
         ]
       }
 
