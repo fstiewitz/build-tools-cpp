@@ -188,17 +188,13 @@ module.exports =
       finished = false
 
       while not finished
-        for e, i in path_elements
-          if i is 0
-            item = e.splice(0, 1)[0]
-          else
-            if e[0] is item
-              e.splice(0, 1)
-            else
-              finished = true
-              for j in [0..i - 1]
-                path_elements[j].splice(0, 1, item)
-              break
+        item = path_elements[0][0]
+        for p in path_elements
+          if p[0] isnt item
+            finished = true
+        break if finished
+        for p in path_elements
+          p.splice(0,1)
       (e.join(_p.sep) for e in path_elements)
 
     setActiveProject: (e) ->
