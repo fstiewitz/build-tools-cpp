@@ -1,4 +1,4 @@
-{$$,View} = require 'atom-space-pen-views'
+{$,$$,View} = require 'atom-space-pen-views'
 {CompositeDisposable} = require 'atom'
 
 module.exports =
@@ -16,34 +16,40 @@ class DependencyView extends View
 
   @content: ->
     @div class:'dependency-view', =>
-      @div id:'from', =>
-        @div class:'small-header', 'Command'
-        @div class:'block', =>
-          @label =>
-            @div class:'settings-name', 'Project Name'
-            @div =>
-              @span class:'text-subtle', 'Cannot be changed'
-          @select disabled:"yes", class:'project form-control', outlet: 'project_from'
-          @div id:'source-project-none', class:'error hidden', 'Select a project'
-        @div class:'block', =>
-          @label =>
-            @div class:'settings-name', 'Command Name'
-          @select class:'command form-control', outlet: 'command_from'
-          @div id:'source-command-select', class:'error hidden', 'Select a command'
-          @div id:'source-command-none', class:'error hidden', 'Project has no command'
-      @div id:'to', =>
-        @div class:'small-header', 'depends on'
-        @div class:'block', =>
-          @label =>
-            @div class:'settings-name', 'Project Name'
-          @select class:'project form-control', outlet: 'project_to'
-          @div id:'dest-project-none', class:'error hidden', 'Select a project'
-        @div class:'block', =>
-          @label =>
-            @div class:'settings-name', 'Command Name'
-          @select class:'command form-control', outlet: 'command_to'
-          @div id:'dest-command-select', class:'error hidden', 'Select a command'
-          @div id:'dest-command-none', class:'error hidden', 'Project has no command'
+      @div class:'inset-panel', =>
+        @div class:'panel-heading settings-name', 'Command'
+        @div class:'panel-body padded', id:'from', =>
+          @div class:'block', =>
+            @label =>
+              @div class:'settings-name', 'Project Name'
+              @div =>
+                @span class:'text-subtle', 'Cannot be changed'
+            @select disabled:"yes", class:'project form-control', outlet: 'project_from'
+            @div id:'source-project-none', class:'error hidden', 'Select a project'
+          @div class:'block', =>
+            @label =>
+              @div class:'settings-name', 'Command Name'
+            @select class:'command form-control', outlet: 'command_from'
+            @div id:'source-command-select', class:'error hidden', 'Select a command'
+            @div id:'source-command-none', class:'error hidden', 'Project has no command'
+      @div class:'inset-panel', =>
+        @div class:'panel-heading settings-name', 'depends on'
+        @div class:'panel-body padded', id:'to', =>
+          @div class:'block', =>
+            @label =>
+              @div class:'settings-name', 'Project Name'
+            @select class:'project form-control', outlet: 'project_to'
+            @div id:'dest-project-none', class:'error hidden', 'Select a project'
+          @div class:'block', =>
+            @label =>
+              @div class:'settings-name', 'Command Name'
+            @select class:'command form-control', outlet: 'command_to'
+            @div id:'dest-command-select', class:'error hidden', 'Select a command'
+            @div id:'dest-command-none', class:'error hidden', 'Project has no command'
+      @div class:'block checkbox', =>
+        @input id:'show-all', type:'checkbox'
+        @label =>
+          @div class:'settings-name', 'Show all projects'
       @div class:'buttons', =>
         @div class: 'btn btn-error icon icon-close inline-block-tight', 'Cancel'
         @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
@@ -59,6 +65,16 @@ class DependencyView extends View
     @disposables.add atom.commands.add @element,
       'core:confirm': @accept
       'core:cancel': @cancel
+
+    @show_all = false
+    @on 'change', '#show-all', (e) =>
+      @show_all = $(e.currentTarget).prop('checked')
+      @reload()
+    @on 'click', '.checkbox label', (e) =>
+      item = $(e.currentTarget.parentNode.children[0])
+      item.prop('checked', not item.prop('checked'))
+      @show_all = item.prop('checked')
+      @reload()
 
   destroy: ->
     @disposables.dispose()
@@ -121,28 +137,13 @@ class DependencyView extends View
     else
       return false
 
-  show: (@project, items, @oldid) ->
-    @find('#source-project-none').addClass('hidden')
-    @find('#source-command-select').addClass('hidden')
-    @find('#source-command-none').addClass('hidden')
-    @find('#dest-project-none').addClass('hidden')
-    @find('#dest-command-select').addClass('hidden')
-    @find('#dest-command-none').addClass('hidden')
-    @updateProjects()
-    e = @project_from.find('[value="' + project + '"]')[0]
-    @project_from[0].selectedIndex = if e? then Array.prototype.indexOf.call(e.parentNode.childNodes, e) else 0
-    @selectedProject @project_from[0]
-    if items?
-      e = @command_from.find('[value="' + items.from + '"]')[0]
-      @command_from[0].selectedIndex = if e? then Array.prototype.indexOf.call(e.parentNode.childNodes, e) else 0
-
-      e = @project_to.find('[value="' + items.to.project + '"]')[0]
-      @project_to[0].selectedIndex = if e? then Array.prototype.indexOf.call(e.parentNode.childNodes, e) else 0
-      @selectedProject @project_to[0]
-
-      e = @command_to.find('[value="' + items.to.command + '"]')[0]
-      @command_to[0].selectedIndex = if e? then Array.prototype.indexOf.call(e.parentNode.childNodes, e) else 0
-
+  show: (@project, @items, @oldid) ->
+    if atom.inSpecMode()
+      @show_all = true
+    else
+      @show_all = false
+    @find('#show-all').prop('checked', @show_all)
+    @reload()
     @panel ?= atom.workspace.addModalPanel(item: this)
     @parent('.modal').css(
       'max-height': '100%'
@@ -151,6 +152,28 @@ class DependencyView extends View
     )
     @panel.show()
     @project_from.focus()
+
+  reload: ->
+    @find('#source-project-none').addClass('hidden')
+    @find('#source-command-select').addClass('hidden')
+    @find('#source-command-none').addClass('hidden')
+    @find('#dest-project-none').addClass('hidden')
+    @find('#dest-command-select').addClass('hidden')
+    @find('#dest-command-none').addClass('hidden')
+    @updateProjects()
+    e = @project_from.find('[value="' + @project + '"]')[0]
+    @project_from[0].selectedIndex = if e? then Array.prototype.indexOf.call(e.parentNode.childNodes, e) else 0
+    @selectedProject @project_from[0]
+    if @items?
+      e = @command_from.find('[value="' + @items.from + '"]')[0]
+      @command_from[0].selectedIndex = if e? then Array.prototype.indexOf.call(e.parentNode.childNodes, e) else 0
+
+      e = @project_to.find('[value="' + @items.to.project + '"]')[0]
+      @project_to[0].selectedIndex = if e? then Array.prototype.indexOf.call(e.parentNode.childNodes, e) else 0
+      @selectedProject @project_to[0]
+
+      e = @command_to.find('[value="' + @items.to.command + '"]')[0]
+      @command_to[0].selectedIndex = if e? then Array.prototype.indexOf.call(e.parentNode.childNodes, e) else 0
 
   validInput: ->
     f = (o) ->
@@ -166,7 +189,10 @@ class DependencyView extends View
     @command_from.append(@defaultcommand())
     @command_to.append(@defaultcommand())
 
-    projects = @projects.getProjects()
+    if @show_all
+      projects = @projects.getProjects()
+    else
+      projects = atom.project.getPaths()
     if projects.length is 0
       @project_from.append(@defaultproject())
       @project_to.append(@defaultproject())

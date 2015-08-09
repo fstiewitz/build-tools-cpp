@@ -6,14 +6,14 @@ module.exports =
     @content: ->
       @div class:'import-view', =>
         @div class:'inset-panel', =>
-          @div class:'panel-heading icon icon-cloud-download', 'Import'
-          @div class:'panel-body padded', =>
+          @div class:'panel-heading settings-name icon icon-cloud-download', 'Import'
+          @div class:'panel-body', =>
             @ul class:'list-tree has-collapsable-children', outlet: 'tree'
             @div id:'error-none', class:'error hidden', 'Nothing selected'
-            @div class:'block checkbox', =>
-              @input id:'show-all', type:'checkbox'
-              @label =>
-                @div class:'settings-name', 'Show all projects'
+        @div class:'block checkbox', =>
+          @input id:'show-all', type:'checkbox'
+          @label =>
+            @div class:'settings-name', 'Show all projects'
         @div class:'buttons', =>
           @div class: 'btn btn-error icon icon-close inline-block-tight', 'Cancel'
           @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
@@ -91,7 +91,15 @@ module.exports =
         @show_all = true
       else
         @show_all = false
+      @find('#show-all').prop('checked', @show_all)
       @reload()
+      @panel ?= atom.workspace.addModalPanel(item: this)
+      @parent('.modal').css(
+        'max-height': '100%'
+        display: 'flex'
+        'flex-direction': 'column'
+      )
+      @panel.show()
 
     reload: ->
       @find('#error-none').addClass 'hidden'
@@ -104,13 +112,6 @@ module.exports =
       for project in paths
         @addProject @projects.data[project] if @projects.data[project]?
       @tree.on 'click', '.project', (e) => @collapse e.currentTarget
-      @panel ?= atom.workspace.addModalPanel(item: this)
-      @parent('.modal').css(
-        'max-height': '100%'
-        display: 'flex'
-        'flex-direction': 'column'
-      )
-      @panel.show()
 
     addProject: (project) ->
       item = $$ ->
