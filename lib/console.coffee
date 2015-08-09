@@ -10,7 +10,7 @@ module.exports =
             @progress class: 'inline-block', outlet: 'progress'
             @div class: 'name bold', outlet: 'name'
           @div class: 'icons', =>
-            @div class: 'icon-link-external'
+            @div class: 'icon-link-external hidden'
             @div class: 'icon-x'
         @div class: 'output hidden', outlet: 'output'
 
@@ -22,6 +22,8 @@ module.exports =
     initialize: ->
       @on 'click','.icon-x', =>
         @hideBox()
+      @on 'click','.icon-link-external', =>
+        @showExternal()
       @on 'mousedown', '.header', @startResize
       @timeout = null
       @progress.prop('max', '100')
@@ -51,6 +53,16 @@ module.exports =
       @showOutput() if @find('.output').text() isnt ''
       @visible_items.header = true
 
+    showExternal: ->
+      atom.workspace.open(null).then (editor) =>
+        editor.setText @buildText()
+
+    buildText: ->
+      s = []
+      for child in @output.children()
+        s.push child.textContent
+      s.join('\n')
+
     cancel: ->
       @hideBox()
 
@@ -77,6 +89,7 @@ module.exports =
 
     clear: ->
       @find('.output').text('')
+      @find('.icon-link-external').addClass 'hidden'
       clearTimeout @timeout if @timeout?
 
     openFile: (element) ->
@@ -89,6 +102,7 @@ module.exports =
           )
 
     finishConsole: (exitcode) ->
+      @find('.icon-link-external').removeClass 'hidden'
       @find('.filelink').on 'click', @openFile
       if (t = atom.config.get('build-tools.CloseOnSuccess')) > -1 and exitcode is 0
         if t is 0
