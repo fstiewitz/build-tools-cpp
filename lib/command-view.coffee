@@ -84,7 +84,7 @@ class CommandView extends View
             @div id:'stdout', class:'btn-group btn-group-sm', outlet:'stdout_highlights', =>
               @button id:'nh', class:'btn selected', 'No highlighting'
               @button id:'ha', class:'btn', 'Highlight all'
-              @button id:'ht', class:'btn', 'Lines with error or warning tags'
+              @button id:'ht', class:'btn', 'Lines with error tags'
               @button id:'hc', class:'btn', 'Custom Profile'
           @div class:'block hidden', outlet:'stdout_profile_div', =>
             @label =>
@@ -114,7 +114,7 @@ class CommandView extends View
             @div id:'stderr', class:'btn-group btn-group-sm', outlet:'stderr_highlights', =>
               @button id:'nh', class:'btn selected', 'No highlighting'
               @button id:'ha', class:'btn', 'Highlight all'
-              @button id:'ht', class:'btn', 'Lines with error or warning tags'
+              @button id:'ht', class:'btn', 'Lines with error tags'
               @button id:'hc', class:'btn', 'Custom Profile'
           @div class:'block hidden', outlet:'stderr_profile_div', =>
             @label =>
