@@ -86,6 +86,7 @@ module.exports =
       @visible_items.output = true
 
     clear: ->
+      @hideOutput()
       @find('.output').text('')
       @find('.icon-link-external').addClass 'hidden'
       clearTimeout @timeout if @timeout?
@@ -112,7 +113,7 @@ module.exports =
           , t * 1000)
 
     printLine: (message) =>
-      @showOutput() if not @lockoutput
+      @showOutput() if not @lockoutput and @visible_items.output is false
       @output.append(message)
       @output.scrollTop(@output[0].scrollHeight)
       @output[0].children[@output[0].children.length - 1]
