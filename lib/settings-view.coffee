@@ -27,9 +27,9 @@ module.exports =
     initialize: ({@uri, @projects, @profiles}) ->
       ProjectPane ?= require './project-pane'
       CommandPane ?= require './command-pane'
-      @projectpane = new ProjectPane(@projects,@profiles, (arg0,arg1,arg2,arg3) =>
+      @projectpane = new ProjectPane(@projects, @profiles, (arg0, arg1, arg2, arg3) =>
         @showCommandPane()
-        @commandpane.show arg0,arg1,arg2,arg3
+        @commandpane.show arg0, arg1, arg2, arg3
       )
       @commandpane = new CommandPane(@projectpane.editccb, @hideCommandPane)
       @reload()
@@ -119,7 +119,7 @@ module.exports =
             finished = true
         break if finished
         for p in path_elements
-          p.splice(0,1)
+          p.splice(0, 1)
       (e.join(_p.sep) for e in path_elements)
 
     setActiveProject: (e) ->

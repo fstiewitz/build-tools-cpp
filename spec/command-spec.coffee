@@ -4,7 +4,7 @@ Profiles = require '../lib/profiles/profiles'
 
 {$} = require 'atom-space-pen-views'
 
-describe 'Command Panel', ->
+describe 'Command Pane', ->
   [success_spy, hide_spy, cmd, projects, view, fixturesPath] = []
 
   cmd = {

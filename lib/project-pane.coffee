@@ -1,4 +1,4 @@
-{$,$$,ScrollView} = require 'atom-space-pen-views'
+{$, $$, ScrollView} = require 'atom-space-pen-views'
 
 ImportView = null
 DependencyView = null
@@ -62,7 +62,7 @@ module.exports =
             @div class: 'panel-body padded', =>
               @div class: 'dependency-list', outlet: 'dependency_list'
 
-    initialize: (@projects, @profiles, @commandpane_show)->
+    initialize: (@projects, @profiles, @commandpane_show) ->
       @dependencyview = null
       @importview = null
 
