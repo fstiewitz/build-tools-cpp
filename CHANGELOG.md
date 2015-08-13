@@ -1,3 +1,6 @@
+## 3.2.3 - Command Pane
+* The command dialog pane is getting a little too large (will get even larger next week), so I moved it into the project settings view
+
 ## 3.2.0 - Open output & UI improvements
 * There is a new icon in the top right corner of the console pane that, when clicked on, opens a new untitled editor with the content of the console output
 * UI improvements:
