@@ -1,7 +1,7 @@
 {
   "name": "build-tools",
   "main": "./lib/main",
-  "version": "3.2.2",
+  "version": "3.2.3",
   "description": "Build your projects in atom",
   "repository": "https://github.com/deprint/build-tools-cpp",
   "activationCommands": {
