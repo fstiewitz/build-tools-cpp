@@ -1,6 +1,5 @@
 {$,$$,ScrollView} = require 'atom-space-pen-views'
 
-CommandView = null
 ImportView = null
 DependencyView = null
 
@@ -12,7 +11,6 @@ highlight_translation =
 module.exports =
   class ProjectPane extends ScrollView
 
-    commandview: null
     importview: null
     dependencyview: null
 
@@ -64,15 +62,12 @@ module.exports =
             @div class: 'panel-body padded', =>
               @div class: 'dependency-list', outlet: 'dependency_list'
 
-    initialize: (@projects, @profiles)->
-      @commandview = null
+    initialize: (@projects, @profiles, @commandpane_show)->
       @dependencyview = null
       @importview = null
 
       @on 'click', '#add-command-button', (e) =>
-        CommandView ?= require './command-view'
-        @commandview ?= new CommandView(@editccb)
-        @commandview.show(null, null, @activeProject, @profiles)
+        @commandpane_show(null, null, @activeProject, @profiles)
       @on 'click', '#add-dependency-button', (e) =>
         DependencyView ?= require './dependency-view'
         @dependencyview ?= new DependencyView(@editdcb, @projects)
@@ -106,8 +101,6 @@ module.exports =
 
     destroy: ->
       @detach()
-      @commandview?.destroy()
-      @commandview = null
       @dependencyview?.destroy()
       @dependencyview = null
       @importview?.destroy()
@@ -115,6 +108,7 @@ module.exports =
       @projects = null
       @profiles = null
       @activeProject = null
+      @commandpane_show = null
 
     setContent: (@activeProject, name) ->
       @clearAll()
@@ -150,8 +144,6 @@ module.exports =
       @dependency_list.empty()
 
     hideModals: ->
-      if @commandview?.visible()
-        @commandview.hide()
       if @dependencyview?.visible()
         @dependencyview.hide()
       if @importview?.visible()
@@ -170,13 +162,11 @@ module.exports =
         @activeProject.addDependency items
 
     importccb: (command) =>
-      @CommandView ?= require './command-view'
-      @commandview ?= new @CommandView(@editccb)
-      @commandview.show(null, command, @activeProject, @profiles)
+      @commandpane_show(null, command, @activeProject, @profiles)
 
     importdcb: (dependency) =>
-      @DependencyView ?= require './dependency-view'
-      @dependencyview ?= new @DependencyView(@editdcb, @projects)
+      DependencyView ?= require './dependency-view'
+      @dependencyview ?= new DependencyView(@editdcb, @projects)
       @dependencyview.show(dependency.from.project, dependency, null)
 
     selectccb: (key, command) =>
@@ -282,15 +272,13 @@ module.exports =
       target.parentNode.parentNode.classList.remove('top-expanded')
 
     editCommand: (target) ->
-      @CommandView ?= require './command-view'
-      @commandview ?= new @CommandView(@editccb)
       id = Array.prototype.indexOf.call(target.parentNode.childNodes, target)
       cmd = @activeProject.getCommandByIndex id
-      @commandview.show(cmd.name, cmd, @activeProject, @profiles)
+      @commandpane_show(cmd.name, cmd, @activeProject, @profiles)
 
     editDependency: (target) ->
-      @DependencyView ?= require './dependency-view'
-      @dependencyview ?= new @DependencyView(@editdcb, @projects)
+      DependencyView ?= require './dependency-view'
+      @dependencyview ?= new DependencyView(@editdcb, @projects)
       id = Array.prototype.indexOf.call(target.parentNode.childNodes, target)
       @dependencyview.show(@activeProject.path, @activeProject.dependencies[id], id)
 

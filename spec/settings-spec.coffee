@@ -77,7 +77,7 @@ describe 'Settings Page', ->
       button = view.find('#add-command-button')
       expect(button.length).toBe 1
       button.click()
-      expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy
+      expect(view.activepane).toBe view.commandpane
 
   describe 'On import command click', ->
     it 'opens the import view', ->
@@ -92,7 +92,7 @@ describe 'Settings Page', ->
       icon = view.find('.command .icon-pencil')
       expect(icon.length).toBe 1
       icon.click()
-      expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
+      expect(view.activepane).toBe view.commandpane
 
   describe 'On add dependency click', ->
     it 'opens the dependency view', ->

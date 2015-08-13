@@ -1,18 +1,20 @@
-{$, $$, ScrollView, TextEditorView} = require 'atom-space-pen-views'
+{$, $$, View, TextEditorView} = require 'atom-space-pen-views'
 {CompositeDisposable} = require 'atom'
 _p = require 'path'
 
 ProjectPane = null
+CommandPane = null
 
 module.exports =
-  class SettingsView extends ScrollView
+  class SettingsView extends View
     projectpane: null
+    commandpane: null
     activepane: null
 
     show_all: false
 
     @content: ->
-      @div class: 'settings pane-item native-key-bindings', tabindex: -1, =>
+      @div class: 'settings pane-item', tabindex: -1, =>
         @div class: 'project-menu', =>
           @ul class: 'list-group', outlet: 'project_list'
           @div class: 'project-menu-options', =>
@@ -23,11 +25,13 @@ module.exports =
         @div class: 'panel padded', outlet: 'pane'
 
     initialize: ({@uri, @projects, @profiles}) ->
-      super
       ProjectPane ?= require './project-pane'
-      @projectpane = new ProjectPane(@projects,@profiles)
-      @pane.append @projectpane
-      @activepane = @projectpane
+      CommandPane ?= require './command-pane'
+      @projectpane = new ProjectPane(@projects,@profiles, (arg0,arg1,arg2,arg3) =>
+        @showCommandPane()
+        @commandpane.show arg0,arg1,arg2,arg3
+      )
+      @commandpane = new CommandPane(@projectpane.editccb, @hideCommandPane)
       @reload()
       @show_all = false
       @find('#show_all').prop('checked', false)
@@ -45,6 +49,8 @@ module.exports =
       @detach()
       @projectpane.destroy()
       @projectpane = null
+      @commandpane.destroy()
+      @commandpane = null
       @projects = null
       @profiles = null
       @activepane = null
@@ -64,6 +70,21 @@ module.exports =
 
     getIconName: ->
       'tools'
+
+    showProjectPane: ->
+      if @activepane isnt @projectpane
+        @activepane?.detach()
+        @pane.html @projectpane
+        @activepane = @projectpane
+
+    showCommandPane: ->
+      if @activepane isnt @commandpane
+        @activepane?.detach()
+        @pane.html @commandpane
+        @activepane = @commandpane
+
+    hideCommandPane: =>
+      @showProjectPane()
 
     updateProjects: ->
       if @show_all
@@ -106,6 +127,7 @@ module.exports =
       path = e.children[1].innerHTML
       @activeProject = @projects.getProject path
       @markAsActive e
+      @showProjectPane()
       @projectpane.setContent @activeProject, name
 
     getElement: (path) ->
@@ -116,6 +138,7 @@ module.exports =
     reload: =>
       return unless @projects?
       @projectpane.hideModals()
+      @showProjectPane()
       @updateProjects()
       if @activeProject?
         if @projects.getProject(@activeProject.path)? and (e = @getElement(@activeProject.path))?

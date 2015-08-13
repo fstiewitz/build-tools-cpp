@@ -1,8 +1,8 @@
-{$, $$, View, TextEditorView} = require 'atom-space-pen-views'
+{$, $$, ScrollView, TextEditorView} = require 'atom-space-pen-views'
 {CompositeDisposable} = require 'atom'
 
 module.exports =
-class CommandView extends View
+class CommandPane extends ScrollView
   nameEditor: null
   commandEditor: null
   wdEditor: null
@@ -142,7 +142,7 @@ class CommandView extends View
         @div class: 'btn btn-error icon icon-x inline-block-tight', 'Cancel'
         @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
 
-  initialize: (@callback) ->
+  initialize: (@success_callback, @cancel_callback) ->
     @disposables = new CompositeDisposable
     @nameEditor = @command_name.getModel()
     @commandEditor = @command_text.getModel()
@@ -202,7 +202,7 @@ class CommandView extends View
       if c
         @find('#command-error-none').removeClass('hidden')
     else
-      @callback(@oldname,
+      @success_callback(@oldname,
         version: 1
         name: @nameEditor.getText()
         command: @commandEditor.getText()
@@ -220,7 +220,7 @@ class CommandView extends View
           profile: if @stderr_highlighting is 'hc' then $(@stderr_profile.children()[@stderr_profile[0].selectedIndex]).prop('value') else undefined
           lint: if @stderr_lint.hasClass('hidden') then false else @find('#lint_stderr').prop('checked')
         )
-      @hide()
+      @cancel_callback()
     event.stopPropagation()
 
   validName: ->
@@ -230,17 +230,8 @@ class CommandView extends View
     @commandEditor.getText() isnt ''
 
   cancel: (event) =>
-    @hide()
+    @cancel_callback()
     event.stopPropagation()
-
-  hide: ->
-    @panel?.hide()
-
-  visible: ->
-    if @panel?
-      return @panel.isVisible()
-    else
-      return false
 
   show: (@oldname, items, @project, @profiles) ->
     @nameEditor.setText('')
@@ -297,14 +288,6 @@ class CommandView extends View
         @stdout_mark.removeClass('hidden')
         @stdout_lint.removeClass('hidden')
         @selectProfile @stdout_profile, items.stdout.profile
-
-    @panel ?= atom.workspace.addModalPanel(item: this)
-    @parent('.modal').css(
-      'max-height': '100%'
-      display: 'flex'
-      'flex-direction': 'column'
-    )
-    @panel.show()
     @command_name.focus()
 
   populateProfiles: (select) ->

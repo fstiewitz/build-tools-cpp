@@ -1,11 +1,11 @@
-CommandView = require '../lib/command-view'
+CommandPane = require '../lib/command-pane'
 Projects = require '../lib/projects'
 Profiles = require '../lib/profiles/profiles'
 
 {$} = require 'atom-space-pen-views'
 
 describe 'Command Panel', ->
-  [spy, cmd, projects, view, fixturesPath] = []
+  [success_spy, hide_spy, cmd, projects, view, fixturesPath] = []
 
   cmd = {
     name: 'Test command',
@@ -31,8 +31,9 @@ describe 'Command Panel', ->
     fixturesPath = atom.project.getPaths()[0]
     projects = new Projects('')
     projects.addProject(fixturesPath) if not projects.getProject(fixturesPath)?
-    spy = jasmine.createSpy('callback')
-    view = new CommandView(spy)
+    success_spy = jasmine.createSpy('success')
+    hide_spy = jasmine.createSpy('hide')
+    view = new CommandPane(success_spy, hide_spy)
     jasmine.attachToDOM(view.element)
 
   afterEach ->
@@ -48,20 +49,18 @@ describe 'Command Panel', ->
   describe 'When command view is cancelled', ->
     it 'detaches the command view', ->
       view.show(null, null, projects.getProject(fixturesPath), Profiles)
-      expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
       view.find('.btn-error').click()
-      expect(atom.workspace.getModalPanels()[0].visible).toBeFalsy()
-      expect(spy).not.toHaveBeenCalled()
+      expect(success_spy).not.toHaveBeenCalled()
+      expect(hide_spy).toHaveBeenCalled()
 
   describe 'When command view is confirmed with good values', ->
     it 'calls the callback function', ->
       view.show(null, null, projects.getProject(fixturesPath), Profiles)
-      expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
       view.nameEditor.setText('Test command')
       view.commandEditor.setText('foo')
       view.find('.btn-primary').click()
-      expect(atom.workspace.getModalPanels()[0].visible).toBeFalsy()
-      expect(spy).toHaveBeenCalledWith(null, {
+      expect(hide_spy).toHaveBeenCalled()
+      expect(success_spy).toHaveBeenCalledWith(null, {
         version: 1,
         name: 'Test command',
         command: 'foo',
@@ -85,18 +84,16 @@ describe 'Command Panel', ->
   describe 'When command view is confirmed with wrong values', ->
     it 'displays an error message and does not call the callback function', ->
       view.show(null, null, projects.getProject(fixturesPath), Profiles)
-      expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
       view.nameEditor.setText('Test command')
       view.commandEditor.setText('')
       view.find('.btn-primary').click()
-      expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
-      expect(spy).not.toHaveBeenCalled()
+      expect(success_spy).not.toHaveBeenCalled()
+      expect(hide_spy).not.toHaveBeenCalled()
       expect(view.find('#command-error-none').hasClass('hidden')).toBeFalsy()
 
   describe 'When command view is created with a preset and confirmed', ->
     it 'displays the preset and calls the callback function on confirm', ->
       view.show(cmd.name, cmd, projects.getProject(fixturesPath), Profiles)
-      expect(atom.workspace.getModalPanels()[0].visible).toBeTruthy()
       expect(view.nameEditor.getText()).toBe 'Test command'
       expect(view.commandEditor.getText()).toBe 'pwd "Hello World" test'
       expect(view.wdEditor.getText()).toBe 'sub0'
@@ -117,8 +114,8 @@ describe 'Command Panel', ->
       view.nameEditor.setText('Test command 2')
       view.commandEditor.setText('foo')
       view.find('.btn-primary').click()
-      expect(atom.workspace.getModalPanels()[0].visible).toBeFalsy()
-      expect(spy).toHaveBeenCalledWith('Test command', {
+      expect(hide_spy).toHaveBeenCalled()
+      expect(success_spy).toHaveBeenCalledWith('Test command', {
         version: 1,
         name: 'Test command 2',
         command: 'foo',
