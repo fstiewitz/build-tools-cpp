@@ -24,7 +24,7 @@ build-tools (prev. build-tools-cpp)
 
 ## Settings
 ### Commands
-![Command](https://cloud.githubusercontent.com/assets/7817714/9156655/bc3e6ce6-3ee1-11e5-9cdf-9d1b37b6ed21.png)
+![Command](https://cloud.githubusercontent.com/assets/7817714/9272469/fea5afaa-4282-11e5-9640-3b56fbc57776.png)
 
 ### Dependencies
 ![Dependency](https://cloud.githubusercontent.com/assets/7817714/9156647/736a56ba-3ee1-11e5-8f38-42fe7400dff6.png)
