@@ -1,5 +1,5 @@
 {$, $$} = require 'atom-space-pen-views'
-fs = require 'fs'
+fs = require 'fs-plus'
 path = require 'path'
 Profiles = require './profiles/profiles'
 
@@ -46,7 +46,7 @@ module.exports =
         filenames = []
         for match in @profile.files message
           match.file = @absolutePath(match.file)
-          filenames.push match
+          filenames.push match if fs.isFileSync match.file
       $$ ->
         status = '' if not status?
         status = 'info' if status is 'note'
