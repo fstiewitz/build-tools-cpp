@@ -163,13 +163,13 @@ class CommandPane extends ScrollView
     @commandEditor = @command_text.getModel()
     @wdEditor = @working_directory.getModel()
 
-    @on 'click', '.icon-triangle-right', (e) =>
+    @on 'click', '.icon-triangle-right', (e) ->
       item = $(e.currentTarget)
       item.removeClass('icon-triangle-right')
       item.addClass('icon-triangle-down')
       $(e.currentTarget.parentNode.children[1]).removeClass('hidden')
 
-    @on 'click', '.icon-triangle-down', (e) =>
+    @on 'click', '.icon-triangle-down', (e) ->
       item = $(e.currentTarget)
       item.removeClass('icon-triangle-down')
       item.addClass('icon-triangle-right')
