@@ -13,6 +13,8 @@ describe 'Command Pane', ->
     wd: 'sub0',
     shell: false,
     wildcards: false,
+    save_all: false,
+    close_success: true,
     stdout: {
       file: false,
       highlighting: 'hc',
@@ -28,6 +30,7 @@ describe 'Command Pane', ->
   }
 
   beforeEach ->
+    atom.config.set('build-tools.SaveAll', false)
     fixturesPath = atom.project.getPaths()[0]
     projects = new Projects('')
     projects.addProject(fixturesPath) if not projects.getProject(fixturesPath)?
@@ -61,12 +64,14 @@ describe 'Command Pane', ->
       view.find('.btn-primary').click()
       expect(hide_spy).toHaveBeenCalled()
       expect(success_spy).toHaveBeenCalledWith(null, {
-        version: 1,
+        version: 2,
         name: 'Test command',
         command: 'foo',
         wd: '.',
         shell: false,
         wildcards: false,
+        save_all: false,
+        close_success: false,
         stdout: {
           file: true,
           highlighting: 'nh',
@@ -99,6 +104,8 @@ describe 'Command Pane', ->
       expect(view.wdEditor.getText()).toBe 'sub0'
       expect(view.find('#command_in_shell').prop('checked')).toBeFalsy()
       expect(view.find('#wildcards').prop('checked')).toBeFalsy()
+      expect(view.find('#save').prop('checked')).toBeFalsy()
+      expect(view.find('#close_success').prop('checked')).toBeTruthy()
       expect(view.find('#mark_paths_stdout').prop('checked')).toBeFalsy()
       expect(view.find('#stdout #hc').hasClass('selected')).toBeTruthy()
       expect(view.find('#lint_stdout').prop('checked')).toBeFalsy()
@@ -116,12 +123,14 @@ describe 'Command Pane', ->
       view.find('.btn-primary').click()
       expect(hide_spy).toHaveBeenCalled()
       expect(success_spy).toHaveBeenCalledWith('Test command', {
-        version: 1,
+        version: 2,
         name: 'Test command 2',
         command: 'foo',
         wd: 'sub0',
         shell: false,
         wildcards: false,
+        save_all: false,
+        close_success: true,
         stdout: {
           file: false,
           highlighting: 'hc',

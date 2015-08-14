@@ -103,8 +103,9 @@ module.exports =
     finishConsole: (exitcode) ->
       @find('.icon-link-external').removeClass 'hidden'
       @find('.filelink').on 'click', @openFile
-      if (t = atom.config.get('build-tools.CloseOnSuccess')) > -1 and exitcode is 0
-        if t is 0
+      if @cmd.close_success and exitcode is 0
+        t = atom.config.get('build-tools.CloseOnSuccess')
+        if t < 1
           @hideBox()
         else
           @timeout = setTimeout( =>
@@ -127,10 +128,10 @@ module.exports =
     unlock: ->
       @lockoutput = false
 
-    createOutput: (cmd) ->
+    createOutput: (@cmd) ->
       @Output ?= require './output'
-      @stdout = new @Output(cmd, 'stdout', @printLine)
-      @stderr = new @Output(cmd, 'stderr', @printLine)
+      @stdout = new @Output(@cmd, 'stdout', @printLine)
+      @stderr = new @Output(@cmd, 'stderr', @printLine)
 
     setQueueCount: (@queue) ->
       if @queue is 1

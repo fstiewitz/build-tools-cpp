@@ -35,6 +35,7 @@ describe 'Console View', ->
       wd: 'build',
       shell: false,
       wildcards: false,
+      close_success: false
       stdout: {
         file: false,
         highlighting: 'ha',
@@ -69,28 +70,24 @@ describe 'Console View', ->
 
     beforeEach ->
       view.printLine 'Test'
+      atom.config.set('build-tools.CloseOnSuccess', 3)
 
-    describe 'When timeout is disabled (-1)', ->
+    describe 'When timeout is disabled', ->
       it 'does not close the console pane on success', ->
-        atom.config.set('build-tools.CloseOnSuccess', -1)
+        view.cmd = close_success: false
         view.finishConsole(0)
         expect(view.visible_items.header).toBeTruthy()
 
     describe 'When timeout is enabled (0)', ->
       it 'closes the console pane on success', ->
         atom.config.set('build-tools.CloseOnSuccess', 0)
+        view.cmd = close_success: true
         view.finishConsole(0)
         expect(view.visible_items.header).toBeFalsy()
 
-    describe 'When timeout is enabled (3)', ->
-      it 'closes the console pane on success after 3 seconds', ->
-        atom.config.set('build-tools.CloseOnSuccess', 3)
-        view.finishConsole(0)
-        expect(view.visible_items.header).toBeTruthy()
-
     describe 'When command fails', ->
       it 'does not close the console pane', ->
-        atom.config.set('build-tools.CloseOnSuccess', 3)
+        view.cmd = close_success: true
         view.finishConsole(1)
         expect(view.visible_items.header).toBeTruthy()
 

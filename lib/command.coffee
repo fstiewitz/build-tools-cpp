@@ -8,12 +8,14 @@ module.exports =
     wd: ''
     shell: false
     wildcards: false
+    save_all: false
+    close_success: false
     stdout: {}
     stderr: {}
     targetOf: []
     version: null
 
-    constructor: ({@project, @name, @command, @wd, @shell, @wildcards, @stdout, @stderr, @targetOf, @version}, _command) ->
+    constructor: ({@project, @name, @command, @wd, @shell, @wildcards, @save_all, @close_success, @stdout, @stderr, @targetOf, @version}, _command) ->
       @command = _command if _command?
       @targetOf = [] if not @targetOf?
       if not @version?
@@ -22,6 +24,10 @@ module.exports =
           @stdout.profile = 'gcc_clang'
         if @stderr.highlighting is 'hc'
           @stderr.profile = 'gcc_clang'
+      if @version isnt 2
+        @version = 2
+        @save_all = atom.config.get('build-tools.SaveAll')
+        @close_success = false
       return
 
     getProject: ->

@@ -77,6 +77,21 @@ class CommandPane extends ScrollView
               @div =>
                 @span class: 'inline-block text-subtle', 'Enable if command or working directory contain wildcards'
       @div class: 'inset-panel', =>
+        @div class: 'panel-heading settings-name icon icon-triangle-right', 'Advanced'
+        @div class: 'panel-body padded hidden', =>
+          @div class: 'block checkbox', outlet: 'close_success', =>
+            @input id: 'close_success', type: 'checkbox'
+            @label =>
+              @div class: 'settings-name', 'Close on success'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Close console on success. Uses config value in package settings if enabled'
+          @div class: 'block checkbox', outlet: 'save', =>
+            @input id: 'save', type: 'checkbox'
+            @label =>
+              @div class: 'settings-name', 'Save All'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Save all files before executing your build command'
+      @div class: 'inset-panel', =>
         @div class: 'panel-heading settings-name icon icon-plug', 'stdout'
         @div class: 'panel-body padded', id: 'stdout', =>
           @div class: 'block', =>
@@ -148,6 +163,18 @@ class CommandPane extends ScrollView
     @commandEditor = @command_text.getModel()
     @wdEditor = @working_directory.getModel()
 
+    @on 'click', '.icon-triangle-right', (e) =>
+      item = $(e.currentTarget)
+      item.removeClass('icon-triangle-right')
+      item.addClass('icon-triangle-down')
+      $(e.currentTarget.parentNode.children[1]).removeClass('hidden')
+
+    @on 'click', '.icon-triangle-down', (e) =>
+      item = $(e.currentTarget)
+      item.removeClass('icon-triangle-down')
+      item.addClass('icon-triangle-right')
+      $(e.currentTarget.parentNode.children[1]).addClass('hidden')
+
     @on 'click', '.btn-group .btn', (e) =>
       if e.currentTarget.parentNode.id is 'stdout'
         @stdout_highlighting = e.currentTarget.id
@@ -203,12 +230,14 @@ class CommandPane extends ScrollView
         @find('#command-error-none').removeClass('hidden')
     else
       @success_callback(@oldname,
-        version: 1
+        version: 2
         name: @nameEditor.getText()
         command: @commandEditor.getText()
         wd: if (d = @wdEditor.getText()) is '' then '.' else d
         shell: @find('#command_in_shell').prop('checked')
         wildcards: @find('#wildcards').prop('checked')
+        save_all: @find('#save').prop('checked')
+        close_success: @find('#close_success').prop('checked')
         stdout:
           file: @find('#mark_paths_stdout').prop('checked')
           highlighting: @stdout_highlighting
@@ -240,6 +269,8 @@ class CommandPane extends ScrollView
 
     @find('#command_in_shell').prop('checked', false)
     @find('#wildcards').prop('checked', false)
+    @find('#save').prop('checked', atom.config.get('build-tools.SaveAll'))
+    @find('#close_success').prop('checked', false)
     @find('#mark_paths_stdout').prop('checked', true)
     @find('#mark_paths_stderr').prop('checked', true)
     @find('#lint_stdout').prop('checked', false)
@@ -268,6 +299,8 @@ class CommandPane extends ScrollView
       @wdEditor.setText(items.wd)
       @find('#command_in_shell').prop('checked', items.shell)
       @find('#wildcards').prop('checked', items.wildcards)
+      @find('#save').prop('checked', items.save_all)
+      @find('#close_success').prop('checked', items.close_success)
       @find('#mark_paths_stdout').prop('checked', items.stdout.file)
       @find('#mark_paths_stderr').prop('checked', items.stderr.file)
       @stdout_highlights.find('.selected').removeClass('selected')

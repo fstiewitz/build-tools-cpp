@@ -128,8 +128,8 @@ describe 'Projects', ->
       expect(project['commands'][1].project).toBe root2
       expect(project['commands'][1].name).toBe 'Test command 2'
 
-    it 'upgrades the version property if input is pre-3.0', ->
-      expect(project['commands'][1].version).toBe 1
+    it 'upgrades the version property if input is pre-3.3', ->
+      expect(project['commands'][1].version).toBe 2
       expect(project['commands'][1].stderr.highlighting).toBe 'hc'
       expect(project['commands'][1].stderr.profile).toBe 'gcc_clang'
 

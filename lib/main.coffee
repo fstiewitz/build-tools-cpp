@@ -49,6 +49,8 @@ module.exports =
     @projects ?= new @Projects()
 
   activate: (state) ->
+    if atom.config.get('build-tools.CloseOnSuccess') is -1
+      atom.config.set('build-tools.CloseOnSuccess', 3)
     @createProjectInstance()
     createConsoleView()
     atom.workspace.addOpener (uritoopen) =>
@@ -172,7 +174,6 @@ module.exports =
       handle()
 
   execute: (id, ask = false) ->
-    @saveall() if atom.config.get('build-tools.SaveAll')
     if (path = atom.workspace.getActiveTextEditor()?.getPath())?
       if (projectpath = @projects.getNextProjectPath path) isnt ''
         project = @projects.getProject projectpath
@@ -190,6 +191,7 @@ module.exports =
             createAskView()
             askview.show command.command, (c) =>
               _command = new Command(command, c)
+              @saveall() if command.save_all
               @command_list = @projects.generateDependencyList _command
               consoleview?.setQueueCount(@command_list.length)
               ll.messages = []
@@ -198,6 +200,7 @@ module.exports =
             @command_list = @projects.generateDependencyList command
             consoleview?.setQueueCount(@command_list.length)
             ll.messages = []
+            @saveall() if @command_list[0].save_all
             @spawn @command_list.splice(0, 1)[0]
 
   provideLinter: ->
@@ -220,6 +223,6 @@ module.exports =
       default: 'bash -c'
     CloseOnSuccess:
       title: 'Close console on success'
-      description: '-1 to keep console pane, 0 to hide console on success, >0 to hide console after x seconds'
+      description: 'Value is used in command settings. 0 to hide console on success, >0 to hide console after x seconds'
       type: 'integer'
-      default: -1
+      default: 3
