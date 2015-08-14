@@ -40,6 +40,7 @@ module.exports =
     in: (line) ->
       if (m = XRegExp.exec line, @regex)? #Start of error message
         @status = m.type
+        @laststatus = @status
         @output.print m
         @lint m
       else if /\s+\^\s*/.test(line) #End of error message
@@ -47,9 +48,12 @@ module.exports =
         @status = null
       else if @status? #Inside error message
         @output.print input: line, type: @status
+      else if /required|found|reason|symbol|location/.test(line) #Reason,Found,Required,Symbol and Location fields
+        @output.print input: line, type: @laststatus
       else #Rest
         @output.print input: line
 
     clear: ->
       @status = null
+      @laststatus = null
       @indentation = null
