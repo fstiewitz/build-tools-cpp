@@ -1,3 +1,7 @@
+## 3.3.0 - Advanced settings
+* Options "Close on success" and "Save all" are now per-command
+* Java: Highlight "required" and other tags
+
 ## 3.2.3 - Command Pane
 * The command dialog pane is getting a little too large (will get even larger next week), so I moved it into the project settings view
 
