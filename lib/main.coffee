@@ -49,9 +49,9 @@ module.exports =
     @projects ?= new @Projects()
 
   activate: (state) ->
+    @createProjectInstance()
     if atom.config.get('build-tools.CloseOnSuccess') is -1
       atom.config.set('build-tools.CloseOnSuccess', 3)
-    @createProjectInstance()
     createConsoleView()
     atom.workspace.addOpener (uritoopen) =>
       if uritoopen is settingsviewuri
@@ -213,7 +213,7 @@ module.exports =
   config:
     SaveAll:
       title: 'Save all'
-      description: 'Save all files before executing your build command'
+      description: 'Default value used in command settings. Save all files before executing your build command'
       type: 'boolean'
       default: true
     ShellCommand:

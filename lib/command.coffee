@@ -27,7 +27,7 @@ module.exports =
       if @version isnt 2
         @version = 2
         @save_all = atom.config.get('build-tools.SaveAll')
-        @close_success = false
+        @close_success = if atom.config.get('build-tools.CloseOnSuccess') is -1 then false else true
       return
 
     getProject: ->
