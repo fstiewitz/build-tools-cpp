@@ -1,5 +1,5 @@
 {$, View} = require 'atom-space-pen-views'
-output = require './output'
+Output = require './output'
 
 module.exports =
   class ConsoleOutput extends View
@@ -129,9 +129,8 @@ module.exports =
       @lockoutput = false
 
     createOutput: (@cmd) ->
-      @Output ?= require './output'
-      @stdout = new @Output(@cmd, 'stdout', @printLine)
-      @stderr = new @Output(@cmd, 'stderr', @printLine)
+      @stdout = new Output(@cmd, 'stdout', @printLine)
+      @stderr = new Output(@cmd, 'stderr', @printLine)
 
     setQueueCount: (@queue) ->
       if @queue is 1

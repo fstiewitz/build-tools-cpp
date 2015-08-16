@@ -96,18 +96,15 @@ describe 'Console View', ->
     describe 'When :createOutput', ->
       it 'creates output objects', ->
         data['path'] = fixturesPath
-        expect(view.Output).toBeUndefined()
         expect(view.stdout).toBeUndefined()
         expect(view.stderr).toBeUndefined()
         view.createOutput data
-        expect(view.Output).toBeDefined()
         expect(view.stdout).toBeDefined()
         expect(view.stderr).toBeDefined()
 
     describe 'On input', ->
       it 'correctly displays errors and warnings', ->
         view.createOutput data
-        expect(view.Output).toBeDefined()
         expect(view.stdout).toBeDefined()
         expect(view.stderr).toBeDefined()
         for i in [0..2]
