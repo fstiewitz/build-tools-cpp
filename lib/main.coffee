@@ -154,6 +154,7 @@ module.exports =
             consoleview?.setHeader(
               "#{res.name} of #{res.project}: finished with exitcode #{exitcode}"
             )
+            @command_list = []
         else
           if consoleview.queue is 1
             consoleview?.setQueueCount(0)
@@ -161,8 +162,8 @@ module.exports =
             "#{res.name} of #{res.project}:" +
             "<span class='error'>finished with exitcode #{exitcode}</span>"
           )
+          @command_list = []
         @lint() if (@command_list.length is 0) or exitcode isnt 0
-        @command_list = []
         @process = null
       )
     @process.onWillThrowError ({error, handle}) =>
