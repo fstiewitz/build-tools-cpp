@@ -1,3 +1,43 @@
+## 3.4.0 - Local configuration files
+* If you execute a command, the package will climb up the file tree and if it finds a `.build-tools.cson` it will use the configuration of said file in favor of any global project settings.
+* Limitations:
+  1. No UI for editing local config files
+  2. No local dependencies
+* Added snippets for editing local config files: `btp<TAB>btc<TAB>` to get started
+* Example config:
+``` coffee
+  'commands': [
+    {
+      'name': 'Test'
+      'command': 'echo Hello World!'
+      'wd': '.' #Working directory. Default: .
+      'shell': false #Execute in shell
+      'wildcards': false #Replace wildcards
+      'save_all': false #Save all
+      'close_success': false #Close console on success
+      'stdout':
+        'file': false #Highlight files
+        #nh: No highlighting
+        #ha: Highlight all
+        #ht: Highlight tags
+        #hc: Highlighting profile (requires 'profile')
+        'highlighting': 'nh'
+        #gcc_clang: GCC/Clang
+        #apm_test: apm test (Jasmine specs)
+        #java: Java
+        #python: Python
+        #'profile': 'gcc_clang' #Uncomment if 'highlighting' is 'hc'
+        'lint': false #Lint errors/warnings
+      'stderr':
+        'file': false
+        'highlighting': 'hc'
+        'lint': false
+      #Backwards compatibility with older command versions (don't change it)
+      'version': 2
+    }
+  ]
+```
+
 ## 3.3.0 - Advanced settings
 * Options "Close on success" and "Save all" are now per-command
 * Java: Highlight "required" and other tags
