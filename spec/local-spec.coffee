@@ -2,33 +2,21 @@ Projects = require '../lib/projects'
 path = require 'path'
 
 describe 'Local projects', ->
-  [fixturesPath] = []
-
-  beforeEach ->
-    fixturesPath = atom.project.getPaths()[0]
+  fixturesPath = ""
 
   describe 'Test @hasLocal', ->
-    expect(Projects.hasLocal fixturesPath).toBe true
+    it 'returns true', ->
+      fixturesPath = atom.project.getPaths()[0]
+      expect(Projects.hasLocal fixturesPath).toBe true
 
   describe 'Test @loadLocal', ->
-    console.log fixturesPath
-    project = Projects.loadLocal fixturesPath
-    expect(project).not.toBeNull()
-    expect(project.commands.length).toBe 2
-    expect(project.commands[0]).toEqual
-      name: 'Test'
-      command: 'echo Hello World'
-      wd: '.'
-      shell: false
-      wildcards: false
-      save_all: false
-      close_success: false
-      stdout:
-        file: false
-        highlighting: 'nh'
-        lint: false
-      stderr:
-        file: false
-        highlighting: 'hc'
-        lint: false
-      version: 2
+    it 'returns a project instance', ->
+      fixturesPath = atom.project.getPaths()[0]
+      project = Projects.loadLocal fixturesPath
+      expect(project).not.toBeNull()
+      expect(project.commands.length).toBe 2
+      expect(project.commands[0].project).toBe fixturesPath
+      expect(project.commands[0].name).toBe 'Test'
+      expect(project.commands[0].command).toBe 'echo Hello World'
+      expect(project.commands[0].stderr.highlighting).toBe 'hc'
+      expect(project.commands[0].version).toBe 2
