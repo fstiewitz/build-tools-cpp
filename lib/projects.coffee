@@ -4,6 +4,10 @@ fs = require 'fs'
 {Emitter} = require 'atom'
 CSON = require 'season'
 
+notify = (message) ->
+  atom.notifications?.addError message
+  console.log('build-tools: ' + message)
+
 module.exports =
   class Projects
     filename: null
@@ -53,7 +57,7 @@ module.exports =
         Object.keys(data).forEach (key) =>
           @data[key] = new Project(key, data[key], @setData, @checkDependencies)
       catch error
-        @notify 'Error while reading settings from file'
+        notify 'Error while reading settings from file'
 
     setData: (emit = true) =>
       if @filename?
@@ -62,13 +66,9 @@ module.exports =
           CSON.writeFileSync @filename, @data
           @emitter.emit 'file-change' if emit
         catch error
-          @notify "Settings could not be written to #{@filename}"
+          notify "Settings could not be written to #{@filename}"
       else
         @reload()
-
-    notify: (message) ->
-      atom.notifications?.addError message
-      console.log('build-tools: ' + message)
 
     checkDependencies: ({added, removed, replaced}) =>
       if removed?
@@ -138,24 +138,27 @@ module.exports =
               command.targetOf[index].command = replaced.new.name if value.command is replaced.old.name
 
     generateDependencyList: (command, omit = []) ->
-      commands = []
-      contains = ->
-        for obj in omit
-          if (obj.project is command.project) and (obj.name is command.name)
-            return true
-        return false
+      if @data[command.project]?
+        commands = []
+        contains = ->
+          for obj in omit
+            if (obj.project is command.project) and (obj.name is command.name)
+              return true
+          return false
 
-      if not contains()
-        omit.push {
-          project: command.project
-          name: command.name
-        }
-        dependencies = @data[command.project].dependencies.filter (value, index) ->
-          (value.from.command is command.name)
-        for dependency in dependencies
-          commands = commands.concat(@generateDependencyList @data[dependency.to.project].getCommand(dependency.to.command), omit)
-        commands.push(command)
-      commands
+        if not contains()
+          omit.push {
+            project: command.project
+            name: command.name
+          }
+          dependencies = @data[command.project].dependencies.filter (value, index) ->
+            (value.from.command is command.name)
+          for dependency in dependencies
+            commands = commands.concat(@generateDependencyList @data[dependency.to.project].getCommand(dependency.to.command), omit)
+          commands.push(command)
+        commands
+      else
+        [command]
 
     touchFile: ->
       if not fs.existsSync @filename
@@ -163,7 +166,7 @@ module.exports =
 
     addProject: (path) ->
       if @data[path]?
-        @notify "Project \"#{path}\" already exists"
+        notify "Project \"#{path}\" already exists"
       else
         @data[path] = new Project(path, {commands: [], dependencies: []}, @setData, @checkDependencies)
         @setData()
@@ -171,7 +174,7 @@ module.exports =
     getNextProjectPath: (file) ->
       p = file.split(path.sep)
       i = p.length
-      while (i isnt 0) and (@data[p.slice(0, i).join(path.sep)] is undefined)
+      while (i isnt 0) and (@data[p.slice(0, i).join(path.sep)] is undefined and not fs.existsSync(path.join(p.slice(0,i).join(path.sep),'.build-tools.cson')))
         i = i - 1
       p.slice(0, i).join(path.sep)
 
@@ -180,3 +183,13 @@ module.exports =
 
     getProjects: ->
       Object.keys(@data)
+
+    @hasLocal: (_path) ->
+      fs.existsSync path.join(_path, '.build-tools.cson')
+
+    @loadLocal: (_path) ->
+      try
+        new Project(_path, CSON.readFileSync(path.join(_path, '.build-tools.cson')))
+      catch error
+        notify 'Error while reading settings from file' + path.join(_path, '.build-tools.cson')
+        null

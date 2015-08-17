@@ -17,6 +17,8 @@ selectionview = null
 AskView = null
 askview = null
 
+Projects = null
+
 createAskView = ->
   AskView ?= require './ask-view'
   askview ?= new AskView
@@ -45,8 +47,8 @@ module.exports =
   command_list: null
 
   createProjectInstance: ->
-    @Projects ?= require './projects'
-    @projects ?= new @Projects()
+    Projects ?= require './projects'
+    @projects ?= new Projects()
 
   activate: (state) ->
     @createProjectInstance()
@@ -108,7 +110,10 @@ module.exports =
   selection: ->
     if (path = atom.workspace.getActiveTextEditor()?.getPath())?
       if (projectpath = @projects.getNextProjectPath path) isnt ''
-        project = @projects.getProject projectpath
+        project = null
+        if Projects.hasLocal projectpath
+          project = Projects.loadLocal projectpath
+        project ?= @projects.getProject projectpath
         createSelectionView()
         selectionview.show project, (name) =>
           if (command = project.getCommand name)?
@@ -177,32 +182,36 @@ module.exports =
   execute: (id, ask = false) ->
     if (path = atom.workspace.getActiveTextEditor()?.getPath())?
       if (projectpath = @projects.getNextProjectPath path) isnt ''
-        project = @projects.getProject projectpath
-        bindings = ['make', 'configure', 'preconfigure']
-        if (b = bindings[id])?
-          if (key = project.key[b])?
-            project = @projects.getProject key.project
-            command = project.getCommand key.command
+        project = null
+        if Projects.hasLocal projectpath
+          project = Projects.loadLocal projectpath
+        project ?= @projects.getProject projectpath
+        if project?
+          bindings = ['make', 'configure', 'preconfigure']
+          if (b = bindings[id])?
+            if (key = project.key[b])?
+              project = @projects.getProject key.project
+              command = project.getCommand key.command
+            else
+              command = project.getCommandByIndex id
           else
             command = project.getCommandByIndex id
-        else
-          command = project.getCommandByIndex id
-        if command?
-          if ask
-            createAskView()
-            askview.show command.command, (c) =>
-              _command = new Command(command, c)
-              @saveall() if command.save_all
-              @command_list = @projects.generateDependencyList _command
+          if command?
+            if ask
+              createAskView()
+              askview.show command.command, (c) =>
+                _command = new Command(command, c)
+                @saveall() if command.save_all
+                @command_list = @projects.generateDependencyList _command
+                consoleview?.setQueueCount(@command_list.length)
+                ll.messages = []
+                @spawn @command_list.splice(0, 1)[0]
+            else
+              @command_list = @projects.generateDependencyList command
               consoleview?.setQueueCount(@command_list.length)
               ll.messages = []
+              @saveall() if @command_list[0].save_all
               @spawn @command_list.splice(0, 1)[0]
-          else
-            @command_list = @projects.generateDependencyList command
-            consoleview?.setQueueCount(@command_list.length)
-            ll.messages = []
-            @saveall() if @command_list[0].save_all
-            @spawn @command_list.splice(0, 1)[0]
 
   provideLinter: ->
     grammarScopes: ['*']
