@@ -1,0 +1,40 @@
+'.source.coffee':
+  'Project':
+    'prefix': 'btp'
+    'body': '''
+    'commands': [
+      $1
+    ]
+    '''
+  'Command':
+    'prefix': 'btc'
+    'body': '''
+    {
+      'name': '$1'
+      'command': '$2'
+      'wd': '${3:.}' #Working directory. Default: .
+      'shell': false #Execute in shell
+      'wildcards': false #Replace wildcards
+      'save_all': false #Save all
+      'close_success': false #Close console on success
+      'stdout':
+        'file': false #Highlight files
+        #nh: No highlighting
+        #ha: Highlight all
+        #ht: Highlight tags
+        #hc: Highlighting profile (requires 'profile')
+        'highlighting': 'nh'
+        #gcc_clang: GCC/Clang
+        #apm_test: apm test (Jasmine specs)
+        #java: Java
+        #python: Python
+        #'profile': 'gcc_clang' #Uncomment if 'highlighting' is 'hc'
+        'lint': false #Lint errors/warnings
+      'stderr':
+        'file': false
+        'highlighting': 'hc'
+        'lint': false
+      #Backwards compatibility with older command versions (don't change it)
+      'version': 2
+    }
+    '''

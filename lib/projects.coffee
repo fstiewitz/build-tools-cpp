@@ -191,5 +191,5 @@ module.exports =
       try
         new Project(_path, CSON.readFileSync(path.join(_path, '.build-tools.cson')))
       catch error
-        notify 'Error while reading settings from file' + path.join(_path, '.build-tools.cson')
+        notify 'Error while reading settings from local file ' + path.join(_path, '.build-tools.cson')
         null
