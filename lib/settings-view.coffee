@@ -38,7 +38,7 @@ module.exports =
       @on 'change', '#show-all', (e) =>
         @show_all = $(e.currentTarget).prop('checked')
         @reload()
-      @on 'click', '.checkbox label', (e) =>
+      @on 'click', '.project-menu-options .checkbox label', (e) =>
         item = $(e.currentTarget.parentNode.children[0])
         item.prop('checked', not item.prop('checked'))
         @show_all = item.prop('checked')
