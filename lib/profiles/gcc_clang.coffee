@@ -7,6 +7,8 @@ module.exports =
 
     scopes: ['source.c++', 'source.cpp', 'source.c']
 
+    default_extensions: ['cc', 'cpp', 'cp', 'cxx', 'c++', 'cu', 'cuh', 'h', 'hh', 'hpp', 'hxx', 'h++', 'inl', 'ipp', 'tcc', 'tpp', 'c', 'h']
+
     regex_string: '
     (?<file> [\\S]+\\.(?extensions)): #File \n
     ((?<row> [\\d]+)(:(?<col> [\\d]+))?)? #Row and column \n

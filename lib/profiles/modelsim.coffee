@@ -7,6 +7,8 @@ module.exports =
 
     scopes: ['source.vhdl' , 'source.verilog']
 
+    default_extensions: ['vhd']
+
     regex_string: '
     (?<type> Error|Warning):[ ](?<file> [\\S]+\\.(?extensions))\\((?<row> [\\d]+)\\):[ ](?<message> .+)$
     '

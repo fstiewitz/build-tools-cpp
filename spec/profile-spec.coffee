@@ -4,7 +4,7 @@ Profile.profile 'GCC/Clang', {
   stderr:
     profile: 'gcc_clang'
     highlighting: 'hc'
-}, 'stderr', ['language-c'],
+}, 'stderr',
 [
   'In file included from test/src/def.h:32:0, ',
   '                 from test/src/gen.h:31, ',
@@ -41,7 +41,7 @@ Profile.profile 'apm test', {
   stderr:
     profile: 'apm_test'
     highlighting: 'hc'
-}, 'stderr', ['language-javascript', 'language-coffee-script'],
+}, 'stderr',
 [
   '.................................................FF...............................................'
   ''
@@ -102,7 +102,7 @@ Profile.profile 'Java', {
   stderr:
     profile: 'java'
     highlighting: 'hc'
-}, 'stderr', ['language-java'],
+}, 'stderr',
 [
   'Buildfile: /home/fabian/Projects/testing/java/build.xml'
   ''
@@ -154,7 +154,7 @@ Profile.profile 'Python', {
   stderr:
     profile: 'python'
     highlighting: 'hc'
-}, 'stderr', ['language-python'],
+}, 'stderr',
 [
   'Traceback (most recent call last): '
   '  File "/home/fabian/Projects/sonata/sonata/info.py", line 208, in on_viewport_resize'
@@ -193,7 +193,7 @@ Profile.profile 'Modelsim', {
   stderr:
     profile: 'modelsim'
     highlighting: 'hc'
-}, 'stderr', ['language-vhdl','language-verilog'],
+}, 'stderr',
 [
   'vcom -work work /home/chris/coding/vhdl_test/test.vhd'
   'Model Technology ModelSim SE-64 vcom 10.1g Compiler 2014.08 Aug  8 2014'

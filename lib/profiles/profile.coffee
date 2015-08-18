@@ -7,6 +7,8 @@ module.exports =
 
     scopes: []
 
+    default_extensions: []
+
     regex_string: null
 
     constructor: (@output) ->
@@ -16,6 +18,7 @@ module.exports =
         if (grammar = atom.grammars.grammarForScopeName(scope))?
           extensions_raw = extensions_raw.concat(grammar.fileTypes)
 
+      extensions_raw = @default_extensions if extensions_raw.length is 0
       extensions_raw = extensions_raw.sort().reverse()
 
       for extension in extensions_raw

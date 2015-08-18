@@ -2,16 +2,11 @@ Output = require '../lib/output'
 ll = require '../lib/linter-list'
 
 module.exports =
-  profile: (name, command, stream, packages, strings, expectations, files) ->
+  profile: (name, command, stream, strings, expectations, files) ->
     describe command[stream].profile, ->
       output = null
-      promises = null
 
       beforeEach ->
-        promises = {} if not promises?
-        for p in packages
-          promises[p] = atom.packages.activatePackage(p)
-          waitsForPromise -> promises[p]
         output = new Output(command, stream, (p) -> p)
         expect(output).toBeDefined()
         expect(output.profile).toBeDefined()

@@ -7,6 +7,8 @@ module.exports =
 
     scopes: ['source.python']
 
+    default_extensions: ['cpy', 'gyp', 'gypi', 'kv', 'py', 'pyw', 'rpy', 'SConscript', 'SConstruct', 'Sconstruct', 'sconstruct', 'Snakefile', 'tac', 'wsgi']
+
     file_string: '
     File\\ "(?<file> [\\S]+\\.(?extensions))", \\ #File \n
     line\\ (?<row> [\\d]+) #Row \n

@@ -7,6 +7,8 @@ module.exports =
 
     scopes: ['source.java']
 
+    default_extensions: ['java', 'bsh']
+
     regex_string: '
     (?<file> [\\S]+\\.(?extensions)): #File \n
     (?<row> [\\d]+)? #Row \n

@@ -7,6 +7,8 @@ module.exports =
 
     scopes: ['source.coffee', 'source.js']
 
+    default_extensions: ['js', 'htc', '_js', 'es', 'es6', 'jsm', 'pjs', 'xsjs', 'xsjslib', 'coffee', 'Cakefile', 'coffee.erb', 'cson', '_coffee']
+
     error_string_file: '^ \n
     [\\s]+ #Indentation \n
     (?<message> .+) #Message \n
