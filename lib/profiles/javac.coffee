@@ -56,4 +56,3 @@ module.exports =
     clear: ->
       @status = null
       @laststatus = null
-      @indentation = null

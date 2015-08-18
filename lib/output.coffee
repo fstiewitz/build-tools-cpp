@@ -19,8 +19,10 @@ module.exports =
       @printfunc = printfunc
       @lines = []
       if @settings.stream.profile?
-        @profile = new Profiles[@settings.stream.profile]({@print, @replacePrevious, @createMessage, @absolutePath})
-        @profile.clear()
+        @profile = new Profiles[@settings.stream.profile]?({@print, @replacePrevious, @createMessage, @absolutePath})
+        if not @profile?
+          atom.notifications?.addError "Could not find highlighting profile: #{@settings.stream.profile}"
+        @profile?.clear()
 
     in: (message) ->
       lines = message.split('\n')
