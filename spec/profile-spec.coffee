@@ -188,3 +188,41 @@ Profile.profile 'Python', {
   [],
   []
 ]
+
+Profile.profile 'Modelsim', {
+  stderr:
+    profile: 'modelsim'
+    highlighting: 'hc'
+}, 'stderr', ['language-vhdl','language-verilog'],
+[
+  'vcom -work work /home/chris/coding/vhdl_test/test.vhd'
+  'Model Technology ModelSim SE-64 vcom 10.1g Compiler 2014.08 Aug  8 2014'
+  '-- Loading package STANDARD'
+  '-- Loading package TEXTIO'
+  '-- Loading package std_logic_1164'
+  '-- Loading package NUMERIC_STD'
+  '-- Loading package test_pkg'
+  '-- Compiling entity test'
+  '-- Compiling architecture beh of test'
+  '-- Loading entity test_sub'
+  '** Error: /home/chris/coding/vhdl_test/test.vhd(106): (vcom-1484) Unknown formal identifier "data_in".'
+  '** Error: /home/chris/coding/vhdl_test/test.vhd(278): VHDL Compiler exiting'
+],
+[
+  {type: 'error', message: '(vcom-1484) Unknown formal identifier "data_in".', file: '/home/chris/coding/vhdl_test/test.vhd', row: '106'},
+  {type: 'error', message: 'VHDL Compiler exiting', file: '/home/chris/coding/vhdl_test/test.vhd', row: '278'}
+],
+[
+  [{file: '/home/chris/coding/vhdl_test/test.vhd', start: 16, end: 52}],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [{file: '/home/chris/coding/vhdl_test/test.vhd', row: '106', start: 10, end: 51}],
+  [{file: '/home/chris/coding/vhdl_test/test.vhd', row: '278', start: 10, end: 51}]
+]
