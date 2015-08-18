@@ -86,17 +86,25 @@ module.exports =
     hideCommandPane: =>
       @showProjectPane()
 
+    hideAllPanes: ->
+      @activepane?.detach()
+      @activepane = null
+      @pane.html "Specify project"
+
     updateProjects: ->
       if @show_all
         paths = @projects.getProjects()
       else
         paths = atom.project.getPaths()
       @project_list.empty()
-      small_paths = @removeSharedPath paths
-      for name, i in small_paths
-        @addProject name, paths[i]
-      @project_list.on 'click', '.project-item', (e) =>
-        @setActiveProject e.currentTarget
+      if paths.length isnt 0
+        small_paths = @removeSharedPath paths
+        for name, i in small_paths
+          @addProject name, paths[i]
+        @project_list.on 'click', '.project-item', (e) =>
+          @setActiveProject e.currentTarget
+      else
+        @hideAllPanes()
 
     addProject: (name, path) ->
       item = $$ ->
@@ -123,6 +131,7 @@ module.exports =
       (e.join(_p.sep) for e in path_elements)
 
     setActiveProject: (e) ->
+      return unless e?
       name = e.children[0].innerHTML
       path = e.children[1].innerHTML
       @activeProject = @projects.getProject path
