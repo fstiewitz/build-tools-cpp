@@ -27,6 +27,15 @@ describe 'Settings Page', ->
       expect(view.projectpane).toBeDefined()
       expect(view.activepane).toEqual view.projectpane
 
+  describe 'When no active projects', ->
+
+    beforeEach ->
+      atom.project.removePath(fixturesPath)
+      view.reload()
+
+    it 'shows an error message', ->
+      expect(view.pane.children().html()).toEqual view.errorpane.html()
+
   describe 'On "Show All"', ->
 
     beforeEach ->
