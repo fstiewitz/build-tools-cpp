@@ -24,6 +24,9 @@ module.exports =
                 @div class: 'settings-name', 'Show all projects'
         @div class: 'panel padded', outlet: 'pane'
 
+    errorpane: $$ ->
+      @div class: 'text-error', 'This package only works with at least ONE active project'
+
     initialize: ({@uri, @projects, @profiles}) ->
       ProjectPane ?= require './project-pane'
       CommandPane ?= require './command-pane'
@@ -89,7 +92,7 @@ module.exports =
     hideAllPanes: ->
       @activepane?.detach()
       @activepane = null
-      @pane.html "Specify project"
+      @pane.html @errorpane
 
     updateProjects: ->
       if @show_all
