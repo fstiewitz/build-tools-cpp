@@ -1,3 +1,8 @@
+## 3.5.0 - New Profile: Modelsim
+* Added new profile: Modelsim
+* Created github wiki page for developing your own highlighting profiles (service provider and UI for simple profiles are coming soon)
+* Fix two uncaught exceptions in settings view
+
 ## 3.4.0 - Local configuration files
 * If you execute a command, the package will climb up the file tree and if it finds a `.build-tools.cson` it will use the configuration of said file in favor of any global project settings.
 * Limitations:

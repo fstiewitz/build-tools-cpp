@@ -13,7 +13,7 @@ build-tools (prev. build-tools-cpp)
 * Chain commands and projects with dependenies
 * Errors are highlighted both inside the console and in-line with [Linter](https://github.com/AtomLinter/Linter)
 * File coordinates are highlighted and can be opened
-* Can highlight <b>GCC, Clang, Python, Java and apm test</b>
+* Can highlight <b>GCC, Clang, Python, Java, Modelsim and apm test</b>
 
 ## Keys
 * `ctrl+l ctrl+u/i/o` for executing the 1st/2nd/3rd command of a project
@@ -27,7 +27,6 @@ build-tools (prev. build-tools-cpp)
 ![Command](https://cloud.githubusercontent.com/assets/7817714/9272469/fea5afaa-4282-11e5-9640-3b56fbc57776.png)
 
 ### Dependencies
-![Dependency](https://cloud.githubusercontent.com/assets/7817714/9156647/736a56ba-3ee1-11e5-8f38-42fe7400dff6.png)
 * Dependencies are executed in descending order
 * <b>Commands are not executed twice</b>
 * Build fails if one of the dependencies returns a non-zero exit code
