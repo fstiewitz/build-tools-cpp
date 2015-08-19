@@ -50,9 +50,9 @@ module.exports =
 
     destroy: ->
       @detach()
-      @projectpane.destroy()
+      @projectpane?.destroy()
       @projectpane = null
-      @commandpane.destroy()
+      @commandpane?.destroy()
       @commandpane = null
       @projects = null
       @profiles = null
