@@ -3,13 +3,10 @@ ll = require('../linter-list')
 
 module.exports =
   class Profile
-    name: ''
 
     scopes: []
 
     default_extensions: []
-
-    regex_string: null
 
     constructor: (@output) ->
       extensions_raw = []
@@ -29,10 +26,6 @@ module.exports =
     createRegex: (content) ->
       content = content.replace(/\(\?extensions\)/g, @extensions)
       new XRegExp(content, 'xni')
-
-    in: (line) ->
-      if @regex?
-        XRegExp.exec(line, @regex)
 
     lint: (match) ->
       if match? and match.file? and match.row? and match.type? and match.message?

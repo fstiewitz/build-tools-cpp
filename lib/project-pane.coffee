@@ -1,4 +1,5 @@
 {$, $$, ScrollView} = require 'atom-space-pen-views'
+Profiles = require './profiles/profiles'
 
 ImportView = null
 DependencyView = null
@@ -62,12 +63,12 @@ module.exports =
             @div class: 'panel-body padded', =>
               @div class: 'dependency-list', outlet: 'dependency_list'
 
-    initialize: (@projects, @profiles, @commandpane_show) ->
+    initialize: (@projects, @commandpane_show) ->
       @dependencyview = null
       @importview = null
 
       @on 'click', '#add-command-button', (e) =>
-        @commandpane_show(null, null, @activeProject, @profiles)
+        @commandpane_show(null, null, @activeProject)
       @on 'click', '#add-dependency-button', (e) =>
         DependencyView ?= require './dependency-view'
         @dependencyview ?= new DependencyView(@editdcb, @projects)
@@ -106,7 +107,6 @@ module.exports =
       @importview?.destroy()
       @importview = null
       @projects = null
-      @profiles = null
       @activeProject = null
       @commandpane_show = null
 
@@ -162,7 +162,7 @@ module.exports =
         @activeProject.addDependency items
 
     importccb: (command) =>
-      @commandpane_show(null, command, @activeProject, @profiles)
+      @commandpane_show(null, command, @activeProject)
 
     importdcb: (dependency) =>
       DependencyView ?= require './dependency-view'
@@ -175,7 +175,6 @@ module.exports =
         command: command.name
 
     addCommand: (items) ->
-      profiles = @profiles
       item = $$ ->
         @div class: 'command', =>
           @div class: 'top', =>
@@ -206,7 +205,7 @@ module.exports =
                   @div class: 'text-padded', 'Mark paths (stdout)'
                   @div class: 'text-padded', 'Use Linter (stdout)'
                 @div class: 'values', =>
-                  @div class: 'text-highlight text-padded', if items.stdout.highlighting is 'hc' then profiles[items.stdout.profile].profile_name else highlight_translation[items.stdout.highlighting]
+                  @div class: 'text-highlight text-padded', if items.stdout.highlighting is 'hc' then Profiles.profiles[items.stdout.profile].profile_name else highlight_translation[items.stdout.highlighting]
                   @div class: 'text-highlight text-padded', if items.stdout.highlighting is 'hc' then items.stdout.file.toString() else 'Disabled'
                   @div class: 'text-highlight text-padded', if items.stdout.highlighting is 'hc' then items.stdout.lint.toString() else 'Disabled'
               @div id: 'stderr', class: 'stream', =>
@@ -215,7 +214,7 @@ module.exports =
                   @div class: 'text-padded', 'Mark paths (stderr)'
                   @div class: 'text-padded', 'Use Linter (stderr)'
                 @div class: 'values', =>
-                  @div class: 'text-highlight text-padded', if items.stderr.highlighting is 'hc' then profiles[items.stderr.profile].profile_name else highlight_translation[items.stderr.highlighting]
+                  @div class: 'text-highlight text-padded', if items.stderr.highlighting is 'hc' then Profiles.profiles[items.stderr.profile].profile_name else highlight_translation[items.stderr.highlighting]
                   @div class: 'text-highlight text-padded', if items.stderr.highlighting is 'hc' then items.stderr.file.toString() else 'Disabled'
                   @div class: 'text-highlight text-padded', if items.stderr.highlighting is 'hc' then items.stderr.lint.toString() else 'Disabled'
       item.on 'click', '.icon-triangle-right', (e) =>
@@ -274,7 +273,7 @@ module.exports =
     editCommand: (target) ->
       id = Array.prototype.indexOf.call(target.parentNode.childNodes, target)
       cmd = @activeProject.getCommandByIndex id
-      @commandpane_show(cmd.name, cmd, @activeProject, @profiles)
+      @commandpane_show(cmd.name, cmd, @activeProject)
 
     editDependency: (target) ->
       DependencyView ?= require './dependency-view'

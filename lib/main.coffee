@@ -1,6 +1,5 @@
 Command = require './command'
 ll = require './linter-list'
-Profiles = require './profiles/profiles'
 
 {CompositeDisposable, BufferedProcess} = require 'atom'
 
@@ -57,7 +56,7 @@ module.exports =
     createConsoleView()
     atom.workspace.addOpener (uritoopen) =>
       if uritoopen is settingsviewuri
-        createSettingsView({uri: uritoopen, @projects, profiles: Profiles})
+        createSettingsView({uri: uritoopen, @projects})
 
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace',

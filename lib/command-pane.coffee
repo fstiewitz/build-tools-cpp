@@ -1,5 +1,6 @@
 {$, $$, ScrollView, TextEditorView} = require 'atom-space-pen-views'
 {CompositeDisposable} = require 'atom'
+Profiles = require './profiles/profiles'
 
 module.exports =
 class CommandPane extends ScrollView
@@ -262,7 +263,7 @@ class CommandPane extends ScrollView
     @cancel_callback()
     event.stopPropagation()
 
-  show: (@oldname, items, @project, @profiles) ->
+  show: (@oldname, items, @project) ->
     @nameEditor.setText('')
     @commandEditor.setText('')
     @wdEditor.setText('')
@@ -329,8 +330,8 @@ class CommandPane extends ScrollView
         @option value: key, profile
     select.empty()
     gcc_index = 0
-    for key, id in Object.keys @profiles
-      select.append createitem(key, @profiles[key].profile_name)
+    for key, id in Object.keys Profiles.profiles
+      select.append createitem(key, Profiles.profiles[key].profile_name)
       gcc_index = id if key is 'gcc_clang'
     select[0].selectedIndex = gcc_index
 

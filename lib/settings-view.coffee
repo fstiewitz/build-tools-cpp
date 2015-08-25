@@ -27,10 +27,10 @@ module.exports =
     errorpane: $$ ->
       @div class: 'text-error', 'This package only works with at least ONE active project'
 
-    initialize: ({@uri, @projects, @profiles}) ->
+    initialize: ({@uri, @projects}) ->
       ProjectPane ?= require './project-pane'
       CommandPane ?= require './command-pane'
-      @projectpane = new ProjectPane(@projects, @profiles, (arg0, arg1, arg2, arg3) =>
+      @projectpane = new ProjectPane(@projects, (arg0, arg1, arg2, arg3) =>
         @showCommandPane()
         @commandpane.show arg0, arg1, arg2, arg3
       )
@@ -55,7 +55,6 @@ module.exports =
       @commandpane?.destroy()
       @commandpane = null
       @projects = null
-      @profiles = null
       @activepane = null
 
     attached: ->
