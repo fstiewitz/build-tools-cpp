@@ -1,6 +1,9 @@
 Command = require './command'
 Dependency = require './dependency'
 
+CSON = null
+path = null
+
 module.exports =
   class Project
     path: ''
@@ -11,6 +14,12 @@ module.exports =
     key: {}
 
     constructor: (@path, {commands, dependencies, key}, @save, @check) ->
+      if not @save?
+        @save = =>
+          CSON ?= require 'season'
+          path ?= require 'path'
+          CSON.writeFileSync path.join(@path, '.build-tools.cson'), this
+      @check = null if not @check?
       if key?
         @key = key
       else
