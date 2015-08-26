@@ -1,5 +1,6 @@
 Command = require './command'
 ll = require './linter-list'
+Profiles = require './profiles/profiles'
 
 {CompositeDisposable, BufferedProcess} = require 'atom'
 
@@ -218,6 +219,9 @@ module.exports =
     lintOnFly: false
     lint: ->
       ll.messages
+
+  consumeProfile: ({key,profile}) ->
+    Profiles.addProfile key, profile
 
   config:
     SaveAll:

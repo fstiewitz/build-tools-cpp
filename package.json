@@ -39,5 +39,12 @@
         "1.0.0": "provideLinter"
       }
     }
+  },
+  "consumedServices": {
+    "build-tools.profile": {
+      "versions": {
+        "^1.0.0": "consumeProfile"
+      }
+    }
   }
 }

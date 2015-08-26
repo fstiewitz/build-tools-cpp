@@ -205,7 +205,7 @@ module.exports =
                   @div class: 'text-padded', 'Mark paths (stdout)'
                   @div class: 'text-padded', 'Use Linter (stdout)'
                 @div class: 'values', =>
-                  @div class: 'text-highlight text-padded', if items.stdout.highlighting is 'hc' then Profiles.profiles[items.stdout.profile].profile_name else highlight_translation[items.stdout.highlighting]
+                  @div class: 'text-highlight text-padded', if items.stdout.highlighting is 'hc' then Profiles.profiles[items.stdout.profile]?.profile_name else highlight_translation[items.stdout.highlighting]
                   @div class: 'text-highlight text-padded', if items.stdout.highlighting is 'hc' then items.stdout.file.toString() else 'Disabled'
                   @div class: 'text-highlight text-padded', if items.stdout.highlighting is 'hc' then items.stdout.lint.toString() else 'Disabled'
               @div id: 'stderr', class: 'stream', =>
@@ -214,7 +214,7 @@ module.exports =
                   @div class: 'text-padded', 'Mark paths (stderr)'
                   @div class: 'text-padded', 'Use Linter (stderr)'
                 @div class: 'values', =>
-                  @div class: 'text-highlight text-padded', if items.stderr.highlighting is 'hc' then Profiles.profiles[items.stderr.profile].profile_name else highlight_translation[items.stderr.highlighting]
+                  @div class: 'text-highlight text-padded', if items.stderr.highlighting is 'hc' then Profiles.profiles[items.stderr.profile]?.profile_name else highlight_translation[items.stderr.highlighting]
                   @div class: 'text-highlight text-padded', if items.stderr.highlighting is 'hc' then items.stderr.file.toString() else 'Disabled'
                   @div class: 'text-highlight text-padded', if items.stderr.highlighting is 'hc' then items.stderr.lint.toString() else 'Disabled'
       item.on 'click', '.icon-triangle-right', (e) =>
