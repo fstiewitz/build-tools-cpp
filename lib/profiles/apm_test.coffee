@@ -1,8 +1,5 @@
-Profile = require './profile'
-XRegExp = require('xregexp').XRegExp
-
 module.exports =
-  class APMTest extends Profile
+  class APMTest
     @profile_name: 'apm test'
 
     scopes: ['source.coffee', 'source.js']
@@ -38,17 +35,17 @@ module.exports =
     ((?<row> [\\d]+)(:(?<col> [\\d]+))?)? #Row and column \n
     '
 
-    constructor: (output) ->
-      super(output)
-      @regex_at = @createRegex @at_string
-      @regex_error_file = @createRegex @error_string_file
-      @regex_error_nofile = @createRegex @error_string_nofile
-      @regex_file = @createRegex @file_string
+    constructor: (@output) ->
+      @extensions = @output.createExtensionString @scopes, @default_extensions
+      @regex_at = @output.createRegex @at_string, @extensions
+      @regex_error_file = @output.createRegex @error_string_file, @extensions
+      @regex_error_nofile = @output.createRegex @error_string_nofile, @extensions
+      @regex_file = @output.createRegex @file_string, @extensions
 
     files: (line) ->
       start = 0
       out = []
-      while (m = XRegExp.exec line.substr(start), @regex_file)?
+      while (m = @regex_file.xexec line.substr(start))?
         start += m.index
         start += (if line[start] is '(' or line[start] is '"' then 1 else 0)
         m.start = start
@@ -60,7 +57,7 @@ module.exports =
       out
 
     in: (line) ->
-      if (m = XRegExp.exec line, @regex_at)? #Traceback
+      if (m = @regex_at.xexec line)? #Traceback
         if @lastMatch?
           if @firstAt and not @lastMatch.file?
             m.type = 'error'
@@ -76,22 +73,22 @@ module.exports =
               m.message = m.message.split(0, -1)
             @lastMatch.trace.push @output.createMessage m #Message to Traceback
             m.message = @lastMatch.message
-            @lint m #Trace message to Linter
+            @output.lint m #Trace message to Linter
           @output.print m #Message to console
           @firstAt = false
         else
           @output.print m
-      else if (m = XRegExp.exec line, @regex_error_nofile)? #Error message
-        @lint @lastMatch #Lint last message
-        if (n = XRegExp.exec line, @regex_error_file)? #Has file coordinates
+      else if (m = @regex_error_nofile.xexec line)? #Error message
+        @output.lint @lastMatch #Lint last message
+        if (n = @regex_error_file.xexec line, @regex_error_file)? #Has file coordinates
           m = n
         m.type = 'error'
         @lastMatch = m
         @firstAt = true
         @output.print m
-        @lint m #Lint current message (@lint checks for required fields)
+        @output.lint m #Lint current message (@lint checks for required fields)
       else
-        @lint @lastMatch #Lint last message
+        @output.lint @lastMatch #Lint last message
         @firstAt = true
         @lastMatch = null
         @output.print {input: line, type: 'error'}

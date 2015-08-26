@@ -1,8 +1,5 @@
-Profile = require './profile'
-XRegExp = require('xregexp').XRegExp
-
 module.exports =
-  class Java extends Profile
+  class Java
     @profile_name: 'Java'
 
     scopes: ['source.java']
@@ -21,15 +18,15 @@ module.exports =
     (?<row> [\\d]+)? #Row\n
     '
 
-    constructor: (output) ->
-      super(output)
-      @regex = @createRegex @regex_string
-      @regex_file = @createRegex @file_string
+    constructor: (@output) ->
+      @extensions = @output.createExtensionString @scopes, @default_extensions
+      @regex = @output.createRegex @regex_string, @extensions
+      @regex_file = @output.createRegex @file_string, @extensions
 
     files: (line) ->
       start = 0
       out = []
-      while (m = XRegExp.exec line.substr(start), @regex_file)?
+      while (m = @regex_file.xexec line.substr(start))?
         start += m.index
         m.start = start
         m.end = start + m.file.length + (if m.row? then m.row.length else 0)
@@ -40,11 +37,11 @@ module.exports =
       out
 
     in: (line) ->
-      if (m = XRegExp.exec line, @regex)? #Start of error message
+      if (m = @regex.xexec line)? #Start of error message
         @status = m.type
         @laststatus = @status
         @output.print m
-        @lint m
+        @output.lint m
       else if /\s+\^\s*/.test(line) #End of error message
         @output.print input: line, type: @status
         @status = null

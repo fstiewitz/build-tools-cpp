@@ -20,15 +20,15 @@ module.exports =
       it 'has a `in` function', ->
         expect(output.profile.in).toBeDefined()
 
-      it 'has a `clear` function', ->
-        expect(output.profile.clear).toBeDefined()
+      it 'has a `files` function', ->
+        expect(output.profile.files).toBeDefined()
 
       describe 'on ::in', ->
         matches = []
 
         beforeEach ->
           spyOn(output, 'absolutePath').andCallFake (path) -> path
-          spyOn(output.profile, 'lint').andCallFake (match) ->
+          spyOn(output.profile.output, 'lint').andCallFake (match) ->
             if match? and match.file? and match.row? and match.type? and match.message?
               matches.push
                 file: match.file

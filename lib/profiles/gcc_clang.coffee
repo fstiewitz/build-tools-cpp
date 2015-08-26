@@ -1,8 +1,5 @@
-Profile = require './profile'
-XRegExp = require('xregexp').XRegExp
-
 module.exports =
-  class GCCClang extends Profile
+  class GCCClang
     @profile_name: 'GCC/Clang'
 
     scopes: ['source.c++', 'source.cpp', 'source.c']
@@ -23,15 +20,15 @@ module.exports =
     ((?<row> [\\d]+)(:(?<col> [\\d]+))?)? #Row and column \n
     '
 
-    constructor: (output) ->
-      super(output)
-      @regex = @createRegex @regex_string
-      @regex_file = @createRegex @file_string
+    constructor: (@output) ->
+      @extensions = @output.createExtensionString @scopes, @default_extensions
+      @regex = @output.createRegex @regex_string, @extensions
+      @regex_file = @output.createRegex @file_string, @extensions
 
     files: (line) ->
       start = 0
       out = []
-      while (m = XRegExp.exec line.substr(start), @regex_file)?
+      while (m = @regex_file.xexec line.substr(start))?
         start += m.index
         m.start = start
         m.end = start + m.file.length +
@@ -42,7 +39,7 @@ module.exports =
       out
 
     in: (line) ->
-      if (m = XRegExp.exec line, @regex)? #Start of error message
+      if (m = @regex.xexec line)? #Start of error message
         @status = m.type
         out = []
         m.trace = []
@@ -51,21 +48,21 @@ module.exports =
           line.highlighting = @status
           line.message = m.message
           out.push line #Message to console
-          @lint line #Trace message to Linter
+          @output.lint line #Trace message to Linter
           line.message = 'Referenced'
           if line? and line.file? and line.row? and line.type? and line.message?
             m.trace.push @output.createMessage line #Message to Traceback
         @output.replacePrevious out
         @prebuffer = []
         @output.print m
-        @lint m
+        @output.lint m
       else if @regex_end.test line #End of error message
         @output.print input: line, type: @status
         @status = null
       else if @status? #Inside error message
         @output.print input: line, type: @status
       else #Before error message (Traceback)
-        if (m = XRegExp.exec line, @regex_file)?
+        if (m = @regex_file.xexec line)?
           @prebuffer.push m
         else
           @prebuffer.push input: line
