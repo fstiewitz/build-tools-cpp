@@ -27,7 +27,7 @@ module.exports =
           preconfigure: null
       @commands = []
       for command in commands
-        command.project ?= @path
+        command.project = @path if not command.project? or not @check?
         @commands.push(new Command(command))
       @dependencies = []
       if dependencies?
