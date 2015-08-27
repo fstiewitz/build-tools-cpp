@@ -1,16 +1,23 @@
 Command = require './command'
 Dependency = require './dependency'
 
+CSON = null
+path = null
+Emitter = null
+
 module.exports =
   class Project
-    path: ''
-    commands: []
-    dependencies: []
-    save: null
-    check: null
-    key: {}
 
     constructor: (@path, {commands, dependencies, key}, @save, @check) ->
+      if not @save?
+        CSON = require 'season'
+        path = require 'path'
+        {Emitter} = require 'atom'
+        @emitter = new Emitter
+        @save = =>
+          CSON.writeFileSync path.join(@path, '.build-tools.cson'), {@commands}
+          @emitter.emit 'file-change'
+      @check = undefined if not @check?
       if key?
         @key = key
       else
@@ -20,7 +27,7 @@ module.exports =
           preconfigure: null
       @commands = []
       for command in commands
-        command.project ?= @path
+        command.project = @path if not command.project? or not @check?
         @commands.push(new Command(command))
       @dependencies = []
       if dependencies?
@@ -28,6 +35,10 @@ module.exports =
           dependency.from.project ?= @path
           @dependencies.push(new Dependency(dependency))
       return
+
+    destroy: ->
+      @emitter?.dispose()
+      @emitter = undefined
 
     notify: (message) ->
       atom.notifications?.addError message
@@ -72,7 +83,8 @@ module.exports =
 
     removeCommand: (name) ->
       if (i = @getCommandIndex name) isnt -1
-        @check?(removed: @commands.splice(i, 1)[0])
+        rem = @commands.splice(i, 1)[0]
+        @check?(removed: rem)
         @save?()
       else
         @notify "Command \"#{name}\" not found"
@@ -87,8 +99,9 @@ module.exports =
         if oldname is item.name
           @commands.splice(i, 1, new Command(item))
         else
+          rem = @commands.splice(i, 1)[0]
           @check?(replaced:
-            old: @commands.splice(i, 1)[0]
+            old: rem
             new: item
             )
           @commands.splice(i, 0, new Command(item))
@@ -130,3 +143,6 @@ module.exports =
 
     getCommand: (name) ->
       @commands[id] if (id = @getCommandIndex name) isnt -1
+
+    onFileChange: (callback) ->
+      @emitter.on 'file-change', callback

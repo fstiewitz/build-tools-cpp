@@ -1,58 +1,42 @@
-'commands': [
+commands: [
   {
-    'name': 'Test'
-    'command': 'echo Hello World'
-    'wd': '.' #Working directory. Default: .
-    'shell': false #Execute in shell
-    'wildcards': false #Replace wildcards
-    'save_all': false #Save all
-    'close_success': false #Close console on success
-    'stdout':
-      'file': false #Highlight files
-      #nh: No highlighting
-      #ha: Highlight all
-      #ht: Highlight tags
-      #hc: Highlighting profile (requires 'profile')
-      'highlighting': 'nh'
-      #gcc_clang: GCC/Clang
-      #apm_test: apm test (Jasmine specs)
-      #java: Java
-      #python: Python
-      #'profile': 'gcc_clang' #Uncomment if 'highlighting' is 'hc'
-      'lint': false #Lint errors/warnings
-    'stderr':
-      'file': false
-      'highlighting': 'hc'
-      'lint': false
-    #Backwards compatibility with older command versions (don't change it)
-    'version': 2
+    project: "/home/fabian/.atom/packages/build-tools/spec/fixtures"
+    name: "Test"
+    command: "echo Hello World"
+    wd: "."
+    shell: false
+    wildcards: false
+    save_all: false
+    close_success: false
+    stdout:
+      file: false
+      highlighting: "nh"
+      lint: false
+    stderr:
+      file: false
+      highlighting: "nh"
+      lint: false
+    targetOf: []
+    version: 2
   }
   {
-    'name': 'Test 2'
-    'command': 'echo 2'
-    'wd': 'test' #Working directory. Default: .
-    'shell': false #Execute in shell
-    'wildcards': false #Replace wildcards
-    'save_all': false #Save all
-    'close_success': false #Close console on success
-    'stdout':
-      'file': false #Highlight files
-      #nh: No highlighting
-      #ha: Highlight all
-      #ht: Highlight tags
-      #hc: Highlighting profile (requires 'profile')
-      'highlighting': 'nh'
-      #gcc_clang: GCC/Clang
-      #apm_test: apm test (Jasmine specs)
-      #java: Java
-      #python: Python
-      #'profile': 'gcc_clang' #Uncomment if 'highlighting' is 'hc'
-      'lint': false #Lint errors/warnings
-    'stderr':
-      'file': false
-      'highlighting': 'hc'
-      'lint': false
-    #Backwards compatibility with older command versions (don't change it)
-    'version': 2
+    project: "/home/fabian/.atom/packages/build-tools/spec/fixtures"
+    name: "Test 2"
+    command: "echo 2"
+    wd: "."
+    shell: false
+    wildcards: false
+    save_all: false
+    close_success: false
+    stdout:
+      file: false
+      highlighting: "nh"
+      lint: false
+    stderr:
+      file: false
+      highlighting: "nh"
+      lint: false
+    targetOf: []
+    version: 2
   }
 ]
