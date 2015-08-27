@@ -32,7 +32,7 @@
         'lint': false #Lint errors/warnings
       'stderr':
         'file': false
-        'highlighting': 'hc'
+        'highlighting': 'nh'
         'lint': false
       #Backwards compatibility with older command versions (don't change it)
       'version': 2
