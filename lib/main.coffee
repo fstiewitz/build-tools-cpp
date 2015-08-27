@@ -63,11 +63,6 @@ module.exports =
     if atom.config.get('build-tools.CloseOnSuccess') is -1
       atom.config.set('build-tools.CloseOnSuccess', 3)
     createConsoleView()
-    atom.workspace.addOpener (uritoopen) =>
-      if uritoopen is settingsviewuri
-        createSettingsView({uri: uritoopen, @projects, profiles: Profiles})
-      else if uritoopen.endsWith('.build-tools.cson') and (project = Projects.loadLocalFile uritoopen)?
-        createLocalSettingsView({uri: uritoopen, @projects, project, profiles: Profiles})
 
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace',
@@ -85,6 +80,11 @@ module.exports =
       'core:close': => @cancel()
     @subscriptions.add atom.project.onDidChangePaths ->
       settingsview?.reload()
+    @subscriptions.add atom.workspace.addOpener (uritoopen) =>
+      if uritoopen is settingsviewuri
+        createSettingsView({uri: uritoopen, @projects, profiles: Profiles})
+      else if uritoopen.endsWith('.build-tools.cson') and (project = Projects.loadLocalFile uritoopen)?
+        createLocalSettingsView({uri: uritoopen, @projects, project, profiles: Profiles})
 
   deactivate: ->
     @process?.kill()
@@ -102,6 +102,9 @@ module.exports =
     settingsview?.destroy()
     settingsview = null
     SettingsView = null
+    localsettingsview?.destroy()
+    localsettingsview = null
+    LocalSettingsView = null
     @projects?.destroy()
     @Projects = null
     @projects = null

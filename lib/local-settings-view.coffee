@@ -35,7 +35,7 @@ module.exports =
       @commandpane?.destroy()
       @commandpane = null
       @projects = null
-      @project.destroy?()
+      @project?.destroy()
       @project = null
       @profiles = null
       @activepane = null
