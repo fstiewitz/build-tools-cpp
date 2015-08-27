@@ -62,7 +62,6 @@ module.exports =
     @createProjectInstance()
     if atom.config.get('build-tools.CloseOnSuccess') is -1
       atom.config.set('build-tools.CloseOnSuccess', 3)
-    createConsoleView()
 
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace',
@@ -110,6 +109,7 @@ module.exports =
     @projects = null
 
   show: ->
+    createConsoleView()
     consoleview?.showBox()
 
   kill: ->
@@ -121,6 +121,7 @@ module.exports =
     consoleview?.cancel()
 
   selection: ->
+    createConsoleView()
     if (path = atom.workspace.getActiveTextEditor()?.getPath())?
       if (projectpath = @projects.getNextProjectPath path) isnt ''
         project = null
@@ -193,6 +194,7 @@ module.exports =
       handle()
 
   execute: (id, ask = false) ->
+    createConsoleView()
     if (path = atom.workspace.getActiveTextEditor()?.getPath())?
       if (projectpath = @projects.getNextProjectPath path) isnt ''
         project = null

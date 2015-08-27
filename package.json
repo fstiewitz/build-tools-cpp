@@ -4,19 +4,6 @@
   "version": "3.5.0",
   "description": "Build your projects in atom",
   "repository": "https://github.com/deprint/build-tools-cpp",
-  "activationCommands": {
-    "atom-workspace": [
-      "build-tools:first-command",
-      "build-tools:second-command",
-      "build-tools:third-command",
-      "build-tools:first-command-ask",
-      "build-tools:second-command-ask",
-      "build-tools:third-command-ask",
-      "build-tools:show",
-      "build-tools:settings",
-      "build-tools:commands"
-    ]
-  },
   "license": "MIT",
   "engines": {
     "atom": ">=0.197.0 <2.0.0"

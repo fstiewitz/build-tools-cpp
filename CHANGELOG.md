@@ -1,3 +1,6 @@
+## 3.6.0 - UI for local configuration files
+* Added UI for local configuration files
+
 ## 3.5.0 - New Profile: Modelsim
 * Added new profile: Modelsim
 * Created github wiki page for developing your own highlighting profiles (service provider and UI for simple profiles are coming soon)
