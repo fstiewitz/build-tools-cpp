@@ -22,6 +22,8 @@ module.exports =
         @showCommandPane()
         @commandpane.show arg0, arg1, arg2, arg3
       )
+      $(@projectpane.children()[1].children[0]).remove()
+      $(@projectpane.children()[1].children[1]).remove()
       @commandpane = new CommandPane(@projectpane.editccb, @hideCommandPane)
       @reload()
       return
@@ -33,6 +35,7 @@ module.exports =
       @commandpane?.destroy()
       @commandpane = null
       @projects = null
+      @project.destroy?()
       @project = null
       @profiles = null
       @activepane = null

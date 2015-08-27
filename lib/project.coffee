@@ -7,12 +7,6 @@ Emitter = null
 
 module.exports =
   class Project
-    path: ''
-    commands: []
-    dependencies: []
-    save: null
-    check: null
-    key: {}
 
     constructor: (@path, {commands, dependencies, key}, @save, @check) ->
       if not @save?
@@ -21,9 +15,9 @@ module.exports =
         {Emitter} = require 'atom'
         @emitter = new Emitter
         @save = =>
-          CSON.writeFileSync path.join(@path, '.build-tools.cson'), this
+          CSON.writeFileSync path.join(@path, '.build-tools.cson'), {@commands}
           @emitter.emit 'file-change'
-      @check = null if not @check?
+      @check = undefined if not @check?
       if key?
         @key = key
       else
@@ -44,7 +38,7 @@ module.exports =
 
     destroy: ->
       @emitter?.dispose()
-      @emitter = null
+      @emitter = undefined
 
     notify: (message) ->
       atom.notifications?.addError message
