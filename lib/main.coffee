@@ -144,8 +144,8 @@ module.exports =
     atom.commands.dispatch(atom.views.getView(atom.workspace), 'linter:lint')
 
   spawn: (res, clear = true) ->
-    {cmd, args, env, cwd} = res.parseCommand()
-    consoleview?.createOutput res
+    {command, cmd, args, env} = res.parseCommand()
+    consoleview?.createOutput command
     consoleview?.showBox()
     consoleview?.setHeader("#{res.name} of #{res.project}")
     consoleview?.clear() if clear
@@ -156,7 +156,7 @@ module.exports =
       command: cmd
       args: args
       options:
-        cwd: cwd,
+        cwd: command.wd,
         env: env
       stdout: (data) ->
         consoleview?.stdout?.in data
