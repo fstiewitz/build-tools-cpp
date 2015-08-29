@@ -96,7 +96,7 @@ module.exports =
         sha = sh.split(' ')
         args = sha.slice(1)
         args.push(command)
-        {command: new Command(this, null, cwd), cmd: sha[0], args, env: process.env, cwd}
+        {command: new Command(this, null, cwd), cmd: sha[0], args, env: process.env}
       else
         split = (cmd_string) ->
           args = []
@@ -126,4 +126,4 @@ module.exports =
             args[i] = a.slice(1, -1)
         cmd = args[0]
         args = args.slice(1)
-        {command: new Command(this, null, cwd), cmd, args, env: process.env, cwd}
+        {command: new Command(this, null, cwd), cmd, args, env: process.env}
