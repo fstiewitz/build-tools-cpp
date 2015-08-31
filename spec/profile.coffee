@@ -47,7 +47,7 @@ module.exports =
           for match, index in matches
             expectation = expectations[index]
             for key in Object.keys(expectation)
-              expect(match[key]).toEqual expectation[key]
+              expect("Line[#{index}].#{key}: " + match[key]).toEqual "Line[#{index}].#{key}: " + expectation[key]
 
       return unless files?
 
@@ -60,8 +60,8 @@ module.exports =
 
         it 'correctly returns file descriptors', ->
           expect(matches.length).toBe files.length
-          for match, index in matches
-            expectation = files[index]
-            for item, index in expectation
+          for match, index0 in matches
+            expectation = files[index0]
+            for item, index1 in expectation
               for key in Object.keys(item)
-                expect(match[index][key]).toBe item[key]
+                expect("Line[#{index0}][#{index1}].#{key}: " + match[index1][key]).toBe "Line[#{index0}][#{index1}].#{key}: " + item[key]
