@@ -15,8 +15,9 @@ module.exports =
     targetOf: []
     version: null
 
-    constructor: ({@project, @name, @command, @wd, @shell, @wildcards, @save_all, @close_success, @stdout, @stderr, @targetOf, @version}, _command) ->
+    constructor: ({@project, @name, @command, @wd, @shell, @wildcards, @save_all, @close_success, @stdout, @stderr, @targetOf, @version}, _command, _wd) ->
       @command = _command if _command?
+      @wd = _wd if _wd?
       @targetOf = [] if not @targetOf?
       if not @version?
         @version = 1
@@ -33,67 +34,69 @@ module.exports =
     getProject: ->
       @project
 
-    baseName: ->
-      if (filename = @file())?
+    baseName: (wd = '.') ->
+      if (filename = @file(wd))?
         path.basename(filename)
 
-    fileWithoutExtension: ->
-      if (filename = @file())?
+    fileWithoutExtension: (wd = '.') ->
+      if (filename = @file(wd))?
         path.basename(filename, path.extname(filename))
 
-    folder: ->
-      if (filename = @file())?
+    folder: (wd = '.') ->
+      if (filename = @file(wd))?
         path.dirname(filename)
 
-    file: ->
-      path.relative(path.resolve(@project, @wd), atom.workspace.getActiveTextEditor()?.getPath())
+    file: (wd = '.') ->
+      path.relative(path.resolve(@project, wd), atom.workspace.getActiveTextEditor()?.getPath())
 
     replaceWildcards: ->
       command = @command
       wd = @wd
       if @wildcards
-        if /%[fbde]/.test(@command)
-          if /%f/.test(@command)
-            command = command.replace /(\\)?(%f)/g, ($0, $1, $2) =>
-              if $1 then $2 else @file()
-
-          if /%b/.test(@command)
-            command = command.replace /(\\)?(%b)/g, ($0, $1, $2) =>
-              if $1 then $2 else @baseName()
-
-          if /%d/.test(@command)
-            command = command.replace /(\\)?(%d)/g, ($0, $1, $2) =>
-              if $1 then $2 else @folder()
-
-          if /%e/.test(@command)
-            command = command.replace /(\\)?(%e)/g, ($0, $1, $2) =>
-              if $1 then $2 else @fileWithoutExtension()
         if /%[fbde]/.test(@wd)
           if /%f/.test(@wd)
             wd = wd.replace /(\\)?(%f)/g, ($0, $1, $2) =>
-              if $1 then $2 else @file()
+              if $1 then $2 else @file(null)
 
           if /%b/.test(@wd)
             wd = wd.replace /(\\)?(%b)/g, ($0, $1, $2) =>
-              if $1 then $2 else @baseName()
+              if $1 then $2 else @baseName(null)
 
           if /%d/.test(@wd)
             wd = wd.replace /(\\)?(%d)/g, ($0, $1, $2) =>
-              if $1 then $2 else @folder()
+              if $1 then $2 else @folder(null)
 
           if /%e/.test(@wd)
             wd = wd.replace /(\\)?(%e)/g, ($0, $1, $2) =>
-              if $1 then $2 else @fileWithoutExtension()
+              if $1 then $2 else @fileWithoutExtension(null)
+
+        if /%[fbde]/.test(@command)
+          if /%f/.test(@command)
+            command = command.replace /(\\)?(%f)/g, ($0, $1, $2) =>
+              if $1 then $2 else @file(wd)
+
+          if /%b/.test(@command)
+            command = command.replace /(\\)?(%b)/g, ($0, $1, $2) =>
+              if $1 then $2 else @baseName(wd)
+
+          if /%d/.test(@command)
+            command = command.replace /(\\)?(%d)/g, ($0, $1, $2) =>
+              if $1 then $2 else @folder(wd)
+
+          if /%e/.test(@command)
+            command = command.replace /(\\)?(%e)/g, ($0, $1, $2) =>
+              if $1 then $2 else @fileWithoutExtension(wd)
       {command, wd}
 
     parseCommand: ->
       {command, wd} = @replaceWildcards()
+      cwd = path.resolve(@project, wd)
       if @shell
         sh = atom.config.get('build-tools.ShellCommand')
         sha = sh.split(' ')
         args = sha.slice(1)
         args.push(command)
-        {cmd: sha[0], args, env: process.env, cwd: path.resolve(@project, wd)}
+        {command: new Command(this, null, cwd), cmd: sha[0], args, env: process.env}
       else
         split = (cmd_string) ->
           args = []
@@ -123,4 +126,4 @@ module.exports =
             args[i] = a.slice(1, -1)
         cmd = args[0]
         args = args.slice(1)
-        {cmd, args, env: process.env, cwd: path.resolve(@project, wd)}
+        {command: new Command(this, null, cwd), cmd, args, env: process.env}

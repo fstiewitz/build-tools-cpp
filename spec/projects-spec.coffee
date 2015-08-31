@@ -348,10 +348,10 @@ describe 'Projects', ->
 
     it 'converts all information before giving them to BufferedProcess', ->
       expect(command.name).toBe 'Test command'
-      {cmd, args, env, cwd} = command.parseCommand()
-      expect(cmd).toBe 'pwd'
-      expect(args).toEqual ['Hello World', 'test']
-      expect(cwd).toBe (path.join(root1, command.wd))
+      out = command.parseCommand()
+      expect(out.cmd).toBe 'pwd'
+      expect(out.args).toEqual ['Hello World', 'test']
+      expect(out.command.wd).toBe (path.join(root1, command.wd))
 
   describe 'When removing a command', ->
     [project, command, dependencies, command_target] = []

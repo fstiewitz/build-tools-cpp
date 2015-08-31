@@ -2,9 +2,9 @@ module.exports =
   class GCCClang
     @profile_name: 'GCC/Clang'
 
-    scopes: ['source.c++', 'source.cpp', 'source.c']
+    scopes: ['source.c++', 'source.cpp', 'source.c', 'source.arduino', 'source.ino']
 
-    default_extensions: ['cc', 'cpp', 'cp', 'cxx', 'c++', 'cu', 'cuh', 'h', 'hh', 'hpp', 'hxx', 'h++', 'inl', 'ipp', 'tcc', 'tpp', 'c', 'h']
+    default_extensions: ['cc', 'cpp', 'cp', 'cxx', 'c++', 'cu', 'cuh', 'h', 'hh', 'hpp', 'hxx', 'h++', 'inl', 'ipp', 'tcc', 'tpp', 'c', 'h', 'ino', 'pde']
 
     regex_string: '
     (?<file> [\\S]+\\.(?extensions)): #File \n

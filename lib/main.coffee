@@ -8,6 +8,9 @@ settingsviewuri = 'atom://build-tools-settings'
 SettingsView = null
 settingsview = null
 
+LocalSettingsView = null
+localsettingsview = null
+
 ConsoleView = null
 consoleview = null
 
@@ -36,6 +39,11 @@ createSettingsView = (state) ->
   settingsview = new SettingsView(state)
   settingsview
 
+createLocalSettingsView = (state) ->
+  LocalSettingsView ?= require './local-settings-view'
+  localsettingsview = new LocalSettingsView(state)
+  localsettingsview
+
 module.exports =
 
   process: null
@@ -54,10 +62,6 @@ module.exports =
     @createProjectInstance()
     if atom.config.get('build-tools.CloseOnSuccess') is -1
       atom.config.set('build-tools.CloseOnSuccess', 3)
-    createConsoleView()
-    atom.workspace.addOpener (uritoopen) =>
-      if uritoopen is settingsviewuri
-        createSettingsView({uri: uritoopen, @projects})
 
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace',
@@ -75,6 +79,11 @@ module.exports =
       'core:close': => @cancel()
     @subscriptions.add atom.project.onDidChangePaths ->
       settingsview?.reload()
+    @subscriptions.add atom.workspace.addOpener (uritoopen) =>
+      if uritoopen is settingsviewuri
+        createSettingsView({uri: uritoopen, @projects})
+      else if uritoopen.endsWith('.build-tools.cson') and (project = Projects.loadLocalFile uritoopen)?
+        createLocalSettingsView({uri: uritoopen, @projects, project})
 
   deactivate: ->
     @process?.kill()
@@ -92,11 +101,15 @@ module.exports =
     settingsview?.destroy()
     settingsview = null
     SettingsView = null
+    localsettingsview?.destroy()
+    localsettingsview = null
+    LocalSettingsView = null
     @projects?.destroy()
     @Projects = null
     @projects = null
 
   show: ->
+    createConsoleView()
     consoleview?.showBox()
 
   kill: ->
@@ -108,6 +121,7 @@ module.exports =
     consoleview?.cancel()
 
   selection: ->
+    createConsoleView()
     if (path = atom.workspace.getActiveTextEditor()?.getPath())?
       if (projectpath = @projects.getNextProjectPath path) isnt ''
         project = null
@@ -130,8 +144,8 @@ module.exports =
     atom.commands.dispatch(atom.views.getView(atom.workspace), 'linter:lint')
 
   spawn: (res, clear = true) ->
-    {cmd, args, env, cwd} = res.parseCommand()
-    consoleview?.createOutput res
+    {command, cmd, args, env} = res.parseCommand()
+    consoleview?.createOutput command
     consoleview?.showBox()
     consoleview?.setHeader("#{res.name} of #{res.project}")
     consoleview?.clear() if clear
@@ -142,7 +156,7 @@ module.exports =
       command: cmd
       args: args
       options:
-        cwd: cwd,
+        cwd: command.wd,
         env: env
       stdout: (data) ->
         consoleview?.stdout?.in data
@@ -180,6 +194,7 @@ module.exports =
       handle()
 
   execute: (id, ask = false) ->
+    createConsoleView()
     if (path = atom.workspace.getActiveTextEditor()?.getPath())?
       if (projectpath = @projects.getNextProjectPath path) isnt ''
         project = null
