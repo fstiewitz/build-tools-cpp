@@ -1,3 +1,6 @@
+## 3.7.0 - Service API: Profiles
+* This update introduces a service interface for other packages to add their own [highlighting profiles](https://github.com/deprint/build-tools-cpp/wiki/Service-API:-Profiles)
+
 ## 3.6.0 - UI for local configuration files
 * Added UI for local configuration files
 

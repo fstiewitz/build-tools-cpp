@@ -31,6 +31,10 @@ build-tools (prev. build-tools-cpp)
 * <b>Commands are not executed twice</b>
 * Build fails if one of the dependencies returns a non-zero exit code
 
+## Service API
+`build-tools` allows other packages to:
+* add their own [highlighting profiles](https://github.com/deprint/build-tools-cpp/wiki/Service-API:-Profiles)
+
 ## Roadmap
 * Project templates
 * More highlighting profiles
