@@ -16,4 +16,8 @@ module.exports =
     )
 
   removeProfile: (key) ->
-    @profiles[key] = null
+    delete @profiles[key]
+
+  reset: ->
+    for k in Object.keys(@profiles)
+      @removeProfile k unless k in ['gcc_clang', 'apm_test', 'java', 'python', 'modelsim']
