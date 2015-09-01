@@ -228,9 +228,6 @@ module.exports =
               @saveall() if @command_list[0].save_all
               @spawn @command_list.splice(0, 1)[0]
 
-  getSpecHelper: ->
-    require '../spec/helper'
-
   provideLinter: ->
     grammarScopes: ['*']
     scope: 'project'
