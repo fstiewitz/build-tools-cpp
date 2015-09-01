@@ -1,7 +1,6 @@
 {$} = require 'atom-space-pen-views'
 ProjectPane = require '../lib/project-pane'
 Projects = require '../lib/projects'
-Profiles = require '../lib/profiles/profiles'
 
 describe 'Project Pane', ->
   [cmd, dep, projects, project, view, fixturesPath, spy] = []
@@ -39,7 +38,7 @@ describe 'Project Pane', ->
     projects = new Projects('')
     projects.addProject fixturesPath
     spy = jasmine.createSpy('spy')
-    view = new ProjectPane(projects, Profiles, spy)
+    view = new ProjectPane(projects, spy)
     project = projects.getProject(fixturesPath)
     view.setContent project, 'Test'
     jasmine.attachToDOM(view.element)
@@ -76,7 +75,7 @@ describe 'Project Pane', ->
       button = view.find('#add-command-button')
       expect(button.length).toBe 1
       button.click()
-      expect(spy).toHaveBeenCalledWith null, null, project, Profiles
+      expect(spy).toHaveBeenCalledWith null, null, project
 
   describe 'On import command click', ->
     it 'opens the import view', ->

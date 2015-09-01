@@ -1,5 +1,4 @@
 Output = require '../lib/output'
-ll = require '../lib/linter-list'
 
 module.exports =
   profile: (name, command, stream, strings, expectations, files) ->
@@ -20,15 +19,15 @@ module.exports =
       it 'has a `in` function', ->
         expect(output.profile.in).toBeDefined()
 
-      it 'has a `clear` function', ->
-        expect(output.profile.clear).toBeDefined()
+      it 'has a `files` function', ->
+        expect(output.profile.files).toBeDefined()
 
       describe 'on ::in', ->
         matches = []
 
         beforeEach ->
           spyOn(output, 'absolutePath').andCallFake (path) -> path
-          spyOn(output.profile, 'lint').andCallFake (match) ->
+          spyOn(output.profile.output, 'lint').andCallFake (match) ->
             if match? and match.file? and match.row? and match.type? and match.message?
               matches.push
                 file: match.file
@@ -47,7 +46,7 @@ module.exports =
           for match, index in matches
             expectation = expectations[index]
             for key in Object.keys(expectation)
-              expect(match[key]).toEqual expectation[key]
+              expect("Line[#{index}].#{key}: " + match[key]).toEqual "Line[#{index}].#{key}: " + expectation[key]
 
       return unless files?
 
@@ -60,8 +59,8 @@ module.exports =
 
         it 'correctly returns file descriptors', ->
           expect(matches.length).toBe files.length
-          for match, index in matches
-            expectation = files[index]
-            for item, index in expectation
+          for match, index0 in matches
+            expectation = files[index0]
+            for item, index1 in expectation
               for key in Object.keys(item)
-                expect(match[index][key]).toBe item[key]
+                expect("Line[#{index0}][#{index1}].#{key}: " + match[index1][key]).toBe "Line[#{index0}][#{index1}].#{key}: " + item[key]

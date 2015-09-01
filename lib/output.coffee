@@ -2,6 +2,8 @@
 fs = require 'fs-plus'
 path = require 'path'
 Profiles = require './profiles/profiles'
+ll = require './linter-list'
+XRegExp = require('xregexp').XRegExp
 
 module.exports =
   class Output
@@ -19,10 +21,10 @@ module.exports =
       @printfunc = printfunc
       @lines = []
       if @settings.stream.profile?
-        @profile = new Profiles[@settings.stream.profile]?({@print, @replacePrevious, @createMessage, @absolutePath})
+        @profile = new Profiles.profiles[@settings.stream.profile]?({@print, @replacePrevious, @createMessage, @absolutePath, @pushLinterMessage, @createExtensionString, @createRegex, @lint})
         if not @profile?
           atom.notifications?.addError "Could not find highlighting profile: #{@settings.stream.profile}"
-        @profile?.clear()
+        @profile?.clear?()
 
     in: (message) ->
       lines = message.split('\n')
@@ -93,3 +95,41 @@ module.exports =
       id = @lines.length - 1
       $(@lines[id]).prop('class', line.prop('class'))
       $(@lines[id]).html(line.html())
+
+    pushLinterMessage: (message) =>
+      ll.messages.push message
+
+    createExtensionString: (scopes, default_extensions) ->
+      extensions_raw = []
+      extensions = []
+      scopes.forEach (scope) ->
+        if (grammar = atom.grammars.grammarForScopeName(scope))?
+          extensions_raw = extensions_raw.concat(grammar.fileTypes)
+
+      extensions_raw = default_extensions if extensions_raw.length is 0
+      extensions_raw = extensions_raw.sort().reverse()
+
+      for extension in extensions_raw
+        extensions.push extension.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&')
+
+      '(' + extensions.join('|') + ')'
+
+    createRegex: (content, extensions) ->
+      content = content.replace(/\(\?extensions\)/g, extensions)
+      new XRegExp(content, 'xni')
+
+    lint: (match) =>
+      if match? and match.file? and match.row? and match.type? and match.message?
+        row = 1
+        col = 10000
+        row = parseInt(match.row)
+        col = parseInt(match.col) if match.col?
+        @pushLinterMessage
+          type: match.type
+          text: match.message
+          filePath: @absolutePath match.file
+          range: [
+            [row - 1, 0]
+            [row - 1, col - 1]
+          ]
+          trace: match.trace

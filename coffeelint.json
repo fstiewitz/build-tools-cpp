@@ -49,7 +49,7 @@
     "limitComments": true
   },
   "missing_fat_arrows": {
-    "level": "warn",
+    "level": "ignore",
     "is_strict": false
   },
   "newlines_after_classes": {
@@ -90,7 +90,7 @@
     "level": "error"
   },
   "no_this": {
-    "level": "warn"
+    "level": "ignore"
   },
   "no_throwing_strings": {
     "level": "error"

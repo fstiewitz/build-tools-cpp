@@ -1,5 +1,4 @@
 LocalSettingsView = require '../lib/local-settings-view'
-Profiles = require '../lib/profiles/profiles'
 Projects = require '../lib/projects'
 
 describe 'Local settings page', ->
@@ -10,7 +9,7 @@ describe 'Local settings page', ->
     project = Projects.loadLocal fixturesPath
     projects = new Projects('')
     expect(project).not.toBeNull()
-    view = new LocalSettingsView({uri: '.build-tools.cson', projects, project, profiles: Profiles})
+    view = new LocalSettingsView({uri: '.build-tools.cson', projects, project})
     jasmine.attachToDOM view.element
 
   afterEach ->

@@ -1,7 +1,6 @@
 {$} = require 'atom-space-pen-views'
 SettingsView = require '../lib/settings-view'
 Projects = require '../lib/projects'
-Profiles = require '../lib/profiles/profiles'
 
 describe 'Settings Page', ->
   [projects, view, fixturesPath] = []
@@ -12,7 +11,7 @@ describe 'Settings Page', ->
     projects.addProject fixturesPath
     projects.addProject 'fixtures2'
     projects.addProject 'fixtures3'
-    view = new SettingsView({uri: '', projects, profiles: Profiles})
+    view = new SettingsView({uri: '', projects})
     jasmine.attachToDOM(view.element)
 
   afterEach ->

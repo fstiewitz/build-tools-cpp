@@ -24,7 +24,7 @@ describe 'Command Pane', ->
     stderr: {
       file: true,
       highlighting: 'hc',
-      profile: 'gcc_clang',
+      profile: 'foo',
       lint: false
     }
   }
@@ -45,20 +45,20 @@ describe 'Command Pane', ->
 
   describe 'When command is created', ->
     it 'opens the command view with default values', ->
-      view.show(null, null, projects.getProject(fixturesPath), Profiles)
+      view.show(null, null, projects.getProject(fixturesPath))
       expect(view.nameEditor.getText()).toBe ''
       expect(view.commandEditor.getText()).toBe ''
 
   describe 'When command view is cancelled', ->
     it 'detaches the command view', ->
-      view.show(null, null, projects.getProject(fixturesPath), Profiles)
+      view.show(null, null, projects.getProject(fixturesPath))
       view.find('.btn-error').click()
       expect(success_spy).not.toHaveBeenCalled()
       expect(hide_spy).toHaveBeenCalled()
 
   describe 'When command view is confirmed with good values', ->
     it 'calls the callback function', ->
-      view.show(null, null, projects.getProject(fixturesPath), Profiles)
+      view.show(null, null, projects.getProject(fixturesPath))
       view.nameEditor.setText('Test command')
       view.commandEditor.setText('foo')
       view.find('.btn-primary').click()
@@ -88,7 +88,7 @@ describe 'Command Pane', ->
 
   describe 'When command view is confirmed with wrong values', ->
     it 'displays an error message and does not call the callback function', ->
-      view.show(null, null, projects.getProject(fixturesPath), Profiles)
+      view.show(null, null, projects.getProject(fixturesPath))
       view.nameEditor.setText('Test command')
       view.commandEditor.setText('')
       view.find('.btn-primary').click()
@@ -98,7 +98,7 @@ describe 'Command Pane', ->
 
   describe 'When command view is created with a preset and confirmed', ->
     it 'displays the preset and calls the callback function on confirm', ->
-      view.show(cmd.name, cmd, projects.getProject(fixturesPath), Profiles)
+      view.show(cmd.name, cmd, projects.getProject(fixturesPath))
       expect(view.nameEditor.getText()).toBe 'Test command'
       expect(view.commandEditor.getText()).toBe 'pwd "Hello World" test'
       expect(view.wdEditor.getText()).toBe 'sub0'
@@ -112,10 +112,10 @@ describe 'Command Pane', ->
       expect(view.find('#mark_paths_stderr').prop('checked')).toBeTruthy()
       expect(view.find('#stderr #hc').hasClass('selected')).toBeTruthy()
       expect(view.find('#lint_stderr').prop('checked')).toBeFalsy()
-      expect(view.stdout_profile.children().length).toBe Object.keys(Profiles).length
+      expect(view.stdout_profile.children().length).toBe Object.keys(Profiles.profiles).length
       expect($(view.stdout_profile.children()[view.stdout_profile[0].selectedIndex]).prop('value')).toBe 'java'
       expect($(view.stdout_profile_div).hasClass('hidden')).toBe false
-      expect(view.stderr_profile.children().length).toBe Object.keys(Profiles).length
+      expect(view.stderr_profile.children().length).toBe Object.keys(Profiles.profiles).length
       expect($(view.stderr_profile.children()[view.stderr_profile[0].selectedIndex]).prop('value')).toBe 'gcc_clang'
       expect($(view.stderr_profile_div).hasClass('hidden')).toBe false
       view.nameEditor.setText('Test command 2')

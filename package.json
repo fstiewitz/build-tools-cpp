@@ -5,8 +5,11 @@
   "description": "Build your projects in atom",
   "repository": "https://github.com/deprint/build-tools-cpp",
   "license": "MIT",
+  "scripts": {
+    "lint": "coffeelint lib"
+  },
   "engines": {
-    "atom": ">=0.197.0 <2.0.0"
+    "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
     "atom-space-pen-views": "^2.0.0",
@@ -24,6 +27,13 @@
     "linter": {
       "versions": {
         "1.0.0": "provideLinter"
+      }
+    }
+  },
+  "consumedServices": {
+    "build-tools.profile": {
+      "versions": {
+        "^1.0.0": "consumeProfile"
       }
     }
   }

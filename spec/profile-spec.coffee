@@ -1,6 +1,6 @@
-Profile = require './profile'
+{profile} = require './helper'
 
-Profile.profile 'GCC/Clang', {
+profile 'GCC/Clang', {
   stderr:
     profile: 'gcc_clang'
     highlighting: 'hc'
@@ -37,7 +37,7 @@ Profile.profile 'GCC/Clang', {
   []
 ]
 
-Profile.profile 'apm test', {
+profile 'apm test', {
   stderr:
     profile: 'apm_test'
     highlighting: 'hc'
@@ -98,7 +98,7 @@ Profile.profile 'apm test', {
   [{file: 'spec/regex-spec.coffee', row: '16', col: '18', start: 61, end: 88}]
 ]
 
-Profile.profile 'Java', {
+profile 'Java', {
   stderr:
     profile: 'java'
     highlighting: 'hc'
@@ -150,7 +150,7 @@ Profile.profile 'Java', {
   []
 ]
 
-Profile.profile 'Python', {
+profile 'Python', {
   stderr:
     profile: 'python'
     highlighting: 'hc'
@@ -189,7 +189,7 @@ Profile.profile 'Python', {
   []
 ]
 
-Profile.profile 'Modelsim', {
+profile 'Modelsim', {
   stderr:
     profile: 'modelsim'
     highlighting: 'hc'

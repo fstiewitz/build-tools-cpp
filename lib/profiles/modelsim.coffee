@@ -1,8 +1,5 @@
-Profile = require './profile'
-XRegExp = require('xregexp').XRegExp
-
 module.exports =
-  class Modelsim extends Profile
+  class Modelsim
     @profile_name: 'Modelsim'
 
     scopes: ['source.vhdl' , 'source.verilog']
@@ -17,15 +14,15 @@ module.exports =
     (?<file> [\\S]+\\.(?extensions))(\\((?<row> [\\d]+)\\))?
     '
 
-    constructor: (output) ->
-      super(output)
-      @regex = @createRegex @regex_string
-      @regex_file = @createRegex @file_string
+    constructor: (@output) ->
+      @extensions = @output.createExtensionString @scopes, @default_extensions
+      @regex = @output.createRegex @regex_string, @extensions
+      @regex_file = @output.createRegex @file_string, @extensions
 
     files: (line) ->
       start = 0
       out = []
-      while (m = XRegExp.exec line.substr(start), @regex_file)?
+      while (m = @regex_file.xexec line.substr(start))?
         start += m.index
         m.start = start
         m.end = start + m.file.length + (if m.row? then m.row.length + 1 else -1)
@@ -36,7 +33,7 @@ module.exports =
       out
 
     in: (line) ->
-      if (m = XRegExp.exec line, @regex)? #Start of error message
+      if (m = @regex.xexec line)? #Start of error message
         m.type = m.type.toLowerCase()
         @output.print m
-        @lint m
+        @output.lint m

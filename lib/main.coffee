@@ -81,9 +81,9 @@ module.exports =
       settingsview?.reload()
     @subscriptions.add atom.workspace.addOpener (uritoopen) =>
       if uritoopen is settingsviewuri
-        createSettingsView({uri: uritoopen, @projects, profiles: Profiles})
+        createSettingsView({uri: uritoopen, @projects})
       else if uritoopen.endsWith('.build-tools.cson') and (project = Projects.loadLocalFile uritoopen)?
-        createLocalSettingsView({uri: uritoopen, @projects, project, profiles: Profiles})
+        createLocalSettingsView({uri: uritoopen, @projects, project})
 
   deactivate: ->
     @process?.kill()
@@ -234,6 +234,9 @@ module.exports =
     lintOnFly: false
     lint: ->
       ll.messages
+
+  consumeProfile: ({key, profile}) ->
+    Profiles.addProfile key, profile
 
   config:
     SaveAll:

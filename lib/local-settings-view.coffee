@@ -15,10 +15,10 @@ module.exports =
       @div class: 'settings pane-item', tabindex: -1, =>
         @div class: 'panel padded', outlet: 'pane'
 
-    initialize: ({@uri, @projects, @project, @profiles}) ->
+    initialize: ({@uri, @projects, @project}) ->
       ProjectPane ?= require './project-pane'
       CommandPane ?= require './command-pane'
-      @projectpane = new ProjectPane(@projects, @profiles, (arg0, arg1, arg2, arg3) =>
+      @projectpane = new ProjectPane(@projects, (arg0, arg1, arg2, arg3) =>
         @showCommandPane()
         @commandpane.show arg0, arg1, arg2, arg3
       )
