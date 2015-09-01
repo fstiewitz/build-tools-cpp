@@ -30,7 +30,7 @@ describe 'Console View', ->
       stderr: {
         file: true,
         highlighting: 'hc',
-        profile: 'gcc_clang',
+        profile: 'foo',
         lint: false
       }
     }
@@ -51,6 +51,27 @@ describe 'Console View', ->
       view.printLine 'Test'
       expect(view.find('.output').html()).toBe 'Test'
       expect(view.find('.output').hasClass('hidden')).toBeFalsy()
+
+  describe 'Output', ->
+
+    beforeEach ->
+      view.createOutput data
+
+    it 'creates output streams', ->
+      expect(view.stdout).toBeDefined()
+      expect(view.stderr).toBeDefined()
+      expect(view.stdout.profile).toBeUndefined()
+      expect(view.stderr.profile).toBeUndefined()
+
+    it 'on input', ->
+      d = [
+        'First line\n'
+        'Second line\n'
+        '\n'
+        'Fourth line\n'
+      ]
+      view.stdout.in l for l in d
+      expect(view.find('.output').children().length).toBe 4
 
   describe 'Timeout', ->
 

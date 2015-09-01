@@ -67,10 +67,8 @@ module.exports =
           else
             m.type = 'trace'
             m.highlighting = 'error'
-            if not m.message? and m.message isnt ' '
+            if not m.message? or m.message.trim() isnt ''
               m.message = 'Referenced'
-            else if m.message.endsWith ' '
-              m.message = m.message.split(0, -1)
             @lastMatch.trace.push @output.createMessage m #Message to Traceback
             m.message = @lastMatch.message
             @output.lint m #Trace message to Linter

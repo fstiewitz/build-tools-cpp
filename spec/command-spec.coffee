@@ -24,7 +24,7 @@ describe 'Command Pane', ->
     stderr: {
       file: true,
       highlighting: 'hc',
-      profile: 'gcc_clang',
+      profile: 'foo',
       lint: false
     }
   }
