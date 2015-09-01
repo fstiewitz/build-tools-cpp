@@ -235,7 +235,7 @@ module.exports =
     lint: ->
       ll.messages
 
-  consumeProfile: ({key,profile}) ->
+  consumeProfile: ({key, profile}) ->
     Profiles.addProfile key, profile
 
   config:

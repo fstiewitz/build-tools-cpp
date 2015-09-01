@@ -1,5 +1,4 @@
 Output = require '../lib/output'
-ll = require '../lib/linter-list'
 
 module.exports =
   profile: (name, command, stream, strings, expectations, files) ->

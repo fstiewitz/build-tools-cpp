@@ -11,7 +11,9 @@ module.exports =
   addProfile: (key, profile) ->
     return if @profiles[key]?
     @profiles[key] = profile
-    new Disposable => @removeProfile key
+    new Disposable(=>
+      @removeProfile key
+    )
 
   removeProfile: (key) ->
     @profiles[key] = null

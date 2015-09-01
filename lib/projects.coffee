@@ -174,7 +174,7 @@ module.exports =
     getNextProjectPath: (file) ->
       p = file.split(path.sep)
       i = p.length
-      while (i isnt 0) and (@data[p.slice(0, i).join(path.sep)] is undefined and not fs.existsSync(path.join(p.slice(0,i).join(path.sep),'.build-tools.cson')))
+      while (i isnt 0) and (@data[p.slice(0, i).join(path.sep)] is undefined and not fs.existsSync(path.join(p.slice(0, i).join(path.sep), '.build-tools.cson')))
         i = i - 1
       p.slice(0, i).join(path.sep)
 
