@@ -23,7 +23,7 @@
     "tools",
     "projects"
   ],
-  "specHelper": "./spec/helper"
+  "specHelper": "./spec/helper",
   "providedServices": {
     "linter": {
       "versions": {
