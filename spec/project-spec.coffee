@@ -11,6 +11,8 @@ describe 'Project Pane', ->
     wd: 'sub0',
     shell: false,
     wildcards: false,
+    save_all: false,
+    close_success: false,
     stdout: {
       file: false,
       highlighting: 'ha',
@@ -22,6 +24,7 @@ describe 'Project Pane', ->
       profile: 'apm_test',
       lint: false
     }
+    version: 2
   }
 
   beforeEach ->

@@ -3,11 +3,7 @@ Profiles = require './profiles/profiles'
 
 ImportView = null
 DependencyView = null
-
-highlight_translation =
-  'nh': 'No highlighting'
-  'ha': 'Highlight all'
-  'ht': 'Highlight tags'
+CommandInfoPane = null
 
 module.exports =
   class ProjectPane extends ScrollView
@@ -48,13 +44,8 @@ module.exports =
               @span class: 'section-header', 'Commands'
               @span id: 'add-command-button', class: 'inline-block btn btn-xs icon icon-plus', 'Add command'
               @span id: 'import-command-button', class: 'inline-block btn btn-xs icon icon-cloud-download', 'Import command'
-            @div class: 'panel-body padded command-container', =>
-              @div class: 'key-info', =>
-                @div class: 'key-desc', 'First Local Command'
-                @div class: 'key-desc', 'Second Local Command'
-                @div class: 'key-desc', 'Third Local Command'
-              @div class: 'command-menu', =>
-                @div class: 'command-list', outlet: 'command_list'
+            @div class: 'panel-body padded', =>
+              @div class: 'command-list', outlet: 'command_list'
           @div class: 'inset-panel', =>
             @div class: 'panel-heading icon icon-circuit-board', =>
               @span class: 'section-header', 'Dependencies'
@@ -174,49 +165,9 @@ module.exports =
         project: command.project
         command: command.name
 
-    addCommand: (items) ->
-      item = $$ ->
-        @div class: 'command', =>
-          @div class: 'top', =>
-            @div id: 'info', class: 'align', =>
-              @div class: 'icon-triangle-right expander'
-              @div id: 'name', items.name
-            @div id: 'options', class: 'align', =>
-              @div class: 'icon-pencil'
-              @div class: 'icon-triangle-up'
-              @div class: 'icon-triangle-down'
-              @div class: 'icon-x'
-          @div class: 'info hidden', =>
-            @div id: 'general', =>
-              @div =>
-                @div class: 'text-padded', 'Command'
-                @div class: 'text-padded', 'Working Directory'
-                @div class: 'text-padded', 'Shell'
-                @div class: 'text-padded', 'Wildcards'
-              @div class: 'values', =>
-                @div class: 'text-highlight text-padded', items.command
-                @div class: 'text-highlight text-padded', items.wd
-                @div class: 'text-highlight text-padded', items.shell.toString()
-                @div class: 'text-highlight text-padded', items.wildcards.toString()
-            @div class: 'streams', =>
-              @div id: 'stdout', class: 'stream', =>
-                @div =>
-                  @div class: 'text-padded', 'Highlighting (stdout)'
-                  @div class: 'text-padded', 'Mark paths (stdout)'
-                  @div class: 'text-padded', 'Use Linter (stdout)'
-                @div class: 'values', =>
-                  @div class: 'text-highlight text-padded', if items.stdout.highlighting is 'hc' then String(Profiles.profiles[items.stdout.profile]?.profile_name) else highlight_translation[items.stdout.highlighting]
-                  @div class: 'text-highlight text-padded', if items.stdout.highlighting is 'hc' then items.stdout.file.toString() else 'Disabled'
-                  @div class: 'text-highlight text-padded', if items.stdout.highlighting is 'hc' then items.stdout.lint.toString() else 'Disabled'
-              @div id: 'stderr', class: 'stream', =>
-                @div =>
-                  @div class: 'text-padded', 'Highlighting (stderr)'
-                  @div class: 'text-padded', 'Mark paths (stderr)'
-                  @div class: 'text-padded', 'Use Linter (stderr)'
-                @div class: 'values', =>
-                  @div class: 'text-highlight text-padded', if items.stderr.highlighting is 'hc' then String(Profiles.profiles[items.stderr.profile]?.profile_name) else highlight_translation[items.stderr.highlighting]
-                  @div class: 'text-highlight text-padded', if items.stderr.highlighting is 'hc' then items.stderr.file.toString() else 'Disabled'
-                  @div class: 'text-highlight text-padded', if items.stderr.highlighting is 'hc' then items.stderr.lint.toString() else 'Disabled'
+    addCommand: (command) ->
+      CommandInfoPane ?= require './command-info-pane'
+      item = new CommandInfoPane(command)
       item.on 'click', '.icon-triangle-right', (e) =>
         @reduceAll e.currentTarget.parentNode.parentNode.parentNode.parentNode
         @expandCommand e.currentTarget
