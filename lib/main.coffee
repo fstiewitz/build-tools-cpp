@@ -1,6 +1,7 @@
 Command = require './command'
 ll = require './linter-list'
 Profiles = require './profiles/profiles'
+OutputModules = require './output/output'
 
 {CompositeDisposable, BufferedProcess} = require 'atom'
 
@@ -237,6 +238,9 @@ module.exports =
 
   consumeProfile: ({key, profile}) ->
     Profiles.addProfile key, profile
+
+  consumeOutputModule: ({key, mod}) ->
+    OutputModules.addModule key, mod
 
   config:
     SaveAll:

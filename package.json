@@ -35,6 +35,11 @@
       "versions": {
         "^1.0.0": "consumeProfile"
       }
+    },
+    "build-tools.output": {
+      "versions": {
+        "^1.0.0": "consumeOutputModule"
+      }
     }
   }
 }
