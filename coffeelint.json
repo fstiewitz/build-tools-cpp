@@ -64,7 +64,7 @@
     "console": false
   },
   "no_empty_functions": {
-    "level": "error"
+    "level": "ignore"
   },
   "no_empty_param_list": {
     "level": "error"
