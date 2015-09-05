@@ -1,11 +1,16 @@
 Profiles = require '../profiles/profiles'
 
+{XRegExp} = require 'xregexp'
+
+fs = require 'fs'
+path = require 'path'
+
 {Emitter} = require 'atom'
 
 module.exports =
   class OutputStream
 
-    constructor: (@stream) ->
+    constructor: (@settings, @stream) ->
       if @stream.profile?
         @profile = new Profiles.profiles[@stream.profile]?({@print, @replacePrevious, @createMessage, @absolutePath, @pushLinterMessage, @createExtensionString, @createRegex, @lint})
         if not @profile?
@@ -29,7 +34,7 @@ module.exports =
       return unless subscriber?
       @subscribers.on 'input', subscriber.in if subscriber.in?
 
-    in: (line) ->
+    in: (message) ->
       lines = message.split('\n')
       for line, index in lines
         if line isnt '' or (line is '' and index isnt lines.length - 1)
