@@ -27,7 +27,7 @@ command =
     #Backwards compatibility with older command versions (don't change it)
     version: 3
 
-fdescribe 'Output Manager', ->
+describe 'Output Manager', ->
   manager = null
   output = null
 
