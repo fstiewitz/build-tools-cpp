@@ -1,84 +1,117 @@
-{$$, View} = require 'atom-space-pen-views'
+{$, $$, View} = require 'atom-space-pen-views'
 
 ConsoleView = null
+consoleview = null
+
+buildHTML = (message, status, filenames) ->
+  $$ ->
+    status = '' if not status?
+    status = 'info' if status is 'note'
+    @div class: "bold text-#{status}", =>
+      if filenames? and filenames.length isnt 0
+        prev = -1
+        for {file, row, col, start, end} in filenames
+          @span message.substr(prev + 1, start - (prev + 1))
+          @span class: "filelink highlight-#{status}", name: file, row: row, col: col, message.substr(start, end - start + 1)
+          prev = end
+        @span message.substr(prev + 1) if prev isnt message.length - 1
+      else
+        @span if message is '' then ' ' else message
 
 module.exports =
-  infoPane: (config) ->
-    $$ ->
-      @div class: 'module', =>
-        @div =>
-          @div class: 'text-padded', 'Close on success'
-        @div class: 'values', =>
-          @div class: 'text-highlight text-padded', config.close_success
 
-  editPane:
-    class ConsoleEdit extends View
-      @content: ->
-        @div class: 'panel-body padded hidden', =>
-          @div class: 'block checkbox', =>
-            @input id: 'close_success', type: 'checkbox'
-            @label =>
-              @div class: 'settings-name', 'Close on success'
-              @div =>
-                @span class: 'inline-block text-subtle', 'Close console on success. Uses config value in package settings if enabled'
-
-      initialize: (command) ->
-        if command.output['console']?
-          @find('#close_success').prop('checked', command.output['console'].close_success)
-          @show()
-
-      show: ->
-        @removeClass 'hidden'
-
-      hide: ->
-        @addClass 'hidden'
-
-      get: ->
-        close_success: @find('#close_success').prop('checked')
-
-  defaultConfig: (command) ->
-    command.output['console'] =
-      close_success: false
+  deactivate: ->
+    consoleview.destroy()
+    consoleview = null
+    ConsoleView = null
 
   output:
     class Console
 
-      setInstance: (@instance) ->
+      getView: -> #Not part of API (Spec function)
+        consoleview
 
       newQueue: (@queue) ->
-        ConsoleView ?= require '../console'
-        @view = new ConsoleView(@instance)
-        @view.setQueueCount @queue.count
-        @view.clear()
+        ConsoleView ?= require '../view/console'
+        consoleview ?= new ConsoleView
+        consoleview.setQueueCount @queue.queue.length
+        consoleview.clear()
 
       newCommand: (@command) ->
-        @view.createOutput @command
-        @view.showBox()
-        @view.setHeader("#{@command.name} of #{@command.project}")
-        @view.unlock()
+        consoleview.showBox()
+        consoleview.setHeader("#{@command.name} of #{@command.project}")
+        consoleview.unlock()
+        @stdout.lines = []
+        @stderr.lines = []
 
-      stdout: (line, files) ->
-        @view.stdout line, files
+      stdout:
 
-      stderr: (line, files) ->
-        @view.stderr line, files
+        lines: []
+
+        in: ({input, files}) ->
+          @lines.push consoleview.printLine(buildHTML(input.input, input.type, files))
+
+        setType: (status) ->
+          last = @lines[@lines.length - 1]
+          status = '' if not status?
+          status = 'info' if status is 'note'
+          $(last).prop('class', "bold text-#{status}")
+
+        print: ({input, files}) ->
+          _new = buildHTML(input.input, input.type, files)
+          element = $(@lines[@lines.length - 1])
+          element.prop('class', _new.prop('class'))
+          element.html(_new.html())
+
+        replacePrevious: (lines) ->
+          for {input, files}, index in lines
+            _new = buildHTML(input.input, input.type, files)
+            element = $(@lines[@lines.length - lines.length + index])
+            element.prop('class', _new.prop('class'))
+            element.html(_new.html())
+
+      stderr:
+
+        lines: []
+
+        in: ({input, files}) ->
+          @lines.push consoleview.printLine(buildHTML(input.input, input.type, files))
+
+        setType: (status) ->
+          last = @lines[@lines.length - 1]
+          status = '' if not status?
+          status = 'info' if status is 'note'
+          $(last).prop('class', "bold text-#{status}")
+
+        print: ({input, files}) ->
+          _new = buildHTML(input.input, input.type, files)
+          element = $(@lines[@lines.length - 1])
+          element.prop('class', _new.prop('class'))
+          element.html(_new.html())
+
+        replacePrevious: (lines) ->
+          for {input, files}, index in lines
+            _new = buildHTML(input.input, input.type, files)
+            element = $(@lines[@lines.length - lines.length + index])
+            element.prop('class', _new.prop('class'))
+            element.html(_new.html())
 
       error: (message) ->
-        @view.hideOutput()
-        @view.setHeader("#{@command.name} of #{@command.project}: received #{message}")
-        @view.lock()
+        consoleview.hideOutput()
+        consoleview.setHeader("#{@command.name} of #{@command.project}: received #{message}")
+        consoleview.lock()
 
       exitCommand: (code) ->
         if code is 0
-          @view.setQueueLength @queue.length
-          @view.setHeader(
+          consoleview.setQueueLength @queue.queue.length
+          consoleview.setHeader(
             "#{@command.name} of #{@command.project}: finished with exitcode #{code}"
           )
         else
-          @view.setHeader(
-            "#{@command.name} of #{@command.project}:" +
+          consoleview.setHeader(
+            "#{@command.name} of #{@command.project}: " +
             "<span class='error'>finished with exitcode #{code}</span>"
           )
 
       exitQueue: (code) ->
-        @view.finishConsole code
+        consoleview.finishConsole code

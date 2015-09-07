@@ -2,7 +2,7 @@ Profiles = require '../profiles/profiles'
 
 {XRegExp} = require 'xregexp'
 
-fs = require 'fs'
+fs = require 'fs-plus'
 path = require 'path'
 
 {Emitter} = require 'atom'
@@ -38,7 +38,7 @@ module.exports =
       lines = message.split('\n')
       for line, index in lines
         if line isnt '' or (line is '' and index isnt lines.length - 1)
-          @subscribers.emit 'input', line
+          @subscribers.emit 'input', input: line, files: @getFiles(line)
           @parse line
 
     parse: (line) ->
@@ -71,10 +71,23 @@ module.exports =
       }
 
     replacePrevious: (new_lines) =>
-      @subscribers.emit 'replacePrevious', new_lines
+      items = []
+      for line in new_lines
+        items.push
+          input: line
+          files: @getFiles(line.input)
+      @subscribers.emit 'replacePrevious', items
+
+    getFiles: (line) ->
+      if @profile?
+        filenames = []
+        for match in @profile.files line
+          match.file = @absolutePath(match.file)
+          filenames.push match if fs.isFileSync match.file
+        return filenames
 
     print: (match) =>
-      @subscribers.emit 'print', match
+      @subscribers.emit 'print', input: match, files: @getFiles(match.input)
 
     pushLinterMessage: (message) =>
       @subscribers.emit 'linter', message

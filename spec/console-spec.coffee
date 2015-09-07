@@ -1,139 +1,150 @@
-path = require 'path'
-ConsoleOutput = require '../lib/console'
+Module = require '../lib/output/console'
 
-describe 'Console View', ->
-  [view, fixturesPath, data, input_stdout, input_stderr] = []
+describe 'Output Module - Console', ->
+  module = null
 
   beforeEach ->
-    activationPromise = atom.packages.activatePackage('language-c')
-    waitsForPromise -> activationPromise
-
-    view = new ConsoleOutput()
-    view.showBox()
-    jasmine.attachToDOM(view.element)
-    expect(view.hasClass('console')).toBeTruthy()
-    expect(view.find('.output').hasClass('hidden')).toBeTruthy()
-    fixturesPath = atom.project.getPaths()[0]
-    data = {
-      project: fixturesPath
-      name: 'Test command',
-      command: 'echo "Test"',
-      wd: 'build',
-      shell: false,
-      wildcards: false,
-      close_success: false
-      stdout: {
-        file: false,
-        highlighting: 'ha',
-        lint: false
-      }
-      stderr: {
-        file: true,
-        highlighting: 'hc',
-        profile: 'foo',
-        lint: false
-      }
-    }
+    module = new Module.output
+    q = [1, 2, 3]
+    module.newQueue(queue: q)
+    q.splice(0, 1)
+    module.newCommand name: 'Test command', project: 'fixtures'
 
   afterEach ->
-    view.destroy()
+    Module.deactivate()
 
-  describe 'When :setHeader', ->
-    it 'sets the header', ->
-      expect(view.find('.name').html()).toBe ''
-      view.setHeader 'Test'
-      expect(view.find('.name').html()).toBe 'Test'
+  it 'sets the header line', ->
+    expect(module.getView().name.text()).toBe 'Test command of fixtures'
 
-  describe 'When :printLine', ->
-    it 'prints a line', ->
-      expect(view.find('.output').html()).toBe ''
-      expect(view.find('.output').hasClass('hidden')).toBeTruthy()
-      view.printLine 'Test'
-      expect(view.find('.output').html()).toBe 'Test'
-      expect(view.find('.output').hasClass('hidden')).toBeFalsy()
+  it 'sets the progress bar', ->
+    expect(module.getView().progress.prop('max')).toBe 3
 
-  describe 'Output', ->
+  describe 'On stdout input', ->
 
     beforeEach ->
-      view.createOutput data
+      module.stdout.in input: {input: 'Foo Bar', type: ''}, files: []
+      module.stdout.in input: {input: 'Hello World', type: 'error'}, files: []
 
-    it 'creates output streams', ->
-      expect(view.stdout).toBeDefined()
-      expect(view.stderr).toBeDefined()
-      expect(view.stdout.profile).toBeUndefined()
-      expect(view.stderr.profile).toBeUndefined()
+    it 'adds the line to the internal line stack', ->
+      expect(module.stdout.lines.length).toBe 2
+      expect(module.stdout.lines[1].innerText).toBe 'Hello World'
 
-    it 'on input', ->
-      d = [
-        'First line\n'
-        'Second line\n'
-        '\n'
-        'Fourth line\n'
-      ]
-      view.stdout.in l for l in d
-      expect(view.find('.output').children().length).toBe 4
+    describe 'On setType', ->
 
-  describe 'Timeout', ->
+      beforeEach ->
+        module.stdout.setType 'warning'
+
+      it 'changes the message type', ->
+        expect(module.stdout.lines[1].classList.contains 'text-warning').toBe true
+
+    describe 'On print', ->
+
+      beforeEach ->
+        module.stdout.print input: {input: 'Hello World!', type: 'warning'}, files: []
+
+      it 'changes the message type', ->
+        expect(module.stdout.lines[1].classList.contains 'text-warning').toBe true
+
+      it 'changes the message content', ->
+        expect(module.stdout.lines[1].innerText).toBe 'Hello World!'
+
+    describe 'On replacePrevious', ->
+
+      beforeEach ->
+        input = [
+          {input: {input: 'Hello World!', type: 'warning'}, files: []}
+          {input: {input: 'Goodbye World!', type: 'warning'}, files: []}
+        ]
+        module.stdout.replacePrevious input
+
+      it 'changes the first line\'s type', ->
+        expect(module.stdout.lines[0].classList.contains 'text-warning').toBe true
+
+      it 'changes the first line\'s content', ->
+        expect(module.stdout.lines[0].innerText).toBe 'Hello World!'
+
+      it 'changes the second line\'s type', ->
+        expect(module.stdout.lines[1].classList.contains 'text-warning').toBe true
+
+      it 'changes the second line\'s content', ->
+        expect(module.stdout.lines[1].innerText).toBe 'Goodbye World!'
+
+  describe 'On stderr input', ->
 
     beforeEach ->
-      view.printLine 'Test'
-      atom.config.set('build-tools.CloseOnSuccess', 3)
+      module.stderr.in input: {input: 'Foo Bar', type: ''}, files: []
+      module.stderr.in input: {input: 'Hello World', type: 'error'}, files: []
 
-    describe 'When timeout is disabled', ->
-      it 'does not close the console pane on success', ->
-        view.cmd = close_success: false
-        view.finishConsole(0)
-        expect(view.visible_items.header).toBeTruthy()
+    it 'adds the line to the internal line stack', ->
+      expect(module.stderr.lines.length).toBe 2
+      expect(module.stderr.lines[1].innerText).toBe 'Hello World'
 
-    describe 'When timeout is enabled (0)', ->
-      it 'closes the console pane on success', ->
-        atom.config.set('build-tools.CloseOnSuccess', 0)
-        view.cmd = close_success: true
-        view.finishConsole(0)
-        expect(view.visible_items.header).toBeFalsy()
+    describe 'On setType', ->
 
-    describe 'When command fails', ->
-      it 'does not close the console pane', ->
-        view.cmd = close_success: true
-        view.finishConsole(1)
-        expect(view.visible_items.header).toBeTruthy()
+      beforeEach ->
+        module.stderr.setType 'warning'
 
-  describe 'When single command is executed', ->
+      it 'changes the message type', ->
+        expect(module.stderr.lines[1].classList.contains 'text-warning').toBe true
+
+    describe 'On print', ->
+
+      beforeEach ->
+        module.stderr.print input: {input: 'Hello World!', type: 'warning'}, files: []
+
+      it 'changes the message type', ->
+        expect(module.stderr.lines[1].classList.contains 'text-warning').toBe true
+
+      it 'changes the message content', ->
+        expect(module.stderr.lines[1].innerText).toBe 'Hello World!'
+
+    describe 'On replacePrevious', ->
+
+      beforeEach ->
+        input = [
+          {input: {input: 'Hello World!', type: 'warning'}, files: []}
+          {input: {input: 'Goodbye World!', type: 'warning'}, files: []}
+        ]
+        module.stderr.replacePrevious input
+
+      it 'changes the first line\'s type', ->
+        expect(module.stderr.lines[0].classList.contains 'text-warning').toBe true
+
+      it 'changes the first line\'s content', ->
+        expect(module.stderr.lines[0].innerText).toBe 'Hello World!'
+
+      it 'changes the second line\'s type', ->
+        expect(module.stderr.lines[1].classList.contains 'text-warning').toBe true
+
+      it 'changes the second line\'s content', ->
+        expect(module.stderr.lines[1].innerText).toBe 'Goodbye World!'
+
+  describe 'On error', ->
+
     beforeEach ->
-      view.setQueueCount 1
+      module.error 'Error'
 
-    it 'creates an indeterminate progress bar', ->
-      expect(view.progress.attr('value')).not.toBeDefined()
+    it 'shows the error message', ->
+      expect(module.getView().name.text()).toBe 'Test command of fixtures: received Error'
 
-    describe 'and fails', ->
-      it 'shows an empty progress bar', ->
-        view.setQueueCount(0)
-        expect(view.progress.attr('value')).toBe '0'
+  describe 'On exitCommand with successful exit code', ->
 
-    describe 'and succeeds', ->
-      it 'shows a full progress bar', ->
-        view.setQueueLength(0)
-        expect(view.progress.attr('value')).toBe '1'
-
-  describe 'When two commands are executed', ->
     beforeEach ->
-      view.setQueueCount 2
+      module.exitCommand 0
 
-    it 'creates a determinate progress bar', ->
-      expect(view.progress.attr('value')).toBe '0'
-      expect(view.progress.attr('max')).toBe '2'
+    it 'sets the header line', ->
+      expect(module.getView().name.text()).toBe 'Test command of fixtures: finished with exitcode 0'
 
-    describe 'and the first command fails', ->
-      it 'shows an empty progress bar', ->
-        view.setQueueLength(2)
-        expect(view.progress.attr('value')).toBe '0'
+    it 'sets the progress bar', ->
+      expect(module.getView().progress.prop('value')).toBe 1
 
-    describe 'and the second command fails', ->
-      it 'shows a 50% progress bar', ->
-        view.setQueueLength(1)
-        expect(view.progress.attr('value')).toBe '1'
+  describe 'On exitCommand with error code', ->
 
-    describe 'and both commands succeed', ->
-      it 'shows a full progress bar', ->
-        view.setQueueLength(0)
-        expect(view.progress.attr('value')).toBe '2'
+    beforeEach ->
+      module.exitCommand 1
+
+    it 'sets the header line', ->
+      expect(module.getView().name.text()).toBe 'Test command of fixtures: finished with exitcode 1'
+
+    it 'sets the progress bar', ->
+      expect(module.getView().progress.prop('value')).toBe 0

@@ -66,7 +66,7 @@ describe 'Command Worker', ->
       worker.manager.stdout.in 'Hello World\n'
 
     it 'calls stdout.in of all outputs', ->
-      expect(output.stdout.in).toHaveBeenCalledWith 'Hello World'
+      expect(output.stdout.in).toHaveBeenCalledWith input: 'Hello World', files: undefined
 
   describe 'on error', ->
 
