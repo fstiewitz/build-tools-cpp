@@ -59,14 +59,14 @@ module.exports =
           $(last).prop('class', "bold text-#{status}")
 
         print: ({input, files}) ->
-          _new = buildHTML(input.input, input.type, files)
+          _new = buildHTML(input.input, (if input.highlighting? then input.highlighting else input.type), files)
           element = $(@lines[@lines.length - 1])
           element.prop('class', _new.prop('class'))
           element.html(_new.html())
 
         replacePrevious: (lines) ->
           for {input, files}, index in lines
-            _new = buildHTML(input.input, input.type, files)
+            _new = buildHTML(input.input, (if input.highlighting? then input.highlighting else input.type), files)
             element = $(@lines[@lines.length - lines.length + index])
             element.prop('class', _new.prop('class'))
             element.html(_new.html())
@@ -85,14 +85,14 @@ module.exports =
           $(last).prop('class', "bold text-#{status}")
 
         print: ({input, files}) ->
-          _new = buildHTML(input.input, input.type, files)
+          _new = buildHTML(input.input, (if input.highlighting? then input.highlighting else input.type), files)
           element = $(@lines[@lines.length - 1])
           element.prop('class', _new.prop('class'))
           element.html(_new.html())
 
         replacePrevious: (lines) ->
           for {input, files}, index in lines
-            _new = buildHTML(input.input, input.type, files)
+            _new = buildHTML(input.input, (if input.highlighting? then input.highlighting else input.type), files)
             element = $(@lines[@lines.length - lines.length + index])
             element.prop('class', _new.prop('class'))
             element.html(_new.html())
