@@ -24,7 +24,8 @@ _command = [
     stderr:
       highlighting: 'ha'
     output:
-      test: {}
+      test:
+        close_success: true
     #Backwards compatibility with older command versions (don't change it)
     version: 3
   }
@@ -50,7 +51,8 @@ _command = [
     stderr:
       highlighting: 'ha'
     output:
-      test: {}
+      test:
+        close_success: true
     #Backwards compatibility with older command versions (don't change it)
     version: 3
   }
@@ -76,7 +78,8 @@ _command = [
     stderr:
       highlighting: 'ha'
     output:
-      test: {}
+      test:
+        close_success: true
     #Backwards compatibility with older command versions (don't change it)
     version: 3
   }
@@ -110,7 +113,7 @@ describe 'Queue Worker', ->
         linter: jasmine.createSpy('linter')
       error: jasmine.createSpy('error')
 
-    worker = new QueueWorker(command, test: output)
+    worker = new QueueWorker({queue: command}, {test: output})
     spyOn(worker, 'finishedCommand').andCallThrough()
     spyOn(worker, 'errorCommand').andCallThrough()
 
@@ -118,7 +121,7 @@ describe 'Queue Worker', ->
     worker.destroy()
 
   it 'calls newQueue of all outputs', ->
-    expect(output.newQueue).toHaveBeenCalledWith command
+    expect(output.newQueue).toHaveBeenCalledWith queue: command
 
   describe 'on run', ->
 

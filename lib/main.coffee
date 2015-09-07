@@ -2,6 +2,7 @@ Command = require './command'
 ll = require './linter-list'
 Profiles = require './profiles/profiles'
 OutputModules = require './output/output'
+QueueWorker = require './pipeline/queue-worker'
 
 {CompositeDisposable, BufferedProcess} = require 'atom'
 
@@ -11,9 +12,6 @@ settingsview = null
 
 LocalSettingsView = null
 localsettingsview = null
-
-ConsoleView = null
-consoleview = null
 
 SelectionView = null
 selectionview = null
@@ -26,10 +24,6 @@ Projects = null
 createAskView = ->
   AskView ?= require './ask-view'
   askview ?= new AskView
-
-createConsoleView = ->
-  ConsoleView ?= require './console'
-  consoleview ?= new ConsoleView()
 
 createSelectionView = ->
   SelectionView ?= require './selection-view.coffee'
@@ -53,8 +47,6 @@ module.exports =
   Projects: null
   projects: null
 
-  command_list: null
-
   createProjectInstance: ->
     Projects ?= require './projects'
     @projects ?= new Projects()
@@ -72,12 +64,11 @@ module.exports =
       'build-tools:third-command-ask': => @execute(2, true)
       'build-tools:second-command-ask': => @execute(1, true)
       'build-tools:first-command-ask': => @execute(0, true)
-      'build-tools:show': @show
       'build-tools:settings': ->
         atom.workspace.open(settingsviewuri)
       'build-tools:commands': => @selection()
-      'core:cancel': => @cancel()
-      'core:close': => @cancel()
+      'core:cancel': => @currentWorker?.stop()
+      'core:close': => @currentWorker?.stop()
     @subscriptions.add atom.project.onDidChangePaths ->
       settingsview?.reload()
     @subscriptions.add atom.workspace.addOpener (uritoopen) =>
@@ -87,12 +78,7 @@ module.exports =
         createLocalSettingsView({uri: uritoopen, @projects, project})
 
   deactivate: ->
-    @process?.kill()
-    @process = null
     @subscriptions.dispose()
-    consoleview?.destroy()
-    consoleview = null
-    ConsoleView = null
     askview?.destroy()
     askview = null
     AskView = null
@@ -109,20 +95,11 @@ module.exports =
     @Projects = null
     @projects = null
 
-  show: ->
-    createConsoleView()
-    consoleview?.showBox()
-
-  kill: ->
-    @process?.kill()
-    @process = null
-
-  cancel: ->
-    @kill()
-    consoleview?.cancel()
+  saveall: ->
+    for editor in atom.workspace.getTextEditors()
+      editor.save() if editor.isModified() and editor.getPath()?
 
   selection: ->
-    createConsoleView()
     if (path = atom.workspace.getActiveTextEditor()?.getPath())?
       if (projectpath = @projects.getNextProjectPath path) isnt ''
         project = null
@@ -132,70 +109,16 @@ module.exports =
         createSelectionView()
         selectionview.show project, (name) =>
           if (command = project.getCommand name)?
-            @command_list = @projects.generateDependencyList command
-            consoleview?.setQueueCount(@command_list.length)
-            ll.messages = []
-            @spawn @command_list.splice(0, 1)[0]
+            command_list = @projects.generateDependencyList command
+            @saveall() if command_list[0].save_all
+            @executeQueue command_list
 
-  saveall: ->
-    for editor in atom.workspace.getTextEditors()
-      editor.save() if editor.isModified() and editor.getPath()?
-
-  lint: ->
-    atom.commands.dispatch(atom.views.getView(atom.workspace), 'linter:lint')
-
-  spawn: (res, clear = true) ->
-    {command, cmd, args, env} = res.parseCommand()
-    consoleview?.createOutput command
-    consoleview?.showBox()
-    consoleview?.setHeader("#{res.name} of #{res.project}")
-    consoleview?.clear() if clear
-    ll.messages = [] if clear
-    consoleview?.unlock()
-    @kill()
-    @process = new BufferedProcess(
-      command: cmd
-      args: args
-      options:
-        cwd: command.wd,
-        env: env
-      stdout: (data) ->
-        consoleview?.stdout?.in data
-      stderr: (data) ->
-        consoleview?.stderr?.in data
-      exit: (exitcode) =>
-        if (@command_list.length is 0) or exitcode isnt 0
-          consoleview?.finishConsole(exitcode)
-        if exitcode is 0
-          consoleview?.setQueueLength(@command_list.length)
-          if @command_list.length isnt 0
-            @spawn @command_list.splice(0, 1)[0], false
-          else
-            consoleview?.setHeader(
-              "#{res.name} of #{res.project}: finished with exitcode #{exitcode}"
-            )
-            @command_list = []
-        else
-          if consoleview.queue is 1
-            consoleview?.setQueueCount(0)
-          consoleview?.setHeader(
-            "#{res.name} of #{res.project}:" +
-            "<span class='error'>finished with exitcode #{exitcode}</span>"
-          )
-          @command_list = []
-        @lint() if (@command_list.length is 0) or exitcode isnt 0
-        @process = null
-      )
-    @process.onWillThrowError ({error, handle}) =>
-      consoleview?.hideOutput()
-      consoleview?.setHeader("#{res.name} of #{res.project}: received #{error}")
-      consoleview?.lock()
-      @command_list = []
-      @process = null
-      handle()
+  executeQueue: (queue) ->
+    @currentWorker.stop() if @currentWorker? and not @currentWorker.hasFinished()
+    @currentWorker = new QueueWorker(queue: queue)
+    @currentWorker.run()
 
   execute: (id, ask = false) ->
-    createConsoleView()
     if (path = atom.workspace.getActiveTextEditor()?.getPath())?
       if (projectpath = @projects.getNextProjectPath path) isnt ''
         project = null
@@ -218,16 +141,12 @@ module.exports =
               askview.show command.command, (c) =>
                 _command = new Command(command, c)
                 @saveall() if command.save_all
-                @command_list = @projects.generateDependencyList _command
-                consoleview?.setQueueCount(@command_list.length)
-                ll.messages = []
-                @spawn @command_list.splice(0, 1)[0]
+                command_list = @projects.generateDependencyList _command
+                @executeQueue command_list
             else
-              @command_list = @projects.generateDependencyList command
-              consoleview?.setQueueCount(@command_list.length)
-              ll.messages = []
-              @saveall() if @command_list[0].save_all
-              @spawn @command_list.splice(0, 1)[0]
+              command_list = @projects.generateDependencyList command
+              @saveall() if command_list[0].save_all
+              @executeQueue command_list
 
   provideLinter: ->
     grammarScopes: ['*']

@@ -20,4 +20,4 @@ describe 'Local projects', ->
       expect(project.commands[0].name).toBe 'Test'
       expect(project.commands[0].command).toBe 'echo Hello World'
       expect(project.commands[0].stderr.highlighting).toBe 'nh'
-      expect(project.commands[0].version).toBe 2
+      expect(project.commands[0].version).toBe 3

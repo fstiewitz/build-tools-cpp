@@ -129,7 +129,7 @@ describe 'Projects', ->
       expect(project['commands'][1].name).toBe 'Test command 2'
 
     it 'upgrades the version property if input is pre-3.3', ->
-      expect(project['commands'][1].version).toBe 2
+      expect(project['commands'][1].version).toBe 3
       expect(project['commands'][1].stderr.highlighting).toBe 'hc'
       expect(project['commands'][1].stderr.profile).toBe 'gcc_clang'
 
@@ -345,13 +345,6 @@ describe 'Projects', ->
       expect(command_list[1].name).toBe 'Test command'
       expect(command_list[2].project).toBe root1
       expect(command_list[2].name).toBe 'Test command'
-
-    it 'converts all information before giving them to BufferedProcess', ->
-      expect(command.name).toBe 'Test command'
-      out = command.parseCommand()
-      expect(out.cmd).toBe 'pwd'
-      expect(out.args).toEqual ['Hello World', 'test']
-      expect(out.command.wd).toBe (path.join(root1, command.wd))
 
   describe 'When removing a command', ->
     [project, command, dependencies, command_target] = []

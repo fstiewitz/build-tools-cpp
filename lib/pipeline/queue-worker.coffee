@@ -9,7 +9,7 @@ module.exports =
       if not @outputs?
         @outputs = {}
 
-        for command in @queue
+        for command in @queue.queue
           for key in Object.keys(command.output)
             @outputs[key] = new Outputs.modules[key].output if Outputs.modules[key]? and not @outputs[key]
 
@@ -27,14 +27,15 @@ module.exports =
 
     run: ->
       return if @finished
-      command = @queue.splice(0, 1)[0]
+      command = @queue.queue.splice(0, 1)[0]
       return @finishedQueue 0 unless command?
       outputs = []
       for key in Object.keys(command.output)
-        outputs.push @outputs[key]
+        outputs.push @outputs[key] if @outputs[key]?
       @currentWorker = new CommandWorker(command, outputs, @finishedCommand, @errorCommand)
 
     stop: ->
+      return if @finished
       @currentWorker.destroy()
       @finishedQueue -2
 

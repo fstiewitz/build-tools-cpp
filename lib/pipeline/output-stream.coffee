@@ -28,11 +28,13 @@ module.exports =
 
     subscribeToCommands: (subscriber, command) ->
       return unless subscriber?
-      @subscribers.on command, subscriber[command] if subscriber[command]?
+      return unless subscriber[command]?
+      @subscribers.on command, (o) -> subscriber[command](o)
 
     subscribeToInput: (subscriber) ->
       return unless subscriber?
-      @subscribers.on 'input', subscriber.in if subscriber.in?
+      return unless subscriber.in?
+      @subscribers.on 'input', (o) -> subscriber.in(o)
 
     in: (message) ->
       lines = message.split('\n')
@@ -48,6 +50,7 @@ module.exports =
         @subscribers.emit 'setType', v if (v = @parseTags line)?
       else if @stream.highlighting is 'hc' and @profile?
         @profile.in line
+
 
     parseTags: (line) ->
       /(error|warning):/g.exec(line)?[1]

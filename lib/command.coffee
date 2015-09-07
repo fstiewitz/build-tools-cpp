@@ -15,20 +15,28 @@ module.exports =
     targetOf: []
     version: null
 
-    constructor: ({@project, @name, @command, @wd, @shell, @wildcards, @save_all, @close_success, @stdout, @stderr, @targetOf, @version}, _command, _wd) ->
+    constructor: ({@project, @name, @command, @wd, @shell, @wildcards, @save_all, close_success, @stdout, @stderr, @output, @targetOf, @version}, _command, _wd) ->
       @command = _command if _command?
       @wd = _wd if _wd?
       @targetOf = [] if not @targetOf?
+      @output = {} if not @output?
       if not @version?
         @version = 1
         if @stdout.highlighting is 'hc'
           @stdout.profile = 'gcc_clang'
         if @stderr.highlighting is 'hc'
           @stderr.profile = 'gcc_clang'
-      if @version isnt 2
+      if @version < 2
         @version = 2
         @save_all = atom.config.get('build-tools.SaveAll')
         @close_success = if atom.config.get('build-tools.CloseOnSuccess') is -1 then false else true
+      if @version < 3
+        @version = 3
+        delete @close_success
+        @output =
+          console:
+            close_success: true
+          linter: {}
       return
 
     getProject: ->
@@ -127,43 +135,3 @@ module.exports =
         cmd = args[0]
         args = args.slice(1)
         {cmd, args, wd: cwd, env: process.env}
-
-    parseCommand: ->
-      {command, wd} = @replaceWildcards()
-      cwd = path.resolve(@project, wd)
-      if @shell
-        sh = atom.config.get('build-tools.ShellCommand')
-        sha = sh.split(' ')
-        args = sha.slice(1)
-        args.push(command)
-        {command: new Command(this, null, cwd), cmd: sha[0], args, env: process.env}
-      else
-        split = (cmd_string) ->
-          args = []
-          cmd_list = cmd_string.split(' ')
-          instring = false
-          getQuoteIndex = (line) ->
-            return {index: c, character: '"'} if (c = line.indexOf('"')) isnt -1
-            return {index: c, character: "'"} if (c = line.indexOf("'")) isnt -1
-          while (cmd_list.length isnt 0)
-            if not instring
-              args.push cmd_list[0]
-            else
-              args[args.length - 1] += ' ' + cmd_list[0]
-            qi = getQuoteIndex(cmd_list[0])
-            if (qi = getQuoteIndex(cmd_list[0]))?
-              if instring
-                instring = false
-              else
-                if cmd_list[0].substr(qi.index + 1).indexOf(qi.character) is -1
-                  instring = true
-            cmd_list.shift()
-          args
-        args = split command
-        reg = /[\"\']/
-        for a, i in args
-          if reg.test(a[0]) and reg.test(a[a.length - 1])
-            args[i] = a.slice(1, -1)
-        cmd = args[0]
-        args = args.slice(1)
-        {command: new Command(this, null, cwd), cmd, args, env: process.env}

@@ -22,8 +22,8 @@ describe 'Output Module - Console', ->
   describe 'On stdout input', ->
 
     beforeEach ->
-      module.stdout.in input: {input: 'Foo Bar', type: ''}, files: []
-      module.stdout.in input: {input: 'Hello World', type: 'error'}, files: []
+      module.stdout.in input: 'Foo Bar', files: []
+      module.stdout.in input: 'Hello World', files: []
 
     it 'adds the line to the internal line stack', ->
       expect(module.stdout.lines.length).toBe 2
@@ -72,8 +72,8 @@ describe 'Output Module - Console', ->
   describe 'On stderr input', ->
 
     beforeEach ->
-      module.stderr.in input: {input: 'Foo Bar', type: ''}, files: []
-      module.stderr.in input: {input: 'Hello World', type: 'error'}, files: []
+      module.stderr.in input: 'Foo Bar', files: []
+      module.stderr.in input: 'Hello World', files: []
 
     it 'adds the line to the internal line stack', ->
       expect(module.stderr.lines.length).toBe 2

@@ -102,7 +102,7 @@ module.exports =
     finishConsole: (exitcode) ->
       @find('.icon-link-external').removeClass 'hidden'
       @find('.filelink').on 'click', @openFile
-      if @cmd.close_success and exitcode is 0
+      if @cmd.output['console'].close_success and exitcode is 0
         t = atom.config.get('build-tools.CloseOnSuccess')
         if t < 1
           @hideBox()
@@ -111,6 +111,8 @@ module.exports =
             @hideBox()
             @timeout = null
           , t * 1000)
+
+    setCommand: (@cmd) ->
 
     printLine: (message) =>
       @showOutput() if not @lockoutput and @visible_items.output is false

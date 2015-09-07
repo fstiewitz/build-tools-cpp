@@ -38,6 +38,7 @@ module.exports =
         consoleview.clear()
 
       newCommand: (@command) ->
+        consoleview.setCommand @command
         consoleview.showBox()
         consoleview.setHeader("#{@command.name} of #{@command.project}")
         consoleview.unlock()
@@ -49,7 +50,7 @@ module.exports =
         lines: []
 
         in: ({input, files}) ->
-          @lines.push consoleview.printLine(buildHTML(input.input, input.type, files))
+          @lines.push consoleview.printLine(buildHTML(input, '', files))
 
         setType: (status) ->
           last = @lines[@lines.length - 1]
@@ -75,7 +76,7 @@ module.exports =
         lines: []
 
         in: ({input, files}) ->
-          @lines.push consoleview.printLine(buildHTML(input.input, input.type, files))
+          @lines.push consoleview.printLine(buildHTML(input, '', files))
 
         setType: (status) ->
           last = @lines[@lines.length - 1]
@@ -99,7 +100,6 @@ module.exports =
       error: (message) ->
         consoleview.hideOutput()
         consoleview.setHeader("#{@command.name} of #{@command.project}: received #{message}")
-        consoleview.lock()
 
       exitCommand: (code) ->
         if code is 0
@@ -114,4 +114,13 @@ module.exports =
           )
 
       exitQueue: (code) ->
+        consoleview.lock()
+        if code is -2
+          consoleview.setHeader(
+            "#{@command.name} of #{@command.project}: " +
+            "<span class='error'>aborted by user or package</span>"
+          )
+          consoleview.setQueueLength @queue.queue.length
+        if consoleview.progress.prop('max') is 1 and code isnt 0
+          consoleview.setQueueLength 1
         consoleview.finishConsole code
