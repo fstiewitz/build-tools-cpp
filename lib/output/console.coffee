@@ -25,6 +25,32 @@ module.exports =
     consoleview = null
     ConsoleView = null
 
+  name: 'Console'
+  description: 'Display command output in console pane'
+  private: false
+
+  edit:
+    class ConsolePane extends View
+
+      @content: ->
+        @div class: 'panel-body padded', =>
+          @div class: 'block checkbox', =>
+            @input id: 'close_success', type: 'checkbox'
+            @label =>
+              @div class: 'settings-name', 'Close on success'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Close console on success. Uses config value in package settings if enabled'
+
+      set: (command) ->
+        if command?
+          @find('#close_success').prop('checked', command.output.console.close_success)
+        else
+          @find('#close_success').prop('checked', if atom.config.get('build-tools.CloseOnSuccess') is -1 then false else true)
+
+      get: (command) ->
+        command.output.console.close_success = @find('#close_success').prop('checked')
+        return true
+
   output:
     class Console
 
