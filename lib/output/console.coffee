@@ -49,7 +49,7 @@ module.exports =
 
       get: (command) ->
         command.output.console.close_success = @find('#close_success').prop('checked')
-        return true
+        return null
 
   output:
     class Console

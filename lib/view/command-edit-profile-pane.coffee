@@ -1,4 +1,4 @@
-{$, View} = require 'atom-space-pen-views'
+{$, $$, View} = require 'atom-space-pen-views'
 Profiles = require '../profiles/profiles'
 
 module.exports =
@@ -62,7 +62,7 @@ module.exports =
         @stderr_profile_div.addClass('hidden')
         @stdout_profile_div.addClass('hidden')
 
-      @on 'click', '.btn-group .btn', ({currentTarget}) ->
+      @on 'click', '.btn-group .btn', ({currentTarget}) =>
         $(currentTarget.parentNode).find('.selected').removeClass('selected')
         currentTarget.classList.add 'selected'
         if currentTarget.id is 'hc'
@@ -71,11 +71,13 @@ module.exports =
           @["#{currentTarget.parentNode.id}_profile_div"].addClass('hidden')
 
     get: (command) ->
+      command.stdout = {}
+      command.stderr = {}
       command.stdout.highlighting = @stdout_highlights.find('.selected')[0].id
       command.stdout.profile = if command.stdout.highlighting is 'hc' then $(@stdout_profile.children()[@stdout_profile[0].selectedIndex]).prop('value') else undefined
       command.stderr.highlighting = @stderr_highlights.find('.selected')[0].id
       command.stderr.profile = if command.stderr.highlighting is 'hc' then $(@stderr_profile.children()[@stderr_profile[0].selectedIndex]).prop('value') else undefined
-      return true
+      return null
 
     populateProfiles: (select) ->
       createitem = (key, profile) ->

@@ -1,4 +1,4 @@
-{View} = require 'atom-space-pen-views'
+{TextEditorView, View} = require 'atom-space-pen-views'
 
 module.exports =
   class MainPane extends View
@@ -80,17 +80,17 @@ module.exports =
       else
         @command_name.getModel().setText('')
         @command_text.getModel().setText('')
-        @working_directory.getModel().setText('')
+        @working_directory.getModel().setText('.')
         @find('#command_in_shell').prop('checked', false)
         @find('#wildcards').prop('checked', false)
 
     get: (command) ->
-      return false if (n = @command_name.getModel().getText()) is ''
-      return false if (c = @command_text.getModel().getText()) is ''
-      return false if (w = @working_directory.getModel().getText()) is ''
+      return 'Empty Name' if (n = @command_name.getModel().getText()) is ''
+      return 'Empty Command' if (c = @command_text.getModel().getText()) is ''
+      w.setText '.' if (w = @working_directory.getModel()).getText() is ''
       command.name = n
       command.command = c
-      command.wd = w
+      command.wd = w.getText()
       command.shell = @find('#command_in_shell').prop('checked')
       command.wildcards = @find('#wildcards').prop('checked')
-      return true
+      return null

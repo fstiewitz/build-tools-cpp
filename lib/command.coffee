@@ -15,11 +15,14 @@ module.exports =
     targetOf: []
     version: null
 
-    constructor: ({@project, @name, @command, @wd, @shell, @wildcards, @save_all, close_success, @stdout, @stderr, @output, @targetOf, @version}, _command, _wd) ->
+    constructor: ({@project, @name, @command, @wd, @shell, @wildcards, @save_all, close_success, @stdout, @stderr, @output, @targetOf, @version} = {}, _command, _wd) ->
       @command = _command if _command?
       @wd = _wd if _wd?
       @targetOf = [] if not @targetOf?
       @output = {} if not @output?
+      @stdout = {} if not @stdout?
+      @stderr = {} if not @stderr?
+      @version = 3 if not @project?
       if not @version?
         @version = 1
         if @stdout.highlighting is 'hc'

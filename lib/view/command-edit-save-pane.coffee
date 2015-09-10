@@ -20,4 +20,4 @@ module.exports =
 
     get: (command) ->
       command.save_all = @find('#save').prop('checked')
-      return true
+      return null

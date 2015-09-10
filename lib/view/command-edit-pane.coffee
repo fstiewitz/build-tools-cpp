@@ -1,5 +1,7 @@
 {$$, View} = require 'atom-space-pen-views'
 
+{CompositeDisposable} = require 'atom'
+
 Outputs = require '../output/output'
 
 Command = require '../command'
@@ -46,18 +48,21 @@ module.exports =
       @panes = null
 
     initializeOutputModules: ->
+      command = @command
       for key in Object.keys(Outputs.modules)
         continue if Outputs.modules[key].private
         pane = $$ ->
           @div class: 'inset-panel', =>
             @div class: 'pane-heading output-module', =>
-              @input id: key, type: 'checkbox', checked: @command.output[key]?
-              @div class: 'inline-block icon icon-terminal', Output.modules[key].name
+              @input id: key, type: 'checkbox'
+              @div class: 'inline-block icon icon-terminal', Outputs.modules[key].name
         edit = null
+        pane.find('input').prop('checked', @command.output[key]?)
         if Outputs.modules[key].edit?
           pane.append (edit = new Outputs.modules[key].edit)
           pane.find('.panel-body').addClass('hidden') unless @command.output[key]?
         @panes.push type: 'output', pane: pane, view: edit
+        @output_modules.append pane
 
     addEventHandler: ->
       @on 'click', '.checkbox label', (e) ->
@@ -76,23 +81,27 @@ module.exports =
       @on 'click', '.buttons .icon-x', @cancel
       @on 'click', '.buttons .icon-check', @accept
 
+      @disposables = new CompositeDisposable
+
       @disposables.add atom.commands.add @element,
         'core:confirm': @accept
         'core:cancel': @cancel
 
     initializePanes: ->
       for item in @panes
-        item.view.set @command
+        item.view?.set @command
 
     accept: (event) =>
       c = new Command
+      c.project = @command.project
       for item in @panes
         if item.type is 'main'
-          return @cancel(event) unless item.view.get c
+          return @cancel(event) if item.view.get(c)?
         else if item.type is 'output'
           continue unless item.pane.find('input').prop('checked')
-          c.output[item.pane.find('input').id] = {}
-          return @cancel(event) unless item.view.get c
+          c.output[item.pane.find('input')[0].id] = {}
+          continue unless item.view?
+          return @cancel(event) if item.view.get(c)?
       @success_callback c
       @cancel event
 
