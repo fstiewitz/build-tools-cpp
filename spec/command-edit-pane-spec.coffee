@@ -1,4 +1,5 @@
 CommandEditPane = require '../lib/view/command-edit-pane'
+Command = require '../lib/command'
 
 describe 'Command Edit Pane', ->
   view = null
@@ -11,6 +12,7 @@ describe 'Command Edit Pane', ->
     cancel = jasmine.createSpy('cancel')
     command =
       project: atom.project.getPaths()[0]
+      oldname: 'Test 1'
       name: 'Test 1'
       command: 'echo test'
       wd: '.'
@@ -25,7 +27,8 @@ describe 'Command Edit Pane', ->
       output:
         console:
           close_success: true
-    view = new CommandEditPane(command, accept, cancel)
+    view = new CommandEditPane(command)
+    view.setCallbacks accept, cancel
     jasmine.attachToDOM(view.element)
 
   afterEach ->
@@ -57,6 +60,7 @@ describe 'Command Edit Pane', ->
     it 'returns the correct values', ->
       res = accept.mostRecentCall.args[0]
       expect(accept).toHaveBeenCalled()
+      expect(res.oldname).toBe 'Test 1'
       expect(res.project).toBe atom.project.getPaths()[0]
       expect(res.command).toBe 'echo test'
       expect(res.save_all).toBe false
@@ -68,3 +72,28 @@ describe 'Command Edit Pane', ->
 
     it 'calls the cancel callback', ->
       expect(cancel).toHaveBeenCalled()
+
+  describe 'Pane can be created with atom.views.getView', ->
+    [c, p] = []
+
+    execute = (callback) ->
+      waitsForPromise -> atom.packages.activatePackage('build-tools')
+      runs -> callback()
+
+    afterEach ->
+      p.destroy()
+
+    it 'On getView with default command', ->
+      execute ->
+        c = new Command
+        p = atom.views.getView(c)
+        expect(p.panes[0].view.command_name.getModel().getText()).toBe ''
+        expect(p.command.oldname).toBeUndefined()
+
+    it 'on getView with a valid command', ->
+      execute ->
+        command.oldname = undefined
+        c = new Command(command)
+        p = atom.views.getView(c)
+        expect(p.panes[0].view.command_name.getModel().getText()).toBe 'Test 1'
+        expect(p.command.oldname).toBe 'Test 1'

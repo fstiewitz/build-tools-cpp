@@ -10,6 +10,8 @@ settingsviewuri = 'atom://build-tools-settings'
 SettingsView = null
 settingsview = null
 
+CommandEditPane = null
+
 LocalSettingsView = null
 localsettingsview = null
 
@@ -76,6 +78,10 @@ module.exports =
         createSettingsView({uri: uritoopen, @projects})
       else if uritoopen.endsWith('.build-tools.cson') and (project = Projects.loadLocalFile uritoopen)?
         createLocalSettingsView({uri: uritoopen, @projects, project})
+    @subscriptions.add atom.views.addViewProvider Command, (command) ->
+      command.oldname = command.name
+      CommandEditPane ?= require './view/command-edit-pane'
+      new CommandEditPane(command)
 
   deactivate: ->
     @subscriptions.dispose()
@@ -91,6 +97,7 @@ module.exports =
     localsettingsview?.destroy()
     localsettingsview = null
     LocalSettingsView = null
+    CommandEditPane = null
     @projects?.destroy()
     @Projects = null
     @projects = null

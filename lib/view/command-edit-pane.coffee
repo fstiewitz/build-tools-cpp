@@ -26,7 +26,7 @@ module.exports =
           @div class: 'btn btn-error icon icon-x inline-block-tight', 'Cancel'
           @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
 
-    initialize: (@command, @success_callback, @cancel_callback) ->
+    initialize: (@command) ->
       @panes = []
 
       @panes.push type: 'main', pane: @general, view: new MainPane
@@ -40,6 +40,8 @@ module.exports =
       @initializeOutputModules()
       @addEventHandler()
       @initializePanes()
+
+    setCallbacks: (@success_callback, @cancel_callback) ->
 
     destroy: ->
       @disposables.dispose()
@@ -57,10 +59,10 @@ module.exports =
               @input id: key, type: 'checkbox'
               @div class: 'inline-block icon icon-terminal', Outputs.modules[key].name
         edit = null
-        pane.find('input').prop('checked', @command.output[key]?)
+        pane.find('input').prop('checked', @command?.output[key]?)
         if Outputs.modules[key].edit?
           pane.append (edit = new Outputs.modules[key].edit)
-          pane.find('.panel-body').addClass('hidden') unless @command.output[key]?
+          pane.find('.panel-body').addClass('hidden') unless @command?.output[key]?
         @panes.push type: 'output', pane: pane, view: edit
         @output_modules.append pane
 
@@ -88,12 +90,17 @@ module.exports =
         'core:cancel': @cancel
 
     initializePanes: ->
+      if @command?.name?
+        c = @command
+      else
+        c = null
       for item in @panes
-        item.view?.set @command
+        item.view?.set c
 
     accept: (event) =>
       c = new Command
       c.project = @command.project
+      c.oldname = @command.oldname
       for item in @panes
         if item.type is 'main'
           return @cancel(event) if item.view.get(c)?
@@ -102,9 +109,9 @@ module.exports =
           c.output[item.pane.find('input')[0].id] = {}
           continue unless item.view?
           return @cancel(event) if item.view.get(c)?
-      @success_callback c
+      @success_callback?(c)
       @cancel event
 
     cancel: (event) =>
-      @cancel_callback()
+      @cancel_callback?()
       event.stopPropagation()
