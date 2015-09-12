@@ -38,7 +38,7 @@ module.exports =
       @profiles.append @panes[2]
 
       @initializeOutputModules()
-      @addEventHandler()
+      @addEventHandlers()
       @initializePanes()
 
     setCallbacks: (@success_callback, @cancel_callback) ->
@@ -66,7 +66,7 @@ module.exports =
         @panes.push type: 'output', pane: pane, view: edit
         @output_modules.append pane
 
-    addEventHandler: ->
+    addEventHandlers: ->
       @on 'click', '.checkbox label', (e) ->
         item = $(e.currentTarget.parentNode.children[0])
         item.prop('checked', not item.prop('checked'))
