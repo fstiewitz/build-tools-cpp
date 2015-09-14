@@ -57,7 +57,7 @@ module.exports =
         Object.keys(data).forEach (key) =>
           @data[key] = new Project(key, data[key], @setData, @checkDependencies)
       catch error
-        notify 'Error while reading settings from file'
+        notify 'Error while reading settings from file: ' + error.getMessage()
 
     setData: (emit = true) =>
       if @filename?
