@@ -4,8 +4,7 @@ Emitter = null
 Command = null
 CommandInfoPane = null
 CSON = null
-
-{CompositeDisposable} = require 'atom'
+CompositeDisposable = null
 
 notify: (message) ->
   atom.notifications?.addError message
@@ -18,7 +17,7 @@ module.exports =
   activate: ->
     fs = require 'fs'
     path = require 'path'
-    {Emitter} = require 'atom'
+    {Emitter, CompositeDisposable} = require 'atom'
     Command = require '../command'
     CommandInfoPane = require '../view/command-info-pane'
     CSON = require 'season'
@@ -39,40 +38,39 @@ module.exports =
     CommandInfoPane = null
     CSON = null
 
-  available: (projectPath) ->
-    true
+  availableSync: (projectPath) ->
+    return p if fs.existsSync (p = path.join(projectPath, '.build-tools.cson'))
 
   model:
     class GlobalBuildToolsProject
 
-      constructor: (@path) ->
-        @emitter = new Emitter
+      constructor: (@path, @exec) ->
+        @emitter = new Emitter if @exec
         @commands = []
-        return if @path is ''
-        filepath = path.join(@path, '.build-tools.cson')
-        if fs.existsSync filepath
+        @filePath = path.join(@path, '.build-tools.cson')
+        if fs.existsSync @filePath
           try
-            {commands} = CSON.readFileSync filepath
+            {commands} = CSON.readFileSync @filePath
           catch error
             notify "Could not read commands from #{filepath}"
             commands = []
         else
-          CSON.writeFileSync filepath, commands: []
+          CSON.writeFileSync @filePath, commands: [] unless @exec
           commands = []
         for command in commands
           command.project = @path if not command.project?
           @commands.push(new Command(command))
 
       destroy: ->
+        return if @exec
         @emitter.dispose()
         @emitter = null
 
       save: ->
-        return if @path is ''
         try
-          CSON.writeFileSync @path, this
+          CSON.writeFileSync @filePath, this
         catch error
-          notify "Could not write commands to #{@path}"
+          notify "Could not write commands to #{@filePath}"
 
       addCommand: (item) ->
         if @getCommandIndex(item.name) is -1

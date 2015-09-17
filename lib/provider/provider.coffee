@@ -19,19 +19,10 @@ module.exports =
     for k in Object.keys(@modules)
       @removeModule k unless k is 'bt'
 
-  getAvailableModules: (filePath) ->
-    available = {}
-    p = filePath.split(path.sep)
-    i = p.length
-    while i isnt 0
-      project = p.slice(0, i).join(path.sep)
-      for k in Object.keys(@modules)
-        if @modules[k].available(project)
-          available[project] ?= []
-          available[project].push k
-      break if project in atom.project.getPaths()
-      i = i - 1
-    return available
-
-  loadCommands: (filePath) ->
-    
+  activate: (key) ->
+    mod = modules[key]
+    return unless mod?
+    return unless mod.active?
+    return unless mod.activate?
+    mod.activate()
+    mod.active = true
