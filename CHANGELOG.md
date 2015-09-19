@@ -1,3 +1,5 @@
+## 3.7.1 - Fix outdated jquery calls
+
 ## 3.7.0 - Service API: Profiles
 * This update introduces a service interface for other packages to add their own [highlighting profiles](https://github.com/deprint/build-tools-cpp/wiki/Service-API:-Profiles)
 
