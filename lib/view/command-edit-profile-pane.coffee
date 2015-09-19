@@ -74,9 +74,9 @@ module.exports =
       command.stdout = {}
       command.stderr = {}
       command.stdout.highlighting = @stdout_highlights.find('.selected')[0].id
-      command.stdout.profile = if command.stdout.highlighting is 'hc' then $(@stdout_profile.children()[@stdout_profile[0].selectedIndex]).prop('value') else undefined
+      command.stdout.profile = if command.stdout.highlighting is 'hc' then @stdout_profile.children()[@stdout_profile[0].selectedIndex].attributes.getNamedItem('value').nodeValue else undefined
       command.stderr.highlighting = @stderr_highlights.find('.selected')[0].id
-      command.stderr.profile = if command.stderr.highlighting is 'hc' then $(@stderr_profile.children()[@stderr_profile[0].selectedIndex]).prop('value') else undefined
+      command.stderr.profile = if command.stderr.highlighting is 'hc' then @stderr_profile.children()[@stderr_profile[0].selectedIndex].attributes.getNamedItem('value').nodeValue else undefined
       return null
 
     populateProfiles: (select) ->
@@ -92,6 +92,6 @@ module.exports =
 
     selectProfile: (select, profile) ->
       for option, id in select.children()
-        if $(option).prop('value') is profile
+        if option.attributes.getNamedItem('value').nodeValue is profile
           select[0].selectedIndex = id
           break

@@ -31,7 +31,7 @@ describe 'Command Edit Profile Pane', ->
       expect(view.stderr_highlights.find('.selected')[0].id).toBe 'hc'
       expect(view.stdout_profile_div.hasClass('hidden')).toBe true
       expect(view.stderr_profile_div.hasClass('hidden')).toBe false
-      expect($(view.stderr_profile.children()[view.stderr_profile[0].selectedIndex]).prop('value')).toBe 'python'
+      expect(view.stderr_profile.children()[view.stderr_profile[0].selectedIndex].attributes.getNamedItem('value').nodeValue).toBe 'python'
 
   describe 'On set without a value', ->
 

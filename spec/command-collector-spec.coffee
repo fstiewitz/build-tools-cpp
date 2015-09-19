@@ -3,7 +3,7 @@ Providers = require '../lib/provider/provider'
 
 path = require 'path'
 
-fdescribe 'Command Collector', ->
+describe 'Command Collector', ->
   module = null
   collector = null
   disp = null

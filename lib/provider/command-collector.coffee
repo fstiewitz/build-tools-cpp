@@ -7,7 +7,7 @@ getPaths = (folderPath) ->
   i = p.length
   ret = []
   project = null
-  project ?= proj for proj in atom.project.getPaths() when folderPath.startsWith(p)
+  project ?= proj for proj in atom.project.getPaths() when folderPath.startsWith(proj)
   while i isnt 0
     _p = p.slice(0, i).join(path.sep)
     ret.push _p
@@ -18,13 +18,15 @@ getPaths = (folderPath) ->
 module.exports =
   class CommandCollector
 
-    constructor: (filePath, keys) ->
+    constructor: (filePath, keys = null) ->
+      keys ?= Object.keys(Provider.modules)
       folderPath = path.dirname(filePath)
       @modules = {}
       paths = getPaths(folderPath)
       for key in keys
-        Provider.activate key
         mod = Provider.modules[key]
+        continue unless mod?
+        Provider.activate key
         for p in paths
           if (f = mod.availableSync p)?
             @modules[key] ?= []
