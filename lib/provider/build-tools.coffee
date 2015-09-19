@@ -5,6 +5,7 @@ Command = null
 CommandInfoPane = null
 CSON = null
 CompositeDisposable = null
+View = require 'atom-space-pen-views'
 
 notify: (message) ->
   atom.notifications?.addError message
@@ -135,6 +136,7 @@ module.exports =
     class GlobalBuildToolsPane extends View
 
       @content: ->
+        @div class: 'panel-heading', outlet: 'name'
         @div class: 'panel-body padded', =>
           @div class: 'inset-panel', =>
             @div class: 'panel-heading icon icon-code', =>
@@ -143,7 +145,8 @@ module.exports =
             @div class: 'panel-body padded', =>
               @div class: 'command-list', outlet: 'command_list'
 
-      initialize: (@project) ->
+      initialize: (@project, _name) ->
+        @name.text _name
         @on 'click', '#add-command-button', (e) =>
           @commandPane = atom.views.getView(new Command)
           @commandPane.setCallbacks @accept, @hidePanes

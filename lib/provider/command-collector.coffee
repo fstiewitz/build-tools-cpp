@@ -7,7 +7,7 @@ getPaths = (folderPath) ->
   i = p.length
   ret = []
   project = null
-  project ?= p for p in atom.project.getPaths() when folderPath.startsWith(p)
+  project ?= proj for proj in atom.project.getPaths() when folderPath.startsWith(p)
   while i isnt 0
     _p = p.slice(0, i).join(path.sep)
     ret.push _p
@@ -18,22 +18,17 @@ getPaths = (folderPath) ->
 module.exports =
   class CommandCollector
 
-    constructor: (filePath, keys, useProvides = true) ->
+    constructor: (filePath, keys) ->
       folderPath = path.dirname(filePath)
       @modules = {}
       paths = getPaths(folderPath)
       for key in keys
         Provider.activate key
         mod = Provider.modules[key]
-        if mod.provides is 'from-root' and useProvides
-          ps = paths.reverse()
-        else
-          ps = paths
-        for p in ps
+        for p in paths
           if (f = mod.availableSync p)?
             @modules[key] ?= []
             @modules[key].push f
-            break if mod.provides isnt 'all' and useProvides
 
     getCommands: ->
       ret = []
@@ -42,6 +37,6 @@ module.exports =
         for p in @modules[key]
           model = new mod.model(p, true)
           ret = ret.concat(model.getCommands())
-          model.destroy()
+          model.destroy?()
           model = null
       return ret

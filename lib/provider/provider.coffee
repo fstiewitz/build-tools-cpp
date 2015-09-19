@@ -20,7 +20,7 @@ module.exports =
       @removeModule k unless k is 'bt'
 
   activate: (key) ->
-    mod = modules[key]
+    mod = @modules[key]
     return unless mod?
     return unless mod.active?
     return unless mod.activate?
