@@ -242,12 +242,12 @@ class CommandPane extends ScrollView
         stdout:
           file: @find('#mark_paths_stdout').prop('checked')
           highlighting: @stdout_highlighting
-          profile: if @stdout_highlighting is 'hc' then $(@stdout_profile.children()[@stdout_profile[0].selectedIndex]).prop('value') else undefined
+          profile: if @stdout_highlighting is 'hc' then $(@stdout_profile.children()[@stdout_profile[0].selectedIndex]).attr('value') else undefined
           lint: if @stdout_lint.hasClass('hidden') then false else @find('#lint_stdout').prop('checked')
         stderr:
           file: @find('#mark_paths_stderr').prop('checked')
           highlighting: @stderr_highlighting
-          profile: if @stderr_highlighting is 'hc' then $(@stderr_profile.children()[@stderr_profile[0].selectedIndex]).prop('value') else undefined
+          profile: if @stderr_highlighting is 'hc' then $(@stderr_profile.children()[@stderr_profile[0].selectedIndex]).attr('value') else undefined
           lint: if @stderr_lint.hasClass('hidden') then false else @find('#lint_stderr').prop('checked')
         )
       @cancel_callback()
@@ -337,6 +337,6 @@ class CommandPane extends ScrollView
 
   selectProfile: (select, profile) ->
     for option, id in select.children()
-      if $(option).prop('value') is profile
+      if $(option).attr('value') is profile
         select[0].selectedIndex = id
         break
