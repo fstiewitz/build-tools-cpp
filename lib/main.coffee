@@ -131,6 +131,7 @@ module.exports =
         createSelectionView()
         selectionview.show project, (name) =>
           if (command = project.getCommand name)?
+            @saveall() if command.save_all
             @command_list = @projects.generateDependencyList command
             consoleview?.setQueueCount(@command_list.length)
             ll.messages = []
