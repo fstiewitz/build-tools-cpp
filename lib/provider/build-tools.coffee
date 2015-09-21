@@ -23,24 +23,13 @@ module.exports =
     CommandInfoPane = require '../view/command-info-pane'
     CSON = require 'season'
 
-    @disposables = new CompositeDisposable
-    @disposables = atom.views.addViewProvider @model, (project) =>
-      new @view(project)
-    @disposables = atom.workspace.addOpener (uritoopen) =>
-      if uritoopen.endsWith '.build-tools.cson'
-        atom.views.getView(new @model(path.resolve(uritoopen, '..')))
-
   deactivate: ->
-    @disposables.dispose()
     fs = null
     path = null
     Emitter = null
     Command = null
     CommandInfoPane = null
     CSON = null
-
-  availableSync: (projectPath) ->
-    return p if fs.existsSync (p = path.join(projectPath, '.build-tools.cson'))
 
   model:
     class GlobalBuildToolsProject
