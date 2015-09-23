@@ -6,14 +6,19 @@ module.exports =
 
     constructor: (@projectPath, @filePath) ->
       @providers = []
-      try
-        {@providers} = CSON.readFileSync @filePath
-        for p, i in @providers
-          @providers[i].model = Providers.modules[p.key]?.model
-          @providers[i].interface = new @providers[i].model(@projectPath, p.config)
+      {providers} = CSON.readFileSync @filePath
+      for p in providers
+        continue unless Providers.activate(p.key) is true
+        @providers.push {
+          key: p.key
+          config: p.config
+          model: Providers.modules[p.key]?.model
+          interface: new Providers.modules[p.key]?.model(@projectPath, p.config)
+        }
+      null
 
     getCommandByIndex: (id) ->
       f = 0
       for provider in @providers
-        return c if (c = provider.interface.getCommandByIndex @projectPath, id - f)?
-        f = f + provider.interface.getCommandCount()
+        return c if (c = provider.interface?.getCommandByIndex id - f)?
+        f = f + provider.interface?.getCommandCount()

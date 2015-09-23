@@ -34,8 +34,9 @@ module.exports =
   model:
     class GlobalBuildToolsProject
 
-      constructor: (@path, @config, @_save) ->
-        @emitter = new Emitter unless @_save?
+      constructor: (_path, @config, @_save) ->
+        @path = _path
+        @emitter = new Emitter if @_save?
         @commands = []
         @path = path.resolve(path.dirname @config.file)
         for command in @config.commands

@@ -22,7 +22,7 @@ module.exports =
   activate: (key) ->
     mod = @modules[key]
     return unless mod?
-    return unless mod.active?
+    return if mod.active?
     return unless mod.activate?
     mod.activate()
     mod.active = true

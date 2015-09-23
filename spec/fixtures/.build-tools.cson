@@ -1,42 +1,42 @@
-commands: [
+providers: [
   {
-    project: "/home/fabian/.atom/packages/build-tools/spec/fixtures"
-    name: "Test"
-    command: "echo Hello World"
-    wd: "."
-    shell: false
-    wildcards: false
-    save_all: false
-    close_success: false
-    stdout:
-      file: false
-      highlighting: "nh"
-      lint: false
-    stderr:
-      file: false
-      highlighting: "nh"
-      lint: false
-    targetOf: []
-    version: 2
-  }
-  {
-    project: "/home/fabian/.atom/packages/build-tools/spec/fixtures"
-    name: "Test 2"
-    command: "echo 2"
-    wd: "."
-    shell: false
-    wildcards: false
-    save_all: false
-    close_success: false
-    stdout:
-      file: false
-      highlighting: "nh"
-      lint: false
-    stderr:
-      file: false
-      highlighting: "nh"
-      lint: false
-    targetOf: []
-    version: 2
+    key: 'bt'
+    config:
+      commands: [
+        {
+          project: '/home/fabian/.atom/packages/build-tools/spec/fixtures'
+          name: 'Test'
+          command: 'echo Hello World'
+          wd: '.'
+          shell: false
+          wildcards: false
+          save_all: false
+          stdout:
+            highlighting: 'nh'
+          stderr:
+            highlighting: 'nh'
+          output:
+            console:
+              close_success: false
+          version: 3
+        }
+        {
+          project: '/home/fabian/.atom/packages/build-tools/spec/fixtures'
+          name: 'Test 2'
+          command: 'echo 2'
+          wd: '.'
+          shell: false
+          wildcards: false
+          save_all: false
+          stdout:
+            highlighting: 'nh'
+          stderr:
+            highlighting: 'nh'
+          output:
+            console:
+              close_success: false
+          version: 3
+        }
+      ]
   }
 ]
