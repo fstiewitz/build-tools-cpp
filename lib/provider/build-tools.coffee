@@ -34,33 +34,27 @@ module.exports =
   model:
     class GlobalBuildToolsProject
 
-      constructor: (@path, @exec) ->
-        @emitter = new Emitter if @exec
+      constructor: (@path, @config, @_save) ->
+        @emitter = new Emitter unless @_save?
         @commands = []
-        @filePath = path.join(@path, '.build-tools.cson')
-        if fs.existsSync @filePath
-          try
-            {commands} = CSON.readFileSync @filePath
-          catch error
-            notify "Could not read commands from #{filepath}"
-            commands = []
-        else
-          CSON.writeFileSync @filePath, commands: [] unless @exec
-          commands = []
-        for command in commands
-          command.project = @path if not command.project?
+        @path = path.resolve(path.dirname @config.file)
+        for command in @config.commands
+          command.project = @path
           @commands.push(new Command(command))
 
       destroy: ->
-        return if @exec
+        return unless @_save?
         @emitter.dispose()
         @emitter = null
 
       save: ->
-        try
-          CSON.writeFileSync @filePath, this
-        catch error
-          notify "Could not write commands to #{@filePath}"
+        @_save()
+
+      getCommandByIndex: (id) ->
+        @commands[id]
+
+      getCommandCount: ->
+        @commands.length
 
       addCommand: (item) ->
         if @getCommandIndex(item.name) is -1
@@ -108,15 +102,6 @@ module.exports =
           if cmd.name is name
             return index
         return -1
-
-      getCommandByIndex: (id) ->
-        @commands[id]
-
-      getCommand: (name) ->
-        @commands[id] if (id = @getCommandIndex name) isnt -1
-
-      getCommands: ->
-        @commands
 
       onChange: (callback) ->
         @emitter.on 'change', callback
