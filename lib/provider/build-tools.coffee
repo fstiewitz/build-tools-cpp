@@ -19,7 +19,7 @@ module.exports =
     fs = require 'fs'
     path = require 'path'
     {Emitter, CompositeDisposable} = require 'atom'
-    Command = require '../command'
+    Command = require './command'
     CommandInfoPane = require '../view/command-info-pane'
     CSON = require 'season'
 

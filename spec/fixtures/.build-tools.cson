@@ -8,9 +8,13 @@ providers: [
           name: 'Test'
           command: 'echo Hello World'
           wd: '.'
-          shell: false
-          wildcards: false
-          save_all: false
+          env: {}
+          modifier:
+            queue:
+              save_all: {}
+            command:
+              shell: {}
+              wildcards: {}
           stdout:
             highlighting: 'nh'
           stderr:
@@ -18,16 +22,20 @@ providers: [
           output:
             console:
               close_success: false
-          version: 3
+          version: 1
         }
         {
           project: '/home/fabian/.atom/packages/build-tools/spec/fixtures'
           name: 'Test 2'
           command: 'echo 2'
           wd: '.'
-          shell: false
-          wildcards: false
-          save_all: false
+          env: {}
+          modifier:
+            queue:
+              save_all: {}
+            command:
+              shell: {}
+              wildcards: {}
           stdout:
             highlighting: 'nh'
           stderr:
@@ -35,7 +43,7 @@ providers: [
           output:
             console:
               close_success: false
-          version: 3
+          version: 1
         }
       ]
   }
