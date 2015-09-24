@@ -3,7 +3,9 @@ path = require 'path'
 
 module.exports =
   modules:
-    bt: require './build-tools'
+    shell: require './shell'
+    wildcards: require './wildcards'
+    save_all: require './save_all'
 
   addModule: (key, mod) ->
     return if @modules[key]?
@@ -17,7 +19,7 @@ module.exports =
 
   reset: ->
     for k in Object.keys(@modules)
-      @removeModule k unless k is 'bt'
+      @removeModule k unless k in ['shell', 'wildcards', 'save_all']
 
   activate: (key) ->
     mod = @modules[key]

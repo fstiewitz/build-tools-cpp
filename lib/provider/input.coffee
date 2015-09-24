@@ -18,10 +18,18 @@ getProjectConfig = (folder, file) ->
   new ProjectConfig(folder, file)
 
 module.exports =
+  currentWorker: null
+
   key: (id) ->
     return unless (path = atom.workspace.getActiveTextEditor()?.getPath())?
     getFirstConfig(path.resolve(path.dirname(path))).then (folder, file) ->
-      currentWorker = getProjectConfig(folder, file).getCommandByIndex(id)?.getWorker()
-      currentWorker?.run()
+      p = getProjectConfig(folder, file).getCommandByIndex(id)?.getQueue().run()
+      p.then (@currentWorker) => @currentWorker.run()
+      p.catch (error) =>
+        atom.notifications?.addError error
+        @currentWorker = null
+
+  cancel: ->
+    @currentWorker?.stop()
 
   getFirstConfig: getFirstConfig

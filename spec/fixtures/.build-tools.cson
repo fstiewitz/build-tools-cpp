@@ -13,7 +13,8 @@ providers: [
             queue:
               save_all: {}
             command:
-              shell: {}
+              shell:
+                command: 'bash -c'
               wildcards: {}
           stdout:
             highlighting: 'nh'
@@ -34,7 +35,6 @@ providers: [
             queue:
               save_all: {}
             command:
-              shell: {}
               wildcards: {}
           stdout:
             highlighting: 'nh'
