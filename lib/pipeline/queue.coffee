@@ -5,7 +5,7 @@ module.exports =
   class Queue
     constructor: (origin) ->
       @queue = [origin]
-      @keys = Object.keys(origin.modifier.queue ? {})
+      @keys = Object.keys(origin.modifier?.queue ? {})
 
     run: ->
       new Promise((resolve, reject) =>

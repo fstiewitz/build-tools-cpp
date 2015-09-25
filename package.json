@@ -28,6 +28,11 @@
       "versions": {
         "1.0.0": "provideLinter"
       }
+    },
+    "input": {
+      "versions": {
+        "1.0.0": "provideInput"
+      }
     }
   },
   "consumedServices": {

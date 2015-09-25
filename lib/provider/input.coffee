@@ -1,6 +1,7 @@
 path = require 'path'
 fs = require 'fs'
 ProjectConfig = require './project'
+Command = require './command'
 
 getFirstConfig = (folder) ->
   new Promise((resolve, reject) ->
@@ -29,6 +30,9 @@ module.exports =
         atom.notifications?.addError error
         @currentWorker = null
     )
+
+  input: (command) ->
+    new Command(command).getQueue()
 
   cancel: ->
     @currentWorker?.stop()

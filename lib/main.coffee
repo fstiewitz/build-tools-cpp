@@ -35,6 +35,9 @@ module.exports =
       LinterList ?= require './linter-list'
       LinterList.messages
 
+  provideInput: ->
+    Input.input
+
   consumeModifierModule: ({key, mod}) ->
     ModifierModules ?= require './modifier/modifier'
     ModifierModules.addModule key, mod
