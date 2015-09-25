@@ -11,9 +11,14 @@ module.exports =
       @version ?= 1
 
     getSpawnInfo: ->
+      @original = @command
       args = Command.splitQuotes @command
       @command = args[0]
       @args = args.slice(1)
+      @mergeEnvironment process.env
+
+    mergeEnvironment: (env) ->
+      @env[key] = env[key] for key in Object.keys(env) when not @env[key]?
 
     @splitQuotes: (cmd_string) ->
       args = []

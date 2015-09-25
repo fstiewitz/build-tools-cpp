@@ -4,7 +4,7 @@
 
 Outputs = require '../output/output'
 
-Command = require '../command'
+Command = require '../provider/command'
 
 MainPane = require './command-edit-main-pane'
 SavePane = require './command-edit-save-pane'

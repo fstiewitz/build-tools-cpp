@@ -1,5 +1,5 @@
 CommandEditPane = require '../lib/view/command-edit-pane'
-Command = require '../lib/command'
+Command = require '../lib/provider/command'
 
 describe 'Command Edit Pane', ->
   view = null

@@ -32,8 +32,8 @@ describe 'Queue', ->
       version: 1
     }
     out = {
-      in: (queue, config) ->
-        queue[0].t = config.t
+      in: (queue) ->
+        queue[0].t = queue[0].modifier.queue.test.t
         return
     }
     modifier = Modifiers.addModule 'test', out

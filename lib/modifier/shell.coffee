@@ -10,6 +10,6 @@ module.exports =
 
   postSplit: (command) ->
     args = Command.splitQuotes command.modifier.command.shell.command
-    command.args = args.slice(1).concat([command.command]).concat(command.args)
+    command.args = args.slice(1).concat([command.original])
     command.command = args[0]
     return

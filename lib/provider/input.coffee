@@ -21,13 +21,14 @@ module.exports =
   currentWorker: null
 
   key: (id) ->
-    return unless (path = atom.workspace.getActiveTextEditor()?.getPath())?
-    getFirstConfig(path.resolve(path.dirname(path))).then (folder, file) ->
-      p = getProjectConfig(folder, file).getCommandByIndex(id)?.getQueue().run()
+    return unless (p = atom.workspace.getActiveTextEditor()?.getPath())?
+    getFirstConfig(path.resolve(path.dirname(p))).then(({folderPath, filePath}) ->
+      p = getProjectConfig(folderPath, filePath).getCommandByIndex(id)?.getQueue().run()
       p.then (@currentWorker) => @currentWorker.run()
       p.catch (error) =>
         atom.notifications?.addError error
         @currentWorker = null
+    )
 
   cancel: ->
     @currentWorker?.stop()

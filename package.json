@@ -31,9 +31,19 @@
     }
   },
   "consumedServices": {
+    "build-tools.modifier": {
+      "versions": {
+        "^1.0.0": "consumeModifierModule"
+      }
+    },
     "build-tools.profile": {
       "versions": {
-        "^1.0.0": "consumeProfile"
+        "^1.0.0": "consumeProfileModule"
+      }
+    },
+    "build-tools.provider": {
+      "versions": {
+        "^1.0.0": "consumeProviderModule"
       }
     },
     "build-tools.output": {

@@ -1,4 +1,5 @@
 CommandWorker = require './command-worker'
+CommandModifier = require './command-modifier'
 Outputs = require '../output/output'
 {Emitter} = require 'atom'
 
@@ -26,13 +27,29 @@ module.exports =
       @outputs = null
 
     run: ->
-      return if @finished
-      command = @queue.queue.splice(0, 1)[0]
-      return @finishedQueue 0 unless command?
-      outputs = []
-      for key in Object.keys(command.output)
-        outputs.push @outputs[key] if @outputs[key]?
-      @currentWorker = new CommandWorker(command, outputs, @finishedCommand, @errorCommand)
+      new Promise((resolve, reject) =>
+        @_run resolve, reject
+      )
+
+    _run: (resolve, reject) ->
+      return reject('Worker already finished') if @finished
+      unless (c = @queue.queue.splice(0, 1)[0])?
+        @finishedQueue 0
+        resolve()
+      modifier = new CommandModifier(c)
+      mods = modifier.run()
+      mods.catch (e) -> reject(e)
+      mods.then =>
+        outputs = (@outputs[key] for key in Object.keys(c.output) when @outputs[key]?)
+        @currentWorker = new CommandWorker(c, outputs)
+        ret = @currentWorker.run()
+        ret.catch (e) -> reject(e)
+        ret.then (exitcode) =>
+          @finishedCommand(exitcode)
+          if exitcode is 0
+            @_run resolve, reject
+          else
+            reject(name: c.name, exit: exitcode)
 
     stop: ->
       return if @finished
@@ -50,9 +67,7 @@ module.exports =
 
     finishedCommand: (exitcode) =>
       @emitter.emit 'finishedCommand', exitcode
-      if exitcode is 0
-        @run()
-      else
+      if exitcode isnt 0
         @finishedQueue exitcode
 
     errorCommand: (error) =>

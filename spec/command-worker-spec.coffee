@@ -1,5 +1,5 @@
 CommandWorker = require '../lib/pipeline/command-worker'
-Command = require '../lib/command'
+Command = require '../lib/provider/command'
 
 _command =
   name: ''
@@ -28,9 +28,8 @@ _command =
 describe 'Command Worker', ->
   worker = null
   output = null
-  finish = null
-  error = null
   command = null
+  promise = null
 
   beforeEach ->
     command = new Command(_command)
@@ -50,9 +49,8 @@ describe 'Command Worker', ->
       error: jasmine.createSpy('error')
 
     command.project = atom.project.getPaths()[0]
-    finish = jasmine.createSpy('finish')
-    error = jasmine.createSpy('error')
-    worker = new CommandWorker(command, [output], finish, error)
+    worker = new CommandWorker(command, [output])
+    promise = worker.run()
 
   afterEach ->
     worker.destroy()
@@ -74,10 +72,12 @@ describe 'Command Worker', ->
       worker.process.error 'Test Error'
 
     it 'calls error of all outputs', ->
-      expect(output.error).toHaveBeenCalledWith 'Test Error'
+      promise.catch (error) ->
+        expect(output.error).toHaveBeenCalledWith 'Test Error'
 
     it 'calls the error callback', ->
-      expect(error).toHaveBeenCalledWith 'Test Error'
+      promise.catch (error) ->
+        expect(error).toBe 'Test Error'
 
   describe 'on finish', ->
 
@@ -85,7 +85,9 @@ describe 'Command Worker', ->
       worker.process.exit 0
 
     it 'calls exitCommand of all outputs', ->
-      expect(output.exitCommand).toHaveBeenCalledWith 0
+      promise.then ->
+        expect(output.exitCommand).toHaveBeenCalledWith 0
 
     it 'calls the finish callback', ->
-      expect(finish).toHaveBeenCalledWith 0
+      promise.then (finish) ->
+        expect(finish).toBe 0

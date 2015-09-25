@@ -5,41 +5,44 @@ OutputManager = require './output-manager'
 module.exports =
   class CommandWorker
 
-    constructor: (@command, @outputs, @finish, @error) ->
+    constructor: (@command, @outputs) ->
       @manager = new OutputManager(@command, @outputs)
 
-      {cmd, args, wd, env} = @command.getSpawnInfo()
-      if atom.inSpecMode()
-        @process =
-          exit: (exitcode) =>
-            @manager.finish exitcode
-            @destroy()
-            @finish(exitcode)
-          error: (error) =>
+    run: ->
+      new Promise((resolve, reject) =>
+        if atom.inSpecMode()
+          @process =
+            exit: (exitcode) =>
+              @manager.finish exitcode
+              @destroy()
+              resolve(exitcode)
+            error: (error) =>
+              @manager.error error
+              @destroy()
+              reject(error)
+        else
+          {command, args, wd, env} = @command
+          @process = new BufferedProcess(
+            command: command
+            args: args
+            options:
+              cwd: wd
+              env: env
+            stdout: (data) =>
+              @manager.stdout.in data
+            stderr: (data) =>
+              @manager.stderr.in data
+            exit: (exitcode) =>
+              @manager.finish exitcode
+              @destroy()
+              resolve(exitcode)
+          )
+          @process.onWillThrowError ({error, handle}) =>
             @manager.error error
             @destroy()
-            @error(error)
-      else
-        @process = new BufferedProcess(
-          command: cmd
-          args: args
-          options:
-            cwd: wd
-            env: env
-          stdout: (data) =>
-            @manager.stdout.in data
-          stderr: (data) =>
-            @manager.stderr.in data
-          exit: (exitcode) =>
-            @manager.finish exitcode
-            @destroy()
-            @finish(exitcode)
-        )
-        @process.onWillThrowError ({error, handle}) =>
-          @manager.error error
-          @destroy()
-          @error(error)
-          handle()
+            reject(error)
+            handle()
+      )
 
     destroy: ->
       @process?.kill?()

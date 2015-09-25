@@ -32,4 +32,4 @@ module.exports =
 
     error: (error) ->
       for output in @outputs
-        output.error error
+        output.error?(error)

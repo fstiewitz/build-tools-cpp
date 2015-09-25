@@ -13,7 +13,8 @@ folder = (project, wd = '.') ->
     path.dirname(filename)
 
 file = (project, wd = '.') ->
-  path.relative(path.resolve(project, wd), atom.workspace.getActiveTextEditor()?.getPath())
+  try
+    path.relative(path.resolve(project, wd), atom.workspace.getActiveTextEditor()?.getPath())
 
 error = 'Could not get path from active text editor'
 
@@ -25,7 +26,7 @@ module.exports =
     path = null
 
   preSplit: (command) ->
-    new Promise(({resolve, reject}) ->
+    new Promise((resolve, reject) ->
       if /%[fbde]/.test(command.wd)
         if /%f/.test(command.wd)
           command.wd = command.wd.replace /(\\)?(%f)/g, ($0, $1, $2) ->

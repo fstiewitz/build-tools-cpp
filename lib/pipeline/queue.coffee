@@ -13,6 +13,6 @@ module.exports =
           continue unless Modifiers.activate(key) is true
           mod = Modifiers.modules[key]
           continue unless mod.in?
-          reject(e) if(e = mod.in @queue, @queue[0].modifier.queue[key])?
+          reject(e) if(e = mod.in @queue)?
         resolve(new QueueWorker(queue: @queue))
       )
