@@ -5,6 +5,7 @@ module.exports =
   class Command
     constructor: ({@project, @name, @command, @wd, @env, @modifier, @stdout, @stderr, @output, @version} = {}) ->
       @env ?= {}
+      @wd ?= '.'
       @output ?= {}
       @stdout ?= highlighting: 'nh'
       @stderr ?= highlighting: 'nh'
