@@ -38,7 +38,7 @@ describe 'Command Edit Pane', ->
     expect(view.element).toBeDefined()
 
   it 'has 5 edit panes', ->
-    expect(view.find('.inset-panel').length).toBe 5
+    expect(view.find('.inset-panel').length).toBe 7
 
   it 'has the correct values', ->
     expect(view.panes[0].view.command_name.getModel().getText()).toBe 'Test 1'

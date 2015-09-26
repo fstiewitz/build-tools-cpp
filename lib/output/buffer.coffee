@@ -28,6 +28,7 @@ module.exports =
 
       set: (command) ->
         if command?
+          command.output.buffer ?= {}
           @find('#recycle_buffer').prop('checked', command.output.buffer.recycle_buffer)
         else
           @find('#recycle_buffer').prop('checked', true)
