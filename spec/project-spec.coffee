@@ -15,16 +15,9 @@ describe 'Project Configuration', ->
     command = null
 
     beforeEach ->
-      command = instance.getCommandByIndex 0
+      p = instance.getCommandByIndex 0
+      p.then (c) -> command = c
+      waitsForPromise -> p
 
     it 'returns the correct command', ->
       expect(command.name).toBe 'Test'
-
-  describe 'on ::getCommandByIndex with an invalid id', ->
-    command = null
-
-    beforeEach ->
-      command = instance.getCommandByIndex 2
-
-    it 'returns the correct command', ->
-      expect(command).toBeUndefined()

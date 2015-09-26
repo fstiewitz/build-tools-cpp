@@ -14,6 +14,7 @@ notify: (message) ->
 module.exports =
 
   name: 'Custom Commands'
+  singular: 'Custom Command'
 
   activate: ->
     fs = require 'fs'
@@ -56,6 +57,9 @@ module.exports =
 
       getCommandCount: ->
         @commands.length
+
+      getCommandNames: ->
+        (c.name for c in @commands)
 
       addCommand: (item) ->
         if @getCommandIndex(item.name) is -1

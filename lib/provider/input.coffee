@@ -3,6 +3,9 @@ fs = require 'fs'
 ProjectConfig = require './project'
 Command = require './command'
 
+SelectionView = null
+selectionview = null
+
 getFirstConfig = (folder) ->
   new Promise((resolve, reject) ->
     _getFirstConfig folder, resolve , reject
@@ -23,13 +26,36 @@ module.exports =
 
   key: (id) ->
     return unless (p = atom.workspace.getActiveTextEditor()?.getPath())?
-    getFirstConfig(path.resolve(path.dirname(p))).then(({folderPath, filePath}) ->
-      p = getProjectConfig(folderPath, filePath).getCommandByIndex(id)?.getQueue().run()
-      p.then (@currentWorker) => @currentWorker.run()
-      p.catch (error) =>
-        atom.notifications?.addError error
-        @currentWorker = null
+    getFirstConfig(path.resolve(path.dirname(p))).then(({folderPath, filePath}) =>
+      p = getProjectConfig(folderPath, filePath).getCommandByIndex(id)
+      p.catch (error) -> atom.notifications?.addError error
+      p.then (command) =>
+        @run(command)
     )
+
+  selection: ->
+    return unless (p = atom.workspace.getActiveTextEditor()?.getPath())?
+    SelectionView ?= require '../view/selection-view'
+    selectionview = new SelectionView
+    selectionview.setLoading('Loading project configuration')
+    q = getFirstConfig(path.resolve(path.dirname(p)))
+    q.then(({folderPath, filePath}) =>
+      selectionview.setLoading('Loading command list')
+      project = getProjectConfig(folderPath, filePath)
+      project.getCommandNameObjects().then (commands) =>
+        selectionview.setItems commands
+        selectionview.callback = ({id, origin}) =>
+          command = project.getCommandById origin, id
+          @run command
+    )
+    q.catch -> selectionview.setError('Could not load project configuration')
+
+  run: (command) ->
+    p = command.getQueue().run()
+    p.then (@currentWorker) => @currentWorker.run()
+    p.catch (error) =>
+      atom.notifications?.addError error
+      @currentWorker = null
 
   input: (command) ->
     new Command(command).getQueue()
