@@ -25,6 +25,12 @@ module.exports =
 
   deactivate: ->
     @subscriptions.dispose()
+    (ModifierModules ? require './modifier/modifier').reset()
+    (ProviderModules ? require './provider/provider').reset()
+    (OutputModules ? require './output/output').reset()
+    ModifierModules = null
+    ProviderModules = null
+    OutputModules = null
     CommandEditPane = null
 
   provideLinter: ->

@@ -15,6 +15,7 @@ module.exports =
             @outputs[key] = new Outputs.modules[key].output if Outputs.modules[key]? and not @outputs[key]
 
       for key in Object.keys(@outputs)
+        continue unless Outputs.activate(key) is true
         @outputs[key].newQueue @queue
 
       @emitter = new Emitter
@@ -35,7 +36,7 @@ module.exports =
       return reject('Worker already finished') if @finished
       unless (c = @queue.queue.splice(0, 1)[0])?
         @finishedQueue 0
-        resolve()
+        return resolve()
       modifier = new CommandModifier(c)
       mods = modifier.run()
       mods.catch (e) -> reject(e)

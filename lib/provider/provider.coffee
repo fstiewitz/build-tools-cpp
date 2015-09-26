@@ -17,6 +17,7 @@ module.exports =
 
   reset: ->
     for k in Object.keys(@modules)
+      @deactivate k
       @removeModule k unless k is 'bt'
 
   activate: (key) ->
@@ -26,3 +27,12 @@ module.exports =
     return true unless mod.activate?
     mod.activate()
     mod.active = true
+
+  deactivate: (key) ->
+    mod = @modules[key]
+    return unless mod?
+    return true unless mod.active?
+    return true unless mod.deactivate?
+    mod.deactivate()
+    mod.active = null
+    return true
