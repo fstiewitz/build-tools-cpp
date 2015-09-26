@@ -16,7 +16,7 @@ module.exports =
 
       for key in Object.keys(@outputs)
         continue unless Outputs.activate(key) is true
-        @outputs[key].newQueue @queue
+        @outputs[key].newQueue?(@queue)
 
       @emitter = new Emitter
       @finished = false
@@ -60,7 +60,7 @@ module.exports =
     finishedQueue: (code) ->
       @emitter.emit 'finishedQueue', code
       for key in Object.keys(@outputs)
-        @outputs[key].exitQueue(code)
+        @outputs[key].exitQueue?(code)
       @finished = true
 
     hasFinished: ->

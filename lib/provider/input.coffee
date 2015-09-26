@@ -76,6 +76,7 @@ module.exports =
 
   run: (command) ->
     p = command.getQueue().run()
+    @cancel()
     p.then (@currentWorker) => @currentWorker.run()
     p.catch (error) =>
       atom.notifications?.addError error

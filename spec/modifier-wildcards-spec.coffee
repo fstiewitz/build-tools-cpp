@@ -7,7 +7,7 @@ describe 'Command Modifier - Wildcards', ->
 
   beforeEach ->
     command = new Command({
-      project: '/home/fabian/.atom/packages/build-tools/spec/fixtures'
+      project: atom.project.getPaths()[0]
       name: 'Test'
       command: 'echo %f'
       wd: '.'

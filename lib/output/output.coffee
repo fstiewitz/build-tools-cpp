@@ -4,6 +4,7 @@ module.exports =
   modules:
     console: require './console'
     linter: require './linter'
+    buffer: require './buffer'
 
   addModule: (key, mod) ->
     return if @modules[key]?
@@ -18,7 +19,7 @@ module.exports =
   reset: ->
     for k in Object.keys(@modules)
       @deactivate k
-      @removeModule k unless k in ['console', 'linter']
+      @removeModule k unless k in ['console', 'linter', 'buffer']
 
   activate: (key) ->
     mod = @modules[key]
