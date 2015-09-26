@@ -18,6 +18,9 @@ module.exports =
       'build-tools:third-command': -> Input.key(2)
       'build-tools:second-command': -> Input.key(1)
       'build-tools:first-command': -> Input.key(0)
+      'build-tools:third-command-ask': -> Input.keyAsk(2)
+      'build-tools:second-command-ask': -> Input.keyAsk(1)
+      'build-tools:first-command-ask': -> Input.keyAsk(0)
       'build-tools:commands': -> Input.selection()
     @subscriptions.add atom.views.addViewProvider Command, (command) ->
       command.oldname = command.name

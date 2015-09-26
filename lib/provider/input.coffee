@@ -6,6 +6,9 @@ Command = require './command'
 SelectionView = null
 selectionview = null
 
+AskView = null
+askview = null
+
 getFirstConfig = (folder) ->
   new Promise((resolve, reject) ->
     _getFirstConfig folder, resolve , reject
@@ -24,6 +27,13 @@ getProjectConfig = (folder, file) ->
 module.exports =
   currentWorker: null
 
+  deactivate: ->
+    SelectionView = null
+    selectionview = null
+
+    AskView = null
+    askview = null
+
   key: (id) ->
     return unless (p = atom.workspace.getActiveTextEditor()?.getPath())?
     getFirstConfig(path.resolve(path.dirname(p))).then(({folderPath, filePath}) =>
@@ -31,6 +41,20 @@ module.exports =
       p.catch (error) -> atom.notifications?.addError error
       p.then (command) =>
         @run(command)
+    )
+
+  keyAsk: (id) ->
+    return unless (p = atom.workspace.getActiveTextEditor()?.getPath())?
+    getFirstConfig(path.resolve(path.dirname(p))).then(({folderPath, filePath}) =>
+      p = getProjectConfig(folderPath, filePath).getCommandByIndex(id)
+      p.catch (error) -> atom.notifications?.addError error
+      p.then (command) =>
+        AskView ?= require '../view/ask-view'
+        askview = new AskView(command.command, (c) =>
+          rc = new Command(command)
+          rc.command = c
+          @run(rc)
+        )
     )
 
   selection: ->
