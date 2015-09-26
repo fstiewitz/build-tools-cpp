@@ -12,7 +12,7 @@ module.exports =
 
     constructor: (@settings, @stream) ->
       if @stream.profile?
-        @profile = new Profiles.profiles[@stream.profile]?({@print, @replacePrevious, @createMessage, @absolutePath, @pushLinterMessage, @createExtensionString, @createRegex, @lint})
+        @profile = new Profiles.profiles[@stream.profile]?({@setType, @print, @replacePrevious, @createMessage, @absolutePath, @pushLinterMessage, @createExtensionString, @createRegex, @lint})
         if not @profile?
           atom.notifications?.addError "Could not find highlighting profile: #{@stream.profile}"
         @profile?.clear?()
@@ -51,9 +51,11 @@ module.exports =
       else if @stream.highlighting is 'hc' and @profile?
         @profile.in line
 
-
     parseTags: (line) ->
       /(error|warning):/g.exec(line)?[1]
+
+    setType: (match) =>
+      @subscribers.emit 'setType', match.highlighting ? match.type
 
     absolutePath: (relpath) =>
       return fp if fs.existsSync(fp = path.resolve(@settings.project, @settings.wd, relpath))
