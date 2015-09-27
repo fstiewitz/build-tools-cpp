@@ -4,26 +4,12 @@ Command = require '../lib/provider/command'
 _command =
   name: ''
   command: ''
-  wd: '.' #Working directory. Default: .
-  shell: false #Execute in shell
-  wildcards: false #Replace wildcards
-  save_all: false #Save all
-  close_success: false #Close console on success
+  wd: '.'
   stdout:
-    #nh: No highlighting
-    #ha: Highlight all
-    #ht: Highlight tags
-    #hc: Highlighting profile (requires 'profile')
     highlighting: 'nh'
-    #gcc_clang: GCC/Clang
-    #apm_test: apm test (Jasmine specs)
-    #java: Java
-    #python: Python
-    #'profile': 'gcc_clang' #Uncomment if 'highlighting' is 'hc'
   stderr:
     highlighting: 'ha'
-  #Backwards compatibility with older command versions (don't change it)
-  version: 3
+  version: 1
 
 describe 'Command Worker', ->
   worker = null

@@ -27,17 +27,17 @@ module.exports =
               @div class: 'settings-name', 'File Path'
               @div =>
                 @span class: 'inline-block text-subtle', 'File path (absolute or relative)'
-            @subview 'command_name', new TextEditorView(mini: true, placeholderText: 'Default: output.log')
+            @subview 'file_path', new TextEditorView(mini: true, placeholderText: 'Default: output.log')
 
       set: (command) ->
         if command?
           command.output.file ?= {}
-          @command_name.getModel().setText(command.output.file.path ? '')
+          @file_path.getModel().setText(command.output.file.path ? '')
         else
-          @command_name.getModel().setText('')
+          @file_path.getModel().setText('')
 
       get: (command) ->
-        out = 'output.log' if (out = @command_name.getModel().getText()) is ''
+        out = 'output.log' if (out = @file_path.getModel().getText()) is ''
         command.output.file.path = out
         return null
 

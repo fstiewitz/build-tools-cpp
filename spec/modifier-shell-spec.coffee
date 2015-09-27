@@ -12,14 +12,8 @@ describe 'Command Modifier - Shell', ->
       wd: '.'
       env: {}
       modifier:
-        queue:
-          test: {
-            t: 1
-          }
-        command:
-          shell:
-            command: 'bash -c'
-          test: {}
+        shell:
+          command: 'bash -c'
       stdout:
         highlighting: 'nh'
       stderr:

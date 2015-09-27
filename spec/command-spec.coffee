@@ -11,11 +11,9 @@ describe 'Command', ->
       command: 'echo "Hello " World'
       wd: '.'
       modifier:
-        queue:
-          save_all: {}
-        command:
-          shell: {}
-          wildcards: {}
+        save_all: {}
+        shell: {}
+        wildcards: {}
       stdout:
         highlighting: 'nh'
       stderr:

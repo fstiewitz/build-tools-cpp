@@ -13,12 +13,7 @@ describe 'Command Modifier - Wildcards', ->
       wd: '.'
       env: {}
       modifier:
-        queue:
-          test: {
-            t: 1
-          }
-        command:
-          wildcards: {}
+        wildcards: {}
       stdout:
         highlighting: 'nh'
       stderr:

@@ -15,14 +15,11 @@ describe 'Command Modifier', ->
       wd: '.'
       env: {}
       modifier:
-        queue:
-          test: {
-            t: 1
-          }
-        command:
-          shell:
-            command: 'bash -c'
-          test: {}
+        test: {
+          t: 1
+        }
+        shell:
+          command: 'bash -c'
       stdout:
         highlighting: 'nh'
       stderr:
@@ -44,7 +41,7 @@ describe 'Command Modifier', ->
     module.dispose()
 
   it 'has the correct keys', ->
-    expect(modifier.keys).toEqual ['shell', 'test']
+    expect(modifier.keys).toEqual ['test', 'shell']
     expect(modifier.preSplitKeys).toEqual ['test']
     expect(modifier.postSplitKeys).toEqual ['shell']
 

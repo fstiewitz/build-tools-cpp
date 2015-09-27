@@ -22,9 +22,9 @@ module.exports =
       @finished = false
 
     destroy: ->
+      @currentWorker.destroy() if not @finished
       @finished = true
       @emitter.dispose()
-      @currentWorker.destroy() if not @finished
       @outputs = null
 
     run: ->

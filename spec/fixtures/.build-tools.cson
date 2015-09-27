@@ -10,12 +10,10 @@ providers: [
           wd: '.'
           env: {}
           modifier:
-            queue:
-              save_all: {}
-            command:
-              shell:
-                command: 'bash -c'
-              wildcards: {}
+            save_all: {}
+            shell:
+              command: 'bash -c'
+            wildcards: {}
           stdout:
             highlighting: 'nh'
           stderr:
@@ -32,10 +30,8 @@ providers: [
           wd: '.'
           env: {}
           modifier:
-            queue:
-              save_all: {}
-            command:
-              wildcards: {}
+            save_all: {}
+            wildcards: {}
           stdout:
             highlighting: 'nh'
           stderr:

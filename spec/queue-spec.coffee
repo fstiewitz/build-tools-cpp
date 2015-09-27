@@ -14,14 +14,9 @@ describe 'Queue', ->
       wd: '.'
       env: {}
       modifier:
-        queue:
-          test: {
-            t: 1
-          }
-        command:
-          shell:
-            command: 'bash -c'
-          wildcards: {}
+        test: {
+          t: 1
+        }
       stdout:
         highlighting: 'nh'
       stderr:
@@ -33,7 +28,7 @@ describe 'Queue', ->
     }
     out = {
       in: (queue) ->
-        queue[0].t = queue[0].modifier.queue.test.t
+        queue[0].t = queue[0].modifier.test.t
         return
     }
     modifier = Modifiers.addModule 'test', out
