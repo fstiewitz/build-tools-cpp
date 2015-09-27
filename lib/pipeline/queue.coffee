@@ -5,7 +5,8 @@ module.exports =
   class Queue
     constructor: (origin) ->
       @queue = [origin]
-      @keys = Object.keys(origin.modifier ? {})
+      @keys = Object.keys(origin.modifier ? {}).filter (k) ->
+        Modifiers.modules[k]?.in?
       @keys.reverse()
 
     run: ->
