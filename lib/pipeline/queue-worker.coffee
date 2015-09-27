@@ -74,3 +74,12 @@ module.exports =
     errorCommand: (error) =>
       @emitter.emit 'errorCommand', error
       @finishedQueue -1
+
+    onFinishedQueue: (callback) ->
+      @emitter.on 'finishedQueue', callback
+
+    onFinishedCommand: (callback) ->
+      @emitter.on 'finishedCommand', callback
+
+    onError: (callback) ->
+      @emitter.on 'errorCommand', callback

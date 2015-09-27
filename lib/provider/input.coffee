@@ -77,13 +77,21 @@ module.exports =
   run: (command) ->
     p = command.getQueue().run()
     @cancel()
-    p.then (@currentWorker) => @currentWorker.run()
+    p.then (@currentWorker) =>
+      @currentWorker.run()
+      @currentWorker.onFinishedQueue => @currentWorker = null
     p.catch (error) =>
       atom.notifications?.addError error
       @currentWorker = null
 
   input: (command) ->
-    new Command(command).getQueue()
+    new Promise((resolve, reject) ->
+      if @currentWorker? and not @currentWorker.finished
+        @currentWorker.onFinishedQueue ->
+          resolve(new Command(command).getQueue())
+      else
+        resolve(new Command(command).getQueue())
+    )
 
   cancel: ->
     @currentWorker?.stop()
