@@ -1,5 +1,6 @@
 Input = require './provider/input'
 Command = require './provider/command'
+Project = require './provider/project'
 
 LinterList = null
 [ProfileModules, OutputModules, ModifierModules, ProviderModules] = []
@@ -7,6 +8,9 @@ LinterList = null
 {CompositeDisposable} = require 'atom'
 
 CommandEditPane = null
+SettingsView = null
+
+path = null
 
 module.exports =
 
@@ -26,6 +30,13 @@ module.exports =
       command.oldname = command.name
       CommandEditPane ?= require './view/command-edit-pane'
       new CommandEditPane(command)
+    @subscriptions.add atom.views.addViewProvider Project, (project) ->
+      SettingsView ?= require './view/settings-view'
+      new SettingsView(project)
+    @subscriptions.add atom.workspace.addOpener (uritoopen) ->
+      if uritoopen.endsWith '.build-tools.cson'
+        path ?= require 'path'
+        atom.views.getView new Project(path.dirname(uritoopen), uritoopen)
 
   deactivate: ->
     @subscriptions.dispose()
@@ -36,6 +47,7 @@ module.exports =
     ProviderModules = null
     OutputModules = null
     CommandEditPane = null
+    SettingsView = null
 
   provideLinter: ->
     grammarScopes: ['*']
