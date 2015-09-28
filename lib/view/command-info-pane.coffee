@@ -1,33 +1,33 @@
 {$$, View} = require 'atom-space-pen-views'
 
 Outputs = require '../output/output'
+Modifiers = require '../modifier/modifier'
 
 MainPane = require './command-info-main-pane'
-SavePane = require './command-info-save-pane'
 ProfilePane = require './command-info-profile-pane'
 
 module.exports =
   class InfoPane extends View
 
     @content: ->
-      @div class: 'command', =>
-        @div class: 'top', =>
+      @div class: 'command inset-panel', =>
+        @div class: 'top panel-heading', =>
           @div id: 'info', class: 'align', =>
             @div class: 'icon-triangle-right expander'
             @div id: 'name', outlet: 'name'
           @div id: 'options', class: 'align', =>
             @div class: 'icon-pencil'
-            @div class: 'icon-triangle-up'
-            @div class: 'icon-triangle-down'
+            @div class: 'icon-triangle-up move-up'
+            @div class: 'icon-triangle-down move-down'
             @div class: 'icon-x'
-        @div class: 'info hidden', outlet: 'info'
+        @div class: 'info hidden panel-body', outlet: 'info'
 
     initialize: (@command) ->
       @panes = []
       @name.text(@command.name)
-      @info.append @buildPane(MainPane)
-      @info.append @buildPane(SavePane)
-      @info.append @buildPane(ProfilePane)
+      @info.append @buildPane(MainPane, 'General', false)
+      @initializeModifierModules()
+      @info.append @buildPane(ProfilePane, 'Highlighting', false)
       @initializeOutputModules()
       @addEventHandlers()
 
@@ -35,8 +35,8 @@ module.exports =
 
     addEventHandlers: ->
       @on 'click', '.icon-pencil', => @edit(@command)
-      @on 'click', '.icon-triangle-up', => @up(@command)
-      @on 'click', '.icon-triangle-down', => @down(@command)
+      @on 'click', '.move-up', => @up(@command)
+      @on 'click', '.move-down', => @down(@command)
       @on 'click', '.icon-x', => @remove(@command)
       @on 'click', '.expander', ({currentTarget}) ->
         if currentTarget.classList.contains 'icon-triangle-right'
@@ -48,11 +48,11 @@ module.exports =
           currentTarget.classList.remove 'icon-triangle-down'
           currentTarget.parentNode.parentNode.parentNode.children[1].classList.add 'hidden'
 
-    buildPane: (Element, name) ->
+    buildPane: (Element, name, active = true) ->
       if name?
         element = $$ ->
           @div class: 'inset-panel', =>
-            @div class: 'panel-heading', "#{name}: active"
+            @div class: 'panel-heading', name + if active then ': active' else ''
             if Element?
               @div class: 'panel-body padded'
       else
@@ -66,5 +66,10 @@ module.exports =
 
     initializeOutputModules: ->
       for key in Object.keys(@command.output)
-        continue unless @command.output[key]?
-        @buildPane Outputs.modules[key]?.info, Outputs.modules[key]?.name ? key
+        continue unless Outputs.activate(key) is true
+        @buildPane Outputs.modules[key].info, 'Output: ' + Outputs.modules[key].name
+
+    initializeModifierModules: ->
+      for key in Object.keys(@command.modifier)
+        continue unless Modifiers.activate(key) is true
+        @buildPane Modifiers.modules[key].info, 'Modifier: ' + Modifiers.modules[key].name

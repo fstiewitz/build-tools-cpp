@@ -5,7 +5,7 @@ Command = null
 CommandInfoPane = null
 CSON = null
 CompositeDisposable = null
-View = require 'atom-space-pen-views'
+{View} = require 'atom-space-pen-views'
 
 notify: (message) ->
   atom.notifications?.addError message
@@ -40,9 +40,10 @@ module.exports =
         @emitter = new Emitter if @_save?
         @commands = []
         @path = path.resolve(path.dirname @config.file)
-        for command in @config.commands
-          command.project = @path
-          @commands.push(new Command(command))
+        if @config.commands?
+          for command in @config.commands
+            command.project = @path
+            @commands.push(new Command(command))
 
       destroy: ->
         return unless @_save?
@@ -60,6 +61,9 @@ module.exports =
 
       getCommandNames: ->
         (c.name for c in @commands)
+
+      getCommands: ->
+        @commands
 
       addCommand: (item) ->
         if @getCommandIndex(item.name) is -1
@@ -115,17 +119,14 @@ module.exports =
     class GlobalBuildToolsPane extends View
 
       @content: ->
-        @div class: 'panel-heading', outlet: 'name'
-        @div class: 'panel-body padded', =>
-          @div class: 'inset-panel', =>
-            @div class: 'panel-heading icon icon-code', =>
-              @span class: 'section-header', 'Commands'
-              @span id: 'add-command-button', class: 'inline-block btn btn-xs icon icon-plus', 'Add command'
-            @div class: 'panel-body padded', =>
-              @div class: 'command-list', outlet: 'command_list'
+        @div class: 'inset-panel', =>
+          @div class: 'panel-heading icon icon-code', =>
+            @span class: 'section-header', 'Commands'
+            @span id: 'add-command-button', class: 'inline-block btn btn-xs icon icon-plus', 'Add command'
+          @div class: 'panel-body padded', =>
+            @div class: 'command-list', outlet: 'command_list'
 
-      initialize: (@project, _name) ->
-        @name.text _name
+      initialize: (@project) ->
         @on 'click', '#add-command-button', (e) =>
           @commandPane = atom.views.getView(new Command)
           @commandPane.setCallbacks @accept, @hidePanes
@@ -141,7 +142,6 @@ module.exports =
       destroy: ->
         @detach()
         @disposable.dispose()
-        @project.destroy()
 
       accept: (c) =>
         @project.addCommand c
@@ -154,6 +154,7 @@ module.exports =
           down = (command) =>
             @project.moveCommandDown(command)
           edit = (command) =>
+            #TODO Show edit view ...
             @project.replaceCommand(command)
           remove = (command) =>
             @project.removeCommand(command)

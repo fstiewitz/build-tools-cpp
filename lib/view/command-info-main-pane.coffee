@@ -6,13 +6,11 @@ module.exports =
       @element.classList.add 'module'
       keys = document.createElement 'div'
       keys.innerHTML = '''
-      <div class: 'text-padded'>Command</div>
-      <div class: 'text-padded'>Working Directory</div>
-      <div class: 'text-padded'>Shell</div>
-      <div class: 'text-padded'>Wildcards</div>
+      <div class: 'text-padded'>Command:</div>
+      <div class: 'text-padded'>Working Directory:</div>
       '''
       values = document.createElement 'div'
-      for k in ['command', 'wd', 'shell', 'wildcards']
+      for k in ['command', 'wd']
         value = document.createElement 'div'
         value.classList.add 'text-padded'
         value.innerText = String(command[k])

@@ -1,6 +1,7 @@
 {ScrollView} = require 'atom-space-pen-views'
 {CompositeDisposable} = require 'atom'
 Providers = require '../provider/provider'
+Project = require '../provider/project'
 
 module.exports =
   class SettingsView extends ScrollView
@@ -11,11 +12,23 @@ module.exports =
           @span id: 'add-provider', class: 'inline-block btn btn-sm icon icon-plus', 'Add provider'
         @div class: 'panel-body padded', outlet: 'provider_list'
 
-    initialize: (@model) ->
+    initialize: (@projectPath, @filePath) ->
       super
-      @disposables = new CompositeDisposable
 
+    getUri: ->
+      @filePath
+
+    getTitle: ->
+      'Build Config: ' + @projectPath
+
+    getIconName: ->
+      'tools'
+
+    attached: ->
+      @model = new Project(@projectPath, @filePath, true)
+      @disposables = new CompositeDisposable
       context = []
+
       for key in Object.keys(Providers.modules)
         name = Providers.modules[key].name
         @disposables.add atom.commands.add '.build-settings',  "build-tools:add-#{name}".replace(/\ /g, '-'), ({type}) -> console.log type
@@ -24,16 +37,15 @@ module.exports =
       @disposables.add atom.contextMenu.add {
         '#add-provider': context
       }
+      @disposables.add @model.onSave @reload
 
-
-    getUri: ->
-      @model.filePath
-
-    getTitle: ->
-      'Build Config: ' + @model.projectPath
-
-    getIconName: ->
-      'tools'
+      @reload()
 
     detached: ->
       @disposables.dispose()
+      @model.destroy()
+
+    reload: =>
+      @provider_list.html('')
+      for provider in @model.providers
+        @provider_list.append provider.view.element

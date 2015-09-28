@@ -31,6 +31,23 @@ module.exports =
         command.modifier.shell.command = out
         return null
 
+  info:
+    class ShellInfoPane
+      constructor: (command) ->
+        @element = document.createElement 'div'
+        @element.classList.add 'module'
+        keys = document.createElement 'div'
+        keys.innerHTML = '''
+        <div class: 'text-padded'>Shell Command:</div>
+        '''
+        values = document.createElement 'div'
+        value = document.createElement 'div'
+        value.classList.add 'text-padded'
+        value.innerText = String(command.modifier.shell.command)
+        values.appendChild value
+        @element.appendChild keys
+        @element.appendChild values
+
   activate: ->
     Command = require '../provider/command'
 

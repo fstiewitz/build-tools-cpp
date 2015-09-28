@@ -37,16 +37,17 @@ module.exports =
   key: (id) ->
     return unless (p = atom.workspace.getActiveTextEditor()?.getPath())?
     getFirstConfig(path.resolve(path.dirname(p))).then(({folderPath, filePath}) =>
-      p = getProjectConfig(folderPath, filePath).getCommandByIndex(id)
+      p = (c = getProjectConfig(folderPath, filePath)).getCommandByIndex(id)
       p.catch (error) -> atom.notifications?.addError error
       p.then (command) =>
         @run(command)
+        c.destroy()
     )
 
   keyAsk: (id) ->
     return unless (p = atom.workspace.getActiveTextEditor()?.getPath())?
     getFirstConfig(path.resolve(path.dirname(p))).then(({folderPath, filePath}) =>
-      p = getProjectConfig(folderPath, filePath).getCommandByIndex(id)
+      p = (config = getProjectConfig(folderPath, filePath)).getCommandByIndex(id)
       p.catch (error) -> atom.notifications?.addError error
       p.then (command) =>
         AskView ?= require '../view/ask-view'
@@ -54,6 +55,7 @@ module.exports =
           rc = new Command(command)
           rc.command = c
           @run(rc)
+          config.destroy()
         )
     )
 
@@ -62,7 +64,7 @@ module.exports =
     SelectionView ?= require '../view/selection-view'
     selectionview = new SelectionView
     selectionview.setLoading('Loading project configuration')
-    q = getFirstConfig(path.resolve(path.dirname(p)))
+    q = (config = getFirstConfig(path.resolve(path.dirname(p))))
     q.then(({folderPath, filePath}) =>
       selectionview.setLoading('Loading command list')
       project = getProjectConfig(folderPath, filePath)
@@ -71,6 +73,7 @@ module.exports =
         selectionview.callback = ({id, origin}) =>
           command = project.getCommandById origin, id
           @run command
+          config.destroy()
     )
     q.catch -> selectionview.setError('Could not load project configuration')
 

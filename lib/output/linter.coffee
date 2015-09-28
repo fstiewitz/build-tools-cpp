@@ -3,6 +3,9 @@ ll = require '../linter-list'
 coordinates = {}
 
 module.exports =
+
+  name: 'Linter'
+
   output:
     class Linter
 

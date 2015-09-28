@@ -19,6 +19,9 @@ file = (project, wd = '.') ->
 error = 'Could not get path from active text editor'
 
 module.exports =
+
+  name: 'Wildcards'
+
   activate: ->
     path = require 'path'
 
