@@ -1,11 +1,11 @@
 @import "ui-variables";
 atom-text-editor::shadow .linter-highlight, .linter-highlight{
   &.note {
-    &:not(.line-number){
+    &:not(.line-number) {
       background-color: @background-color-info;
       color: white;
     }
-    .icon-right::before{
+    .linter-gutter {
       color: @background-color-info;
     }
     .region {
