@@ -36,6 +36,7 @@ module.exports =
 
   key: (id) ->
     return unless (p = atom.workspace.getActiveTextEditor()?.getPath())?
+    @cancel()
     getFirstConfig(path.resolve(path.dirname(p))).then(({folderPath, filePath}) =>
       p = (c = getProjectConfig(folderPath, filePath)).getCommandByIndex(id)
       p.catch (error) -> atom.notifications?.addError error
@@ -46,6 +47,7 @@ module.exports =
 
   keyAsk: (id) ->
     return unless (p = atom.workspace.getActiveTextEditor()?.getPath())?
+    @cancel()
     getFirstConfig(path.resolve(path.dirname(p))).then(({folderPath, filePath}) =>
       p = (config = getProjectConfig(folderPath, filePath)).getCommandByIndex(id)
       p.catch (error) -> atom.notifications?.addError error
@@ -61,6 +63,7 @@ module.exports =
 
   selection: ->
     return unless (p = atom.workspace.getActiveTextEditor()?.getPath())?
+    @cancel()
     SelectionView ?= require '../view/selection-view'
     selectionview = new SelectionView
     selectionview.setLoading('Loading project configuration')
@@ -79,7 +82,6 @@ module.exports =
 
   run: (command) ->
     p = command.getQueue().run()
-    @cancel()
     p.then (@currentWorker) =>
       @currentWorker.run()
       @currentWorker.onFinishedQueue => @currentWorker = null

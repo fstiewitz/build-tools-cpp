@@ -11,9 +11,6 @@ describe 'Command Info Main Pane', ->
       name: 'Test 1'
       command: 'echo test'
       wd: '.'
-      shell: false
-      wildcards: true
-      save_all: true
       stdout:
         highlighting: 'nh'
       stderr:
@@ -31,5 +28,3 @@ describe 'Command Info Main Pane', ->
   it 'has all values', ->
     expect(view.element.children[1].children[0].innerText).toBe 'echo test'
     expect(view.element.children[1].children[1].innerText).toBe '.'
-    expect(view.element.children[1].children[2].innerText).toBe 'false'
-    expect(view.element.children[1].children[3].innerText).toBe 'true'

@@ -59,8 +59,9 @@ describe 'Command Edit Pane', ->
 
     it 'returns the correct values', ->
       res = accept.mostRecentCall.args[0]
+      oldname = accept.mostRecentCall.args[1]
       expect(accept).toHaveBeenCalled()
-      expect(res.oldname).toBe 'Test 1'
+      expect(oldname).toBe 'Test 1'
       expect(res.project).toBe atom.project.getPaths()[0]
       expect(res.command).toBe 'echo test'
       expect(res.save_all).toBe false

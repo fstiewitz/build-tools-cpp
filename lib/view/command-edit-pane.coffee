@@ -100,7 +100,6 @@ module.exports =
     accept: (event) =>
       c = new Command
       c.project = @command.project
-      c.oldname = @command.oldname
       for item in @panes
         if item.type is 'main'
           return @cancel(event) if item.view.get(c)?
@@ -109,7 +108,7 @@ module.exports =
           c.output[item.pane.find('input')[0].id] = {}
           continue unless item.view?
           return @cancel(event) if item.view.get(c)?
-      @success_callback?(c)
+      @success_callback?(c, @command.oldname)
       @cancel event
 
     cancel: (event) =>

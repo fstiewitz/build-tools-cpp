@@ -1,19 +1,15 @@
-{ScrollView} = require 'atom-space-pen-views'
+{View} = require 'atom-space-pen-views'
 {CompositeDisposable} = require 'atom'
-Providers = require '../provider/provider'
-Project = require '../provider/project'
+ConfigPane = require './config-pane'
 
 module.exports =
-  class SettingsView extends ScrollView
+  class SettingsView extends View
     @content: ->
-      @div class: 'build-settings pane-item', tabindex: -1, =>
-        @div class: 'panel-heading', =>
-          @span class: 'inline-block panel-text icon icon-database', 'Providers'
-          @span id: 'add-provider', class: 'inline-block btn btn-sm icon icon-plus', 'Add provider'
-        @div class: 'panel-body padded', outlet: 'provider_list'
+      @div class: 'build-settings pane-item', tabindex: -1
 
     initialize: (@projectPath, @filePath) ->
-      super
+      @configPane = new ConfigPane(@projectPath, @filePath)
+      @configPane.setCallbacks @hidePanes, @showPane
 
     getUri: ->
       @filePath
@@ -25,27 +21,17 @@ module.exports =
       'tools'
 
     attached: ->
-      @model = new Project(@projectPath, @filePath, true)
-      @disposables = new CompositeDisposable
-      context = []
-
-      for key in Object.keys(Providers.modules)
-        name = Providers.modules[key].name
-        @disposables.add atom.commands.add '.build-settings',  "build-tools:add-#{name}".replace(/\ /g, '-'), ({type}) -> console.log type
-        context.push label: "Add #{name}", command: "build-tools:add-#{name}".replace(/\ /g, '-')
-
-      @disposables.add atom.contextMenu.add {
-        '#add-provider': context
-      }
-      @disposables.add @model.onSave @reload
-
-      @reload()
+      @html('')
+      @append @configPane
 
     detached: ->
-      @disposables.dispose()
-      @model.destroy()
+      @detach()
+      @html('')
 
-    reload: =>
-      @provider_list.html('')
-      for provider in @model.providers
-        @provider_list.append provider.view.element
+    hidePanes: =>
+      @html('')
+      @append @configPane
+
+    showPane: (pane) =>
+      @html('')
+      @append pane

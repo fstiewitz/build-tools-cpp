@@ -45,11 +45,6 @@ module.exports =
             command.project = @path
             @commands.push(new Command(command))
 
-      destroy: ->
-        return unless @_save?
-        @emitter.dispose()
-        @emitter = null
-
       save: ->
         @_save()
 
@@ -87,7 +82,7 @@ module.exports =
       replaceCommand: (oldname, item) ->
         if (i = @getCommandIndex oldname) isnt -1
           item['project'] = @path
-          @commands.splice(i, 1, new Command(item))
+          @commands.splice(i, 1, item)
           @emitter.emit 'change'
           return true
         else
@@ -120,9 +115,14 @@ module.exports =
 
       @content: ->
         @div class: 'inset-panel', =>
-          @div class: 'panel-heading icon icon-code', =>
-            @span class: 'section-header', 'Commands'
-            @span id: 'add-command-button', class: 'inline-block btn btn-xs icon icon-plus', 'Add command'
+          @div class: 'top panel-heading', =>
+            @div =>
+              @span id: 'provider-name', class: 'inline-block panel-text icon icon-code', name
+              @span id: 'add-command-button', class: 'inline-block btn btn-xs icon icon-plus', 'Add command'
+            @div class: 'config-buttons align', =>
+              @div class: 'icon-triangle-up'
+              @div class: 'icon-triangle-down'
+              @div class: 'icon-x'
           @div class: 'panel-body padded', =>
             @div class: 'command-list', outlet: 'command_list'
 
@@ -139,10 +139,6 @@ module.exports =
 
       setCallbacks: (@hidePanes, @showPane) ->
 
-      destroy: ->
-        @detach()
-        @disposable.dispose()
-
       accept: (c) =>
         @project.addCommand c
 
@@ -154,8 +150,12 @@ module.exports =
           down = (command) =>
             @project.moveCommandDown(command)
           edit = (command) =>
-            #TODO Show edit view ...
-            @project.replaceCommand(command)
+            c = new Command(command)
+            c.oldname = c.name
+            @commandPane = atom.views.getView(c)
+            @commandPane.setCallbacks((_command, oldname) =>
+              @project.replaceCommand(oldname, _command)
+            , @hidePanes)
           remove = (command) =>
             @project.removeCommand(command)
           pane.setCallbacks up, down, edit, remove

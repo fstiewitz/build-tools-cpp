@@ -65,11 +65,11 @@ module.exports =
       @info.append element
 
     initializeOutputModules: ->
-      for key in Object.keys(@command.output)
+      for key in Object.keys(@command.output ? {})
         continue unless Outputs.activate(key) is true
         @buildPane Outputs.modules[key].info, 'Output: ' + Outputs.modules[key].name
 
     initializeModifierModules: ->
-      for key in Object.keys(@command.modifier)
+      for key in Object.keys(@command.modifier ? {})
         continue unless Modifiers.activate(key) is true
         @buildPane Modifiers.modules[key].info, 'Modifier: ' + Modifiers.modules[key].name
