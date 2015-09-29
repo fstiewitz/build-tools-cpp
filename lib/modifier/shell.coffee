@@ -1,5 +1,5 @@
 Command = null
-{View} = require 'atom-space-pen-views'
+{TextEditorView, View} = require 'atom-space-pen-views'
 
 module.exports =
 
@@ -7,7 +7,7 @@ module.exports =
   description: 'Execute command in a shell'
   private: false
 
-  view:
+  edit:
     class ShellPane extends View
 
       @content: ->

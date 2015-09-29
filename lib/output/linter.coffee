@@ -5,6 +5,8 @@ coordinates = {}
 module.exports =
 
   name: 'Linter'
+  description: 'Highlight errors in-line with Linter'
+  private: false
 
   output:
     class Linter

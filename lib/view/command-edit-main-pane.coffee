@@ -57,32 +57,16 @@ module.exports =
             @div =>
               @span class: 'inline-block text-subtle', 'Directory to execute command in'
           @subview 'working_directory', new TextEditorView(mini: true, placeholderText: '.')
-        @div class: 'block checkbox', =>
-          @input id: 'command_in_shell', type: 'checkbox'
-          @label =>
-            @div class: 'settings-name', 'Execute in shell'
-            @div =>
-              @span class: 'inline-block text-subtle', 'Execute the command in your OS\'s shell. Change "Shell Command" in build-tools\'s settings if you are not using bash or use windows'
-        @div class: 'block checkbox', =>
-          @input id: 'wildcards', type: 'checkbox'
-          @label =>
-            @div class: 'settings-name', 'Replace Wildcards'
-            @div =>
-              @span class: 'inline-block text-subtle', 'Enable if command or working directory contain wildcards'
 
     set: (command) ->
       if command?
         @command_name.getModel().setText(command.name)
         @command_text.getModel().setText(command.command)
         @working_directory.getModel().setText(command.wd)
-        @find('#command_in_shell').prop('checked', command.shell)
-        @find('#wildcards').prop('checked', command.wildcards)
       else
         @command_name.getModel().setText('')
         @command_text.getModel().setText('')
         @working_directory.getModel().setText('.')
-        @find('#command_in_shell').prop('checked', false)
-        @find('#wildcards').prop('checked', false)
 
     get: (command) ->
       return 'Empty Name' if (n = @command_name.getModel().getText()) is ''
@@ -91,6 +75,4 @@ module.exports =
       command.name = n
       command.command = c
       command.wd = w.getText()
-      command.shell = @find('#command_in_shell').prop('checked')
-      command.wildcards = @find('#wildcards').prop('checked')
       return null

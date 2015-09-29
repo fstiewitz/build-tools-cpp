@@ -1,13 +1,13 @@
-{$$, View} = require 'atom-space-pen-views'
+{$, $$, View} = require 'atom-space-pen-views'
 
 {CompositeDisposable} = require 'atom'
 
+Modifiers = require '../modifier/modifier'
 Outputs = require '../output/output'
 
 Command = require '../provider/command'
 
 MainPane = require './command-edit-main-pane'
-SavePane = require './command-edit-save-pane'
 ProfilePane = require './command-edit-profile-pane'
 
 module.exports =
@@ -15,70 +15,78 @@ module.exports =
 
     @content: ->
       @div class: 'commandview', =>
-        @div class: 'inset-panel', outlet: 'general', =>
-          @div class: 'panel-heading settings-name icon icon-gear', 'General'
-        @div class: 'inset-panel', outlet: 'save_all', =>
-          @div class: 'panel-heading settings-name icon icon-triangle-right', 'Modifier: Save all'
-        @div class: 'inset-panel', outlet: 'profiles', =>
-          @div class: 'panel-heading settings-name icon icon-plug', 'Highlighting'
-        @div outlet: 'output_modules'
         @div class: 'buttons', =>
-          @div class: 'btn btn-error icon icon-x inline-block-tight', 'Cancel'
-          @div class: 'btn btn-primary icon icon-check inline-block-tight', 'Accept'
+          @div class: 'btn btn-sm btn-error icon icon-x inline-block-tight', 'Cancel'
+          @div class: 'btn btn-sm btn-primary icon icon-check inline-block-tight', 'Accept'
+        @div class: '_panes', outlet: 'panes_view'
 
     initialize: (@command) ->
-      @panes = []
-
-      @panes.push type: 'main', pane: @general, view: new MainPane
-      @panes.push type: 'main', pane: @save_all, view: new SavePane
-      @panes.push type: 'main', pane: @profiles, view: new ProfilePane
-
-      @general.append @panes[0]
-      @save_all.append @panes[1]
-      @profiles.append @panes[2]
-
-      @initializeOutputModules()
-      @addEventHandlers()
-      @initializePanes()
 
     setCallbacks: (@success_callback, @cancel_callback) ->
 
-    destroy: ->
+    detached: ->
       @disposables.dispose()
       for item in @panes
         item.view?.destroy?()
       @panes = null
 
+    attached: ->
+      @panes = []
+
+      @panes.push @buildPane(new MainPane, 'General', 'icon-gear')
+      @initializeModifierModules()
+      @panes.push @buildPane(new ProfilePane, 'Highlighting', 'icon-plug')
+      @initializeOutputModules()
+
+      @addEventHandlers()
+      @initializePanes()
+
+    buildPane: (view, name, icon, key, desc = '', enabled) ->
+      item = $$ ->
+        @div class: 'inset-panel', =>
+          @div class: 'panel-heading top', =>
+            if key?
+              @div class: 'checkbox', =>
+                @input id: key, type: 'checkbox'
+                @label =>
+                  @div class: "settings-name icon #{icon}", name
+                  @div =>
+                    @span class: 'inline-block text-subtle', desc
+            else
+              @span class: "settings-name icon #{icon}", name
+      item.append view.element if view?
+      if key?
+        item.find('input').prop('checked', enabled)
+        if view?
+          view.element.classList.add 'hidden' unless enabled and view?
+          item.children()[0].children[0].children[0].onchange = ->
+            if @checked
+              @parentNode.parentNode.parentNode.children[1]?.classList.remove 'hidden'
+            else
+              @parentNode.parentNode.parentNode.children[1]?.classList.add 'hidden'
+      @panes_view.append item
+      return pane: item, view: view
+
+    initializeModifierModules: ->
+      for key in Object.keys(Modifiers.modules)
+        continue unless Modifiers.activate(key) is true
+        mod = Modifiers.modules[key]
+        view = null
+        view = new mod.edit if mod.edit?
+        @panes.push @buildPane(view, "Modifier: #{mod.name}", 'icon-pencil', key, mod.description, @command.modifier?[key]?)
+
     initializeOutputModules: ->
-      command = @command
       for key in Object.keys(Outputs.modules)
-        continue if Outputs.modules[key].private
-        pane = $$ ->
-          @div class: 'inset-panel', =>
-            @div class: 'pane-heading output-module', =>
-              @input id: key, type: 'checkbox'
-              @div class: 'inline-block icon icon-terminal', Outputs.modules[key].name
-        edit = null
-        pane.find('input').prop('checked', @command?.output[key]?)
-        if Outputs.modules[key].edit?
-          pane.append (edit = new Outputs.modules[key].edit)
-          pane.find('.panel-body').addClass('hidden') unless @command?.output[key]?
-        @panes.push type: 'output', pane: pane, view: edit
-        @output_modules.append pane
+        continue unless Outputs.activate(key) is true
+        mod = Outputs.modules[key]
+        view = null
+        view = new mod.edit if mod.edit?
+        @panes.push @buildPane(view, "Output: #{mod.name}", 'icon-terminal', key, mod.description, @command.output?[key]?)
 
     addEventHandlers: ->
       @on 'click', '.checkbox label', (e) ->
         item = $(e.currentTarget.parentNode.children[0])
         item.prop('checked', not item.prop('checked'))
-
-      @on 'click', '.output-module', ({currentTarget}) ->
-        item = $(currentTarget.children[0])
-        item.prop('checked', not item.prop('checked'))
-        if currentTarget.parentNode.children.length is 2
-          if item.prop('checked')
-            currentTarget.parentNode.children[1].classList.remove 'hidden'
-          else
-            currentTarget.parentNode.children[1].classList.add 'hidden'
 
       @on 'click', '.buttons .icon-x', @cancel
       @on 'click', '.buttons .icon-check', @accept
@@ -90,25 +98,14 @@ module.exports =
         'core:cancel': @cancel
 
     initializePanes: ->
-      if @command?.name?
-        c = @command
-      else
-        c = null
-      for item in @panes
-        item.view?.set c
+      for {view} in @panes
+        if @command.oldname?
+          command = @command
+        else
+          command = null
+        view?.set command
 
     accept: (event) =>
-      c = new Command
-      c.project = @command.project
-      for item in @panes
-        if item.type is 'main'
-          return @cancel(event) if item.view.get(c)?
-        else if item.type is 'output'
-          continue unless item.pane.find('input').prop('checked')
-          c.output[item.pane.find('input')[0].id] = {}
-          continue unless item.view?
-          return @cancel(event) if item.view.get(c)?
-      @success_callback?(c, @command.oldname)
       @cancel event
 
     cancel: (event) =>

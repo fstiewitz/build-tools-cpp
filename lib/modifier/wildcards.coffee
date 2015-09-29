@@ -21,6 +21,8 @@ error = 'Could not get path from active text editor'
 module.exports =
 
   name: 'Wildcards'
+  description: 'Replace wildcards in command and working directory'
+  private: false
 
   activate: ->
     path = require 'path'
