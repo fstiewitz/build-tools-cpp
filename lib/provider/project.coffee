@@ -73,28 +73,24 @@ module.exports =
         interface: new Providers.modules[key].model(@projectPath, {}, @save)
       @providers[l - 1].view = new Providers.modules[key].view(@providers[l - 1].interface) if @viewed
       @save()
-      @emitter.emit 'save'
       return true
 
     removeProvider: (index) ->
       return false unless @providers.length > index
       @providers.splice(index, 1)[0]
       @save()
-      @emitter.emit 'save'
       return true
 
     moveProviderUp: (index) ->
       return false if (index is 0) or (index >= @providers.length)
       @providers.splice(index - 1, 0, @providers.splice(index, 1)[0])
       @save()
-      @emitter.emit 'save'
       return true
 
     moveProviderDown: (index) ->
       return false if (index >= @providers.length - 1)
       @providers.splice(index, 0, @providers.splice(index + 1, 1)[0])
       @save()
-      @emitter.emit 'save'
       return true
 
     ############################################################################
@@ -112,10 +108,11 @@ module.exports =
       @_return = @_return.concat ({name: command, singular: Providers.modules[p.key].singular, origin: p.key, id: i} for command, i in p.interface.getCommandNames()) if p.interface?
       @_getCommandNameObjects resolve, reject
 
-    save: ->
+    save: =>
       providers = []
       for provider in @providers
         providers.push
           key: provider.key
           config: provider.config
       CSON.writeFileSync @filePath, {providers}
+      @emitter.emit 'save'

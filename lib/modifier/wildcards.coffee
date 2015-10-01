@@ -28,6 +28,7 @@ module.exports =
     class WildcardSaver
       get: (command) ->
         command.modifier.wildcards = {}
+        return null
 
   activate: ->
     path = require 'path'

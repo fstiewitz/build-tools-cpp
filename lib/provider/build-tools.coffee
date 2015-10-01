@@ -44,6 +44,7 @@ module.exports =
           for command in @config.commands
             command.project = @path
             @commands.push(new Command(command))
+        @config.commands = @commands
 
       save: ->
         @_save()

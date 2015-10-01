@@ -13,10 +13,13 @@ module.exports =
         @div class: 'panel-body padded', outlet: 'provider_list'
 
     initialize: (@projectPath, @filePath) ->
+      @model = new Project(@projectPath, @filePath, true)
       super
 
+    destroy: ->
+      @model.destroy()
+
     attached: ->
-      @model = new Project(@projectPath, @filePath, true)
       @disposables = new CompositeDisposable
       context = []
 
@@ -37,7 +40,7 @@ module.exports =
 
     detached: ->
       @disposables.dispose()
-      @model.destroy()
+      @provider_list.html('')
 
     setCallbacks: (@hidePanes, @showPane) ->
 

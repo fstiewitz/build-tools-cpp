@@ -9,6 +9,7 @@ module.exports =
 
     initialize: (@projectPath, @filePath) ->
       @configPane = new ConfigPane(@projectPath, @filePath)
+      @model = @configPane.model
       @configPane.setCallbacks @hidePanes, @showPane
 
     getUri: ->
@@ -26,6 +27,7 @@ module.exports =
 
     detached: ->
       @detach()
+      @model.destroy()
       @html('')
 
     hidePanes: =>

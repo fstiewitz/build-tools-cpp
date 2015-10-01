@@ -12,6 +12,7 @@ module.exports =
     class LinterSaver
       get: (command) ->
         command.output.linter = {}
+        return null
 
   output:
     class Linter
