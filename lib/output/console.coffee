@@ -42,7 +42,7 @@ module.exports =
                 @span class: 'inline-block text-subtle', 'Close console on success. Uses config value in package settings if enabled'
 
       set: (command) ->
-        if command?
+        if command?.output?.console?
           @find('#close_success').prop('checked', command.output.console.close_success)
         else
           @find('#close_success').prop('checked', if atom.config.get('build-tools.CloseOnSuccess') is -1 then false else true)

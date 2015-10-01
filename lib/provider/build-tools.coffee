@@ -7,7 +7,7 @@ CSON = null
 CompositeDisposable = null
 {View} = require 'atom-space-pen-views'
 
-notify: (message) ->
+notify = (message) ->
   atom.notifications?.addError message
   console.log('build-tools: ' + message)
 
@@ -68,7 +68,7 @@ module.exports =
           @emitter.emit 'change'
           return true
         else
-          @notify "Command \"#{item.name}\" already exists"
+          notify "Command \"#{item.name}\" already exists"
           return false
 
       removeCommand: (name) ->
@@ -77,7 +77,7 @@ module.exports =
           @emitter.emit 'change'
           return true
         else
-          @notify "Command \"#{name}\" not found"
+          notify "Command \"#{name}\" not found"
           return false
 
       replaceCommand: (oldname, item) ->
@@ -87,7 +87,7 @@ module.exports =
           @emitter.emit 'change'
           return true
         else
-          @notify "Command \"#{oldname}\" not found"
+          notify "Command \"#{oldname}\" not found"
           return false
 
       moveCommand: (name, offset) ->
@@ -96,7 +96,7 @@ module.exports =
           @emitter.emit 'change'
           return true
         else
-          @notify "Command \"#{name}\" not found"
+          notify "Command \"#{name}\" not found"
           return false
 
       hasCommand: (name) ->
@@ -147,9 +147,9 @@ module.exports =
         for command in @project.getCommands()
           pane = new CommandInfoPane(command)
           up = (command) =>
-            @project.moveCommandUp(command)
+            @project.moveCommand(command.name, -1)
           down = (command) =>
-            @project.moveCommandDown(command)
+            @project.moveCommand(command.name, 1)
           edit = (command) =>
             c = new Command(command)
             c.oldname = c.name
@@ -160,6 +160,6 @@ module.exports =
             , @hidePanes)
             @showPane @commandPane
           remove = (command) =>
-            @project.removeCommand(command)
+            @project.removeCommand(command.name)
           pane.setCallbacks up, down, edit, remove
           @command_list.append pane
