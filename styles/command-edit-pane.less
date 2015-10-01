@@ -5,13 +5,37 @@
   display: flex;
   flex-direction: column;
 
+  .module {
+    padding: 0;
+  }
+
   .top {
     display: flex;
     flex-flow: row wrap;
     justify-content: space-between;
 
     .checkbox {
-      width: 100%;
+      flex: 1
+    }
+  }
+
+  .align {
+    display: flex;
+    flex: none;
+
+    .icon-triangle-up {
+        &:before {
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+        }
+    }
+    .icon-triangle-down {
+      &:before {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
     }
   }
 

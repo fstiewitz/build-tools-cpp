@@ -156,6 +156,7 @@ module.exports =
             @commandPane.setCallbacks((_command, oldname) =>
               @project.replaceCommand(oldname, _command)
             , @hidePanes)
+            @showPane @commandPane
           remove = (command) =>
             @project.removeCommand(command)
           pane.setCallbacks up, down, edit, remove

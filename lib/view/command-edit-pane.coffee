@@ -33,25 +33,31 @@ module.exports =
     attached: ->
       @panes = []
 
-      @panes.push @buildPane(new MainPane, 'General', 'icon-gear')
+      @buildPane(new MainPane, 'General', 'icon-gear')
       @initializeModifierModules()
-      @panes.push @buildPane(new ProfilePane, 'Highlighting', 'icon-plug')
+      @buildPane(new ProfilePane, 'Highlighting', 'icon-plug')
       @initializeOutputModules()
 
       @addEventHandlers()
       @initializePanes()
 
-    buildPane: (view, name, icon, key, desc = '', enabled) ->
+    buildPane: (view, name, icon, key, desc = '', enabled, moveable = false) ->
       item = $$ ->
         @div class: 'inset-panel', =>
-          @div class: 'panel-heading top', =>
+          c = 'panel-heading top'
+          c += ' module' if key?
+          @div class: c, =>
             if key?
-              @div class: 'checkbox', =>
+              @div class: 'checkbox align', =>
                 @input id: key, type: 'checkbox'
                 @label =>
                   @div class: "settings-name icon #{icon}", name
                   @div =>
                     @span class: 'inline-block text-subtle', desc
+              if moveable
+                @div class: 'align', =>
+                  @div class: 'icon-triangle-up'
+                  @div class: 'icon-triangle-down'
             else
               @span class: "settings-name icon #{icon}", name
       item.append view.element if view?
@@ -64,24 +70,66 @@ module.exports =
               @parentNode.parentNode.parentNode.children[1]?.classList.remove 'hidden'
             else
               @parentNode.parentNode.parentNode.children[1]?.classList.add 'hidden'
+        if moveable
+          item.on 'click', '.panel-heading .align .icon-triangle-up', (event) =>
+            for pane, index in @panes
+              if pane.key is key
+                @moveModifierUp(index)
+                event.stopPropagation()
+                break
+          item.on 'click', '.panel-heading .align .icon-triangle-down', (event) =>
+            for pane, index in @panes
+              if pane.key is key
+                @moveModifierDown(index)
+                event.stopPropagation()
+                break
       @panes_view.append item
+      @panes.push pane: item, view: view, key: key
       return pane: item, view: view
 
     initializeModifierModules: ->
-      for key in Object.keys(Modifiers.modules)
+      for key in Object.keys(@command.modifier ? {})
         continue unless Modifiers.activate(key) is true
         mod = Modifiers.modules[key]
+        continue if mod.private
         view = null
         view = new mod.edit if mod.edit?
-        @panes.push @buildPane(view, "Modifier: #{mod.name}", 'icon-pencil', key, mod.description, @command.modifier?[key]?)
+        @buildPane(view, "Modifier: #{mod.name}", 'icon-pencil', key, mod.description, @command.modifier?[key]?, true)
+
+      if Object.keys(@command.modifier ? {}).length is 0
+        rest = Object.keys(Modifiers.modules)
+      else
+        rest = Object.keys(Modifiers.modules).filter (key) =>
+          not (key in Object.keys(@command.modifier ? {}))
+
+      for key in rest
+        continue unless Modifiers.activate(key) is true
+        mod = Modifiers.modules[key]
+        continue if mod.private
+        view = null
+        view = new mod.edit if mod.edit?
+        @buildPane(view, "Modifier: #{mod.name}", 'icon-pencil', key, mod.description, @command.modifier?[key]?, true)
 
     initializeOutputModules: ->
       for key in Object.keys(Outputs.modules)
         continue unless Outputs.activate(key) is true
         mod = Outputs.modules[key]
+        continue if mod.private
         view = null
         view = new mod.edit if mod.edit?
-        @panes.push @buildPane(view, "Output: #{mod.name}", 'icon-terminal', key, mod.description, @command.output?[key]?)
+        @buildPane(view, "Output: #{mod.name}", 'icon-terminal', key, mod.description, @command.output?[key]?)
+
+    moveModifierUp: (index) ->
+      return false if (index is 1) or (index > Object.keys(Modifiers.modules).length)
+      e = @panes.splice(index, 1)[0]
+      @panes.splice(index - 1, 0, e)
+      $(@panes_view.children()[index - 1]).before e.pane
+
+    moveModifierDown: (index) ->
+      return false if (index >= Object.keys(Modifiers.modules).length)
+      e = @panes.splice(index + 1, 1)[0]
+      @panes.splice(index, 0, e)
+      $(@panes_view.children()[index]).before e.pane
 
     addEventHandlers: ->
       @on 'click', '.checkbox label', (e) ->
