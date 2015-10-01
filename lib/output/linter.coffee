@@ -8,6 +8,11 @@ module.exports =
   description: 'Highlight errors in-line with Linter'
   private: false
 
+  edit:
+    class LinterSaver
+      get: (command) ->
+        command.output.linter = {}
+
   output:
     class Linter
 

@@ -60,11 +60,11 @@ module.exports =
                   @div class: 'icon-triangle-down'
             else
               @span class: "settings-name icon #{icon}", name
-      item.append view.element if view?
+      item.append view.element if view.element?
       if key?
         item.find('input').prop('checked', enabled)
-        if view?
-          view.element.classList.add 'hidden' unless enabled and view?
+        if view.element?
+          view.element.classList.add 'hidden' unless enabled
           item.children()[0].children[0].children[0].onchange = ->
             if @checked
               @parentNode.parentNode.parentNode.children[1]?.classList.remove 'hidden'
@@ -92,9 +92,7 @@ module.exports =
         continue unless Modifiers.activate(key) is true
         mod = Modifiers.modules[key]
         continue if mod.private
-        view = null
-        view = new mod.edit if mod.edit?
-        @buildPane(view, "Modifier: #{mod.name}", 'icon-pencil', key, mod.description, @command.modifier?[key]?, true)
+        @buildPane(new mod.edit, "Modifier: #{mod.name}", 'icon-pencil', key, mod.description, @command.modifier?[key]?, true)
 
       if Object.keys(@command.modifier ? {}).length is 0
         rest = Object.keys(Modifiers.modules)
@@ -106,18 +104,14 @@ module.exports =
         continue unless Modifiers.activate(key) is true
         mod = Modifiers.modules[key]
         continue if mod.private
-        view = null
-        view = new mod.edit if mod.edit?
-        @buildPane(view, "Modifier: #{mod.name}", 'icon-pencil', key, mod.description, @command.modifier?[key]?, true)
+        @buildPane(new mod.edit, "Modifier: #{mod.name}", 'icon-pencil', key, mod.description, @command.modifier?[key]?, true)
 
     initializeOutputModules: ->
       for key in Object.keys(Outputs.modules)
         continue unless Outputs.activate(key) is true
         mod = Outputs.modules[key]
         continue if mod.private
-        view = null
-        view = new mod.edit if mod.edit?
-        @buildPane(view, "Output: #{mod.name}", 'icon-terminal', key, mod.description, @command.output?[key]?)
+        @buildPane(new mod.edit, "Output: #{mod.name}", 'icon-terminal', key, mod.description, @command.output?[key]?)
 
     moveModifierUp: (index) ->
       return false if (index is 1) or (index > Object.keys(Modifiers.modules).length)
@@ -151,9 +145,24 @@ module.exports =
           command = @command
         else
           command = null
-        view?.set command
+        view?.set? command
 
     accept: (event) =>
+      c = new Command
+      c.project = @command.project
+      for {pane, view} in @panes
+        if (p = pane.children()[0].children[0].children[0])?
+          if p.checked
+            if (ret = view.get(c))?
+              atom.notifications?.addError ret
+              event.stopPropagation()
+              return
+        else
+          if (ret = view.get(c))?
+            atom.notifications?.addError ret
+            event.stopPropagation()
+            return
+      @success_callback c, @command.oldname
       @cancel event
 
     cancel: (event) =>

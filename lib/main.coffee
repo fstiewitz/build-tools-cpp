@@ -48,6 +48,7 @@ module.exports =
     SettingsView = null
 
   provideLinter: ->
+    name: 'build-tools'
     grammarScopes: ['*']
     scope: 'project'
     lintOnFly: false

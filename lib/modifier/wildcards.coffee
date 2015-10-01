@@ -24,6 +24,11 @@ module.exports =
   description: 'Replace wildcards in command and working directory'
   private: false
 
+  edit:
+    class WildcardSaver
+      get: (command) ->
+        command.modifier.wildcards = {}
+
   activate: ->
     path = require 'path'
 

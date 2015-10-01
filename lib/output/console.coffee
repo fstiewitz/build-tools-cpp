@@ -48,6 +48,7 @@ module.exports =
           @find('#close_success').prop('checked', if atom.config.get('build-tools.CloseOnSuccess') is -1 then false else true)
 
       get: (command) ->
+        command.output.console ?= {}
         command.output.console.close_success = @find('#close_success').prop('checked')
         return null
 

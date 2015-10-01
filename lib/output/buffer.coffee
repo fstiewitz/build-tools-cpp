@@ -27,13 +27,13 @@ module.exports =
                 @span class: 'inline-block text-subtle', 'Re-use the same buffer'
 
       set: (command) ->
-        if command?
-          command.output.buffer ?= {}
+        if command?.output?.buffer?
           @find('#recycle_buffer').prop('checked', command.output.buffer.recycle_buffer)
         else
           @find('#recycle_buffer').prop('checked', true)
 
       get: (command) ->
+        command.output.buffer ?= {}
         command.output.buffer.recycle_buffer = @find('#recycle_buffer').prop('checked')
         return null
 

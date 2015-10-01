@@ -27,8 +27,6 @@ describe 'Command Edit Main Pane', ->
       expect(view.command_name.getModel().getText()).toBe 'Test'
       expect(view.command_text.getModel().getText()).toBe 'echo test'
       expect(view.working_directory.getModel().getText()).toBe '.'
-      expect(view.find('#command_in_shell').prop('checked')).toBe true
-      expect(view.find('#wildcards').prop('checked')).toBe false
 
   describe 'On set without a value', ->
 
@@ -39,8 +37,6 @@ describe 'Command Edit Main Pane', ->
       expect(view.command_name.getModel().getText()).toBe ''
       expect(view.command_text.getModel().getText()).toBe ''
       expect(view.working_directory.getModel().getText()).toBe '.'
-      expect(view.find('#command_in_shell').prop('checked')).toBe false
-      expect(view.find('#wildcards').prop('checked')).toBe false
 
   describe 'On get with wrong values', ->
     c = {}
@@ -72,6 +68,4 @@ describe 'Command Edit Main Pane', ->
         name: 'Foo'
         command: 'Bar'
         wd: '.'
-        shell: false
-        wildcards: false
       }

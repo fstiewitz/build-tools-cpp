@@ -20,14 +20,14 @@ module.exports =
             @subview 'command_name', new TextEditorView(mini: true, placeholderText: 'Default: bash -c')
 
       set: (command) ->
-        if command?
-          command.modifier.shell ?= {}
-          @command_name.getModel().setText(command.modifier.shell.command ? '')
+        if command?.modifier?.shell?
+          @command_name.getModel().setText(command.modifier.shell.command)
         else
           @command_name.getModel().setText('')
 
       get: (command) ->
         out = 'bash -c' if (out = @command_name.getModel().getText()) is ''
+        command.modifier.shell ?= {}
         command.modifier.shell.command = out
         return null
 

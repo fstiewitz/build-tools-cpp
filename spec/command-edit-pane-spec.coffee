@@ -16,9 +16,8 @@ describe 'Command Edit Pane', ->
       name: 'Test 1'
       command: 'echo test'
       wd: '.'
-      shell: false
-      wildcards: false
-      save_all: true
+      modifier:
+        save_all: {}
       stdout:
         highlighting: 'nh'
       stderr:
@@ -31,30 +30,22 @@ describe 'Command Edit Pane', ->
     view.setCallbacks accept, cancel
     jasmine.attachToDOM(view.element)
 
-  afterEach ->
-    view.destroy()
-
   it 'has a pane', ->
     expect(view.element).toBeDefined()
 
   it 'has 5 edit panes', ->
-    expect(view.find('.inset-panel').length).toBe 7
+    expect(view.find('.inset-panel').length).toBe 9
 
   it 'has the correct values', ->
     expect(view.panes[0].view.command_name.getModel().getText()).toBe 'Test 1'
-    expect(view.panes[1].view.find('#save').prop('checked')).toBe true
-    expect(view.panes[2].view.stderr_profile[0].selectedIndex).toBe 3
-    expect(view.panes[3].view.find('#close_success').prop('checked')).toBe true
-    expect(view.panes[3].pane.find('input').prop('checked')).toBe true
-    expect(view.panes[3].pane.find('input')[0].id).toBe 'console'
-    expect(view.panes[4].view).toBeNull()
-    expect(view.panes[4].pane.find('input').prop('checked')).toBe false
-    expect(view.panes[4].pane.find('input')[0].id).toBe 'linter'
+    expect(view.panes[1].pane.find('#save_all').prop('checked')).toBe true
+    expect(view.panes[4].view.stderr_profile[0].selectedIndex).toBe 3
+    expect(view.panes[5].view.find('#close_success').prop('checked')).toBe true
 
   describe 'On accept', ->
 
     beforeEach ->
-      view.panes[1].view.find('#save').prop('checked', false)
+      view.panes[1].pane.find('#save_all').prop('checked', false)
       view.find('.btn-primary').click()
 
     it 'returns the correct values', ->
@@ -64,7 +55,7 @@ describe 'Command Edit Pane', ->
       expect(oldname).toBe 'Test 1'
       expect(res.project).toBe atom.project.getPaths()[0]
       expect(res.command).toBe 'echo test'
-      expect(res.save_all).toBe false
+      expect(res.modifier.save_all).toBeUndefined()
       expect(res.stdout.highlighting).toBe 'nh'
       expect(res.stderr.highlighting).toBe 'hc'
       expect(res.stderr.profile).toBe 'python'
@@ -81,13 +72,11 @@ describe 'Command Edit Pane', ->
       waitsForPromise -> atom.packages.activatePackage('build-tools')
       runs -> callback()
 
-    afterEach ->
-      p.destroy()
-
     it 'On getView with default command', ->
       execute ->
         c = new Command
         p = atom.views.getView(c)
+        jasmine.attachToDOM(p.element)
         expect(p.panes[0].view.command_name.getModel().getText()).toBe ''
         expect(p.command.oldname).toBeUndefined()
 
@@ -96,5 +85,6 @@ describe 'Command Edit Pane', ->
         command.oldname = undefined
         c = new Command(command)
         p = atom.views.getView(c)
+        jasmine.attachToDOM(p.element)
         expect(p.panes[0].view.command_name.getModel().getText()).toBe 'Test 1'
         expect(p.command.oldname).toBe 'Test 1'

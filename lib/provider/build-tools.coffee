@@ -152,6 +152,7 @@ module.exports =
           edit = (command) =>
             c = new Command(command)
             c.oldname = c.name
+            c.project = @project.projectPath
             @commandPane = atom.views.getView(c)
             @commandPane.setCallbacks((_command, oldname) =>
               @project.replaceCommand(oldname, _command)

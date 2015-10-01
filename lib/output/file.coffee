@@ -30,14 +30,14 @@ module.exports =
             @subview 'file_path', new TextEditorView(mini: true, placeholderText: 'Default: output.log')
 
       set: (command) ->
-        if command?
-          command.output.file ?= {}
+        if command?.output?.file?
           @file_path.getModel().setText(command.output.file.path ? '')
         else
           @file_path.getModel().setText('')
 
       get: (command) ->
         out = 'output.log' if (out = @file_path.getModel().getText()) is ''
+        command.output.file ?= {}
         command.output.file.path = out
         return null
 
