@@ -20,7 +20,7 @@ module.exports =
       @mergeEnvironment process.env
 
     mergeEnvironment: (env) ->
-      @env[key] = env[key] for key in Object.keys(env) when not @env[key]?
+      @env[key] = env[key] for key in Object.keys(env) when not @env[key]
 
     @splitQuotes: (cmd_string) ->
       args = []

@@ -67,16 +67,16 @@ module.exports =
     SelectionView ?= require '../view/selection-view'
     selectionview = new SelectionView
     selectionview.setLoading('Loading project configuration')
-    q = (config = getFirstConfig(path.resolve(path.dirname(p))))
+    q = getFirstConfig(path.resolve(path.dirname(p)))
     q.then(({folderPath, filePath}) =>
       selectionview.setLoading('Loading command list')
       project = getProjectConfig(folderPath, filePath)
       project.getCommandNameObjects().then (commands) =>
         selectionview.setItems commands
-        selectionview.callback = ({id, origin}) =>
-          command = project.getCommandById origin, id
+        selectionview.callback = ({id, pid}) =>
+          command = project.getCommandById pid, id
           @run command
-          config.destroy()
+          project.destroy()
     )
     q.catch -> selectionview.setError('Could not load project configuration')
 

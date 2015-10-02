@@ -20,7 +20,11 @@ module.exports =
   reset: ->
     for k in Object.keys(@modules)
       @deactivate k
-      @removeModule k unless k in ['console', 'linter', 'buffer', 'file']
+      @removeModule k
+    @modules.console = require './console'
+    @modules.linter = require './linter'
+    @modules.buffer = require './buffer'
+    @modules.file = require './file'
 
   activate: (key) ->
     mod = @modules[key]

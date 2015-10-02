@@ -6,6 +6,7 @@ module.exports =
     shell: require './shell'
     wildcards: require './wildcards'
     save_all: require './save_all'
+    env: require './env'
 
   addModule: (key, mod) ->
     return if @modules[key]?
@@ -20,7 +21,11 @@ module.exports =
   reset: ->
     for k in Object.keys(@modules)
       @deactivate k
-      @removeModule k unless k in ['shell', 'wildcards', 'save_all']
+      @removeModule k
+    @modules.shell = require './shell'
+    @modules.wildcards = require './wildcards'
+    @modules.save_all = require './save_all'
+    @modules.env = require './env'
 
   activate: (key) ->
     mod = @modules[key]

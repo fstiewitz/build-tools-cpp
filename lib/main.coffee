@@ -26,6 +26,7 @@ module.exports =
       'build-tools:second-command-ask': -> Input.keyAsk(1)
       'build-tools:first-command-ask': -> Input.keyAsk(0)
       'build-tools:commands': -> Input.selection()
+      'core:cancel': -> Input.cancel()
     @subscriptions.add atom.views.addViewProvider Command, (command) ->
       command.oldname = command.name
       CommandEditPane ?= require './view/command-edit-pane'

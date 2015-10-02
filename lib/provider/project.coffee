@@ -41,10 +41,8 @@ module.exports =
     # Getters
     ############################################################################
 
-    getCommandById: (origin, id) ->
-      for provider in @providers
-        if provider.key is origin
-          return provider.interface?.getCommandByIndex id
+    getCommandById: (pid, id) ->
+      @providers[pid]?.interface?.getCommandByIndex id
 
     getCommandByIndex: (id) ->
       new Promise((resolve, reject) =>
@@ -106,7 +104,7 @@ module.exports =
 
     _getCommandNameObjects: (resolve, reject) ->
       return resolve(@_return) unless (p = @_providers.pop())?
-      @_return = @_return.concat ({name: command, singular: Providers.modules[p.key].singular, origin: p.key, id: i} for command, i in p.interface.getCommandNames()) if p.interface?
+      @_return = @_return.concat ({name: command, singular: Providers.modules[p.key].singular, origin: p.key, id: i, pid: @providers.length - @_providers.length - 1} for command, i in p.interface.getCommandNames()) if p.interface?
       @_getCommandNameObjects resolve, reject
 
     save: =>

@@ -18,7 +18,8 @@ module.exports =
   reset: ->
     for k in Object.keys(@modules)
       @deactivate k
-      @removeModule k unless k is 'bt'
+      @removeModule k
+    @modules.bt = require './build-tools'
 
   activate: (key) ->
     mod = @modules[key]

@@ -34,13 +34,13 @@ describe 'Command Edit Pane', ->
     expect(view.element).toBeDefined()
 
   it 'has 5 edit panes', ->
-    expect(view.find('.inset-panel').length).toBe 9
+    expect(view.find('.inset-panel').length).toBe 10
 
   it 'has the correct values', ->
     expect(view.panes[0].view.command_name.getModel().getText()).toBe 'Test 1'
     expect(view.panes[1].pane.find('#save_all').prop('checked')).toBe true
-    expect(view.panes[4].view.stderr_profile[0].selectedIndex).toBe 3
-    expect(view.panes[5].view.find('#close_success').prop('checked')).toBe true
+    expect(view.panes[5].view.stderr_profile[0].selectedIndex).toBe 3
+    expect(view.panes[6].view.find('#close_success').prop('checked')).toBe true
 
   describe 'On accept', ->
 
