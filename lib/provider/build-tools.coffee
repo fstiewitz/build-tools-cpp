@@ -16,11 +16,11 @@ module.exports =
   name: 'Custom Commands'
   singular: 'Custom Command'
 
-  activate: ->
+  activate: (command) ->
     fs = require 'fs'
     path = require 'path'
     {Emitter, CompositeDisposable} = require 'atom'
-    Command = require './command'
+    Command = command
     CommandInfoPane = require '../view/command-info-pane'
     CSON = require 'season'
 
@@ -33,13 +33,12 @@ module.exports =
     CSON = null
 
   model:
-    class GlobalBuildToolsProject
+    class BuildToolsProject
 
       constructor: (_path, @config, @_save) ->
         @path = _path
         @emitter = new Emitter if @_save?
         @commands = []
-        @path = path.resolve(path.dirname @config.file)
         if @config.commands?
           for command in @config.commands
             command.project = @path
@@ -112,7 +111,7 @@ module.exports =
         @emitter.on 'change', callback
 
   view:
-    class GlobalBuildToolsPane extends View
+    class BuildToolsPane extends View
 
       @content: ->
         @div class: 'inset-panel', =>
