@@ -30,7 +30,7 @@ module.exports =
               @div =>
                 @span class: 'inline-block text-subtle', 'Enter XRegExp string. The XRegExp object will use '
                 @span class: 'inline-block highlight', 'xni'
-                @span class: 'inline-block', ' flags. Refer to the internet (including this package\'s wiki) for details.'
+                @span class: 'inline-block text-subtle', ' flags. Refer to the internet (including this package\'s wiki) for details.'
             @subview 'stdout_regex', new TextEditorView(mini: true)
           @div class: 'block', =>
             @label =>
@@ -38,15 +38,15 @@ module.exports =
               @div =>
                 @span class: 'inline-block text-subtle', 'Enter CSON string with default properties. To highlight an error you need at least a '
                 @span class: 'inline-block highlight', 'type'
-                @span class: 'inline-block', ' field. Linter messages require at least '
+                @span class: 'inline-block text-subtle', ' field. Linter messages require at least '
                 @span class: 'inline-block highlight', 'type'
-                @span class: 'inline-block', ', '
+                @span class: 'inline-block text-subtle', ', '
                 @span class: 'inline-block highlight', 'file'
-                @span class: 'inline-block', ', '
+                @span class: 'inline-block text-subtle', ', '
                 @span class: 'inline-block highlight', 'row'
-                @span class: 'inline-block', ' and '
+                @span class: 'inline-block text-subtle', ' and '
                 @span class: 'inline-block highlight', 'message'
-                @span class: 'inline-block', ' fields.'
+                @span class: 'inline-block text-subtle', ' fields.'
             @subview 'stdout_default', new TextEditorView(mini: true)
         @div class: 'block', =>
           @label =>
@@ -72,7 +72,7 @@ module.exports =
               @div =>
                 @span class: 'inline-block text-subtle', 'Enter XRegExp string. The XRegExp object will use '
                 @span class: 'inline-block highlight', 'xni'
-                @span class: 'inline-block', ' flags. Refer to the internet (including this package\'s wiki) for details.'
+                @span class: 'inline-block text-subtle', ' flags. Refer to the internet (including this package\'s wiki) for details.'
             @subview 'stderr_regex', new TextEditorView(mini: true)
           @div class: 'block', =>
             @label =>
@@ -80,15 +80,15 @@ module.exports =
               @div =>
                 @span class: 'inline-block text-subtle', 'Enter CSON string with default properties. To highlight an error you need at least a '
                 @span class: 'inline-block highlight', 'type'
-                @span class: 'inline-block', ' field. Linter messages require at least '
+                @span class: 'inline-block text-subtle', ' field. Linter messages require at least '
                 @span class: 'inline-block highlight', 'type'
-                @span class: 'inline-block', ', '
+                @span class: 'inline-block text-subtle', ', '
                 @span class: 'inline-block highlight', 'file'
-                @span class: 'inline-block', ', '
+                @span class: 'inline-block text-subtle', ', '
                 @span class: 'inline-block highlight', 'row'
-                @span class: 'inline-block', ' and '
+                @span class: 'inline-block text-subtle', ' and '
                 @span class: 'inline-block highlight', 'message'
-                @span class: 'inline-block', ' fields.'
+                @span class: 'inline-block text-subtle', ' fields.'
             @subview 'stderr_default', new TextEditorView(mini: true)
 
     set: (command) ->

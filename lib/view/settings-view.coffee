@@ -8,9 +8,6 @@ module.exports =
       @div class: 'build-settings pane-item', tabindex: -1
 
     initialize: (@projectPath, @filePath) ->
-      @configPane = new ConfigPane(@projectPath, @filePath)
-      @model = @configPane.model
-      @configPane.setCallbacks @hidePanes, @showPane
 
     getUri: ->
       @filePath
@@ -22,13 +19,16 @@ module.exports =
       'tools'
 
     attached: ->
+      @configPane = new ConfigPane(@projectPath, @filePath)
+      @model = @configPane.model
+      @configPane.setCallbacks @hidePanes, @showPane
       @html('')
       @append @configPane
 
     detached: ->
-      @detach()
-      @model.destroy()
       @html('')
+      @configPane.destroy()
+      @model = null
 
     hidePanes: =>
       @html('')

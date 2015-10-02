@@ -70,8 +70,9 @@ module.exports =
         key: key
         config: {}
         model: Providers.modules[key].model
-        interface: new Providers.modules[key].model(@projectPath, {}, @save)
-      @providers[l - 1].view = new Providers.modules[key].view(@providers[l - 1].interface) if @viewed
+
+      @providers[l - 1].interface = new Providers.modules[key].model(@projectPath, @providers[l - 1].config, @save)
+      @providers[l - 1].view = new Providers.modules[key].view(@providers[l - 1].interface) if @viewed and Providers.modules[key].view?
       @save()
       return true
 
