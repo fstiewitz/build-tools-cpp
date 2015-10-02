@@ -20,10 +20,12 @@ module.exports =
       for k in ['stdout', 'stderr']
         value = document.createElement 'div'
         value.classList.add 'text-padded'
-        if command[k].highlighting isnt 'hc'
-          value.innerText = highlight_translation[command[k].highlighting]
-        else
+        if command[k].highlighting is 'hc'
           value.innerText = String(profiles[command[k].profile]?.profile_name)
+        else if command[k].highlighting is 'hr'
+          value.innerText = command[k].regex
+        else
+          value.innerText = highlight_translation[command[k].highlighting]
         values.appendChild value
       @element.appendChild keys
       @element.appendChild values

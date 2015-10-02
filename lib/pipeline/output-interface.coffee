@@ -10,14 +10,14 @@ module.exports =
 
         if @stdout.highlighting isnt 'nh'
           @stdout.subscribeToCommands output.stdout, 'setType'
-          if @stdout.profile?
+          if @stdout.profile? or @stdout.regex?
             @stdout.subscribeToCommands output.stdout, 'replacePrevious'
             @stdout.subscribeToCommands output.stdout, 'print'
             @stdout.subscribeToCommands output.stdout, 'linter'
 
         if @stderr.highlighting isnt 'nh'
           @stderr.subscribeToCommands output.stderr, 'setType'
-          if @stderr.profile?
+          if @stderr.profile? or @stdout.regex?
             @stderr.subscribeToCommands output.stderr, 'replacePrevious'
             @stderr.subscribeToCommands output.stderr, 'print'
             @stderr.subscribeToCommands output.stderr, 'linter'

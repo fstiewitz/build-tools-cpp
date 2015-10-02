@@ -7,6 +7,8 @@ path = require 'path'
 
 {Emitter} = require 'atom'
 
+CSON = require 'season'
+
 module.exports =
   class OutputStream
 
@@ -19,12 +21,19 @@ module.exports =
       else
         @profile = null
 
+      if @stream.regex?
+        @regex = new XRegExp(@stream.regex, 'xni')
+        @default = {}
+        @default = CSON.parse(@stream.defaults) if @stream.defaults isnt ''
+
       @subscribers = new Emitter
 
     destroy: ->
       @subscribers.dispose()
       @subscribers = null
       @profile = null
+      @regex = null
+      @default = {}
 
     subscribeToCommands: (subscriber, command) ->
       return unless subscriber?
@@ -40,7 +49,7 @@ module.exports =
       lines = message.split('\n')
       for line, index in lines
         if line isnt '' or (line is '' and index isnt lines.length - 1)
-          @subscribers.emit 'input', input: line, files: @getFiles(line)
+          @subscribers.emit 'input', input: line, files: @getFiles(input: line)
           @parse line
 
     parse: (line) ->
@@ -50,9 +59,22 @@ module.exports =
         @subscribers.emit 'setType', v if (v = @parseTags line)?
       else if @stream.highlighting is 'hc' and @profile?
         @profile.in line
+      else if @stream.highlighting is 'hr'
+        @parseWithRegex line
 
     parseTags: (line) ->
       /(error|warning):/g.exec(line)?[1]
+
+    parseWithRegex: (line) ->
+      return unless @regex?
+      if (m = @regex.xexec line)?
+        match = {}
+        for k in Object.keys(@default)
+          match[k] = @default[k]
+        for k in Object.keys(m)
+          match[k] = m[k] if m[k]?
+        @print match
+        @lint match
 
     setType: (match) =>
       @subscribers.emit 'setType', match.highlighting ? match.type
@@ -80,19 +102,25 @@ module.exports =
       for line in new_lines
         items.push
           input: line
-          files: @getFiles(line.input)
+          files: @getFiles(line)
       @subscribers.emit 'replacePrevious', items
 
-    getFiles: (line) ->
+    getFiles: (match) ->
+      filenames = []
       if @profile?
-        filenames = []
-        for match in @profile.files line
-          match.file = @absolutePath(match.file)
-          filenames.push match if fs.isFileSync match.file
-        return filenames
+        for _match in @profile.files match.input
+          _match.file = @absolutePath(_match.file)
+          filenames.push _match if fs.isFileSync _match.file
+      else if @regex? and match.file?
+        start = match.input.indexOf(match.file)
+        end = start + match.file.length - 1
+        file = @absolutePath(match.file)
+        return filenames unless file?
+        filenames.push {file: file, start: start, end: end, row: match.row, col: match.col}
+      return filenames
 
     print: (match) =>
-      @subscribers.emit 'print', input: match, files: @getFiles(match.input)
+      @subscribers.emit 'print', input: match, files: @getFiles(match)
 
     pushLinterMessage: (message) =>
       @subscribers.emit 'linter', message

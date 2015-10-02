@@ -128,11 +128,6 @@ module.exports =
             @div class: 'command-list', outlet: 'command_list'
 
       initialize: (@project) ->
-        @on 'click', '#add-command-button', (e) =>
-          @commandPane = atom.views.getView(new Command)
-          @commandPane.setCallbacks @accept, @hidePanes
-          @showPane @commandPane
-        @addCommands()
         @disposable = @project.onChange =>
           @project.save()
           @command_list.html('')
@@ -143,7 +138,15 @@ module.exports =
       accept: (c) =>
         @project.addCommand c
 
+      attached: ->
+        @on 'click', '#add-command-button', (e) =>
+          @commandPane = atom.views.getView(new Command)
+          @commandPane.setCallbacks @accept, @hidePanes
+          @showPane @commandPane
+        @addCommands()
+
       addCommands: ->
+        @command_list.html('')
         for command in @project.getCommands()
           pane = new CommandInfoPane(command)
           up = (command) =>

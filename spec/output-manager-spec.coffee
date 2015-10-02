@@ -42,7 +42,7 @@ describe 'Output Manager', ->
   describe 'On stdout input', ->
     it 'calls the correct functions', ->
       manager.stdout.in 'Hello World\n'
-      expect(output.stdout.in).toHaveBeenCalledWith input: 'Hello World', files: undefined
+      expect(output.stdout.in).toHaveBeenCalledWith input: 'Hello World', files: []
       expect(output.stdout.setType).toHaveBeenCalledWith('warning')
 
   describe 'On stderr input', ->
