@@ -9,19 +9,20 @@ module.exports =
     constructor: (@projectPath, @filePath, @viewed = false) ->
       @emitter = new Emitter if @viewed
       @providers = []
-      {providers} = CSON.readFileSync @filePath
-      for p in providers
-        continue unless Providers.activate(p.key) is true
-        l = @providers.push {
-          key: p.key
-          config: p.config
-          model: Providers.modules[p.key].model
-          interface: new Providers.modules[p.key].model(@projectPath, p.config, if @viewed then @save)
-        }
-        continue unless @viewed
-        continue unless Providers.modules[p.key].view?
-        provider = @providers[l - 1]
-        provider.view = new Providers.modules[p.key].view(provider.interface)
+      try
+        {providers} = CSON.readFileSync @filePath
+        for p in providers
+          continue unless Providers.activate(p.key) is true
+          l = @providers.push {
+            key: p.key
+            config: p.config
+            model: Providers.modules[p.key].model
+            interface: new Providers.modules[p.key].model(@projectPath, p.config, if @viewed then @save)
+          }
+          continue unless @viewed
+          continue unless Providers.modules[p.key].view?
+          provider = @providers[l - 1]
+          provider.view = new Providers.modules[p.key].view(provider.interface)
       null
 
     destroy: ->

@@ -25,7 +25,9 @@ module.exports =
 
       for key in Object.keys(Providers.modules)
         name = Providers.modules[key].name
-        @disposables.add atom.commands.add '.build-settings',  "build-tools:add-#{name}".replace(/\ /g, '-'), => @model.addProvider key
+        @disposables.add atom.commands.add '.build-settings',  "build-tools:add-#{name}".replace(/\ /g, '-'), ((k) =>
+          => @model.addProvider k
+          )(key)
         context.push label: "Add #{name}", command: "build-tools:add-#{name}".replace(/\ /g, '-')
 
       @disposables.add atom.contextMenu.add {
