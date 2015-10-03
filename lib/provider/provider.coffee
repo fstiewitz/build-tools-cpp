@@ -5,6 +5,7 @@ Command = require './command'
 module.exports =
   modules:
     bt: require './build-tools'
+    bte: require './build-tools-external'
 
   addModule: (key, mod) ->
     return if @modules[key]?
@@ -21,6 +22,7 @@ module.exports =
       @deactivate k
       @removeModule k
     @modules.bt = require './build-tools'
+    @modules.bte = require './build-tools-external'
 
   activate: (key) ->
     mod = @modules[key]

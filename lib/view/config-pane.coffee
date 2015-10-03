@@ -48,7 +48,7 @@ module.exports =
       @provider_list.html('')
       for provider, index in @model.providers
         @provider_list.append @buildPane Providers.modules[provider.key].name, provider.view.element, index
-        provider.view.setCallbacks @hidePanes, @showPane
+        provider.view.setCallbacks?(@hidePanes, @showPane)
 
     buildPane: (name, element, id) ->
       item = $(element)

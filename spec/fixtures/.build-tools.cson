@@ -1,41 +1,41 @@
 providers: [
   {
-    key: 'bt'
+    key: "bt"
     config:
       commands: [
         {
-          project: '/home/fabian/.atom/packages/build-tools/spec/fixtures'
-          name: 'Test'
-          command: 'echo Hello World'
-          wd: '.'
+          project: "/home/fabian/.atom/packages/build-tools/spec/fixtures"
+          name: "Test"
+          command: "echo Hello World"
+          wd: "."
           env: {}
           modifier:
             save_all: {}
             shell:
-              command: 'bash -c'
+              command: "bash -c"
             wildcards: {}
           stdout:
-            highlighting: 'nh'
+            highlighting: "nh"
           stderr:
-            highlighting: 'nh'
+            highlighting: "nh"
           output:
             console:
               close_success: false
           version: 1
         }
         {
-          project: '/home/fabian/.atom/packages/build-tools/spec/fixtures'
-          name: 'Test 2'
-          command: 'echo 2'
-          wd: '.'
+          project: "/home/fabian/.atom/packages/build-tools/spec/fixtures"
+          name: "Test 2"
+          command: "echo Hello World to 4.0"
+          wd: "."
           env: {}
           modifier:
             save_all: {}
             wildcards: {}
           stdout:
-            highlighting: 'nh'
+            highlighting: "nh"
           stderr:
-            highlighting: 'nh'
+            highlighting: "nh"
           output:
             console:
               close_success: false
