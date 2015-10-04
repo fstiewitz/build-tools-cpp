@@ -160,11 +160,12 @@ module.exports =
 
       exitQueue: (code) ->
         consoleview.lock()
-        if code is -2
-          consoleview.setHeader(
-            "#{@command.name} of #{@command.project}: " +
-            "<span class='error'>aborted by user or package</span>"
-          )
+        if code < 0
+          if code is -2
+            consoleview.setHeader(
+              "#{@command.name} of #{@command.project}: " +
+              "<span class='error'>aborted by user or package</span>"
+            )
           consoleview.setQueueLength @queue.queue.length
         if consoleview.progress.prop('max') is 1 and code isnt 0
           consoleview.setQueueLength 1

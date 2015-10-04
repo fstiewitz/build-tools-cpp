@@ -44,7 +44,9 @@ module.exports =
         outputs = (@outputs[key] for key in Object.keys(c.output) when @outputs[key]?)
         @currentWorker = new CommandWorker(c, outputs)
         ret = @currentWorker.run()
-        ret.catch (e) -> reject(e)
+        ret.catch (e) =>
+          @errorCommand e
+          reject(e)
         ret.then (exitcode) =>
           @finishedCommand(exitcode)
           if exitcode is 0
@@ -66,12 +68,12 @@ module.exports =
     hasFinished: ->
       @finished
 
-    finishedCommand: (exitcode) =>
+    finishedCommand: (exitcode) ->
       @emitter.emit 'finishedCommand', exitcode
       if exitcode isnt 0
         @finishedQueue exitcode
 
-    errorCommand: (error) =>
+    errorCommand: (error) ->
       @emitter.emit 'errorCommand', error
       @finishedQueue -1
 
