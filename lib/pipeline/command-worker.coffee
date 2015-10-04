@@ -21,12 +21,12 @@ module.exports =
               @destroy()
               reject(error)
         else
-          {command, args, wd, env} = @command
+          {command, args, env} = @command
           @process = new BufferedProcess(
             command: command
             args: args
             options:
-              cwd: wd
+              cwd: @command.getWD()
               env: env
             stdout: (data) =>
               @manager.stdout.in data

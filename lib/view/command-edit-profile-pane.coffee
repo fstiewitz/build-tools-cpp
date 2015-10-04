@@ -23,7 +23,7 @@ module.exports =
             @div =>
               @span class: 'inline-block text-subtle', 'Select Highlighting Profile'
           @select class: 'form-control', outlet: 'stdout_profile'
-        @div class: 'block hidden', outlet: 'stdout_regex_div', =>
+        @div class: 'hidden', outlet: 'stdout_regex_div', =>
           @div class: 'block', =>
             @label =>
               @div class: 'settings-name', 'Regular Expression'

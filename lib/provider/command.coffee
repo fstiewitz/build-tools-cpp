@@ -19,6 +19,9 @@ module.exports =
       @args = args.slice(1)
       @mergeEnvironment process.env
 
+    getWD: ->
+      path.resolve(@project, @wd)
+
     mergeEnvironment: (env) ->
       @env[key] = env[key] for key in Object.keys(env) when not @env[key]
 
