@@ -3,6 +3,9 @@
 Providers = require '../provider/provider'
 Project = require '../provider/project'
 
+path = require 'path'
+fs = require 'fs'
+
 module.exports =
   class ConfigPane extends ScrollView
     @content: ->
@@ -10,6 +13,7 @@ module.exports =
         @div class: 'panel-heading', =>
           @span class: 'inline-block panel-text icon icon-database', 'Providers'
           @span id: 'add-provider', class: 'inline-block btn btn-sm icon icon-plus', 'Add provider'
+          @span id: 'migrate-global', class: 'inline-block btn btn-sm icon icon-globe hidden', 'Migrate old commands'
         @div class: 'panel-body padded', outlet: 'provider_list'
 
     initialize: (@projectPath, @filePath) ->
@@ -35,6 +39,10 @@ module.exports =
       }
 
       @on 'click', '#add-provider', (event) -> atom.contextMenu.showForEvent(event)
+      @on 'click', '#migrate-global', @model.migrateGlobal
+
+      @model.hasGlobal =>
+        @find('#migrate-global').removeClass('hidden')
 
       @disposables.add @model.onSave @reload
 
@@ -43,6 +51,7 @@ module.exports =
     detached: ->
       @disposables.dispose()
       @provider_list.html('')
+      @find('#migrate-global').addClass('hidden')
 
     setCallbacks: (@hidePanes, @showPane) ->
 

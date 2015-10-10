@@ -3,6 +3,8 @@ Providers = require './provider'
 
 {Emitter} = require 'atom'
 
+path = require 'path'
+
 module.exports =
   class ProjectConfig
 
@@ -43,6 +45,8 @@ module.exports =
       for provider in @providers
         provider.view?.destroy?()
         provider.interface.destroy?()
+      @providers = null
+      @global_data = null
 
     ############################################################################
     # Event functions
@@ -162,3 +166,14 @@ module.exports =
       for command in commands
         providers[0].config.commands.push ProjectConfig.migrateCommand(command)
       atom.notifications?.addWarning "Imported #{commands.length} local command(s)"
+
+    migrateGlobal: =>
+      @addProvider 'bt'
+      provider = @providers[@providers.length - 1].interface
+      for command in @global_data[@projectPath].commands
+        provider.addCommand(ProjectConfig.migrateCommand(command))
+
+    hasGlobal: (callback) ->
+      CSON.readFile path.join(path.dirname(atom.config.getUserConfigPath()), 'build-tools-cpp.projects'), (err, @global_data) =>
+        return if err?
+        callback() if @global_data[@projectPath]?
