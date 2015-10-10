@@ -9,20 +9,33 @@ module.exports =
     constructor: (@projectPath, @filePath, @viewed = false) ->
       @emitter = new Emitter if @viewed
       @providers = []
-      try
-        {providers} = CSON.readFileSync @filePath
-        for p in providers
-          continue unless Providers.activate(p.key) is true
-          l = @providers.push {
-            key: p.key
-            config: p.config
-            model: Providers.modules[p.key].model
-            interface: new Providers.modules[p.key].model(@projectPath, p.config, if @viewed then @save)
-          }
-          continue unless @viewed
-          continue unless Providers.modules[p.key].view?
-          provider = @providers[l - 1]
-          provider.view = new Providers.modules[p.key].view(provider.interface)
+      data = CSON.readFileSync @filePath
+      if data isnt null
+        providers = data.providers
+        commands = data.commands
+      else
+        providers = []
+      save = false
+      if commands? and not providers?
+        save = true
+        providers = []
+        @migrateLocal(commands, providers)
+
+      return unless providers?
+
+      for p in providers
+        continue unless Providers.activate(p.key) is true
+        l = @providers.push {
+          key: p.key
+          config: p.config
+          model: Providers.modules[p.key].model
+          interface: new Providers.modules[p.key].model(@projectPath, p.config, if @viewed then @save)
+        }
+        continue unless @viewed
+        continue unless Providers.modules[p.key].view?
+        provider = @providers[l - 1]
+        provider.view = new Providers.modules[p.key].view(provider.interface)
+      @save() if save
       null
 
     destroy: ->
@@ -116,3 +129,36 @@ module.exports =
           config: provider.config
       CSON.writeFileSync @filePath, {providers}
       @emitter.emit 'save'
+
+    @migrateCommand: (c) ->
+      command = {}
+      for key in ['project', 'name', 'command', 'wd']
+        command[key] = c[key]
+      if not c.version?
+        c.version = 1
+        if c.stdout.highlighting is 'hc'
+          c.stdout.profile = 'gcc_clang'
+        if c.stderr.highlighting is 'hc'
+          c.stderr.profile = 'gcc_clang'
+      if c.version is 1
+        c.version = 2
+        c.save_all = true
+        c.close_success = false
+      command.modifier = {}
+      command.modifier.save_all = {} if c.save_all
+      command.modifier.shell = command: 'bash -c' if c.shell
+      command.modifier.wildcards = {} if c.wildcards
+      command.stdout = c.stdout
+      command.stderr = c.stderr
+      command.output = {}
+      command.output.console = {}
+      command.output.console.close_success = c.close_success
+      command.output.linter = {no_trace: false} if c.stderr.profile? or c.stdout.profile?
+      command.version = 1
+      return command
+
+    migrateLocal: (commands, providers) ->
+      providers.push key: 'bt', config: commands: []
+      for command in commands
+        providers[0].config.commands.push ProjectConfig.migrateCommand(command)
+      atom.notifications?.addWarning "Imported #{commands.length} local command(s)"
