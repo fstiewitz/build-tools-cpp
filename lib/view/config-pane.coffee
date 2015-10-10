@@ -3,9 +3,6 @@
 Providers = require '../provider/provider'
 Project = require '../provider/project'
 
-path = require 'path'
-fs = require 'fs'
-
 module.exports =
   class ConfigPane extends ScrollView
     @content: ->
