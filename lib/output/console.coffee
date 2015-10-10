@@ -20,7 +20,17 @@ buildHTML = (message, status, filenames) ->
 
 module.exports =
 
+  activate: ->
+    ConsoleView = require '../view/console'
+    consoleview = new ConsoleView
+    {CompositeDisposable} = require 'atom'
+    @disposables = new CompositeDisposable
+    @disposables.add atom.commands.add 'atom-workspace',
+      'build-tools:toggle': consoleview.toggleBox
+    @disposables.add atom.keymaps.add 'build-tools:console', 'atom-workspace': 'ctrl-l ctrl-s': 'build-tools:toggle'
+
   deactivate: ->
+    @disposables.dispose()
     consoleview.destroy()
     consoleview = null
     ConsoleView = null
@@ -77,8 +87,6 @@ module.exports =
         consoleview
 
       newQueue: (@queue) ->
-        ConsoleView ?= require '../view/console'
-        consoleview ?= new ConsoleView
         consoleview.setQueueCount @queue.queue.length
         consoleview.clear()
 

@@ -50,6 +50,12 @@ module.exports =
       @showOutput() if @find('.output').text() isnt ''
       @visible_items.header = true
 
+    toggleBox: =>
+      if @visible_items.header
+        @hideBox()
+      else
+        @showBox()
+
     showExternal: ->
       atom.workspace.open(null).then (editor) =>
         editor.setText @buildText()

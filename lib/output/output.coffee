@@ -11,6 +11,7 @@ module.exports =
     return if @modules[key]?
     @modules[key] = mod
     new Disposable(=>
+      @deactivate key
       @removeModule key
     )
 

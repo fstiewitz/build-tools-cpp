@@ -6,5 +6,3 @@
   'ctrl-l i': 'build-tools:second-command-ask'
   'ctrl-l o': 'build-tools:first-command-ask'
   'ctrl-l ctrl-l': 'build-tools:commands'
-  'ctrl-l ctrl-,': 'build-tools:settings'
-  'ctrl-l ctrl-s': 'build-tools:show'

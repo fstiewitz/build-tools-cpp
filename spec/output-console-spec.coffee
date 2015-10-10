@@ -4,6 +4,8 @@ describe 'Output Module - Console', ->
   module = null
 
   beforeEach ->
+    Module.activate()
+    Module.active = true
     module = new Module.output
     q = [1, 2, 3]
     module.newQueue(queue: q)
@@ -12,6 +14,7 @@ describe 'Output Module - Console', ->
 
   afterEach ->
     Module.deactivate()
+    Module.active = null
 
   it 'sets the header line', ->
     expect(module.getView().name.text()).toBe 'Test command of fixtures'

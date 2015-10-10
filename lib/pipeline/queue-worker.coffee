@@ -12,10 +12,10 @@ module.exports =
 
         for command in @queue.queue
           for key in Object.keys(command.output)
+            continue unless Outputs.activate(key) is true
             @outputs[key] = new Outputs.modules[key].output if Outputs.modules[key]? and not @outputs[key]
 
       for key in Object.keys(@outputs)
-        continue unless Outputs.activate(key) is true
         @outputs[key].newQueue?(@queue)
 
       @emitter = new Emitter
