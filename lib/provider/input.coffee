@@ -89,14 +89,14 @@ module.exports =
       atom.notifications?.addError error
       @currentWorker = null
 
-  input: (command) ->
-    new Promise((resolve, reject) ->
-      if @currentWorker? and not @currentWorker.finished
-        @currentWorker.onFinishedQueue ->
-          resolve(new Command(command).getQueue())
-      else
-        resolve(new Command(command).getQueue())
-    )
+  inputCommand: (command) ->
+    new Command(command).getQueue()
+
+  inputQueue: (commands) ->
+    _commands = []
+    for command in commands
+      _commands.push new Command(command)
+    new Queue(_commands)
 
   cancel: ->
     @currentWorker?.stop()

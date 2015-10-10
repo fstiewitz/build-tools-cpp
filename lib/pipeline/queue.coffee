@@ -4,7 +4,10 @@ QueueWorker = require './queue-worker'
 module.exports =
   class Queue
     constructor: (origin) ->
-      @queue = [origin]
+      if origin.length?
+        @queue = origin
+      else
+        @queue = [origin]
       @keys = Object.keys(origin.modifier ? {}).filter (k) ->
         Modifiers.modules[k]?.in?
       @keys.reverse()

@@ -79,4 +79,4 @@ module.exports =
           @__this.fd.write input + '\n'
 
       exitCommand: ->
-        @.fd.end()
+        @fd.end()

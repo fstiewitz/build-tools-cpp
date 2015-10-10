@@ -11,7 +11,7 @@ module.exports =
   private: false
 
   edit:
-    class LinterSaver extends View
+    class LinterPane extends View
       @content: ->
         @div class: 'panel-body padded', =>
           @div class: 'block checkbox', =>

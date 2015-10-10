@@ -16,7 +16,7 @@ module.exports =
       set: (command) ->
         if command?.modifier.env?
           for key in Object.keys(command.modifier.env ? {})
-            @env.getModel().insertText("#{key}=#{command.env[key]}\n")
+            @env.getModel().insertText("#{key}=#{command.modifier.env[key]}\n")
         else
           @env.getModel().setText('')
 
@@ -27,6 +27,29 @@ module.exports =
           value = l.substr(key.length + 1)
           command.modifier.env[key] = value
         return null
+
+  info:
+    class EnvInfoPane
+      constructor: (command) ->
+        @element = document.createElement 'div'
+        @element.classList.add 'module'
+        keys = document.createElement 'div'
+        values = document.createElement 'div'
+
+        for key in Object.keys(command.modifier.env)
+          _key = document.createElement 'div'
+          _key.classList.add 'text-padded'
+          _key.innerText = "#{key} = "
+
+          value = document.createElement 'div'
+          value.classList.add 'text-padded'
+          value.innerText = command.modifier.env[key]
+
+          keys.appendChild _key
+          values.appendChild value
+
+        @element.appendChild keys
+        @element.appendChild values
 
   preSplit: (command) ->
     command.env = {}
