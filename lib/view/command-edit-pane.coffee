@@ -129,6 +129,7 @@ module.exports =
       @on 'click', '.checkbox label', (e) ->
         item = $(e.currentTarget.parentNode.children[0])
         item.prop('checked', not item.prop('checked'))
+        item[0].onchange?()
 
       @on 'click', '.buttons .icon-x', @cancel
       @on 'click', '.buttons .icon-check', @accept
