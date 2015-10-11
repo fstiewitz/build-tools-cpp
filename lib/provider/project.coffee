@@ -63,7 +63,7 @@ module.exports =
       new Promise((resolve, reject) =>
         if (c = @providers[pid]?.interface?.getCommandByIndex id) instanceof Promise
           c.then (command) -> resolve(command)
-          c.catch (e) -> resolve(e)
+          c.catch (e) -> reject(e)
         else if c?
           resolve(c)
         else
@@ -126,9 +126,16 @@ module.exports =
       return reject("Command ##{id + 1} not found") unless (p = @_providers.pop())?
       if (c = p.interface?.getCommandByIndex id - @f) instanceof Promise
         c.then (command) -> resolve(command)
-        c.catch (count) =>
-          @f = @f + count
-          @_getCommandByIndex id, resolve, reject
+        c.catch =>
+          if (c = p.interface?.getCommandCount()) instanceof Promise
+            c.then (count) =>
+              @f = @f + count
+              @_getCommandByIndex id, resolve, reject
+            c.catch =>
+              @_getCommandByIndex id, resolve, reject
+          else
+            @f = @f + (c ? 0)
+            @_getCommandByIndex id, resolve, reject
       else if c?
         resolve(c)
       else

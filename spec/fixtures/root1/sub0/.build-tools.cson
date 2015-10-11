@@ -1,0 +1,36 @@
+providers: [
+  {
+    key: "bt"
+    config:
+      commands: [
+        {
+          project: "/opt/work/build-tools/spec/fixtures/root1/sub0"
+          name: "Bar"
+          command: "bar"
+          wd: "."
+          env: {}
+          modifier: {}
+          stdout:
+            highlighting: "nh"
+          stderr:
+            highlighting: "nh"
+          output: {}
+          version: 1
+        }
+        {
+          project: "/opt/work/build-tools/spec/fixtures/root1/sub0"
+          name: "Bar 2"
+          command: "bar2"
+          wd: "."
+          env: {}
+          modifier: {}
+          stdout:
+            highlighting: "nh"
+          stderr:
+            highlighting: "nh"
+          output: {}
+          version: 1
+        }
+      ]
+  }
+]

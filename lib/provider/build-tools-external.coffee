@@ -31,7 +31,10 @@ module.exports =
         file = path.resolve(@projectPath, @config.file)
         if not @config.overwrite
           @projectPath = path.dirname(file)
-        @project = new Project(@projectPath, file)
+        try
+          @project = new Project(@projectPath, file)
+        catch
+          @project = null
 
       save: ->
         @_save()
@@ -42,6 +45,7 @@ module.exports =
 
       getCommandByIndex: (id) ->
         new Promise((resolve, reject) =>
+          reject("Could not load project file #{@config.file}") unless @project?
           p = @project.getCommandByIndex id
           p.then (command) ->
             resolve(command)
@@ -50,6 +54,7 @@ module.exports =
 
       getCommandCount: ->
         new Promise((resolve, reject) =>
+          reject("Could not load project file #{@config.file}") unless @project?
           p = @project.getCommandNameObjects()
           p.then (arr) -> resolve(arr.length)
           p.catch (e) -> reject(e)
@@ -57,6 +62,7 @@ module.exports =
 
       getCommandNames: ->
         new Promise((resolve, reject) =>
+          reject("Could not load project file #{@config.file}") unless @project?
           p = @project.getCommandNameObjects()
           p.then (commands) ->
             resolve(command.name for command in commands)

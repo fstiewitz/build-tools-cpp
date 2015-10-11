@@ -71,7 +71,8 @@ module.exports =
     q.then(({folderPath, filePath}) =>
       selectionview.setLoading('Loading command list')
       project = getProjectConfig(folderPath, filePath)
-      project.getCommandNameObjects().then (commands) =>
+      n = project.getCommandNameObjects()
+      n.then (commands) =>
         selectionview.setItems commands
         selectionview.callback = ({id, pid}) =>
           p = project.getCommandById pid, id
@@ -79,8 +80,11 @@ module.exports =
             @run command
             project.destroy()
           p.catch (e) ->
-            atom.notifications?.addError e
+            selectionview.setError e
             project.destroy()
+      n.catch (error) ->
+        selectionview.setError error
+        project.destroy()
     )
     q.catch -> selectionview.setError('Could not load project configuration')
 

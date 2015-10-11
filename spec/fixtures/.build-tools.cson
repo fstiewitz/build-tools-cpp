@@ -4,16 +4,15 @@ providers: [
     config:
       commands: [
         {
-          project: "/home/fabian/.atom/packages/build-tools/spec/fixtures"
+          project: "/opt/work/build-tools/spec/fixtures"
           name: "Test"
-          command: "echo Hello World"
+          command: "pwd"
           wd: "."
           env: {}
           modifier:
             save_all: {}
             shell:
               command: "bash -c"
-            wildcards: {}
           stdout:
             highlighting: "nh"
           stderr:
@@ -21,26 +20,21 @@ providers: [
           output:
             console:
               close_success: false
-          version: 1
-        }
-        {
-          project: "/home/fabian/.atom/packages/build-tools/spec/fixtures"
-          name: "Test 2"
-          command: "echo Hello World to 4.0"
-          wd: "."
-          env: {}
-          modifier:
-            save_all: {}
-            wildcards: {}
-          stdout:
-            highlighting: "nh"
-          stderr:
-            highlighting: "nh"
-          output:
-            console:
-              close_success: false
+              debug: true
           version: 1
         }
       ]
+  }
+  {
+    key: "bte"
+    config:
+      file: "root1/sub0/.build-tools.cson"
+      overwrite: false
+  }
+  {
+    key: "bte"
+    config:
+      file: "root1/sub0/.build-tools.cson"
+      overwrite: true
   }
 ]
