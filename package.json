@@ -29,7 +29,7 @@
         "1.0.0": "provideLinter"
       }
     },
-    "input": {
+    "build-tools.input": {
       "versions": {
         "1.0.0": "provideInput"
       }

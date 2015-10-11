@@ -2,6 +2,7 @@ path = require 'path'
 fs = require 'fs'
 ProjectConfig = require './project'
 Command = require './command'
+Queue = require '../pipeline/queue'
 
 SelectionView = null
 selectionview = null

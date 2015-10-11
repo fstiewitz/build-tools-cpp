@@ -52,7 +52,7 @@ module.exports =
           if exitcode is 0
             @_run resolve, reject
           else
-            reject(name: c.name, exit: exitcode)
+            reject("Command finished with exit code #{exitcode}")
 
     stop: ->
       return if @finished
