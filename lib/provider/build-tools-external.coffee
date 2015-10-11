@@ -34,6 +34,8 @@ module.exports =
           for provider in data.providers
             if provider.key is 'bt' and provider.config.commands?
               for command in provider.config.commands
+                if @config.overwrite
+                  command.project = @projectPath
                 @commands.push new Command(command)
         catch error
           notify "Could not read from #{@config.file}", error
@@ -69,6 +71,14 @@ module.exports =
                 @div =>
                   @span class: 'inline-block text-subtle', 'Path to .build-tools.cson file'
               @subview 'path', new TextEditorView(mini: true)
+            @div class: 'block checkbox', =>
+              @input id: 'overwrite_wd', type: 'checkbox'
+              @label =>
+                @div class: 'settings-name', 'Overwrite working directory'
+                @div =>
+                  @span class: 'inline-block text-subtle', 'Execute command relative to '
+                  @span class: 'inline-block text-highlight', 'this'
+                  @span class: 'inline-block text-subtle', ' config file instead of the external one'
 
       initialize: (@project) ->
         @path.getModel().setText(@project.config.file ? '')
@@ -77,6 +87,7 @@ module.exports =
         @on 'click', '#apply', =>
           if (p = @path.getModel().getText()) isnt ''
             @project.config.file = p
+            @project.config.overwrite = @find('#overwrite_wd').prop('checked')
             @project.save()
           else
             atom.notifications?.addError 'Path must not be empty'

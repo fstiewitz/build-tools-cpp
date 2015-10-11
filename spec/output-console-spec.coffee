@@ -10,7 +10,7 @@ describe 'Output Module - Console', ->
     q = [1, 2, 3]
     module.newQueue(queue: q)
     q.splice(0, 1)
-    module.newCommand name: 'Test command', project: 'fixtures'
+    module.newCommand name: 'Test command', project: 'fixtures', output: {console: {}}
 
   afterEach ->
     Module.deactivate()

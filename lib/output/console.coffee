@@ -50,16 +50,25 @@ module.exports =
               @div class: 'settings-name', 'Close on success'
               @div =>
                 @span class: 'inline-block text-subtle', 'Close console on success. Uses config value in package settings if enabled'
+          @div class: 'block checkbox', =>
+            @input id: 'debug', type: 'checkbox'
+            @label =>
+              @div class: 'settings-name', 'Print debug information'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Print command data for debugging'
 
       set: (command) ->
         if command?.output?.console?
           @find('#close_success').prop('checked', command.output.console.close_success)
+          @find('#debug').prop('checked', command.output.console.debug)
         else
           @find('#close_success').prop('checked', if atom.config.get('build-tools.CloseOnSuccess') is -1 then false else true)
+          @find('#debug').prop('checked', false)
 
       get: (command) ->
         command.output.console ?= {}
         command.output.console.close_success = @find('#close_success').prop('checked')
+        command.output.console.debug = @find('#debug').prop('checked')
         return null
 
   info:
@@ -71,12 +80,14 @@ module.exports =
         keys = document.createElement 'div'
         keys.innerHTML = '''
         <div class: 'text-padded'>Close on success:</div>
+        <div class: 'text-padded'>Debugging:</div>
         '''
         values = document.createElement 'div'
-        value = document.createElement 'div'
-        value.classList.add 'text-padded'
-        value.innerText = String(command.output.console.close_success)
-        values.appendChild value
+        for key in ['close_success', 'debug']
+          value = document.createElement 'div'
+          value.classList.add 'text-padded'
+          value.innerText = String(command.output.console[key])
+          values.appendChild value
         @element.appendChild keys
         @element.appendChild values
 
@@ -95,6 +106,25 @@ module.exports =
         consoleview.showBox()
         consoleview.setHeader("#{@command.name} of #{@command.project}")
         consoleview.unlock()
+        if @command.output.console.debug
+          @stdout.in(input: "Command: #{@command.name}", files: [])
+          for key in ['command', 'project', 'wd']
+            @stdout.in(input: "  #{key}: #{@command[key]}", files: [])
+          if @command.stdout.highlighting is 'hc'
+            @stdout.in(input: "  stdout highlighting: #{@command.stdout.profile}", files: [])
+          else
+            @stdout.in(input: "  stdout highlighting: #{@command.stdout.highlighting}", files: [])
+
+          if @command.stderr.highlighting is 'hc'
+            @stdout.in(input: "  stderr highlighting: #{@command.stderr.profile}", files: [])
+          else
+            @stdout.in(input: "  stderr highlighting: #{@command.stderr.highlighting}", files: [])
+
+          for key in Object.keys(@command.modifier)
+            @stdout.in(input: "  modifier #{key}: " + JSON.stringify(@command.modifier[key]), files: [])
+
+          for key in Object.keys(@command.output)
+            @stdout.in(input: "  output #{key}: " + JSON.stringify(@command.output[key]), files: [])
         @stdout.lines = []
         @stderr.lines = []
 
