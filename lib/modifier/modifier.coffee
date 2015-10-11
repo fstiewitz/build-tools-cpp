@@ -1,6 +1,10 @@
 {Disposable} = require 'atom'
 path = require 'path'
 
+Command = null
+Project = null
+Input = null
+
 module.exports =
   modules:
     shell: require './shell'
@@ -26,13 +30,19 @@ module.exports =
     @modules.wildcards = require './wildcards'
     @modules.save_all = require './save_all'
     @modules.env = require './env'
+    Command = null
+    Project = null
+    Input = null
 
   activate: (key) ->
     mod = @modules[key]
     return unless mod?
     return true if mod.active?
     return true unless mod.activate?
-    mod.activate()
+    Command ?= require '../provider/command'
+    Project ?= require '../provider/project'
+    Input ?= require '../provider/input'
+    mod.activate(Command, Project, Input)
     mod.active = true
 
   deactivate: (key) ->

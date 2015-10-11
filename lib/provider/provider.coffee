@@ -1,7 +1,9 @@
 {Disposable} = require 'atom'
 path = require 'path'
+
 Command = null
 Project = null
+Input = null
 
 module.exports =
   modules:
@@ -24,6 +26,9 @@ module.exports =
       @removeModule k
     @modules.bt = require './build-tools'
     @modules.bte = require './build-tools-external'
+    Command = null
+    Project = null
+    Input = null
 
   activate: (key) ->
     mod = @modules[key]
@@ -32,7 +37,8 @@ module.exports =
     return true unless mod.activate?
     Command ?= require './command'
     Project ?= require './project'
-    mod.activate(Command, Project)
+    Input ?= require './input'
+    mod.activate(Command, Project, Input)
     mod.active = true
 
   deactivate: (key) ->

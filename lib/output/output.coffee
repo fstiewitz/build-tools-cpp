@@ -1,5 +1,9 @@
 {Disposable} = require 'atom'
 
+Command = null
+Project = null
+Input = null
+
 module.exports =
   modules:
     console: require './console'
@@ -26,13 +30,19 @@ module.exports =
     @modules.linter = require './linter'
     @modules.buffer = require './buffer'
     @modules.file = require './file'
+    Command = null
+    Project = null
+    Input = null
 
   activate: (key) ->
     mod = @modules[key]
     return unless mod?
     return true if mod.active?
     return true unless mod.activate?
-    mod.activate()
+    Command ?= require '../provider/command'
+    Project ?= require '../provider/project'
+    Input ?= require '../provider/input'
+    mod.activate(Command, Project, Input)
     mod.active = true
 
   deactivate: (key) ->
