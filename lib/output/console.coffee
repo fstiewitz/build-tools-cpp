@@ -29,7 +29,7 @@ module.exports =
     ConsoleView = require '../console/console-element'
     consolemodel = new Console
     consoleview = new ConsoleView(consolemodel)
-    consolepanel = atom.workspace.addBottomPanel(item: consoleview)
+    consolepanel = atom.workspace.addBottomPanel(item: consoleview, visible: false)
     consoleview.show = -> consolepanel.show()
     consoleview.hide = -> consolepanel.hide()
 
