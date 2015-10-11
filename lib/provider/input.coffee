@@ -74,9 +74,13 @@ module.exports =
       project.getCommandNameObjects().then (commands) =>
         selectionview.setItems commands
         selectionview.callback = ({id, pid}) =>
-          command = project.getCommandById pid, id
-          @run command
-          project.destroy()
+          p = project.getCommandById pid, id
+          p.then (command) =>
+            @run command
+            project.destroy()
+          p.catch (e) ->
+            atom.notifications?.addError e
+            project.destroy()
     )
     q.catch -> selectionview.setError('Could not load project configuration')
 

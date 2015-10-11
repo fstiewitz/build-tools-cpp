@@ -1,6 +1,7 @@
 {Disposable} = require 'atom'
 path = require 'path'
-Command = require './command'
+Command = null
+Project = null
 
 module.exports =
   modules:
@@ -29,7 +30,9 @@ module.exports =
     return unless mod?
     return true if mod.active?
     return true unless mod.activate?
-    mod.activate(Command)
+    Command ?= require './command'
+    Project ?= require './project'
+    mod.activate(Command, Project)
     mod.active = true
 
   deactivate: (key) ->

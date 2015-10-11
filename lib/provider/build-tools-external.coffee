@@ -1,7 +1,7 @@
 Command = null
-CSON = null
 path = null
 {View, TextEditorView} = require 'atom-space-pen-views'
+Project = null
 
 notify = (message, error) ->
   atom.notifications?.addError message
@@ -10,17 +10,17 @@ notify = (message, error) ->
 
 module.exports =
 
-  name: 'External Custom Commands'
-  singular: 'External Custom Command'
+  name: 'Link to configuration file'
+  singular: 'External Command'
 
-  activate: (command) ->
+  activate: (command, project) ->
     Command = command
+    Project = project
     path = require 'path'
-    CSON = require 'season'
 
   deactivate: ->
     Command = null
-    CSON = null
+    Project = null
     path = null
 
   model:
@@ -28,29 +28,41 @@ module.exports =
 
       constructor: (@projectPath, @config, @_save = null) ->
         return if @_save?
-        try
-          @commands = []
-          data = CSON.readFileSync path.resolve(@projectPath, @config.file)
-          for provider in data.providers
-            if provider.key is 'bt' and provider.config.commands?
-              for command in provider.config.commands
-                if @config.overwrite
-                  command.project = @projectPath
-                @commands.push new Command(command)
-        catch error
-          notify "Could not read from #{@config.file}", error
+        file = path.resolve(@projectPath, @config.file)
+        if not @config.overwrite
+          @projectPath = path.dirname(file)
+        @project = new Project(@projectPath, file)
 
       save: ->
         @_save()
 
+      destroy: ->
+        @project?.destroy()
+        @project = null
+
       getCommandByIndex: (id) ->
-        @commands[id]
+        new Promise((resolve, reject) =>
+          p = @project.getCommandByIndex id
+          p.then (command) ->
+            resolve(command)
+          p.catch (e) -> reject(e)
+        )
 
       getCommandCount: ->
-        @commands.length
+        new Promise((resolve, reject) =>
+          p = @project.getCommandNameObjects()
+          p.then (arr) -> resolve(arr.length)
+          p.catch (e) -> reject(e)
+        )
 
       getCommandNames: ->
-        (c.name for c in @commands)
+        new Promise((resolve, reject) =>
+          p = @project.getCommandNameObjects()
+          p.then (commands) ->
+            resolve(command.name for command in commands)
+          p.catch (e) -> reject(e)
+        )
+
 
   view:
     class BuildToolsProjectExternal extends View
@@ -82,6 +94,7 @@ module.exports =
 
       initialize: (@project) ->
         @path.getModel().setText(@project.config.file ? '')
+        @find('#overwrite_wd').prop('checked', @project.config.overwrite)
 
       attached: ->
         @on 'click', '#apply', =>

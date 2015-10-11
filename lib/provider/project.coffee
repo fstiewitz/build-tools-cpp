@@ -60,7 +60,15 @@ module.exports =
     ############################################################################
 
     getCommandById: (pid, id) ->
-      @providers[pid]?.interface?.getCommandByIndex id
+      new Promise((resolve, reject) =>
+        if (c = @providers[pid]?.interface?.getCommandByIndex id) instanceof Promise
+          c.then (command) -> resolve(command)
+          c.catch (e) -> resolve(e)
+        else if c?
+          resolve(c)
+        else
+          reject("Could not get Command ##{id} from #{pid}")
+      )
 
     getCommandByIndex: (id) ->
       new Promise((resolve, reject) =>
@@ -116,13 +124,35 @@ module.exports =
 
     _getCommandByIndex: (id, resolve, reject) ->
       return reject("Command ##{id + 1} not found") unless (p = @_providers.pop())?
-      return resolve(c) if (c = p.interface?.getCommandByIndex id - @f)?
-      @f = @f + (p.interface?.getCommandCount() ? 0)
-      @_getCommandByIndex id, resolve, reject
+      if (c = p.interface?.getCommandByIndex id - @f) instanceof Promise
+        c.then (command) -> resolve(command)
+        c.catch (count) =>
+          @f = @f + count
+          @_getCommandByIndex id, resolve, reject
+      else if c?
+        resolve(c)
+      else
+        if (c = p.interface?.getCommandCount()) instanceof Promise
+          c.then (count) =>
+            @f = @f + count
+            @_getCommandByIndex id, resolve, reject
+          c.catch =>
+            @_getCommandByIndex id, resolve, reject
+        else
+          @f = @f + (c ? 0)
+          @_getCommandByIndex id, resolve, reject
 
     _getCommandNameObjects: (resolve, reject) ->
       return resolve(@_return) unless (p = @_providers.pop())?
-      @_return = @_return.concat ({name: command, singular: Providers.modules[p.key].singular, origin: p.key, id: i, pid: @providers.length - @_providers.length - 1} for command, i in p.interface.getCommandNames()) if p.interface?
+      if (c = p.interface?.getCommandNames()) instanceof Promise
+        c.then (commands) =>
+          _commands = ({name: command, singular: Providers.modules[p.key].singular, origin: p.key, id: i, pid: @providers.length - @_providers.length - 1} for command, i in commands)
+          @_return = @_return.concat(_commands)
+          @_getCommandNameObjects resolve, reject
+        c.catch (e) -> reject(e)
+        return
+      else if c?
+        @_return = @_return.concat ({name: command, singular: Providers.modules[p.key].singular, origin: p.key, id: i, pid: @providers.length - @_providers.length - 1} for command, i in c)
       @_getCommandNameObjects resolve, reject
 
     save: =>
