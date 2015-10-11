@@ -6,8 +6,8 @@ module.exports =
       @element.classList.add 'module'
       keys = document.createElement 'div'
       keys.innerHTML = '''
-      <div class: 'text-padded'>Command:</div>
-      <div class: 'text-padded'>Working Directory:</div>
+      <div class="text-padded">Command:</div>
+      <div class="text-padded">Working Directory:</div>
       '''
       values = document.createElement 'div'
       for k in ['command', 'wd']

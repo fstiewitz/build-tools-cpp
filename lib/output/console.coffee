@@ -79,8 +79,8 @@ module.exports =
         @element.classList.add 'module'
         keys = document.createElement 'div'
         keys.innerHTML = '''
-        <div class: 'text-padded'>Close on success:</div>
-        <div class: 'text-padded'>Debugging:</div>
+        <div class="text-padded">Close on success:</div>
+        <div class="text-padded">Debugging:</div>
         '''
         values = document.createElement 'div'
         for key in ['close_success', 'debug']
@@ -182,7 +182,7 @@ module.exports =
 
       error: (message) ->
         consoleview.hideOutput()
-        consoleview.setHeader("#{@command.name} of #{@command.project}: received #{message}")
+        consoleview.setHeader("#{@command.name} of #{@command.project}: <span class='error'>received #{message}</span>")
 
       exitCommand: (code) ->
         if code is 0

@@ -131,8 +131,8 @@ module.exports =
             c.then (count) =>
               @f = @f + count
               @_getCommandByIndex id, resolve, reject
-            c.catch =>
-              @_getCommandByIndex id, resolve, reject
+            c.catch (e) =>
+              reject(e)
           else
             @f = @f + (c ? 0)
             @_getCommandByIndex id, resolve, reject
@@ -144,7 +144,7 @@ module.exports =
             @f = @f + count
             @_getCommandByIndex id, resolve, reject
           c.catch =>
-            @_getCommandByIndex id, resolve, reject
+            reject(e)
         else
           @f = @f + (c ? 0)
           @_getCommandByIndex id, resolve, reject

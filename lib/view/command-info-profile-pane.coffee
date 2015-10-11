@@ -13,8 +13,8 @@ module.exports =
       @element.classList.add 'module'
       keys = document.createElement 'div'
       keys.innerHTML = '''
-      <div class: 'text-padded'>stdout highlighting:</div>
-      <div class: 'text-padded'>stderr highlighting:</div>
+      <div class="text-padded">stdout highlighting:</div>
+      <div class="text-padded">stderr highlighting:</div>
       '''
       values = document.createElement 'div'
       for k in ['stdout', 'stderr']
