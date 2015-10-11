@@ -6,7 +6,7 @@ Input = null
 
 module.exports =
   modules:
-    console: require './console'
+    console: require './console2'
     linter: require './linter'
     buffer: require './buffer'
     file: require './file'
