@@ -1,7 +1,11 @@
 {$, $$, View} = require 'atom-space-pen-views'
 
-ConsoleView = null
+Console = null
+consolemodel = null
 consoleview = null
+consolepanel = null
+
+CompositeDisposable = null
 
 buildHTML = (message, status, filenames) ->
   $$ ->
@@ -21,19 +25,34 @@ buildHTML = (message, status, filenames) ->
 module.exports =
 
   activate: ->
-    ConsoleView = require '../view/console'
-    consoleview = new ConsoleView
+    Console = require '../console/console'
+    ConsoleView = require '../console/console-element'
+    consolemodel = new Console
+    consoleview = new ConsoleView(consolemodel)
+    consolepanel = atom.workspace.addBottomPanel(item: consoleview)
+    consoleview.show = -> consolepanel.show()
+    consoleview.hide = -> consolepanel.hide()
+
     {CompositeDisposable} = require 'atom'
     @disposables = new CompositeDisposable
     @disposables.add atom.commands.add 'atom-workspace',
-      'build-tools:toggle': consoleview.toggleBox
+      'build-tools:toggle': ->
+        if consolepanel.isVisible()
+          consolepanel.hide()
+        else
+          consolepanel.show()
     @disposables.add atom.keymaps.add 'build-tools:console', 'atom-workspace': 'ctrl-l ctrl-s': 'build-tools:toggle'
 
   deactivate: ->
+    consolepanel.destroy()
+    consolemodel.destroy()
     @disposables.dispose()
-    consoleview.destroy()
+    @disposables = null
+    consolepanel = null
     consoleview = null
+    consolemodel = null
     ConsoleView = null
+    Console = null
 
   name: 'Console'
   description: 'Display command output in console pane'
@@ -50,25 +69,16 @@ module.exports =
               @div class: 'settings-name', 'Close on success'
               @div =>
                 @span class: 'inline-block text-subtle', 'Close console on success. Uses config value in package settings if enabled'
-          @div class: 'block checkbox', =>
-            @input id: 'debug', type: 'checkbox'
-            @label =>
-              @div class: 'settings-name', 'Print debug information'
-              @div =>
-                @span class: 'inline-block text-subtle', 'Print command data for debugging'
 
       set: (command) ->
         if command?.output?.console?
           @find('#close_success').prop('checked', command.output.console.close_success)
-          @find('#debug').prop('checked', command.output.console.debug)
         else
           @find('#close_success').prop('checked', if atom.config.get('build-tools.CloseOnSuccess') is -1 then false else true)
-          @find('#debug').prop('checked', false)
 
       get: (command) ->
         command.output.console ?= {}
         command.output.console.close_success = @find('#close_success').prop('checked')
-        command.output.console.debug = @find('#debug').prop('checked')
         return null
 
   info:
@@ -79,52 +89,28 @@ module.exports =
         @element.classList.add 'module'
         keys = document.createElement 'div'
         keys.innerHTML = '''
-        <div class="text-padded">Close on success:</div>
-        <div class="text-padded">Debugging:</div>
+        <div class: 'text-padded'>Close on success:</div>
         '''
         values = document.createElement 'div'
-        for key in ['close_success', 'debug']
-          value = document.createElement 'div'
-          value.classList.add 'text-padded'
-          value.innerText = String(command.output.console[key])
-          values.appendChild value
+        value = document.createElement 'div'
+        value.classList.add 'text-padded'
+        value.innerText = String(command.output.console.close_success)
+        values.appendChild value
         @element.appendChild keys
         @element.appendChild values
 
   output:
     class Console
 
-      getView: -> #Not part of API (Spec function)
-        consoleview
-
       newQueue: (@queue) ->
-        consoleview.setQueueCount @queue.queue.length
-        consoleview.clear()
+        @stdout._this = @stderr._this = this
 
       newCommand: (@command) ->
-        consoleview.setCommand @command
-        consoleview.showBox()
-        consoleview.setHeader("#{@command.name} of #{@command.project}")
-        consoleview.unlock()
-        if @command.output.console.debug
-          @stdout.in(input: "Command: #{@command.name}", files: [])
-          for key in ['command', 'project', 'wd']
-            @stdout.in(input: "  #{key}: #{@command[key]}", files: [])
-          if @command.stdout.highlighting is 'hc'
-            @stdout.in(input: "  stdout highlighting: #{@command.stdout.profile}", files: [])
-          else
-            @stdout.in(input: "  stdout highlighting: #{@command.stdout.highlighting}", files: [])
-
-          if @command.stderr.highlighting is 'hc'
-            @stdout.in(input: "  stderr highlighting: #{@command.stderr.profile}", files: [])
-          else
-            @stdout.in(input: "  stderr highlighting: #{@command.stderr.highlighting}", files: [])
-
-          for key in Object.keys(@command.modifier)
-            @stdout.in(input: "  modifier #{key}: " + JSON.stringify(@command.modifier[key]), files: [])
-
-          for key in Object.keys(@command.output)
-            @stdout.in(input: "  output #{key}: " + JSON.stringify(@command.output[key]), files: [])
+        @tab = consolemodel.getTab @command
+        @tab.clear()
+        @tab.unlock()
+        @tab.setRunning()
+        @tab.focus()
         @stdout.lines = []
         @stderr.lines = []
 
@@ -133,21 +119,24 @@ module.exports =
         lines: []
 
         in: ({input, files}) ->
-          @lines.push consoleview.printLine(buildHTML(input, '', files))
+          @lines.push(@_this.tab.printLine(buildHTML(input, '', files)))
 
         setType: (status) ->
           last = @lines[@lines.length - 1]
+          return unless last?
           status = '' if not status?
           status = 'info' if status is 'note'
           $(last).prop('class', "bold text-#{status}")
 
         print: ({input, files}) ->
+          return unless @lines[@lines.length - 1]?
           _new = buildHTML(input.input, (input.highlighting ? input.type), files)
           element = $(@lines[@lines.length - 1])
           element.prop('class', _new.prop('class'))
           element.html(_new.html())
 
         replacePrevious: (lines) ->
+          return unless @lines[@lines.length - lines.length]?
           for {input, files}, index in lines
             _new = buildHTML(input.input, (input.highlighting ? input.type), files)
             element = $(@lines[@lines.length - lines.length + index])
@@ -159,21 +148,24 @@ module.exports =
         lines: []
 
         in: ({input, files}) ->
-          @lines.push consoleview.printLine(buildHTML(input, '', files))
+          @lines.push(@_this.tab.printLine(buildHTML(input, '', files)))
 
         setType: (status) ->
           last = @lines[@lines.length - 1]
+          return unless last?
           status = '' if not status?
           status = 'info' if status is 'note'
           $(last).prop('class', "bold text-#{status}")
 
         print: ({input, files}) ->
+          return unless @lines[@lines.length - 1]?
           _new = buildHTML(input.input, (input.highlighting ? input.type), files)
           element = $(@lines[@lines.length - 1])
           element.prop('class', _new.prop('class'))
           element.html(_new.html())
 
         replacePrevious: (lines) ->
+          return unless @lines[@lines.length - lines.length]?
           for {input, files}, index in lines
             _new = buildHTML(input.input, (input.highlighting ? input.type), files)
             element = $(@lines[@lines.length - lines.length + index])
@@ -181,30 +173,17 @@ module.exports =
             element.html(_new.html())
 
       error: (message) ->
-        consoleview.hideOutput()
-        consoleview.setHeader("#{@command.name} of #{@command.project}: <span class='error'>received #{message}</span>")
+        @tab.setError(message)
+        @tab.lock()
+        @tab.finishConsole()
 
       exitCommand: (code) ->
-        if code is 0
-          consoleview.setQueueLength @queue.queue.length
-          consoleview.setHeader(
-            "#{@command.name} of #{@command.project}: finished with exitcode #{code}"
-          )
-        else
-          consoleview.setHeader(
-            "#{@command.name} of #{@command.project}: " +
-            "<span class='error'>finished with exitcode #{code}</span>"
-          )
+        @tab.setFinished(code)
+        @tab.lock()
+        @tab.finishConsole()
 
       exitQueue: (code) ->
-        consoleview.lock()
-        if code < 0
-          if code is -2
-            consoleview.setHeader(
-              "#{@command.name} of #{@command.project}: " +
-              "<span class='error'>aborted by user or package</span>"
-            )
-          consoleview.setQueueLength @queue.queue.length
-        if consoleview.progress.prop('max') is 1 and code isnt 0
-          consoleview.setQueueLength 1
-        consoleview.finishConsole code
+        if code is -2
+          @tab.setCancelled()
+          @tab.lock()
+          @tab.finishConsole()

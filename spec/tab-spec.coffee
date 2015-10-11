@@ -34,7 +34,7 @@ describe 'Console - Tab', ->
   describe 'On ::setRunning', ->
     it 'sets the tab header to "running"', ->
       tab.setRunning()
-      expect(tab.header.name[0].className).toBe 'name loading loading-spinner-tiny'
+      expect(tab.header.icon[0].className).toBe 'icon icon-sync'
 
   describe 'On ::setError', ->
 
@@ -42,7 +42,7 @@ describe 'Console - Tab', ->
       tab.setError 'Error'
 
     it 'sets the tab header to "error"', ->
-      expect(tab.header.name[0].classList.contains 'icon-x').toBe true
+      expect(tab.header.icon[0].classList.contains 'icon-x').toBe true
 
     it 'sets the error variable', ->
       expect(tab.error).toBe 'Error'
@@ -57,7 +57,7 @@ describe 'Console - Tab', ->
       tab.setFinished 0
 
     it 'sets the tab header to "error"', ->
-      expect(tab.header.name[0].classList.contains 'icon-check').toBe true
+      expect(tab.header.icon[0].classList.contains 'icon-check').toBe true
 
     it 'sets the error variable', ->
       expect(tab.code).toBe 0
@@ -71,7 +71,7 @@ describe 'Console - Tab', ->
       tab.setCancelled()
 
     it 'sets the tab header to "error"', ->
-      expect(tab.header.name[0].classList.contains 'icon-x').toBe true
+      expect(tab.header.icon[0].classList.contains 'icon-x').toBe true
 
     it 'sets the error variable', ->
       expect(tab.code).toBe -2

@@ -1,7 +1,7 @@
 Model = require '../lib/console/console'
 View = require '../lib/console/console-element'
 
-fdescribe 'Output Module - Console Element', ->
+describe 'Output Module - Console Element', ->
   [model, view, tab] = []
 
   beforeEach ->
@@ -43,7 +43,6 @@ fdescribe 'Output Module - Console Element', ->
 
       it 'focuses the new tab', ->
         expect(view.active).toBe tab2
-        expect(view.output.children()[0]).toEqual tab2.view[0]
         expect(view.name.text()).toBe 'bar2 of foo'
 
       it 'highlights the new tab', ->

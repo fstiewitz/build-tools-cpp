@@ -7,7 +7,7 @@ module.exports =
         @div class: 'header', =>
           @div class: 'name bold', outlet: 'name'
           @div class: 'icons', =>
-            @div class: 'icon-x'
+            @div class: 'icon-x', outlet: 'close_view'
         @div class: 'console-container', outlet: 'console', =>
           @div class: 'tabs', =>
             @span class: 'icon icon-three-bars'
@@ -15,7 +15,7 @@ module.exports =
           @div class: 'output-container', outlet: 'output'
 
     initialize: (@model) ->
-      @on 'click', '.icon-x', =>
+      @close_view.on 'click', '.icon-x', =>
         @hide()
       @on 'mousedown', '.header', @startResize
 
@@ -28,11 +28,11 @@ module.exports =
     startResize: (e) =>
       $(document).on 'mousemove', @resize
       $(document).on 'mouseup', @endResize
-      @padding = $(document.body).height() - (e.clientY + @find('.output').height())
+      @padding = $(document.body).height() - (e.clientY + @find('.output-container').height())
 
     resize: ({pageY, which}) =>
       return @endResize() unless which is 1
-      @find('.output').height($(document.body).height() - pageY - @padding) #includes padding offset
+      @find('.output-container').height($(document.body).height() - pageY - @padding)
 
     endResize: =>
       $(document).off 'mousemove', @resize
@@ -40,17 +40,18 @@ module.exports =
 
     createTab: (tab) =>
       @tabs.append tab.header
-      tab.header.on 'click', '.name', -> tab.focus()
+      tab.header.on 'click', '.clicker', -> tab.focus()
 
     focusTab: (tab) =>
       @show()
       @tabs.find('.active').removeClass('active')
-      @active?.view.detach()
+      @output.find('.output').addClass('hidden')
       @active = tab
       @name.empty()
       return @hide() unless tab?
       tab.header.addClass 'active'
       @name.append(tab.getHeader())
+      @active.view.removeClass('hidden')
       @output.append @active.view
 
     removeTab: (tab) =>

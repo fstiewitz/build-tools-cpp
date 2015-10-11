@@ -4,7 +4,9 @@ module.exports =
   class TabItem extends View
     @content: ->
       @li class: 'command-item', =>
-        @div class: 'name icon', outlet: 'name'
+        @div class: 'clicker', =>
+          @div class: 'icon', outlet: 'icon'
+          @div class: 'name', outlet: 'name'
         @div class: 'close icon icon-x'
 
     initialize: (project, name, close) ->
@@ -15,8 +17,5 @@ module.exports =
     setHeader: (text) ->
       @name.text(text)
 
-    setSpinner: ->
-      @name[0].className = 'name loading loading-spinner-tiny'
-
     setIcon: (icon) ->
-      @name[0].className = "name icon icon-#{icon}"
+      @icon[0].className = "icon icon-#{icon}"

@@ -5,19 +5,8 @@
     flex: none;
   }
 
-  .titlebar {
-    display: flex;
-    flex: none;
-    align-items: baseline;
-  }
-
   .bold {
     font-weight: bold;
-  }
-
-  .filelink:hover {
-    text-decoration: underline;
-    cursor: pointer;
   }
 
   .header {
@@ -25,15 +14,20 @@
     background-color: @tool-panel-background-color;
     display: flex;
     justify-content: space-between;
+
+    .name {
+      margin: 0 0 0 2px;
+      cursor: default;
+      height: @component-icon-size;
+    }
   }
 
-  .name {
-    margin: 0 0 0 10px;
-    cursor: default;
-    height: @component-icon-size;
+  .filelink:hover {
+    text-decoration: underline;
+    cursor: pointer;
   }
 
-  .output {
+  .output-container {
     position: relative;
     -webkit-flex: 1;
     margin: 1px;
@@ -51,4 +45,78 @@
   .error {
     color: @text-color-error;
   }
+
+  .tabs {
+    position: absolute;
+    z-index: 10;
+    margin-left: 1px;
+
+    .icon-three-bars {
+      position: relative;
+      top: @component-icon-padding;
+      left: @component-icon-padding;
+    }
+
+    .tab-list {
+      display: none;
+    }
+
+    &:hover {
+      background-color: @tool-panel-background-color;
+      list-style: none;
+
+      .tab-list {
+        position: relative;
+        display: block;
+        padding: @component-padding;
+
+        .active {
+          background-color: @background-color-selected;
+          color: @text-color-selected;
+        }
+
+        .command-item {
+          display: flex;
+          justify-content: space-between;
+          cursor: pointer;
+          line-height: @component-line-height;
+          padding-left: @component-icon-padding;
+
+          .icon-check:before {
+            color: @text-color-success;
+          }
+
+          .icon-x:before {
+            color: @text-color-error;
+          }
+
+          .loading-spinner-tiny {
+            margin-top: 2px;
+
+          }
+
+          .clicker {
+            display: flex;
+            flex: 1;
+            .bold;
+          }
+
+          .close {
+            margin-left: @component-icon-padding;
+          }
+
+          &:hover {
+            background-color: @background-color-highlight;
+            color: @text-color-highlight;
+          }
+
+          &:active {
+            background-color: @background-color-selected;
+            color: @text-color-selected;
+          }
+        }
+      }
+    }
+  }
+
 }
