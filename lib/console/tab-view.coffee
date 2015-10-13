@@ -21,7 +21,7 @@ module.exports =
       @lockoutput = false
 
     clear: ->
-      @text('')
+      @empty()
 
     finishConsole: ->
       @find('.filelink').on 'click', ->

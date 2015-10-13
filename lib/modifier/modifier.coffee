@@ -11,6 +11,7 @@ module.exports =
     wildcards: require './wildcards'
     save_all: require './save_all'
     env: require './env'
+    dependency: require './dependency'
 
   addModule: (key, mod) ->
     return if @modules[key]?

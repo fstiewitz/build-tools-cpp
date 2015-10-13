@@ -146,7 +146,7 @@ module.exports =
           command = @command
         else
           command = null
-        view?.set? command
+        view?.set? command, @sourceFile
 
     accept: (event) =>
       c = new Command

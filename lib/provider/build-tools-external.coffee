@@ -26,7 +26,7 @@ module.exports =
   model:
     class BuildToolsProjectExternal
 
-      constructor: (@projectPath, @config, @_save = null) ->
+      constructor: ([@projectPath], @config, @_save = null) ->
         return if @_save?
         file = path.resolve(@projectPath, @config.file)
         if not @config.overwrite

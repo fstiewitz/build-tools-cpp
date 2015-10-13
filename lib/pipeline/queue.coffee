@@ -5,10 +5,10 @@ module.exports =
   class Queue
     constructor: (origin) ->
       if origin.length?
-        @queue = origin
+        @queue = queue: origin
       else
-        @queue = [origin]
-      @keys = Object.keys(origin.modifier ? {}).filter (k) ->
+        @queue = queue: [origin]
+      @keys = Object.keys(@queue.queue[0].modifier ? {}).filter (k) ->
         Modifiers.modules[k]?.in?
       @keys.reverse()
 
@@ -18,7 +18,7 @@ module.exports =
       )
 
     _run: (resolve, reject) ->
-      return resolve(new QueueWorker(queue: @queue)) unless (k = @keys.pop())?
+      return resolve(new QueueWorker(@queue)) unless (k = @keys.pop())?
       return @_run resolve, reject unless Modifiers.activate(k) is true
       ret = Modifiers.modules[k].in @queue
       if ret instanceof Promise

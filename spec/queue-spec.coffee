@@ -28,7 +28,7 @@ describe 'Queue', ->
     }
     out = {
       in: (queue) ->
-        queue[0].t = queue[0].modifier.test.t
+        queue.queue[0].t = queue.queue[0].modifier.test.t
         return
     }
     modifier = Modifiers.addModule 'test', out

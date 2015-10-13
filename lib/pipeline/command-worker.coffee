@@ -40,8 +40,8 @@ module.exports =
           @process.onWillThrowError ({error, handle}) =>
             @manager.error error
             @destroy()
-            reject(error)
             handle()
+            reject(error)
       )
 
     destroy: ->

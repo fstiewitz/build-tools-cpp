@@ -31,7 +31,7 @@ module.exports =
           key: p.key
           config: p.config
           model: Providers.modules[p.key].model
-          interface: new Providers.modules[p.key].model(@projectPath, p.config, if @viewed then @save)
+          interface: new Providers.modules[p.key].model([@projectPath, @filePath], p.config, if @viewed then @save)
         }
         continue unless @viewed
         continue unless Providers.modules[p.key].view?
@@ -62,9 +62,12 @@ module.exports =
     getCommandById: (pid, id) ->
       new Promise((resolve, reject) =>
         if (c = @providers[pid]?.interface?.getCommandByIndex id) instanceof Promise
-          c.then (command) -> resolve(command)
+          c.then (command) ->
+            command.source = @filePath
+            resolve(command)
           c.catch (e) -> reject(e)
         else if c?
+          c.source = @filePath
           resolve(c)
         else
           reject("Could not get Command ##{id} from #{pid}")
@@ -122,28 +125,31 @@ module.exports =
     # Private functions
     ############################################################################
 
-    _getCommandByIndex: (id, resolve, reject) ->
+    _getCommandByIndex: (id, resolve, reject) =>
       return reject("Command ##{id + 1} not found") unless (p = @_providers.pop())?
       if (c = p.interface?.getCommandByIndex id - @f) instanceof Promise
-        c.then (command) -> resolve(command)
+        c.then (command) =>
+          c.source = @filePath
+          resolve(command)
         c.catch =>
           if (c = p.interface?.getCommandCount()) instanceof Promise
             c.then (count) =>
               @f = @f + count
               @_getCommandByIndex id, resolve, reject
-            c.catch (e) =>
+            c.catch (e) ->
               reject(e)
           else
             @f = @f + (c ? 0)
             @_getCommandByIndex id, resolve, reject
       else if c?
+        c.source = @filePath
         resolve(c)
       else
         if (c = p.interface?.getCommandCount()) instanceof Promise
           c.then (count) =>
             @f = @f + count
             @_getCommandByIndex id, resolve, reject
-          c.catch =>
+          c.catch ->
             reject(e)
         else
           @f = @f + (c ? 0)

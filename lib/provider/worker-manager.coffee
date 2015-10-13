@@ -4,7 +4,7 @@ module.exports =
 
   deactivate: ->
     for k in Object.keys(@workers)
-      for j in Object.keys(@workers)
+      for j in Object.keys(@workers[k])
         @workers[k][j]?.stop()
     @workers = {}
 

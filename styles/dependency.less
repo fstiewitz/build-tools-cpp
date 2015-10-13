@@ -1,0 +1,39 @@
+@import "ui-variables.less";
+.commandview {
+  .dependency-list {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .active-dependencies {
+      background-color: @input-background-color;
+      flex: 1;
+    }
+
+    .dependency-select-list {
+      .active-dependencies;
+    }
+
+    .config-icons {
+      margin: 0 0 0 @component-icon-padding;
+      height: @component-icon-size;
+    }
+
+    .dependency {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      height: @component-icon-size;
+
+      &:hover {
+        background-color: @background-color-selected;
+        color: @text-color-selected;
+      }
+
+      .actions {
+        display: flex;
+        flex-direction: row;
+      }
+    }
+  }
+}

@@ -35,8 +35,8 @@ module.exports =
   model:
     class BuildToolsProject
 
-      constructor: (_path, @config, @_save) ->
-        @path = _path
+      constructor: ([project, @sourceFile], @config, @_save) ->
+        @path = project
         @emitter = new Emitter if @_save?
         @commands = []
         if @config.commands?
@@ -140,6 +140,7 @@ module.exports =
       attached: ->
         @on 'click', '#add-command-button', (e) =>
           @commandPane = atom.views.getView(new Command)
+          @commandPane.sourceFile = @project.sourceFile
           @commandPane.setCallbacks @accept, @hidePanes
           @showPane @commandPane
         @addCommands()
@@ -157,6 +158,7 @@ module.exports =
             c.oldname = c.name
             c.project = @project.projectPath
             @commandPane = atom.views.getView(c)
+            @commandPane.sourceFile = @project.sourceFile
             @commandPane.setCallbacks((_command, oldname) =>
               @project.replaceCommand(oldname, _command)
             , @hidePanes)
