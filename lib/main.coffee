@@ -17,6 +17,7 @@ module.exports =
   subscriptions: null
 
   activate: (state) ->
+    Input.activate()
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace',
       'build-tools:third-command': -> Input.key(2)
@@ -42,6 +43,7 @@ module.exports =
     (ModifierModules ? require './modifier/modifier').reset()
     (ProviderModules ? require './provider/provider').reset()
     (OutputModules ? require './output/output').reset()
+    Input.deactivate()
     ModifierModules = null
     ProviderModules = null
     OutputModules = null

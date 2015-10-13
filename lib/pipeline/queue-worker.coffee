@@ -6,14 +6,13 @@ Outputs = require '../output/output'
 module.exports =
   class QueueWorker
 
-    constructor: (@queue, @outputs) ->
-      if not @outputs?
-        @outputs = {}
+    constructor: (@queue) ->
+      @outputs = {}
 
-        for command in @queue.queue
-          for key in Object.keys(command.output)
-            continue unless Outputs.activate(key) is true
-            @outputs[key] = new Outputs.modules[key].output if Outputs.modules[key]? and not @outputs[key]
+      for command in @queue.queue
+        for key in Object.keys(command.output)
+          continue unless Outputs.activate(key) is true
+          @outputs[key] = new Outputs.modules[key].output if not @outputs[key]
 
       for key in Object.keys(@outputs)
         @outputs[key].newQueue?(@queue)
@@ -22,8 +21,6 @@ module.exports =
       @finished = false
 
     destroy: ->
-      @currentWorker.destroy() if not @finished
-      @finished = true
       @emitter.dispose()
       @outputs = null
 
@@ -60,10 +57,11 @@ module.exports =
       @finishedQueue -2
 
     finishedQueue: (code) ->
-      @emitter.emit 'finishedQueue', code
+      @finished = true
       for key in Object.keys(@outputs)
         @outputs[key].exitQueue?(code)
-      @finished = true
+      @emitter.emit 'finishedQueue', code
+      @destroy()
 
     hasFinished: ->
       @finished

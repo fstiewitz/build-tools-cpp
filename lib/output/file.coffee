@@ -62,21 +62,17 @@ module.exports =
   output:
     class Log
       newQueue: (@queue) ->
-        @stdout.__this = this
-        @stderr.__this = this
 
       newCommand: (command) ->
         _path = path.resolve(command.project, command.output.file.path)
         @fd = null
         @fd = fs.createWriteStream _path
 
-      stdout:
-        in: ({input}) ->
-          @__this.fd.write input + '\n'
+      stdout_in: ({input}) ->
+        @fd.write input + '\n'
 
-      stderr:
-        in: ({input}) ->
-          @__this.fd.write input + '\n'
+      stderr_in: ({input}) ->
+        @fd.write input + '\n'
 
       exitCommand: ->
         @fd.end()

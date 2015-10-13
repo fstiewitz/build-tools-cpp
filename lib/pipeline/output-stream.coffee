@@ -35,15 +35,10 @@ module.exports =
       @regex = null
       @default = {}
 
-    subscribeToCommands: (subscriber, command) ->
-      return unless subscriber?
-      return unless subscriber[command]?
-      @subscribers.on command, (o) -> subscriber[command](o)
-
-    subscribeToInput: (subscriber) ->
-      return unless subscriber?
-      return unless subscriber.in?
-      @subscribers.on 'input', (o) -> subscriber.in(o)
+    subscribeToCommands: (object, callback, command) ->
+      return unless object?
+      return unless object[callback]?
+      @subscribers.on command, (o) -> object[callback](o)
 
     in: (message) ->
       lines = message.split('\n')

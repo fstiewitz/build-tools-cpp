@@ -5,22 +5,22 @@ module.exports =
 
     constructor: (@outputs, @stdout, @stderr) ->
       for output in @outputs
-        @stdout.subscribeToInput output.stdout if output.stdout?
-        @stderr.subscribeToInput output.stderr if output.stderr?
+        @stdout.subscribeToCommands output, 'stdout_in', 'input'
+        @stderr.subscribeToCommands output, 'stderr_in', 'input'
 
         if @stdout.highlighting isnt 'nh'
-          @stdout.subscribeToCommands output.stdout, 'setType'
+          @stdout.subscribeToCommands output, 'stdout_setType', 'setType'
           if @stdout.profile? or @stdout.regex?
-            @stdout.subscribeToCommands output.stdout, 'replacePrevious'
-            @stdout.subscribeToCommands output.stdout, 'print'
-            @stdout.subscribeToCommands output.stdout, 'linter'
+            @stdout.subscribeToCommands output, 'stdout_replacePrevious', 'replacePrevious'
+            @stdout.subscribeToCommands output, 'stdout_print', 'print'
+            @stdout.subscribeToCommands output, 'stdout_linter', 'linter'
 
         if @stderr.highlighting isnt 'nh'
-          @stderr.subscribeToCommands output.stderr, 'setType'
+          @stderr.subscribeToCommands output, 'stderr_setType', 'setType'
           if @stderr.profile? or @stdout.regex?
-            @stderr.subscribeToCommands output.stderr, 'replacePrevious'
-            @stderr.subscribeToCommands output.stderr, 'print'
-            @stderr.subscribeToCommands output.stderr, 'linter'
+            @stderr.subscribeToCommands output, 'stderr_replacePrevious', 'replacePrevious'
+            @stderr.subscribeToCommands output, 'stderr_print', 'print'
+            @stderr.subscribeToCommands output, 'stderr_linter', 'linter'
 
     initialize: (command) ->
       for output in @outputs

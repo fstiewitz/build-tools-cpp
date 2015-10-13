@@ -56,27 +56,24 @@ module.exports =
       newQueue: (@queue) ->
         ll.messages = []
         coordinates = {}
-        @stdout._this = @stderr._this = this
 
       newCommand: (@command) ->
 
-      stdout:
-        linter: (message) ->
-          return ll.messages.push message if atom.inSpecMode()
-          return if coordinates[message.filePath + ':' + message.range[0][0]]?
-          coordinates[message.filePath + ':' + message.range[0][0]] = true
-          if @_this.command.output.linter.no_trace
-            message.trace = null
-          ll.messages.push message
+      stdout_linter: (message) ->
+        return ll.messages.push message if atom.inSpecMode()
+        return if coordinates[message.filePath + ':' + message.range[0][0]]?
+        coordinates[message.filePath + ':' + message.range[0][0]] = true
+        if @command.output.linter.no_trace
+          message.trace = null
+        ll.messages.push message
 
-      stderr:
-        linter: (message) ->
-          return ll.messages.push message if atom.inSpecMode()
-          return if coordinates[message.filePath + ':' + message.range[0][0]]?
-          coordinates[message.filePath + ':' + message.range[0][0]] = true
-          if @_this.command.output.linter.no_trace
-            message.trace = null
-          ll.messages.push message
+      stderr_linter: (message) ->
+        return ll.messages.push message if atom.inSpecMode()
+        return if coordinates[message.filePath + ':' + message.range[0][0]]?
+        coordinates[message.filePath + ':' + message.range[0][0]] = true
+        if @command.output.linter.no_trace
+          message.trace = null
+        ll.messages.push message
 
       exitQueue: (code) ->
         atom.commands.dispatch(atom.views.getView(atom.workspace), 'linter:lint')

@@ -24,14 +24,12 @@ describe 'Command Worker', ->
       newCommand: jasmine.createSpy('newCommand')
       exitCommand: jasmine.createSpy('exitCommand')
       exitQueue: jasmine.createSpy('exitQueue')
-      stdout:
-        in: jasmine.createSpy('in')
-        setType: jasmine.createSpy('setType')
-      stderr:
-        in: jasmine.createSpy('in')
-        setType: jasmine.createSpy('setType')
-        print: jasmine.createSpy('setType')
-        linter: jasmine.createSpy('linter')
+      stdout_in: jasmine.createSpy('stdout_in')
+      stdout_setType: jasmine.createSpy('stdout_setType')
+      stderr_in: jasmine.createSpy('stderr_in')
+      stderr_setType: jasmine.createSpy('stderr_setType')
+      stderr_print: jasmine.createSpy('stderr_setType')
+      stderr_linter: jasmine.createSpy('stderr_linter')
       error: jasmine.createSpy('error')
 
     command.project = atom.project.getPaths()[0]
@@ -50,7 +48,7 @@ describe 'Command Worker', ->
       worker.manager.stdout.in 'Hello World\n'
 
     it 'calls stdout.in of all outputs', ->
-      expect(output.stdout.in).toHaveBeenCalledWith input: 'Hello World', files: []
+      expect(output.stdout_in).toHaveBeenCalledWith input: 'Hello World', files: []
 
   describe 'on error', ->
 

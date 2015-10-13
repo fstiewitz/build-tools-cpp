@@ -58,8 +58,6 @@ module.exports =
   output:
     class Buffer
       newQueue: (@queue) ->
-        @stdout.__this = this
-        @stderr.__this = this
 
       newCommand: (command) ->
         if command.output.buffer.recycle_buffer
@@ -79,22 +77,20 @@ module.exports =
             @buffer.onDidDestroy =>
               @buffer = null
 
-      stdout:
-        in: ({input}) ->
-          if @__this.p?
-            @__this.p.then (buffer) =>
-              @__this.buffer = buffer
-              @__this.p = null
-              @__this.buffer?.insertText input + '\n'
-          else
-            @__this.buffer?.insertText input + '\n'
+      stdout_in: ({input}) ->
+        if @p?
+          @p.then (buffer) =>
+            @buffer = buffer
+            @p = null
+            @buffer?.insertText input + '\n'
+        else
+          @buffer?.insertText input + '\n'
 
-      stderr:
-        in: ({input}) ->
-          if @__this.p?
-            @__this.p.then (buffer) =>
-              @__this.buffer = buffer
-              @__this.p = null
-              @__this.buffer?.insertText input + '\n'
-          else
-            @__this.buffer?.insertText input + '\n'
+      stderr_in: ({input}) ->
+        if @p?
+          @p.then (buffer) =>
+            @buffer = buffer
+            @p = null
+            @buffer?.insertText input + '\n'
+        else
+          @buffer?.insertText input + '\n'

@@ -4,6 +4,8 @@ ProjectConfig = require './project'
 Command = require './command'
 Queue = require '../pipeline/queue'
 
+WorkerManager = require './worker-manager'
+
 SelectionView = null
 selectionview = null
 
@@ -26,9 +28,12 @@ getProjectConfig = (folder, file) ->
   new ProjectConfig(folder, file)
 
 module.exports =
-  currentWorker: null
+
+  activate: ->
+    WorkerManager.activate()
 
   deactivate: ->
+    WorkerManager.deactivate()
     SelectionView = null
     selectionview = null
 
@@ -37,7 +42,6 @@ module.exports =
 
   key: (id) ->
     return unless (p = atom.workspace.getActiveTextEditor()?.getPath())?
-    @cancel()
     getFirstConfig(path.resolve(path.dirname(p))).then(({folderPath, filePath}) =>
       p = (c = getProjectConfig(folderPath, filePath)).getCommandByIndex(id)
       p.catch (error) -> atom.notifications?.addError error
@@ -48,7 +52,6 @@ module.exports =
 
   keyAsk: (id) ->
     return unless (p = atom.workspace.getActiveTextEditor()?.getPath())?
-    @cancel()
     getFirstConfig(path.resolve(path.dirname(p))).then(({folderPath, filePath}) =>
       p = (config = getProjectConfig(folderPath, filePath)).getCommandByIndex(id)
       p.catch (error) -> atom.notifications?.addError error
@@ -64,7 +67,6 @@ module.exports =
 
   selection: ->
     return unless (p = atom.workspace.getActiveTextEditor()?.getPath())?
-    @cancel()
     SelectionView ?= require '../view/selection-view'
     selectionview = new SelectionView
     selectionview.setLoading('Loading project configuration')
@@ -90,13 +92,10 @@ module.exports =
     q.catch -> selectionview.setError('Could not load project configuration')
 
   run: (command) ->
-    p = command.getQueue().run()
-    p.then (@currentWorker) =>
-      @currentWorker.run()
-      @currentWorker.onFinishedQueue => @currentWorker = null
-    p.catch (error) =>
-      atom.notifications?.addError error
-      @currentWorker = null
+    WorkerManager.removeWorker(command)
+    p = WorkerManager.createWorker(command)
+    p.then (worker) -> worker.run()
+    p.catch (error) -> atom.notifications?.addError error
 
   inputCommand: (command) ->
     new Command(command).getQueue()
@@ -108,6 +107,6 @@ module.exports =
     new Queue(_commands)
 
   cancel: ->
-    @currentWorker?.stop()
+    WorkerManager.deactivate()
 
   getFirstConfig: getFirstConfig

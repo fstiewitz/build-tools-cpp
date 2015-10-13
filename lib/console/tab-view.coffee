@@ -11,7 +11,7 @@ module.exports =
     printLine: (line) ->
       return null if @lockoutput
       @append(line)
-      @scrollTop(@[0].scrollHeight)
+      @parent().scrollTop(@[0].scrollHeight) unless @hasClass('hidden')
       return @[0].children[@[0].children.length - 1]
 
     lock: ->

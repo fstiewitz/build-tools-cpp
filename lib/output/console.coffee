@@ -103,7 +103,6 @@ module.exports =
     class Console
 
       newQueue: (@queue) ->
-        @stdout._this = @stderr._this = this
 
       newCommand: (@command) ->
         @tab = consolemodel.getTab @command
@@ -111,66 +110,58 @@ module.exports =
         @tab.unlock()
         @tab.setRunning()
         @tab.focus()
-        @stdout.lines = []
-        @stderr.lines = []
+        @stdout_lines = []
+        @stderr_lines = []
 
-      stdout:
+      stdout_in: ({input, files}) ->
+        @stdout_lines.push(@tab.printLine(buildHTML(input, '', files)))
 
-        lines: []
+      stdout_setType: (status) ->
+        last = @stdout_lines[@stdout_lines.length - 1]
+        return unless last?
+        status = '' if not status?
+        status = 'info' if status is 'note'
+        $(last).prop('class', "bold text-#{status}")
 
-        in: ({input, files}) ->
-          @lines.push(@_this.tab.printLine(buildHTML(input, '', files)))
+      stdout_print: ({input, files}) ->
+        return unless @stdout_lines[@stdout_lines.length - 1]?
+        _new = buildHTML(input.input, (input.highlighting ? input.type), files)
+        element = $(@stdout_lines[@stdout_lines.length - 1])
+        element.prop('class', _new.prop('class'))
+        element.html(_new.html())
 
-        setType: (status) ->
-          last = @lines[@lines.length - 1]
-          return unless last?
-          status = '' if not status?
-          status = 'info' if status is 'note'
-          $(last).prop('class', "bold text-#{status}")
-
-        print: ({input, files}) ->
-          return unless @lines[@lines.length - 1]?
+      stdout_replacePrevious: (lines) ->
+        return unless @stdout_lines[@stdout_lines.length - lines.length]?
+        for {input, files}, index in lines
           _new = buildHTML(input.input, (input.highlighting ? input.type), files)
-          element = $(@lines[@lines.length - 1])
+          element = $(@stdout_lines[@stdout_lines.length - lines.length + index])
           element.prop('class', _new.prop('class'))
           element.html(_new.html())
 
-        replacePrevious: (lines) ->
-          return unless @lines[@lines.length - lines.length]?
-          for {input, files}, index in lines
-            _new = buildHTML(input.input, (input.highlighting ? input.type), files)
-            element = $(@lines[@lines.length - lines.length + index])
-            element.prop('class', _new.prop('class'))
-            element.html(_new.html())
+      stderr_in: ({input, files}) ->
+        @stderr_lines.push(@tab.printLine(buildHTML(input, '', files)))
 
-      stderr:
+      stderr_setType: (status) ->
+        last = @stderr_lines[@stderr_lines.length - 1]
+        return unless last?
+        status = '' if not status?
+        status = 'info' if status is 'note'
+        $(last).prop('class', "bold text-#{status}")
 
-        lines: []
+      stderr_print: ({input, files}) ->
+        return unless @stderr_lines[@stderr_lines.length - 1]?
+        _new = buildHTML(input.input, (input.highlighting ? input.type), files)
+        element = $(@stderr_lines[@stderr_lines.length - 1])
+        element.prop('class', _new.prop('class'))
+        element.html(_new.html())
 
-        in: ({input, files}) ->
-          @lines.push(@_this.tab.printLine(buildHTML(input, '', files)))
-
-        setType: (status) ->
-          last = @lines[@lines.length - 1]
-          return unless last?
-          status = '' if not status?
-          status = 'info' if status is 'note'
-          $(last).prop('class', "bold text-#{status}")
-
-        print: ({input, files}) ->
-          return unless @lines[@lines.length - 1]?
+      stderr_replacePrevious: (lines) ->
+        return unless @stderr_lines[@stderr_lines.length - lines.length]?
+        for {input, files}, index in lines
           _new = buildHTML(input.input, (input.highlighting ? input.type), files)
-          element = $(@lines[@lines.length - 1])
+          element = $(@stderr_lines[@stderr_lines.length - lines.length + index])
           element.prop('class', _new.prop('class'))
           element.html(_new.html())
-
-        replacePrevious: (lines) ->
-          return unless @lines[@lines.length - lines.length]?
-          for {input, files}, index in lines
-            _new = buildHTML(input.input, (input.highlighting ? input.type), files)
-            element = $(@lines[@lines.length - lines.length + index])
-            element.prop('class', _new.prop('class'))
-            element.html(_new.html())
 
       error: (message) ->
         @tab.setError(message)

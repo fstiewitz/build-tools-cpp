@@ -15,7 +15,7 @@ describe 'Output Module - Linter', ->
   describe 'On stdout linter message', ->
 
     beforeEach ->
-      module.stdout.linter('Test message')
+      module.stdout_linter('Test message')
 
     it 'adds the message', ->
       expect(ll.messages[0]).toBe 'Test message'
@@ -23,7 +23,7 @@ describe 'Output Module - Linter', ->
   describe 'On stderr linter message', ->
 
     beforeEach ->
-      module.stderr.linter('Test message')
+      module.stderr_linter('Test message')
 
     it 'adds the message', ->
       expect(ll.messages[0]).toBe 'Test message'

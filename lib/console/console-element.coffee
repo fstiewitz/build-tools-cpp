@@ -15,7 +15,7 @@ module.exports =
           @div class: 'output-container', outlet: 'output'
 
     initialize: (@model) ->
-      @close_view.on 'click', '.icon-x', =>
+      @close_view.on 'click', =>
         @hide()
       @on 'mousedown', '.header', @startResize
 
@@ -51,8 +51,10 @@ module.exports =
       return @hide() unless tab?
       tab.header.addClass 'active'
       @name.append(tab.getHeader())
-      @active.view.removeClass('hidden')
-      @output.append @active.view
+      if @active.view.hasClass 'hidden'
+        @active.view.removeClass 'hidden'
+      else
+        @output.append @active.view
 
     removeTab: (tab) =>
       if @active is tab

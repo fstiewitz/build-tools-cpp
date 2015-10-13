@@ -21,14 +21,12 @@ describe 'Output Manager', ->
     output =
       newCommand: jasmine.createSpy('newCommand')
       exitCommand: jasmine.createSpy('exitCommand')
-      stdout:
-        in: jasmine.createSpy('in')
-        setType: jasmine.createSpy('setType')
-      stderr:
-        in: jasmine.createSpy('in')
-        setType: jasmine.createSpy('setType')
-        print: jasmine.createSpy('setType')
-        linter: jasmine.createSpy('linter')
+      stdout_in: jasmine.createSpy('stdout_in')
+      stdout_setType: jasmine.createSpy('stdout_setType')
+      stderr_in: jasmine.createSpy('stderr_in')
+      stderr_setType: jasmine.createSpy('stderr_setType')
+      stderr_print: jasmine.createSpy('stderr_setType')
+      stderr_linter: jasmine.createSpy('stderr_linter')
 
     command.project = atom.project.getPaths()[0]
     manager = new OutputManager(command, [output])
@@ -42,19 +40,19 @@ describe 'Output Manager', ->
   describe 'On stdout input', ->
     it 'calls the correct functions', ->
       manager.stdout.in 'Hello World\n'
-      expect(output.stdout.in).toHaveBeenCalledWith input: 'Hello World', files: []
-      expect(output.stdout.setType).toHaveBeenCalledWith('warning')
+      expect(output.stdout_in).toHaveBeenCalledWith input: 'Hello World', files: []
+      expect(output.stdout_setType).toHaveBeenCalledWith('warning')
 
   describe 'On stderr input', ->
     it 'calls the correct functions', ->
       input = '** Error: test.vhd(278): VHDL Compiler exiting'
       manager.stderr.in "#{input}\n"
-      expect(output.stderr.in.mostRecentCall.args[0].input).toBe input
+      expect(output.stderr_in.mostRecentCall.args[0].input).toBe input
       match = {type: 'error', message: 'VHDL Compiler exiting', file: path.join(atom.project.getPaths()[0], 'test.vhd'), row: '278', input: input}
-      test = output.stderr.print.mostRecentCall.args[0].input
+      test = output.stderr_print.mostRecentCall.args[0].input
       expect(test.input).toBe match.input
       expect(test.type).toBe match.type
-      test = output.stderr.linter.mostRecentCall.args[0]
+      test = output.stderr_linter.mostRecentCall.args[0]
       expect(test.text).toBe match.message
       expect(test.type).toBe match.type
       expect(test.filePath).toBe match.file
