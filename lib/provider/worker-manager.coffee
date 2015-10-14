@@ -15,12 +15,11 @@ module.exports =
 
   createWorker: (command) ->
     new Promise((resolve, reject) =>
-      p = command.getQueue().run()
-      p.then (worker) =>
+      command.getQueue().run().then ((worker) =>
         @workers[command.project][command.name] = worker
         worker.onFinishedQueue => @removeWorker(command)
         resolve(worker)
-      p.catch (error) -> reject(error)
+      ), reject
     )
 
   removeWorker: (command) ->

@@ -7,9 +7,7 @@ Input = null
 
 resolveQueue = (queue, q, projects, resolve, reject) ->
   return resolve(q) unless (c = queue.splice(0, 1)[0])?
-  p = resolveDependencies(c, [], projects)
-  p.then (new_q) -> resolveQueue(queue, q.concat(new_q.reverse()), projects, resolve, reject)
-  p.catch (e) -> reject(e)
+  resolveDependencies(c, [], projects).then ((new_q) -> resolveQueue(queue, q.concat(new_q.reverse()), projects, resolve, reject)), reject
 
 resolveDependencies = (command, q, projects) ->
   new Promise((resolve, reject) ->
@@ -26,13 +24,10 @@ resolveDependencies = (command, q, projects) ->
 resolveDependency = ({list, abort}, q, projects, project, resolve, reject) ->
   unless (k = list.pop())?
     return resolve(q)
-  p = project.getCommandById k[0], k[1]
-  p.then (command) ->
+  project.getCommandById(k[0], k[1]).then ((command) ->
     return reject(new Error("Command names #{command.name} and #{k[0]}:#{k[1]}:#{k[2]} do not match")) if command.name isnt k[2]
-    p = resolveDependencies(command, q, projects)
-    p.then -> resolveDependency({list, abort}, q, projects, project, resolve, reject)
-    p.catch (e) -> reject(e)
-  p.catch (e) ->
+    resolveDependencies(command, q, projects).then (-> resolveDependency({list, abort}, q, projects, project, resolve, reject)), reject
+  ), (e) ->
     return reject(e) if abort
     resolveDependency({list, abort}, q, projects, project, resolve, reject)
 
@@ -69,8 +64,7 @@ module.exports =
         @find('#add').on 'click', =>
           try
             project = new Project(path.dirname(source), source)
-            p = project.getCommandNameObjects()
-            p.then (commands) =>
+            project.getCommandNameObjects().then ((commands) =>
               @select.empty()
               for {pid, id, name} in commands
                 item = $$ ->
@@ -87,8 +81,7 @@ module.exports =
               @select.removeClass('hidden')
               @find('#add').addClass('hidden')
               @find('#cancel').removeClass('hidden')
-            p.catch (e) ->
-              atom.notifications?.addError e
+            ), (e) -> atom.notifications?.addError e
           catch
             atom.notifications?.addError "Could not read from config file #{source}"
 
@@ -177,15 +170,13 @@ module.exports =
   in: (queue) ->
     new Promise((resolve, reject) ->
       projects = {}
-      p = new Promise((resolve, reject) ->
-        resolveQueue(queue.queue, [], projects, resolve, reject))
-      p.then (q) ->
+      new Promise((resolve, reject) -> resolveQueue(queue.queue, [], projects, resolve, reject)).then ((q) ->
         queue.queue = q
         for key in Object.keys(projects)
           for key2 in Object.keys(projects[key])
             projects[key][key2].destroy()
         resolve()
-      p.catch (e) ->
+      ), (e) ->
         for key in Object.keys(projects)
           for key2 in Object.keys(projects[key])
             projects[key][key2].destroy()

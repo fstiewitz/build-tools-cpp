@@ -42,20 +42,17 @@ module.exports =
 
   key: (id) ->
     return unless (p = atom.workspace.getActiveTextEditor()?.getPath())?
-    getFirstConfig(path.resolve(path.dirname(p))).then(({folderPath, filePath}) =>
-      p = (c = getProjectConfig(folderPath, filePath)).getCommandByIndex(id)
-      p.catch (error) -> atom.notifications?.addError error.message
-      p.then (command) =>
+    getFirstConfig(path.resolve(path.dirname(p))).then (({folderPath, filePath}) =>
+      (c = getProjectConfig(folderPath, filePath)).getCommandByIndex(id).then ((command) =>
         @run(command)
         c.destroy()
-    )
+      ), (error) -> atom.notifications?.addError error.message
+    ), ->
 
   keyAsk: (id) ->
     return unless (p = atom.workspace.getActiveTextEditor()?.getPath())?
-    getFirstConfig(path.resolve(path.dirname(p))).then(({folderPath, filePath}) =>
-      p = (config = getProjectConfig(folderPath, filePath)).getCommandByIndex(id)
-      p.catch (error) -> atom.notifications?.addError error.message
-      p.then (command) =>
+    getFirstConfig(path.resolve(path.dirname(p))).then (({folderPath, filePath}) =>
+      (config = getProjectConfig(folderPath, filePath)).getCommandByIndex(id).then ((command) =>
         AskView ?= require '../view/ask-view'
         askview = new AskView(command.command, (c) =>
           rc = new Command(command)
@@ -63,39 +60,34 @@ module.exports =
           @run(rc)
           config.destroy()
         )
-    )
+      ), (error) -> atom.notifications?.addError error.message
+    ), ->
 
   selection: ->
     return unless (p = atom.workspace.getActiveTextEditor()?.getPath())?
     SelectionView ?= require '../view/selection-view'
     selectionview = new SelectionView
     selectionview.setLoading('Loading project configuration')
-    q = getFirstConfig(path.resolve(path.dirname(p)))
-    q.then(({folderPath, filePath}) =>
+    getFirstConfig(path.resolve(path.dirname(p))).then (({folderPath, filePath}) =>
       selectionview.setLoading('Loading command list')
       project = getProjectConfig(folderPath, filePath)
-      n = project.getCommandNameObjects()
-      n.then (commands) =>
+      error = (e) ->
+        selectionview.setError e.message
+        project.destroy()
+      project.getCommandNameObjects().then ((commands) =>
         selectionview.setItems commands
         selectionview.callback = ({id, pid}) =>
-          p = project.getCommandById pid, id
-          p.then (command) =>
+          project.getCommandById(pid, id).then ((command) =>
             @run command
             project.destroy()
-          p.catch (e) ->
-            selectionview.setError e.message
-            project.destroy()
-      n.catch (error) ->
-        selectionview.setError error.message
-        project.destroy()
-    )
-    q.catch -> selectionview.setError('Could not load project configuration')
+          ), error
+        ), error
+    ), -> selectionview.setError('Could not load project configuration')
 
   run: (command) ->
     WorkerManager.removeWorker(command)
-    p = WorkerManager.createWorker(command)
-    p.then (worker) -> worker.run()
-    p.catch (error) -> atom.notifications?.addError error.message
+    error = (e) -> atom.notifications?.addError e.message
+    WorkerManager.createWorker(command).then ((worker) -> worker.run().then(undefined, error)), error
 
   inputCommand: (command) ->
     new Command(command).getQueue()

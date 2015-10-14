@@ -33,25 +33,21 @@ module.exports =
       throw new Error('Worker already finished') if @finished
       unless (c = @queue.queue.splice(0, 1)[0])?
         @finishedQueue 0
-        return resolve()
+        return resolve(0)
       modifier = new CommandModifier(c)
-      mods = modifier.run()
-      mods.catch (e) ->
-        atom.notifications?.addError e.message
-        reject(e)
-      mods.then =>
+      modifier.run().then (=>
         outputs = (@outputs[key] for key in Object.keys(c.output) when @outputs[key]?)
         @currentWorker = new CommandWorker(c, outputs)
-        ret = @currentWorker.run()
-        ret.catch (e) =>
-          @errorCommand e
-          reject(e)
-        ret.then (exitcode) =>
+        @currentWorker.run().then ((exitcode) =>
           @finishedCommand(exitcode)
           if exitcode is 0
             @_run resolve, reject
           else
-            reject(new Error("Command finished with exit code #{exitcode}"))
+            resolve(exitcode)
+        ), (e) =>
+          @errorCommand e
+          resolve(-1)
+      ), reject
 
     stop: ->
       return if @finished

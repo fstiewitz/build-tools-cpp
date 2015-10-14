@@ -14,10 +14,11 @@ describe 'Queue Modifier - Dependencies', ->
       command: 'echo Hello World'
       modifier:
         dependency:
-          abort: true
+          abort: false
           list: [
             [1, 1, 'Bar 2']
             [0, 0, 'Test']
+            [0, 2, 'Test 2']
           ]
       version: 1
     })

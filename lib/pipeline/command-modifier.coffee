@@ -14,13 +14,10 @@ module.exports =
 
     run: ->
       new Promise((resolve, reject) =>
-        rs = @runPreSplit()
-        rs.catch (e) -> reject(e)
-        rs.then =>
+        @runPreSplit().then (=>
           @command.getSpawnInfo()
-          os = @runPostSplit()
-          os.catch (e) -> reject(e)
-          os.then -> resolve()
+          @runPostSplit().then resolve, reject
+        ), reject
       )
 
     runPreSplit: ->
@@ -33,8 +30,7 @@ module.exports =
       return @_runPreSplit resolve, reject unless Modifiers.activate(k) is true
       ret = Modifiers.modules[k].preSplit @command
       if ret instanceof Promise
-        ret.catch (e) -> reject(e)
-        ret.then => @_runPreSplit resolve, reject
+        ret.then (=> @_runPreSplit resolve, reject), reject
       else
         reject(new Error('Error in "' + k + '" module: ' + ret)) if ret?
         @_runPreSplit resolve, reject
@@ -49,8 +45,7 @@ module.exports =
       return @_runPostSplit resolve, reject unless Modifiers.activate(k) is true
       ret = Modifiers.modules[k].postSplit @command
       if ret instanceof Promise
-        ret.catch (e) -> reject(e)
-        ret.then => @_runPostSplit resolve, reject
+        ret.then (=> @_runPostSplit resolve, reject), reject
       else
         reject(new Error('Error in "' + k + '" module: ' + ret)) if ret?
         @_runPostSplit resolve, reject

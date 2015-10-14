@@ -41,27 +41,19 @@ module.exports =
       getCommandByIndex: (id) ->
         new Promise((resolve, reject) =>
           throw new Error("Could not load project file #{@config.file}") unless @project?
-          p = @project.getCommandByIndex id
-          p.then (command) ->
-            resolve(command)
-          p.catch (e) -> reject(e)
+          @project.getCommandByIndex(id).then resolve, reject
         )
 
       getCommandCount: ->
         new Promise((resolve, reject) =>
           throw new Error("Could not load project file #{@config.file}") unless @project?
-          p = @project.getCommandNameObjects()
-          p.then (arr) -> resolve(arr.length)
-          p.catch (e) -> reject(e)
+          @project.getCommandNameObjects().then ((arr) -> resolve(arr.length)), reject
         )
 
       getCommandNames: ->
         new Promise((resolve, reject) =>
           throw new Error("Could not load project file #{@config.file}") unless @project?
-          p = @project.getCommandNameObjects()
-          p.then (commands) ->
-            resolve(command.name for command in commands)
-          p.catch (e) -> reject(e)
+          @project.getCommandNameObjects().then ((commands) -> resolve(command.name for command in commands)), reject
         )
 
   view:
