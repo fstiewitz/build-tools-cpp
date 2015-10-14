@@ -16,7 +16,7 @@ resolveDependencies = (command, q, projects) ->
     q.push command
     unless command.modifier.dependency?
       return resolve(q)
-    reject('No source parameter') unless command.source?
+    throw new Error('No source parameter') unless command.source?
     projects[command.project] ?= {}
     unless projects[command.project][command.source]?
       project = projects[command.project][command.source] = new Project(command.project, command.source)
@@ -28,7 +28,7 @@ resolveDependency = (list, q, projects, project, resolve, reject) ->
     return resolve(q)
   p = project.getCommandById k[0], k[1]
   p.then (command) ->
-    return reject("Command names #{command.name} and #{k[0]}:#{k[1]}:#{k[2]} do not match") if command.name isnt k[2]
+    return reject(new Error("Command names #{command.name} and #{k[0]}:#{k[1]}:#{k[2]} do not match")) if command.name isnt k[2]
     p = resolveDependencies(command, q, projects)
     p.then -> resolveDependency(list, q, projects, project, resolve, reject)
     p.catch (e) -> reject(e)

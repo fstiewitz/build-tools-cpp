@@ -1,7 +1,7 @@
 Dependency = require '../lib/modifier/dependency'
 Command = require '../lib/provider/command'
 
-fdescribe 'Queue Modifier - Dependencies', ->
+describe 'Queue Modifier - Dependencies', ->
   command = null
   queue = null
 

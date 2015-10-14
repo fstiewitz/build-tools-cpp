@@ -21,7 +21,7 @@ module.exports =
         worker.onFinishedQueue => @removeWorker(command)
         resolve(worker)
       p.catch (error) ->
-        console.log error
+        console.log error.message
         reject(error)
     )
 

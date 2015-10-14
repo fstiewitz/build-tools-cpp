@@ -25,5 +25,5 @@ module.exports =
         ret.catch (e) -> reject(e)
         ret.then => @_run resolve, reject
       else
-        reject(ret) if ret?
+        reject(new Error(ret)) if ret?
         @_run resolve, reject

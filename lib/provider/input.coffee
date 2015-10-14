@@ -44,7 +44,7 @@ module.exports =
     return unless (p = atom.workspace.getActiveTextEditor()?.getPath())?
     getFirstConfig(path.resolve(path.dirname(p))).then(({folderPath, filePath}) =>
       p = (c = getProjectConfig(folderPath, filePath)).getCommandByIndex(id)
-      p.catch (error) -> atom.notifications?.addError error
+      p.catch (error) -> atom.notifications?.addError error.message
       p.then (command) =>
         @run(command)
         c.destroy()
@@ -54,7 +54,7 @@ module.exports =
     return unless (p = atom.workspace.getActiveTextEditor()?.getPath())?
     getFirstConfig(path.resolve(path.dirname(p))).then(({folderPath, filePath}) =>
       p = (config = getProjectConfig(folderPath, filePath)).getCommandByIndex(id)
-      p.catch (error) -> atom.notifications?.addError error
+      p.catch (error) -> atom.notifications?.addError error.message
       p.then (command) =>
         AskView ?= require '../view/ask-view'
         askview = new AskView(command.command, (c) =>
@@ -83,10 +83,10 @@ module.exports =
             @run command
             project.destroy()
           p.catch (e) ->
-            selectionview.setError e
+            selectionview.setError e.message
             project.destroy()
       n.catch (error) ->
-        selectionview.setError error
+        selectionview.setError error.message
         project.destroy()
     )
     q.catch -> selectionview.setError('Could not load project configuration')

@@ -67,7 +67,7 @@ module.exports =
         else if c?
           resolve(c)
         else
-          reject("Could not get Command ##{id} from #{pid}")
+          throw new Error("Could not get Command ##{id} from #{pid}")
       )
 
     getCommandByIndex: (id) ->
@@ -123,7 +123,7 @@ module.exports =
     ############################################################################
 
     _getCommandByIndex: (id, resolve, reject) ->
-      return reject("Command ##{id + 1} not found") unless (p = @_providers.pop())?
+      return reject(new Error("Command ##{id + 1} not found")) unless (p = @_providers.pop())?
       if (c = p.interface?.getCommandByIndex id - @f) instanceof Promise
         c.then (command) -> resolve(command)
         c.catch =>

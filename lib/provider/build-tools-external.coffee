@@ -3,11 +3,6 @@ path = null
 {View, TextEditorView} = require 'atom-space-pen-views'
 Project = null
 
-notify = (message, error) ->
-  atom.notifications?.addError message
-  console.log('build-tools: ' + message)
-  console.log(error)
-
 module.exports =
 
   name: 'Link to configuration file'
@@ -45,7 +40,7 @@ module.exports =
 
       getCommandByIndex: (id) ->
         new Promise((resolve, reject) =>
-          reject("Could not load project file #{@config.file}") unless @project?
+          throw new Error("Could not load project file #{@config.file}") unless @project?
           p = @project.getCommandByIndex id
           p.then (command) ->
             resolve(command)
@@ -54,7 +49,7 @@ module.exports =
 
       getCommandCount: ->
         new Promise((resolve, reject) =>
-          reject("Could not load project file #{@config.file}") unless @project?
+          throw new Error("Could not load project file #{@config.file}") unless @project?
           p = @project.getCommandNameObjects()
           p.then (arr) -> resolve(arr.length)
           p.catch (e) -> reject(e)
@@ -62,7 +57,7 @@ module.exports =
 
       getCommandNames: ->
         new Promise((resolve, reject) =>
-          reject("Could not load project file #{@config.file}") unless @project?
+          throw new Error("Could not load project file #{@config.file}") unless @project?
           p = @project.getCommandNameObjects()
           p.then (commands) ->
             resolve(command.name for command in commands)
