@@ -42,6 +42,7 @@ module.exports =
         if @config.commands?
           for command in @config.commands
             command.project = @path
+            command.source = @sourceFile
             @commands.push(new Command(command))
         @config.commands = @commands
 
@@ -63,6 +64,7 @@ module.exports =
       addCommand: (item) ->
         if @getCommandIndex(item.name) is -1
           item['project'] = @path
+          item['source'] = @sourceFile
           @commands.push(new Command(item))
           @emitter.emit 'change'
           return true
@@ -82,6 +84,7 @@ module.exports =
       replaceCommand: (oldname, item) ->
         if (i = @getCommandIndex oldname) isnt -1
           item['project'] = @path
+          item['source'] = @sourceFile
           @commands.splice(i, 1, item)
           @emitter.emit 'change'
           return true

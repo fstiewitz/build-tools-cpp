@@ -5,8 +5,9 @@ providers: [
       commands: [
         {
           project: "/opt/work/build-tools/spec/fixtures/root1/sub0"
+          source: "/opt/work/build-tools/spec/fixtures/root1/sub0/.build-tools.cson"
           name: "Bar"
-          command: "bar"
+          command: "env"
           wd: "."
           env: {}
           modifier: {}
@@ -14,21 +15,35 @@ providers: [
             highlighting: "nh"
           stderr:
             highlighting: "nh"
-          output: {}
+          output:
+            console:
+              close_success: false
           version: 1
         }
         {
           project: "/opt/work/build-tools/spec/fixtures/root1/sub0"
+          source: "/opt/work/build-tools/spec/fixtures/root1/sub0/.build-tools.cson"
           name: "Bar 2"
-          command: "bar2"
+          command: "echo Bar 2"
           wd: "."
           env: {}
-          modifier: {}
+          modifier:
+            dependency:
+              list: [
+                [
+                  "0"
+                  "0"
+                  "Bar"
+                ]
+              ]
+              abort: true
           stdout:
             highlighting: "nh"
           stderr:
             highlighting: "nh"
-          output: {}
+          output:
+            console:
+              close_success: false
           version: 1
         }
       ]

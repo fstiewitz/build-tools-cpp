@@ -5,35 +5,31 @@ Command = null
 Project = null
 Input = null
 
-resolveQueue = (queue, q, resolve, reject) ->
+resolveQueue = (queue, q, projects, resolve, reject) ->
   return resolve(q) unless (c = queue.splice(0, 1)[0])?
-  p = resolveCommands(c)
-  p.then (new_q) -> resolveQueue(queue, q.concat(new_q.reverse()), resolve, reject)
+  p = resolveDependencies(c, [], projects)
+  p.then (new_q) -> resolveQueue(queue, q.concat(new_q.reverse()), projects, resolve, reject)
   p.catch (e) -> reject(e)
 
-resolveCommands = (input) ->
-  q = []
-  p = new Project(input.project, input.source)
-  resolveCommand(input, q, p)
-
-resolveCommand = (command, q, project) ->
+resolveDependencies = (command, q, projects) ->
   new Promise((resolve, reject) ->
     q.push command
     unless command.modifier.dependency?
-      #project.destroy()
       return resolve(q)
-    resolveDependency(command.modifier.dependency.list, q, project, resolve, reject)
+    projects[command.project] ?= {}
+    unless projects[command.project][command.source]?
+      project = projects[command.project][command.source] = new Project(command.project, command.source)
+    resolveDependency(command.modifier.dependency.list, q, projects, project, resolve, reject)
   )
 
-resolveDependency = (list, q, project, resolve, reject) ->
+resolveDependency = (list, q, projects, project, resolve, reject) ->
   unless (k = list.pop())?
-    project.destroy()
     return resolve(q)
   p = project.getCommandById k[0], k[1]
   p.then (command) ->
-    return reject("Command names #{command.name} and #{k[2]} do not match") if command.name isnt k[2]
-    p = resolveCommand(command, q, project)
-    p.then -> resolveDependency(list, q, project, resolve, reject)
+    return reject("Command names #{command.name} and #{k[0]}:#{k[1]}:#{k[2]} do not match") if command.name isnt k[2]
+    p = resolveDependencies(command, q, projects)
+    p.then -> resolveDependency(list, q, projects, project, resolve, reject)
     p.catch (e) -> reject(e)
   p.catch (e) -> reject(e)
 
@@ -177,9 +173,18 @@ module.exports =
 
   in: (queue) ->
     new Promise((resolve, reject) ->
-      p = new Promise((resolve, reject) -> resolveQueue(queue.queue, [], resolve, reject))
+      projects = {}
+      p = new Promise((resolve, reject) ->
+        resolveQueue(queue.queue, [], projects, resolve, reject))
       p.then (q) ->
         queue.queue = q
+        for key in Object.keys(projects)
+          for key2 in Object.keys(projects[key])
+            projects[key][key2].destroy()
         resolve()
-      p.catch (e) -> reject(e)
+      p.catch (e) ->
+        for key in Object.keys(projects)
+          for key2 in Object.keys(projects[key])
+            projects[key][key2].destroy()
+        reject(e)
     )
