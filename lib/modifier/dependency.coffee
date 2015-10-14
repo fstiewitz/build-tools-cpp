@@ -20,19 +20,21 @@ resolveDependencies = (command, q, projects) ->
     projects[command.project] ?= {}
     unless projects[command.project][command.source]?
       project = projects[command.project][command.source] = new Project(command.project, command.source)
-    resolveDependency(command.modifier.dependency.list, q, projects, project, resolve, reject)
+    resolveDependency(command.modifier.dependency, q, projects, project, resolve, reject)
   )
 
-resolveDependency = (list, q, projects, project, resolve, reject) ->
+resolveDependency = ({list, abort}, q, projects, project, resolve, reject) ->
   unless (k = list.pop())?
     return resolve(q)
   p = project.getCommandById k[0], k[1]
   p.then (command) ->
     return reject(new Error("Command names #{command.name} and #{k[0]}:#{k[1]}:#{k[2]} do not match")) if command.name isnt k[2]
     p = resolveDependencies(command, q, projects)
-    p.then -> resolveDependency(list, q, projects, project, resolve, reject)
+    p.then -> resolveDependency({list, abort}, q, projects, project, resolve, reject)
     p.catch (e) -> reject(e)
-  p.catch (e) -> reject(e)
+  p.catch (e) ->
+    return reject(e) if abort
+    resolveDependency({list, abort}, q, projects, project, resolve, reject)
 
 module.exports =
 

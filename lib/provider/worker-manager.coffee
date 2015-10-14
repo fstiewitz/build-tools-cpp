@@ -20,9 +20,7 @@ module.exports =
         @workers[command.project][command.name] = worker
         worker.onFinishedQueue => @removeWorker(command)
         resolve(worker)
-      p.catch (error) ->
-        console.log error.message
-        reject(error)
+      p.catch (error) -> reject(error)
     )
 
   removeWorker: (command) ->

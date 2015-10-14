@@ -95,7 +95,7 @@ module.exports =
     WorkerManager.removeWorker(command)
     p = WorkerManager.createWorker(command)
     p.then (worker) -> worker.run()
-    p.catch (error) -> atom.notifications?.addError error
+    p.catch (error) -> atom.notifications?.addError error.message
 
   inputCommand: (command) ->
     new Command(command).getQueue()

@@ -22,7 +22,7 @@ module.exports =
       return @_run resolve, reject unless Modifiers.activate(k) is true
       ret = Modifiers.modules[k].in @queue
       if ret instanceof Promise
-        ret.catch (e) -> reject(e)
+        ret.catch (e) -> reject(new Error('Error in "' + k + '" module: ' + e.message))
         ret.then => @_run resolve, reject
       else
         reject(new Error('Error in "' + k + '" module: ' + ret)) if ret?
