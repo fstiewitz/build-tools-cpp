@@ -16,6 +16,7 @@ resolveDependencies = (command, q, projects) ->
     q.push command
     unless command.modifier.dependency?
       return resolve(q)
+    reject('No source parameter') unless command.source?
     projects[command.project] ?= {}
     unless projects[command.project][command.source]?
       project = projects[command.project][command.source] = new Project(command.project, command.source)
