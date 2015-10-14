@@ -64,7 +64,6 @@ module.exports =
           p.catch (e) -> reject(e)
         )
 
-
   view:
     class BuildToolsProjectExternal extends View
       @content: ->

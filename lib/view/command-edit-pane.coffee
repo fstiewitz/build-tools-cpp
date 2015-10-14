@@ -151,11 +151,11 @@ module.exports =
     accept: (event) =>
       c = new Command
       c.project = @command.project
-      for {pane, view} in @panes
+      for {pane, view, key} in @panes
         if (p = pane.children()[0].children[0].children[0])?
           if p.checked
             if (ret = view.get(c))?
-              atom.notifications?.addError ret
+              atom.notifications?.addError "Error in '#{key}' module: #{ret}"
               event.stopPropagation()
               return
         else

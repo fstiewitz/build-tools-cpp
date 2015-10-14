@@ -147,11 +147,13 @@ module.exports =
       command.stdout.highlighting = @stdout_highlights.find('.selected')[0].id
       command.stdout.profile = if command.stdout.highlighting is 'hc' then @stdout_profile.children()[@stdout_profile[0].selectedIndex].attributes.getNamedItem('value').nodeValue else undefined
       if command.stdout.highlighting is 'hr'
+        return 'Regular expression must not be empty' if @stdout_regex.getModel().getText() is ''
         command.stdout.regex = @stdout_regex.getModel().getText()
         command.stdout.defaults = @stdout_default.getModel().getText()
       command.stderr.highlighting = @stderr_highlights.find('.selected')[0].id
       command.stderr.profile = if command.stderr.highlighting is 'hc' then @stderr_profile.children()[@stderr_profile[0].selectedIndex].attributes.getNamedItem('value').nodeValue else undefined
       if command.stderr.highlighting is 'hr'
+        return 'Regular expression must not be empty' if @stderr_regex.getModel().getText() is ''
         command.stderr.regex = @stderr_regex.getModel().getText()
         command.stderr.defaults = @stderr_default.getModel().getText()
       return null

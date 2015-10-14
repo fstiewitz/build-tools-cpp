@@ -36,7 +36,7 @@ module.exports =
         ret.catch (e) -> reject(e)
         ret.then => @_runPreSplit resolve, reject
       else
-        reject(ret) if ret?
+        reject(new Error('Error in "' + k + '" module: ' + ret)) if ret?
         @_runPreSplit resolve, reject
 
     runPostSplit: ->
@@ -52,5 +52,5 @@ module.exports =
         ret.catch (e) -> reject(e)
         ret.then => @_runPostSplit resolve, reject
       else
-        reject(ret) if ret?
+        reject(new Error('Error in "' + k + '" module: ' + ret)) if ret?
         @_runPostSplit resolve, reject

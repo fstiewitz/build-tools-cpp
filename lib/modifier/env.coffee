@@ -23,7 +23,9 @@ module.exports =
       get: (command) ->
         command.modifier.env = {}
         for l in @env.getModel().getText().split('\n')
+          continue if l.trim() is ''
           key = l.split('=')[0]
+          return 'No variable name found' if key.length is 0
           value = l.substr(key.length + 1)
           command.modifier.env[key] = value
         return null
