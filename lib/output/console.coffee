@@ -5,6 +5,8 @@ consolemodel = null
 consoleview = null
 consolepanel = null
 
+timeout = null
+
 CompositeDisposable = null
 
 buildHTML = (message, status, filenames) ->
@@ -107,6 +109,7 @@ module.exports =
       newCommand: (@command) ->
         @tab = consolemodel.getTab @command
         @tab.clear()
+        clearTimeout timeout
         @tab.unlock()
         @tab.setRunning()
         @tab.focus()
@@ -172,6 +175,15 @@ module.exports =
         @tab.setFinished(code)
         @tab.lock()
         @tab.finishConsole()
+        if @command.output['console'].close_success and code is 0
+          t = atom.config.get('build-tools.CloseOnSuccess')
+          if t < 1
+            consolepanel.hide()
+          else
+            timeout = setTimeout( ->
+              consolepanel.hide()
+              timeout = null
+            , t * 1000)
 
       exitQueue: (code) ->
         if code is -2

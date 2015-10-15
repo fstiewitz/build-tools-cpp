@@ -35,7 +35,6 @@ module.exports =
       else
         @header.setIcon 'x'
         @getHeader()
-      @activateCallback()
 
     setCancelled: ->
       @header.setIcon 'x'
@@ -53,17 +52,6 @@ module.exports =
 
     finishConsole: ->
       @view.finishConsole()
-
-    activateCallback: ->
-      if @command.output['console'].close_success and @code is 0
-        t = atom.config.get('build-tools.CloseOnSuccess')
-        if t < 1
-          @close()
-        else
-          @timeout = setTimeout( =>
-            @close()
-            @timeout = null
-          , t * 1000)
 
     getHeader: ->
       @title ?= document.createElement 'span'

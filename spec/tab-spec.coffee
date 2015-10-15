@@ -62,9 +62,6 @@ describe 'Console - Tab', ->
     it 'sets the error variable', ->
       expect(tab.code).toBe 0
 
-    it 'calls ::close', ->
-      expect(spy).toHaveBeenCalled()
-
   describe 'On ::setCancelled', ->
 
     beforeEach ->
