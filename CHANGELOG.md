@@ -1,3 +1,33 @@
+## 4.0.0 - Modules
+__Major changes for the user:__
+
+* __Support for v3.x's global configuration file has been dropped__
+* __Commands now have to be configured in local configuration files (`.build-tools.cson`)__
+* __Local commands pre4.0 will migrate if you open them for the first time__
+* __Global commands can be imported if you create/open a local config file in a project folder with configured global commands by clicking the `Migrate old commands` button__
+* __Dependencies pre4.0 have to be reconfigured for each command individually__
+
+__Major changes for package developers: This update introduces 5 services that package developers can use in their packages to ...__
+
+* __... execute commands (Input module)__
+* __... provide commands (Provider modules)__
+* __... modify command parameters (Modifier modules)__
+* __... highlight the output of commands (Profile modules)__
+* __... get the output of commands (Output modules)__
+
+__Refer to the [wiki](https://github.com/deprint/build-tools-cpp/wiki) for details.__
+
+* Allow parallel execution of commands
+* Dependency settings are now stored per-command
+* Added modifier module for environment variables
+* Shell command is now stored per-command
+* Added output module to display output in an undefined text editor
+* Added output module to write output to a file
+* Console panel now has tabs for each command
+* Added provider module for external configuration files
+* Added highlighting option for custom regular expressions
+* User Interface has been adjusted to better reflect the internal structure of this package
+
 ## 3.7.1 - Fix outdated jquery calls
 
 ## 3.7.0 - Service API: Profiles
