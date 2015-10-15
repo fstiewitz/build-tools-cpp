@@ -58,8 +58,8 @@ module.exports =
         @element.classList.add 'module'
         keys = document.createElement 'div'
         keys.innerHTML = '''
-        <div class="text-padded">Log Path:</div>
-        <div class="text-padded">Queue in this file:</div>
+        <div class="text-padded">Log path:</div>
+        <div class="text-padded">Write queue to file:</div>
         '''
         values = document.createElement 'div'
         value = document.createElement 'div'

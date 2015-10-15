@@ -14,9 +14,10 @@ module.exports =
     dependency: require './dependency'
 
   addModule: (key, mod) ->
-    return if @modules[key]?
+    return if @modules[key]? and not @isCoreName(key)
     @modules[key] = mod
     new Disposable(=>
+      @deactivate key
       @removeModule key
     )
 
@@ -54,3 +55,6 @@ module.exports =
     mod.deactivate()
     mod.active = null
     return true
+
+  isCoreName: (key) ->
+    key in ['shell', 'wildcards', 'save_all', 'env', 'dependency']

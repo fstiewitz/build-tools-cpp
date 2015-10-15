@@ -9,7 +9,7 @@ module.exports =
     modelsim: require './modelsim'
 
   addProfile: (key, profile) ->
-    return if @profiles[key]?
+    return if @profiles[key]? and not @isCoreName(key)
     @profiles[key] = profile
     new Disposable(=>
       @removeProfile key
@@ -26,3 +26,6 @@ module.exports =
     @profiles.java = require './javac'
     @profiles.python = require './python'
     @profiles.modelsim = require './modelsim'
+
+  isCoreName: (key) ->
+    key in ['gcc_clang', 'apm_test', 'java', 'python', 'modelsim']

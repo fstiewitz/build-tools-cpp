@@ -25,9 +25,9 @@ module.exports =
     initialize: (@command) ->
       @panes = []
       @name.text(@command.name)
-      @info.append @buildPane(MainPane, 'General', false)
+      @info.append @buildPane(MainPane, 'General')
       @initializeModifierModules()
-      @info.append @buildPane(ProfilePane, 'Highlighting', false)
+      @info.append @buildPane(ProfilePane, 'Highlighting')
       @initializeOutputModules()
       @addEventHandlers()
 
@@ -48,11 +48,11 @@ module.exports =
           currentTarget.classList.remove 'icon-triangle-down'
           currentTarget.parentNode.parentNode.parentNode.children[1].classList.add 'hidden'
 
-    buildPane: (Element, name, active = true) ->
+    buildPane: (Element, name) ->
       if name?
         element = $$ ->
           @div class: 'inset-panel', =>
-            @div class: 'panel-heading', name + if active then ': active' else ''
+            @div class: 'panel-heading', name
             if Element?
               @div class: 'panel-body padded'
       else

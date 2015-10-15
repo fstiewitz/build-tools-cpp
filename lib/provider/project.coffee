@@ -190,6 +190,7 @@ module.exports =
       command.output = {}
       command.output.console = {}
       command.output.console.close_success = c.close_success
+      command.output.console.queue_in_buffer = true
       command.output.linter = {no_trace: false} if c.stderr.profile? or c.stdout.profile?
       command.version = 1
       return command

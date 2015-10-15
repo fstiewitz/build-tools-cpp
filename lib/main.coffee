@@ -60,7 +60,11 @@ module.exports =
       LinterList.messages
 
   provideInput: ->
-    Input
+    ModifierModules ?= require './modifier/modifier'
+    ProfileModules ?= require './profiles/profiles'
+    ProviderModules ?= require './provider/provider'
+    OutputModules ?= require './output/output'
+    {Input, ModifierModules, ProfileModules, ProviderModules, OutputModules}
 
   consumeModifierModule: ({key, mod}) ->
     ModifierModules ?= require './modifier/modifier'

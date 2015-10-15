@@ -41,7 +41,7 @@ describe 'Command Info Pane', ->
     expect(view.info.find('.module')[0].children[1].children[0].innerText).toBe 'echo test'
     expect(view.info.find('.module')[1].children[1].children[0].innerText).toBe 'No highlighting'
     expect(view.info.find('.module')[2].children[1].children[0].innerText).toBe 'true'
-    expect(view.info.find('.panel-heading')[2].innerText).toBe 'Output: Console: active'
+    expect(view.info.find('.panel-heading')[2].innerText).toBe 'Output: Console'
 
   describe 'On up click', ->
 
