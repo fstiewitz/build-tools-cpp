@@ -71,16 +71,25 @@ module.exports =
               @div class: 'settings-name', 'Close on success'
               @div =>
                 @span class: 'inline-block text-subtle', 'Close console on success. Uses config value in package settings if enabled'
+          @div class: 'block checkbox', =>
+            @input id: 'all_in_one', type: 'checkbox'
+            @label =>
+              @div class: 'settings-name', 'Execute Queue in one tab'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Print output of all commands of the queue in one tab'
 
       set: (command) ->
         if command?.output?.console?
           @find('#close_success').prop('checked', command.output.console.close_success)
+          @find('#all_in_one').prop('checked', command.output.console.queue_in_buffer ? true)
         else
           @find('#close_success').prop('checked', if atom.config.get('build-tools.CloseOnSuccess') is -1 then false else true)
+          @find('#all_in_one').prop('checked', true)
 
       get: (command) ->
         command.output.console ?= {}
         command.output.console.close_success = @find('#close_success').prop('checked')
+        command.output.console.queue_in_buffer = @find('#all_in_one').prop('checked')
         return null
 
   info:
@@ -91,12 +100,17 @@ module.exports =
         @element.classList.add 'module'
         keys = document.createElement 'div'
         keys.innerHTML = '''
-        <div class: 'text-padded'>Close on success:</div>
+        <div class="text-padded">Close on success:</div>
+        <div class="text-padded">Execute queue in one tab:</div>
         '''
         values = document.createElement 'div'
         value = document.createElement 'div'
         value.classList.add 'text-padded'
         value.innerText = String(command.output.console.close_success)
+        values.appendChild value
+        value = document.createElement 'div'
+        value.classList.add 'text-padded'
+        value.innerText = String(command.output.console.queue_in_buffer)
         values.appendChild value
         @element.appendChild keys
         @element.appendChild values
@@ -104,12 +118,18 @@ module.exports =
   output:
     class Console
 
-      newQueue: (@queue) ->
+      newQueue: (queue) ->
+        @queue_in_buffer = queue.queue[queue.queue.length - 1].output.console?.queue_in_buffer
+        if @queue_in_buffer
+          @tab = consolemodel.getTab queue.queue[queue.queue.length - 1]
+          @tab.clear()
+          clearTimeout timeout
 
       newCommand: (@command) ->
-        @tab = consolemodel.getTab @command
-        @tab.clear()
-        clearTimeout timeout
+        unless @queue_in_buffer
+          @tab = consolemodel.getTab @command
+          @tab.clear()
+          clearTimeout timeout
         @tab.unlock()
         @tab.setRunning()
         @tab.focus()
@@ -174,6 +194,7 @@ module.exports =
       exitCommand: (code) ->
         @tab.setFinished(code)
         @tab.lock()
+        return if @queue_in_buffer
         @tab.finishConsole()
         if @command.output['console'].close_success and code is 0
           t = atom.config.get('build-tools.CloseOnSuccess')
@@ -190,3 +211,5 @@ module.exports =
           @tab.setCancelled()
           @tab.lock()
           @tab.finishConsole()
+          return
+        @tab.finishConsole() if @queue_in_buffer
