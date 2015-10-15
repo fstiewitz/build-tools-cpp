@@ -1,42 +1,40 @@
-commands: [
+providers: [
   {
-    project: "/home/fabian/.atom/packages/build-tools/spec/fixtures"
-    name: "Test"
-    command: "echo Hello World"
-    wd: "."
-    shell: false
-    wildcards: false
-    save_all: false
-    close_success: false
-    stdout:
-      file: false
-      highlighting: "nh"
-      lint: false
-    stderr:
-      file: false
-      highlighting: "nh"
-      lint: false
-    targetOf: []
-    version: 2
+    key: "bt"
+    config:
+      commands: [
+        {
+          project: "/opt/work/build-tools/spec/fixtures"
+          name: "Test"
+          command: "pwd"
+          wd: "."
+          env: {}
+          modifier:
+            save_all: {}
+            shell:
+              command: "bash -c"
+          stdout:
+            highlighting: "nh"
+          stderr:
+            highlighting: "nh"
+          output:
+            console:
+              close_success: false
+              debug: true
+          version: 1
+        }
+      ]
   }
   {
-    project: "/home/fabian/.atom/packages/build-tools/spec/fixtures"
-    name: "Test 2"
-    command: "echo 2"
-    wd: "."
-    shell: false
-    wildcards: false
-    save_all: false
-    close_success: false
-    stdout:
-      file: false
-      highlighting: "nh"
-      lint: false
-    stderr:
-      file: false
-      highlighting: "nh"
-      lint: false
-    targetOf: []
-    version: 2
+    key: "bte"
+    config:
+      file: "root1/sub0/.build-tools.cson"
+      overwrite: false
+  }
+  {
+    key: "bte"
+    config:
+      file: "root1/sub0/.build-tools.cson"
+      overwrite: true
   }
 ]

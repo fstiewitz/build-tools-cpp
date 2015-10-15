@@ -1,0 +1,51 @@
+providers: [
+  {
+    key: "bt"
+    config:
+      commands: [
+        {
+          project: "/opt/work/build-tools/spec/fixtures/root1/sub0"
+          source: "/opt/work/build-tools/spec/fixtures/root1/sub0/.build-tools.cson"
+          name: "Bar"
+          command: "env"
+          wd: "."
+          env: {}
+          modifier: {}
+          stdout:
+            highlighting: "nh"
+          stderr:
+            highlighting: "nh"
+          output:
+            console:
+              close_success: false
+          version: 1
+        }
+        {
+          project: "/opt/work/build-tools/spec/fixtures/root1/sub0"
+          source: "/opt/work/build-tools/spec/fixtures/root1/sub0/.build-tools.cson"
+          name: "Bar 2"
+          command: "echo Bar 2"
+          wd: "."
+          env: {}
+          modifier:
+            dependency:
+              list: [
+                [
+                  "0"
+                  "0"
+                  "Bar"
+                ]
+              ]
+              abort: true
+          stdout:
+            highlighting: "nh"
+          stderr:
+            highlighting: "nh"
+          output:
+            console:
+              close_success: false
+          version: 1
+        }
+      ]
+  }
+]

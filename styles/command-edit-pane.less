@@ -1,0 +1,70 @@
+@import "ui-variables";
+
+.commandview {
+  cursor: default;
+  display: flex;
+  flex-direction: column;
+
+  .module {
+    padding: 0;
+  }
+
+  .top {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+
+    .checkbox {
+      flex: 1
+    }
+  }
+
+  .align {
+    display: flex;
+    flex: none;
+
+    .icon-triangle-up {
+        &:before {
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+        }
+    }
+    .icon-triangle-down {
+      &:before {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+
+  ._panes {
+    overflow-y: auto;
+  }
+
+  .padded {
+    padding: 10px 20px 10px 20px;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .settings-name {
+    flex: none;
+    font-size: 1.25em;
+  }
+
+  .wildcard-info {
+    position: absolute;
+    right: 5px;
+  }
+
+  .buttons {
+    padding: 5px 5px 5px 5px;
+    display: flex;
+    flex: none;
+    justify-content: space-between;
+  }
+}

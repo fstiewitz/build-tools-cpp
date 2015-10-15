@@ -1,146 +1,35 @@
-CommandPane = require '../lib/command-pane'
-Projects = require '../lib/projects'
-Profiles = require '../lib/profiles/profiles'
+Command = require '../lib/provider/command'
 
-{$} = require 'atom-space-pen-views'
-
-describe 'Command Pane', ->
-  [success_spy, hide_spy, cmd, projects, view, fixturesPath] = []
-
-  cmd = {
-    name: 'Test command',
-    command: 'pwd "Hello World" test',
-    wd: 'sub0',
-    shell: false,
-    wildcards: false,
-    save_all: false,
-    close_success: true,
-    stdout: {
-      file: false,
-      highlighting: 'hc',
-      profile: 'java',
-      lint: false
-    }
-    stderr: {
-      file: true,
-      highlighting: 'hc',
-      profile: 'foo',
-      lint: false
-    }
-  }
+describe 'Command', ->
+  _command = null
+  command = null
 
   beforeEach ->
-    atom.config.set('build-tools.SaveAll', false)
-    fixturesPath = atom.project.getPaths()[0]
-    projects = new Projects('')
-    projects.addProject(fixturesPath) if not projects.getProject(fixturesPath)?
-    success_spy = jasmine.createSpy('success')
-    hide_spy = jasmine.createSpy('hide')
-    view = new CommandPane(success_spy, hide_spy)
-    jasmine.attachToDOM(view.element)
+    _command = {
+      project: '/home/fabian/.atom/packages/build-tools/spec/fixtures'
+      name: 'Test'
+      command: 'echo "Hello " World'
+      wd: '.'
+      modifier:
+        save_all: {}
+        shell: {}
+        wildcards: {}
+      stdout:
+        highlighting: 'nh'
+      stderr:
+        highlighting: 'nh'
+      output:
+        console:
+          close_success: false
+      version: 1
+    }
+    command = new Command(_command)
 
-  afterEach ->
-    view.destroy()
-    projects.destroy()
+  it 'has all objects', ->
+    expect(command.env).toBeDefined()
 
-  describe 'When command is created', ->
-    it 'opens the command view with default values', ->
-      view.show(null, null, projects.getProject(fixturesPath))
-      expect(view.nameEditor.getText()).toBe ''
-      expect(view.commandEditor.getText()).toBe ''
-
-  describe 'When command view is cancelled', ->
-    it 'detaches the command view', ->
-      view.show(null, null, projects.getProject(fixturesPath))
-      view.find('.btn-error').click()
-      expect(success_spy).not.toHaveBeenCalled()
-      expect(hide_spy).toHaveBeenCalled()
-
-  describe 'When command view is confirmed with good values', ->
-    it 'calls the callback function', ->
-      view.show(null, null, projects.getProject(fixturesPath))
-      view.nameEditor.setText('Test command')
-      view.commandEditor.setText('foo')
-      view.find('.btn-primary').click()
-      expect(hide_spy).toHaveBeenCalled()
-      expect(success_spy).toHaveBeenCalledWith(null, {
-        version: 2,
-        name: 'Test command',
-        command: 'foo',
-        wd: '.',
-        shell: false,
-        wildcards: false,
-        save_all: false,
-        close_success: false,
-        stdout: {
-          file: true,
-          highlighting: 'nh',
-          profile: undefined,
-          lint: false
-        }
-        stderr: {
-          file: true,
-          highlighting: 'nh',
-          profile: undefined,
-          lint: false
-        }
-      })
-
-  describe 'When command view is confirmed with wrong values', ->
-    it 'displays an error message and does not call the callback function', ->
-      view.show(null, null, projects.getProject(fixturesPath))
-      view.nameEditor.setText('Test command')
-      view.commandEditor.setText('')
-      view.find('.btn-primary').click()
-      expect(success_spy).not.toHaveBeenCalled()
-      expect(hide_spy).not.toHaveBeenCalled()
-      expect(view.find('#command-error-none').hasClass('hidden')).toBeFalsy()
-
-  describe 'When command view is created with a preset and confirmed', ->
-    it 'displays the preset and calls the callback function on confirm', ->
-      view.show(cmd.name, cmd, projects.getProject(fixturesPath))
-      expect(view.nameEditor.getText()).toBe 'Test command'
-      expect(view.commandEditor.getText()).toBe 'pwd "Hello World" test'
-      expect(view.wdEditor.getText()).toBe 'sub0'
-      expect(view.find('#command_in_shell').prop('checked')).toBeFalsy()
-      expect(view.find('#wildcards').prop('checked')).toBeFalsy()
-      expect(view.find('#save').prop('checked')).toBeFalsy()
-      expect(view.find('#close_success').prop('checked')).toBeTruthy()
-      expect(view.find('#mark_paths_stdout').prop('checked')).toBeFalsy()
-      expect(view.find('#stdout #hc').hasClass('selected')).toBeTruthy()
-      expect(view.find('#lint_stdout').prop('checked')).toBeFalsy()
-      expect(view.find('#mark_paths_stderr').prop('checked')).toBeTruthy()
-      expect(view.find('#stderr #hc').hasClass('selected')).toBeTruthy()
-      expect(view.find('#lint_stderr').prop('checked')).toBeFalsy()
-      expect(view.stdout_profile.children().length).toBe Object.keys(Profiles.profiles).length
-      expect($(view.stdout_profile.children()[view.stdout_profile[0].selectedIndex]).attr('value')).toBe 'java'
-      expect($(view.stdout_profile_div).hasClass('hidden')).toBe false
-      expect(view.stderr_profile.children().length).toBe Object.keys(Profiles.profiles).length
-      expect($(view.stderr_profile.children()[view.stderr_profile[0].selectedIndex]).attr('value')).toBe 'gcc_clang'
-      expect($(view.stderr_profile_div).hasClass('hidden')).toBe false
-      view.nameEditor.setText('Test command 2')
-      view.commandEditor.setText('foo')
-      view.find('.btn-primary').click()
-      expect(hide_spy).toHaveBeenCalled()
-      expect(success_spy).toHaveBeenCalledWith('Test command', {
-        version: 2,
-        name: 'Test command 2',
-        command: 'foo',
-        wd: 'sub0',
-        shell: false,
-        wildcards: false,
-        save_all: false,
-        close_success: true,
-        stdout: {
-          file: false,
-          highlighting: 'hc',
-          profile: 'java',
-          lint: false
-        }
-        stderr: {
-          file: true,
-          highlighting: 'hc',
-          profile: 'gcc_clang',
-          lint: false
-        }
-      })
+  describe 'on ::getSpawnInfo', ->
+    it 'correctly splits the command', ->
+      command.getSpawnInfo()
+      expect(command.command).toBe 'echo'
+      expect(command.args).toEqual ['Hello ', 'World']

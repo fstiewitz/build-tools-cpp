@@ -1,62 +1,33 @@
-@import "ui-variables";
-
-.settings {
-  display: flex;
-  -webkit-user-select: none;
+.build-settings {
   cursor: default;
+  -webkit-user-select: none;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 
-  .project-menu {
-    flex: none;
-    border-width: 0 1px 0 0;
-    border-color: @base-border-color;
-    border-style: solid;
-    max-height: 100%;
+  #config {
+    overflow-y: auto;
+  }
+
+  .top {
     display: flex;
-    flex-direction: column;
+    flex-flow: row wrap;
+    justify-content: space-between;
 
-    .list-group {
-      flex: 1;
-      overflow-y: auto;
-    }
-
-    .project-item {
-      list-style: none;
-      padding: 10px 5px 10px 5px;
-      cursor: pointer;
-      color: @text-color;
-
-      .text-subtle {
-        overflow-x: hidden;
-      }
-
-      &:hover {
-        background-color: @background-color-highlight;
-        color: @text-color-highlight;
-      }
-    }
-
-    .active {
-      background-color: @background-color-selected;
-      color: @text-color-selected;
-
-      &:hover {
-        background-color: @background-color-selected;
-        color: @text-color-selected;
-      }
+    .align {
+      display: flex;
+      padding: 0 0 0 5px;
     }
   }
 
-  .project-menu-options {
-    margin: 5px;
-    border-width: 1px 0 0 0;
-    border-color: @base-border-color;
-    border-style: solid;
-    position: relative;
-    bottom: 0;
-  }
-
-  .checkbox {
-    display: flex;
+  .panel-heading {
+    .panel-text {
+      font-size: 1.25em;
+      font-weight: bold;
+    }
+    .btn {
+      top: 0px;
+    }
   }
 
   input[type="checkbox"] {
@@ -125,43 +96,6 @@
         transform: rotate(-45deg) scale(1);
         transition-delay: 0;
       }
-    }
-  }
-
-  .panel {
-    flex: 1;
-    padding: 5px 20px 5px 20px;
-    overflow-y: auto;
-
-    .key-bind {
-      display: flex;
-      flex: none;
-      justify-content: space-between;
-      align-items: baseline;
-    }
-
-    .key-desc {
-      display: flex;
-      justify-content: space-between;
-      padding: 0 5px 0 0;
-    }
-
-    .text-padded {
-      padding: 2px 0 0 2px;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .section-header {
-      margin: 0 5px 0 0;
-    }
-    .command-list {
-      padding: 0 5px 0 5px;
-    }
-    .dependency-list {
-      padding: 5px 5px 5px 5px;
     }
   }
 }

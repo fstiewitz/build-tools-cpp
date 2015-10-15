@@ -1,4 +1,4 @@
-Output = require '../lib/output'
+Output = require '../lib/pipeline/output-stream'
 
 module.exports =
   profile: (name, command, stream, strings, expectations, files) ->
@@ -6,7 +6,7 @@ module.exports =
       output = null
 
       beforeEach ->
-        output = new Output(command, stream, (p) -> p)
+        output = new Output(command, command[stream])
         expect(output).toBeDefined()
         expect(output.profile).toBeDefined()
 

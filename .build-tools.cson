@@ -1,0 +1,33 @@
+providers: [
+  {
+    key: "bt"
+    config:
+      commands: [
+        {
+          project: "/opt/work/build-tools"
+          source: "/opt/work/build-tools/.build-tools.cson"
+          name: "Run package specs"
+          command: "apm test --no-color"
+          wd: "."
+          env: {}
+          modifier:
+            save_all: {}
+          stdout:
+            highlighting: "nh"
+          stderr:
+            highlighting: "hc"
+            profile: "apm_test"
+          output:
+            console:
+              close_success: true
+              queue_in_buffer: false
+            linter:
+              no_trace: true
+            file:
+              path: "apm.log"
+              queue_in_file: false
+          version: 1
+        }
+      ]
+  }
+]
