@@ -201,8 +201,9 @@ module.exports =
           if t < 1
             consolepanel.hide()
           else
-            timeout = setTimeout( ->
-              consolepanel.hide()
+            clearTimeout timeout
+            timeout = setTimeout( =>
+              consolepanel.hide() if @tab.hasFocus()
               timeout = null
             , t * 1000)
 

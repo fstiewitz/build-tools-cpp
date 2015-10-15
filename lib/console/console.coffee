@@ -27,6 +27,7 @@ module.exports =
         @removeTab tab
       tab.focus = =>
         @focusTab tab
+      tab.console = this
       @emitter.emit 'add', tab
       return tab
 
@@ -36,6 +37,7 @@ module.exports =
       delete @tabs[tab.command.project][tab.command.name]
 
     focusTab: (tab) ->
+      @activeTab = tab
       @emitter.emit 'focus', tab
 
     onFocusTab: (callback) ->

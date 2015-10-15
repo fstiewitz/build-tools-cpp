@@ -53,6 +53,9 @@ module.exports =
     finishConsole: ->
       @view.finishConsole()
 
+    hasFocus: ->
+      this is @console.activeTab
+
     getHeader: ->
       @title ?= document.createElement 'span'
       @title.innerText = "#{@command.name} of #{@command.project}"
