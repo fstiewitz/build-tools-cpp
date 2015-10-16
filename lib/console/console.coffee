@@ -21,6 +21,10 @@ module.exports =
       return tab if (tab = @tabs[command.project]?[command.name])?
       @createTab(command)
 
+    getCustomTab: (name) ->
+      return tab if (tab = @tabs['custom']?[name])?
+      @createCustomTab name
+
     createTab: (command) ->
       @tabs[command.project] ?= {}
       tab = @tabs[command.project][command.name] = new Tab(command)
