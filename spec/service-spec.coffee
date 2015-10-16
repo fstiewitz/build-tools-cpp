@@ -74,6 +74,15 @@ describe 'Linter Service', ->
     expect(provider.lintOnFly).toBeDefined()
     expect(provider.lint).toBeDefined()
 
+describe 'Input Service', ->
+  it 'has all necessary properties', ->
+    obj = main.provideInput()
+    expect(obj.Input).toBe require '../lib/provider/input'
+    expect(obj.ProviderModules).toBe Providers
+    expect(obj.ProfileModules).toBe Profiles
+    expect(obj.OutputModules).toBe Outputs
+    expect(obj.ModifierModules).toBe Modifiers
+
 describe 'Profile Service', ->
   [disp] = []
 
@@ -102,6 +111,8 @@ describe 'Output Service', ->
   [disp] = []
 
   beforeEach ->
+    testOutput.activate = jasmine.createSpy('activate')
+    testOutput.deactivate = jasmine.createSpy('deactivate')
     disp = main.consumeOutputModule key: 'test', mod: testOutput
 
   afterEach ->
@@ -116,38 +127,46 @@ describe 'Output Service', ->
     expect(Outputs.modules['test']).toBeDefined()
     expect(Outputs.modules['test'].name).toBe 'Test Output'
 
+  describe 'when activating the module', ->
+
+    beforeEach ->
+      Outputs.activate('test')
+
+    it 'calls activate', ->
+      expect(testOutput.activate).toHaveBeenCalled()
+
+    it 'sets the active flag', ->
+      expect(testOutput.active).toBe true
+
+    describe 'when deactivating the module', ->
+
+      beforeEach ->
+        Outputs.deactivate('test')
+
+      it 'calls deactivate', ->
+        expect(testOutput.deactivate).toHaveBeenCalled()
+
+      it 'unsets the active flag', ->
+        expect(testOutput.active).toBe null
+
   describe 'when disposing the module disposable', ->
-    it 'removes the module', ->
+
+    beforeEach ->
+      testOutput.active = true
       disp.dispose()
+
+    it 'removes the module', ->
       expect(Outputs.modules['test']).toBeUndefined()
 
-describe 'Provider Service', ->
-  [disp] = []
-
-  beforeEach ->
-    disp = main.consumeProviderModule key: 'test', mod: testProvider
-
-  afterEach ->
-    Providers.reset()
-    disp = null
-
-  it 'returns a disposable', ->
-    {Disposable} = require 'atom'
-    expect(disp instanceof Disposable).toBeTruthy()
-
-  it 'adds the module with all necessary properties', ->
-    expect(Providers.modules['test']).toBeDefined()
-    expect(Providers.modules['test'].name).toBe 'Test commands'
-
-  describe 'when disposing the module disposable', ->
-    it 'removes the module', ->
-      disp.dispose()
-      expect(Providers.modules['test']).toBeUndefined()
+    it 'calls deactivate', ->
+      expect(testOutput.deactivate).toHaveBeenCalled()
 
 describe 'Modifier Service', ->
   [disp] = []
 
   beforeEach ->
+    testModifier.activate = jasmine.createSpy('activate')
+    testModifier.deactivate = jasmine.createSpy('deactivate')
     disp = main.consumeModifierModule key: 'test', mod: testModifier
 
   afterEach ->
@@ -162,7 +181,90 @@ describe 'Modifier Service', ->
     expect(Modifiers.modules['test']).toBeDefined()
     expect(Modifiers.modules['test'].name).toBe 'Test modifier'
 
+  describe 'when activating the module', ->
+
+    beforeEach ->
+      Modifiers.activate('test')
+
+    it 'calls activate', ->
+      expect(testModifier.activate).toHaveBeenCalled()
+
+    it 'sets the active flag', ->
+      expect(testModifier.active).toBe true
+
+    describe 'when deactivating the module', ->
+
+      beforeEach ->
+        Modifiers.deactivate('test')
+
+      it 'calls deactivate', ->
+        expect(testModifier.deactivate).toHaveBeenCalled()
+
+      it 'unsets the active flag', ->
+        expect(testModifier.active).toBe null
+
   describe 'when disposing the module disposable', ->
-    it 'removes the module', ->
+
+    beforeEach ->
+      testModifier.active = true
       disp.dispose()
+
+    it 'removes the module', ->
       expect(Modifiers.modules['test']).toBeUndefined()
+
+    it 'calls deactivate', ->
+      expect(testModifier.deactivate).toHaveBeenCalled()
+
+describe 'Provider Service', ->
+  [disp] = []
+
+  beforeEach ->
+    testProvider.activate = jasmine.createSpy('activate')
+    testProvider.deactivate = jasmine.createSpy('deactivate')
+    disp = main.consumeProviderModule key: 'test', mod: testProvider
+
+  afterEach ->
+    Providers.reset()
+    disp = null
+
+  it 'returns a disposable', ->
+    {Disposable} = require 'atom'
+    expect(disp instanceof Disposable).toBeTruthy()
+
+  it 'adds the module with all necessary properties', ->
+    expect(Providers.modules['test']).toBeDefined()
+    expect(Providers.modules['test'].name).toBe 'Test commands'
+
+  describe 'when activating the module', ->
+
+    beforeEach ->
+      Providers.activate('test')
+
+    it 'calls activate', ->
+      expect(testProvider.activate).toHaveBeenCalled()
+
+    it 'sets the active flag', ->
+      expect(testProvider.active).toBe true
+
+    describe 'when deactivating the module', ->
+
+      beforeEach ->
+        Providers.deactivate('test')
+
+      it 'calls deactivate', ->
+        expect(testProvider.deactivate).toHaveBeenCalled()
+
+      it 'unsets the active flag', ->
+        expect(testProvider.active).toBe null
+
+  describe 'when disposing the module disposable', ->
+
+    beforeEach ->
+      testProvider.active = true
+      disp.dispose()
+
+    it 'removes the module', ->
+      expect(Providers.modules['test']).toBeUndefined()
+
+    it 'calls deactivate', ->
+      expect(testProvider.deactivate).toHaveBeenCalled()
