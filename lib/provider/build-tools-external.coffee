@@ -62,7 +62,7 @@ module.exports =
         @div class: 'inset-panel', =>
           @div class: 'top panel-heading', =>
             @div =>
-              @span id: 'provider-name', class: 'inline-block panel-text icon icon-file-symlink-file', name
+              @span id: 'provider-name', class: 'inline-block panel-text icon icon-file-symlink-file'
               @span id: 'apply', class: 'inline-block btn btn-xs icon icon-check', 'Apply'
             @div class: 'config-buttons align', =>
               @div class: 'icon-triangle-up'

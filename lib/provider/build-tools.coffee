@@ -120,7 +120,7 @@ module.exports =
         @div class: 'inset-panel', =>
           @div class: 'top panel-heading', =>
             @div =>
-              @span id: 'provider-name', class: 'inline-block panel-text icon icon-code', name
+              @span id: 'provider-name', class: 'inline-block panel-text icon icon-code'
               @span id: 'add-command-button', class: 'inline-block btn btn-xs icon icon-plus', 'Add command'
             @div class: 'config-buttons align', =>
               @div class: 'icon-triangle-up'
