@@ -1,47 +1,46 @@
-build-tools (prev. build-tools-cpp)
+build-tools
 ===============
 [![Build Status](https://travis-ci.org/deprint/build-tools-cpp.svg)](https://travis-ci.org/deprint/build-tools-cpp) [![Dependency Status](https://david-dm.org/deprint/build-tools-cpp.svg)](https://david-dm.org/deprint/build-tools-cpp) [![apm](https://img.shields.io/apm/dm/build-tools.svg)](https://github.com/deprint/build-tools-cpp) [![apm](https://img.shields.io/apm/v/build-tools.svg)](https://github.com/deprint/build-tools-cpp)
 
 ### Build your projects in atom
-![Error highlighting](https://cloud.githubusercontent.com/assets/7817714/9097293/fe5026a0-3bc2-11e5-9893-04b866262e63.gif)
+![Error highlighting](https://cloud.githubusercontent.com/assets/7817714/10537808/91cbf92c-73f4-11e5-9f0d-15348000c31f.png)
 
-![Settings](https://cloud.githubusercontent.com/assets/7817714/9156632/1aa1876a-3ee1-11e5-9e95-8888a6ca433c.png)
+![Settings](https://cloud.githubusercontent.com/assets/7817714/10537701/e17d8b08-73f3-11e5-8b06-3981489b537d.gif)
 
 ## Features
 * Execute programs/compilers in Atom
 * Set up different commands for different projects
-* Chain commands and projects with dependenies
-* Errors are highlighted both inside the console and in-line with [Linter](https://github.com/AtomLinter/Linter)
-* File coordinates are highlighted and can be opened
 * Can highlight <b>GCC, Clang, Python, Java, Modelsim and apm test</b>
+* Errors are highlighted both inside the console and in-line with [Linter](https://github.com/atom-community/linter)
+* File coordinates are highlighted and can be opened
+* Service interface for other package developers
+
+## HowTo
+
+1. Create a file called `.build-tools.cson` (preferably in your project's root folder)
+2. Click `Add Provider`
+3. Click `Add Custom Commands`
+4. Click `Add Command`
+5. Configure your command
+6. Execute your command through one of the key bindings.
 
 ## Keys
 * `ctrl+l ctrl+u/i/o` for executing the 1st/2nd/3rd command of a project
 * `ctrl+l ctrl+l` to list all commands of a project
-* `ctrl+l ctrl+,` to open per-project settings
 * `ctrl+l ctrl+s` to show console output
 * `ctrl+l u/i/o` lets you view and change the command before executing it
 
-## Settings
-### Commands
-![Command](https://cloud.githubusercontent.com/assets/7817714/9272469/fea5afaa-4282-11e5-9640-3b56fbc57776.png)
-
-### Dependencies
-* Dependencies are executed in descending order
-* <b>Commands are not executed twice</b>
-* Build fails if one of the dependencies returns a non-zero exit code
-
 ## Service API
 `build-tools` allows other packages to:
-* add their own [highlighting profiles](https://github.com/deprint/build-tools-cpp/wiki/Service-API:-Profiles)
+* add their own highlighting profiles
+* execute their own commands
+* provide their own commands
+* modify command parameters
+* get the command's output
 
-## Roadmap
-* Project templates
-* More highlighting profiles
-* UI for creating simple highlighting profiles
-* Service provider for other packages
-* Bug fixes, UI improvements, etc.
+Refer to the [wiki](https://github.com/deprint/build-tools-cpp/wiki) for details.
+
 
 ## Contributing
 * Let me know if you encounter any bugs.
-* Feature requests are always welcome.
+* Feature requests and critique are always welcome.
