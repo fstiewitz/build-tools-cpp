@@ -66,6 +66,10 @@ module.exports =
     OutputModules ?= require './output/output'
     {Input, ModifierModules, ProfileModules, ProviderModules, OutputModules}
 
+  provideConsole: ->
+    (OutputModules ?= require './output/output').activate 'console'
+    OutputModules.modules.console.provideConsole()
+
   consumeModifierModule: ({key, mod}) ->
     ModifierModules ?= require './modifier/modifier'
     ModifierModules.addModule key, mod

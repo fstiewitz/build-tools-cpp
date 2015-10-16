@@ -24,6 +24,7 @@ module.exports =
       @empty()
 
     finishConsole: ->
+      @find('.filelink').off 'click'
       @find('.filelink').on 'click', ->
         e = $(this)
         lineno = parseInt(e.attr('row'))

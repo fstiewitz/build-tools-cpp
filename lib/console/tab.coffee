@@ -9,7 +9,6 @@ module.exports =
       @emitter = new Emitter
       @header = new TabItem(@command.project, @command.name, => @close())
       @view = new TabView
-      @timeout = null
       @header.setHeader "#{@command.name} of #{@command.project}"
 
     destroy: ->
@@ -19,7 +18,6 @@ module.exports =
       @view.clear()
       @error = null
       @code = null
-      clearTimeout @timeout if @timeout?
 
     setRunning: ->
       @header.setIcon 'sync'

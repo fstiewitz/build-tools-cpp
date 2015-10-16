@@ -33,6 +33,11 @@
       "versions": {
         "1.0.0": "provideInput"
       }
+    },
+    "build-tools.console": {
+      "versions": {
+        "1.0.0": "provideConsole"
+      }
     }
   },
   "consumedServices": {

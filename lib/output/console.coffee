@@ -56,6 +56,9 @@ module.exports =
     ConsoleView = null
     Console = null
 
+  provideConsole: ->
+    consolemodel
+
   name: 'Console'
   description: 'Display command output in console pane'
   private: false

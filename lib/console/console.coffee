@@ -1,4 +1,5 @@
 Tab = require './tab'
+CustomTab = require './custom-tab'
 
 {Emitter} = require 'atom'
 
@@ -31,10 +32,24 @@ module.exports =
       @emitter.emit 'add', tab
       return tab
 
+    createCustomTab: (name) ->
+      @tabs['custom'] ?= {}
+      tab = @tabs.custom[name] = new CustomTab(name)
+      tab.onClose =>
+        @removeTab tab
+      tab.focus = =>
+        @focusTab tab
+      tab.console = this
+      @emitter.emit 'add', tab
+      return tab
+
     removeTab: (tab) ->
       @emitter.emit 'remove', tab
       tab.destroy()
-      delete @tabs[tab.command.project][tab.command.name]
+      if tab.command?
+        delete @tabs[tab.command.project][tab.command.name]
+      else
+        delete @tabs.custom[tab.name]
 
     focusTab: (tab) ->
       @activeTab = tab
