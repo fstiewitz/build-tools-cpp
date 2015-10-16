@@ -23,13 +23,14 @@ module.exports =
     clear: ->
       @empty()
 
-    finishConsole: ->
+    finishConsole: (opener) ->
       @find('.filelink').off 'click'
       @find('.filelink').on 'click', ->
         e = $(this)
         lineno = parseInt(e.attr('row'))
         linecol = parseInt(e.attr('col'))
         if e.attr('name') isnt ''
+          return opener(e) if opener?
           atom.workspace.open(e.attr('name'),
             initialLine: lineno - 1
             initialColumn: linecol - 1

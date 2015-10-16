@@ -10,6 +10,7 @@ module.exports =
       @header = new TabItem('custom', @name, => @close())
       @view = new TabView
       @header.setHeader "#{@name}"
+      @opener = null
 
     destroy: ->
       @emitter.dispose()
@@ -35,7 +36,7 @@ module.exports =
       @view.printLine line
 
     finishConsole: ->
-      @view.finishConsole()
+      @view.finishConsole(@open)
 
     hasFocus: ->
       this is @console.activeTab
@@ -51,3 +52,15 @@ module.exports =
 
     onClose: (callback) ->
       @emitter.on 'close', callback
+
+    setOpener: (@opener) ->
+
+    open: (element) =>
+      return if @opener?(element)?
+      lineno = parseInt(element.attr('row'))
+      linecol = parseInt(element.attr('col'))
+      if element.attr('name') isnt ''
+        atom.workspace.open(element.attr('name'),
+          initialLine: lineno - 1
+          initialColumn: linecol - 1
+        )
