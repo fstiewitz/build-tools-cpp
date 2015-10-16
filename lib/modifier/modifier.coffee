@@ -32,6 +32,7 @@ module.exports =
     @modules.wildcards = require './wildcards'
     @modules.save_all = require './save_all'
     @modules.env = require './env'
+    @modules.dependency = require './dependency'
     Command = null
     Project = null
     Input = null

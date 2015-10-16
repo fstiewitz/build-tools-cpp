@@ -154,10 +154,10 @@ module.exports =
         element.html(_new.html())
 
       stdout_replacePrevious: (lines) ->
-        return unless @stdout_lines[@stdout_lines.length - lines.length]?
+        return unless @stdout_lines[@stdout_lines.length - lines.length - 1]?
         for {input, files}, index in lines
           _new = buildHTML(input.input, (input.highlighting ? input.type), files)
-          element = $(@stdout_lines[@stdout_lines.length - lines.length + index])
+          element = $(@stdout_lines[@stdout_lines.length - lines.length + index - 1])
           element.prop('class', _new.prop('class'))
           element.html(_new.html())
 
@@ -179,10 +179,10 @@ module.exports =
         element.html(_new.html())
 
       stderr_replacePrevious: (lines) ->
-        return unless @stderr_lines[@stderr_lines.length - lines.length]?
+        return unless @stderr_lines[@stderr_lines.length - lines.length - 1]?
         for {input, files}, index in lines
           _new = buildHTML(input.input, (input.highlighting ? input.type), files)
-          element = $(@stderr_lines[@stderr_lines.length - lines.length + index])
+          element = $(@stderr_lines[@stderr_lines.length - lines.length + index - 1])
           element.prop('class', _new.prop('class'))
           element.html(_new.html())
 
