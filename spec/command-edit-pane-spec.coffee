@@ -88,3 +88,16 @@ describe 'Command Edit Pane', ->
         jasmine.attachToDOM(p.element)
         expect(p.panes[0].view.command_name.getModel().getText()).toBe 'Test 1'
         expect(p.command.oldname).toBe 'Test 1'
+
+  describe 'use blacklist to hide modules', ->
+
+    beforeEach ->
+      view.remove()
+      view = new CommandEditPane(command)
+      view.setCallbacks accept, cancel
+      view.setBlacklist ['general', 'console']
+      jasmine.attachToDOM(view.element)
+
+    it 'shows all views minus the blacklisted ones', ->
+      expect(view.find('.inset-panel').length).toBe 9
+      expect(view.panes[0].view.command_name).toBeUndefined()

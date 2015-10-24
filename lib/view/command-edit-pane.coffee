@@ -21,8 +21,11 @@ module.exports =
         @div class: '_panes', outlet: 'panes_view'
 
     initialize: (@command) ->
+      @blacklist = []
 
     setCallbacks: (@success_callback, @cancel_callback) ->
+
+    setBlacklist: (@blacklist) ->
 
     detached: ->
       @disposables.dispose()
@@ -33,9 +36,9 @@ module.exports =
     attached: ->
       @panes = []
 
-      @buildPane(new MainPane, 'General', 'icon-gear')
+      @buildPane(new MainPane, 'General', 'icon-gear') unless 'general' in @blacklist
       @initializeModifierModules()
-      @buildPane(new ProfilePane, 'Highlighting', 'icon-plug')
+      @buildPane(new ProfilePane, 'Highlighting', 'icon-plug') unless 'highlighting' in @blacklist
       @initializeOutputModules()
 
       @addEventHandlers()
@@ -89,6 +92,7 @@ module.exports =
 
     initializeModifierModules: ->
       for key in Object.keys(@command.modifier ? {})
+        continue if key in @blacklist
         continue unless Modifiers.activate(key) is true
         mod = Modifiers.modules[key]
         continue if mod.private
@@ -101,6 +105,7 @@ module.exports =
           not (key in Object.keys(@command.modifier ? {}))
 
       for key in rest
+        continue if key in @blacklist
         continue unless Modifiers.activate(key) is true
         mod = Modifiers.modules[key]
         continue if mod.private
@@ -108,6 +113,7 @@ module.exports =
 
     initializeOutputModules: ->
       for key in Object.keys(Outputs.modules)
+        continue if key in @blacklist
         continue unless Outputs.activate(key) is true
         mod = Outputs.modules[key]
         continue if mod.private
