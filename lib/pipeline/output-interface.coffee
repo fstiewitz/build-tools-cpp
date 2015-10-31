@@ -17,7 +17,7 @@ module.exports =
 
         if @stderr.highlighting isnt 'nh'
           @stderr.subscribeToCommands output, 'stderr_setType', 'setType'
-          if @stderr.profile? or @stdout.regex?
+          if @stderr.profile? or @stderr.regex?
             @stderr.subscribeToCommands output, 'stderr_replacePrevious', 'replacePrevious'
             @stderr.subscribeToCommands output, 'stderr_print', 'print'
             @stderr.subscribeToCommands output, 'stderr_linter', 'linter'
