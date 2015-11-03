@@ -198,6 +198,18 @@ module.exports =
         @tab.setFinished(code)
         @tab.lock()
         return if @queue_in_buffer
+        @finish(code)
+
+      exitQueue: (code) ->
+        if code is -2
+          @tab.setCancelled()
+          @tab.lock()
+          @tab.finishConsole()
+          return
+        return unless @queue_in_buffer
+        @finish(code)
+
+      finish: (code) ->
         @tab.finishConsole()
         if @command.output['console'].close_success and code is 0
           t = atom.config.get('build-tools.CloseOnSuccess')
@@ -209,11 +221,3 @@ module.exports =
               consolepanel.hide() if @tab.hasFocus()
               timeout = null
             , t * 1000)
-
-      exitQueue: (code) ->
-        if code is -2
-          @tab.setCancelled()
-          @tab.lock()
-          @tab.finishConsole()
-          return
-        @tab.finishConsole() if @queue_in_buffer
