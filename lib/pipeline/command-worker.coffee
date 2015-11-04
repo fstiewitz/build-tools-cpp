@@ -1,4 +1,4 @@
-OutputManager = require './output-manager'
+InputOutputManager = require './io-manager'
 
 {BufferedProcess} = require 'atom'
 
@@ -6,7 +6,7 @@ module.exports =
   class CommandWorker
 
     constructor: (@command, @outputs) ->
-      @manager = new OutputManager(@command, @outputs)
+      @manager = new InputOutputManager(@command, @outputs)
 
     run: ->
       new Promise((resolve, reject) =>
@@ -20,6 +20,9 @@ module.exports =
               @manager.error error
               @destroy()
               reject(error)
+          @manager.setInput
+            write: ->
+            end: ->
         else
           {command, args, env} = @command
           @process = new BufferedProcess(
@@ -37,6 +40,7 @@ module.exports =
               @destroy()
               resolve(exitcode)
           )
+          @manager.setInput(@process.process.stdin)
           @process.onWillThrowError ({error, handle}) =>
             @manager.error error
             @destroy()

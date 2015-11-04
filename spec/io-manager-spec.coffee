@@ -1,4 +1,4 @@
-OutputManager = require '../lib/pipeline/output-manager'
+InputOutputManager = require '../lib/pipeline/io-manager'
 
 path = require 'path'
 
@@ -16,26 +16,49 @@ command =
 describe 'Output Manager', ->
   manager = null
   output = null
+  write_cb = null
+  input = null
+  input_cb = null
 
   beforeEach ->
     output =
       newCommand: jasmine.createSpy('newCommand')
       exitCommand: jasmine.createSpy('exitCommand')
+      setInput: jasmine.createSpy('input').andCallFake (_input) -> input_cb = _input
+      onInput: jasmine.createSpy('oninput')
       stdout_in: jasmine.createSpy('stdout_in')
       stdout_setType: jasmine.createSpy('stdout_setType')
       stderr_in: jasmine.createSpy('stderr_in')
       stderr_setType: jasmine.createSpy('stderr_setType')
       stderr_print: jasmine.createSpy('stderr_setType')
       stderr_linter: jasmine.createSpy('stderr_linter')
-
+    input =
+      write: jasmine.createSpy('write').andCallFake(write_cb = ((a, b, cb) -> cb()))
+      end: jasmine.createSpy('end')
     command.project = atom.project.getPaths()[0]
-    manager = new OutputManager(command, [output])
+    manager = new InputOutputManager(command, [output])
+    manager.setInput input
 
   afterEach ->
     manager.destroy()
 
   it 'initalizes the output module', ->
     expect(output.newCommand).toHaveBeenCalledWith command
+
+  it 'initalizes the input callbacks', ->
+    expect(output.setInput).toHaveBeenCalled()
+
+  describe 'On stdin output', ->
+
+    beforeEach ->
+      input_cb 'Test'
+
+    it 'calls the input stream\'s write function', ->
+      expect(input.write).toHaveBeenCalled()
+      expect(input.write.mostRecentCall.args[0]).toBe 'Test'
+
+    it 'calls the input callback', ->
+      expect(output.onInput).toHaveBeenCalledWith 'Test'
 
   describe 'On stdout input', ->
     it 'calls the correct functions', ->

@@ -3,10 +3,12 @@ OutputStream = require './output-stream'
 module.exports =
   class OutputInterface
 
-    constructor: (@outputs, @stdout, @stderr) ->
+    constructor: (@outputs, @stdin, @stdout, @stderr) ->
       for output in @outputs
         @stdout.subscribeToCommands output, 'stdout_in', 'input'
         @stderr.subscribeToCommands output, 'stderr_in', 'input'
+        output.setInput? @stdin.write
+        @stdin.onWrite output.onInput if output.onInput?
 
         if @stdout.highlighting isnt 'nh'
           @stdout.subscribeToCommands output, 'stdout_setType', 'setType'
