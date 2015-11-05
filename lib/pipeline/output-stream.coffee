@@ -27,12 +27,14 @@ module.exports =
         @default = CSON.parse(@stream.defaults) if @stream.defaults isnt ''
 
       @subscribers = new Emitter
+      @buffer = ''
 
     destroy: ->
       @subscribers.dispose()
       @subscribers = null
       @profile = null
       @regex = null
+      @buffer = ''
       @default = {}
 
     subscribeToCommands: (object, callback, command) ->
@@ -40,12 +42,31 @@ module.exports =
       return unless object[callback]?
       @subscribers.on command, (o) -> object[callback](o)
 
-    in: (message) ->
-      lines = message.split('\n')
+    flush: ->
+      return if @buffer is ''
+      @subscribers.emit 'input', input: @buffer, files: @getFiles(input: @buffer)
+      @parse @buffer
+      @buffer = ''
+
+    in: (data) =>
+      @buffer += data
+      lines = @buffer.split '\n'
       for line, index in lines
-        if line isnt '' or (line is '' and index isnt lines.length - 1)
-          @subscribers.emit 'input', input: line, files: @getFiles(input: line)
-          @parse line
+        if index isnt 0
+          @subscribers.emit 'new'
+          if line isnt ''
+            @subscribers.emit 'raw', line
+          if index isnt lines.length - 1
+            @subscribers.emit 'input', input: line, files: @getFiles(input: line)
+            @parse line
+        else
+          if line is (d = data.split('\n')[0])
+            @subscribers.emit 'new'
+          @subscribers.emit 'raw', d
+          if lines.length isnt 1
+            @subscribers.emit 'input', input: line, files: @getFiles(input: line)
+            @parse line
+      @buffer = lines.pop()
 
     parse: (line) ->
       if @stream.highlighting is 'ha'

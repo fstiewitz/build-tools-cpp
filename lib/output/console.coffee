@@ -139,8 +139,18 @@ module.exports =
         @stdout_lines = []
         @stderr_lines = []
 
-      stdout_in: ({input, files}) ->
-        @stdout_lines.push(@tab.printLine(buildHTML(input, '', files)))
+      stdout_new: ->
+        @stdout_lines.push(@tab.printLine '<div class="bold"></div>')
+
+      stdout_raw: (input) ->
+        @stdout_lines[@stdout_lines.length - 1].innerHTML += input
+
+      stdout_in: (data) ->
+        t = data.input
+        data.input = {}
+        data.input.input = t
+        data.input.type = ''
+        @stdout_print data
 
       stdout_setType: (status) ->
         last = @stdout_lines[@stdout_lines.length - 1]
@@ -164,8 +174,18 @@ module.exports =
           element.prop('class', _new.prop('class'))
           element.html(_new.html())
 
-      stderr_in: ({input, files}) ->
-        @stderr_lines.push(@tab.printLine(buildHTML(input, '', files)))
+      stderr_new: ->
+        @stderr_lines.push(@tab.printLine '<div class="bold"></div>')
+
+      stderr_raw: (input) ->
+        @stderr_lines[@stderr_lines.length - 1].innerHTML += input
+
+      stderr_in: (data) ->
+        t = data.input
+        data.input = {}
+        data.input.input = t
+        data.input.type = ''
+        @stderr_print data
 
       stderr_setType: (status) ->
         last = @stderr_lines[@stderr_lines.length - 1]

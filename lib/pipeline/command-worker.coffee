@@ -31,15 +31,15 @@ module.exports =
             options:
               cwd: @command.getWD()
               env: env
-            stdout: (data) =>
-              @manager.stdout.in data
-            stderr: (data) =>
-              @manager.stderr.in data
             exit: (exitcode) =>
               @manager.finish exitcode
               @destroy()
               resolve(exitcode)
           )
+          @process.process.stdout.setEncoding 'utf8'
+          @process.process.stderr.setEncoding 'utf8'
+          @process.process.stdout.on 'data', @manager.stdout.in
+          @process.process.stderr.on 'data', @manager.stderr.in
           @manager.setInput(@process.process.stdin)
           @process.onWillThrowError ({error, handle}) =>
             @manager.error error

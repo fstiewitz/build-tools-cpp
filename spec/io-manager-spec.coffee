@@ -61,6 +61,143 @@ describe 'Output Manager', ->
       expect(output.onInput).toHaveBeenCalledWith 'Test'
 
   describe 'On stdout input', ->
+    new_line = null
+    mid_line = null
+    end_line = null
+
+    beforeEach ->
+      new_line = jasmine.createSpy('new_line')
+      mid_line = jasmine.createSpy('mid_line')
+      end_line = jasmine.createSpy('end_line')
+      manager.stdout.subscribers.on 'new', new_line
+      manager.stdout.subscribers.on 'raw', mid_line
+      manager.stdout.subscribers.on 'input', end_line
+
+    describe 'On single line', ->
+      beforeEach ->
+        manager.stdout.in 'This is a single line\n'
+
+      it 'calls "new"', ->
+        expect(new_line).toHaveBeenCalled()
+
+      it 'calls "raw"', ->
+        expect(mid_line).toHaveBeenCalledWith 'This is a single line'
+
+      it 'calls "input"', ->
+        expect(end_line).toHaveBeenCalled()
+        expect(end_line.mostRecentCall.args[0].input).toBe 'This is a single line'
+
+    describe 'On multiple lines (2 full, last broken)', ->
+      beforeEach ->
+        manager.stdout.in 'First line\nSecond line\nThird'
+
+      it 'calls "new" 3 times', ->
+        expect(new_line.callCount).toBe 3
+
+      it 'calls "raw" 3 times', ->
+        expect(mid_line.callCount).toBe 3
+        expect(mid_line.argsForCall).toEqual [['First line'], ['Second line'], ['Third']]
+
+      it 'calls "input" 2 times', ->
+        expect(end_line.callCount).toBe 2
+        expect(end_line.argsForCall[0][0].input).toBe 'First line'
+        expect(end_line.argsForCall[1][0].input).toBe 'Second line'
+
+      it 'resets buffer', ->
+        expect(manager.stdout.buffer).toBe 'Third'
+
+      describe 'On adding to the third line', ->
+        beforeEach ->
+          manager.stdout.in ' line'
+
+        it 'does not call "new"', ->
+          expect(new_line.callCount).toBe 3
+
+        it 'calls "raw"', ->
+          expect(mid_line.mostRecentCall.args[0]).toBe ' line'
+
+        it 'updates buffer', ->
+          expect(manager.stdout.buffer).toBe 'Third line'
+
+        describe 'On finishing the third line', ->
+          beforeEach ->
+            manager.stdout.in '\n'
+
+          it 'calls "new"', ->
+            expect(new_line.callCount).toBe 4
+
+          it 'calls "input"', ->
+            expect(end_line.callCount).toBe 3
+            expect(end_line.mostRecentCall.args[0].input).toBe 'Third line'
+
+  describe 'On stderr input', ->
+    new_line = null
+    mid_line = null
+    end_line = null
+
+    beforeEach ->
+      new_line = jasmine.createSpy('new_line')
+      mid_line = jasmine.createSpy('mid_line')
+      end_line = jasmine.createSpy('end_line')
+      manager.stderr.subscribers.on 'new', new_line
+      manager.stderr.subscribers.on 'raw', mid_line
+      manager.stderr.subscribers.on 'input', end_line
+
+    describe 'On single line', ->
+      beforeEach ->
+        manager.stderr.in 'This is a single line\n'
+
+      it 'calls "new"', ->
+        expect(new_line).toHaveBeenCalled()
+
+      it 'calls "raw"', ->
+        expect(mid_line).toHaveBeenCalledWith 'This is a single line'
+
+      it 'calls "input"', ->
+        expect(end_line).toHaveBeenCalled()
+        expect(end_line.mostRecentCall.args[0].input).toBe 'This is a single line'
+
+    describe 'On multiple lines (2 full, last broken)', ->
+      beforeEach ->
+        manager.stderr.in 'First line\nSecond line\nThird'
+
+      it 'calls "new" 3 times', ->
+        expect(new_line.callCount).toBe 3
+
+      it 'calls "raw" 3 times', ->
+        expect(mid_line.callCount).toBe 3
+        expect(mid_line.argsForCall).toEqual [['First line'], ['Second line'], ['Third']]
+
+      it 'calls "input" 2 times', ->
+        expect(end_line.callCount).toBe 2
+        expect(end_line.argsForCall[0][0].input).toBe 'First line'
+        expect(end_line.argsForCall[1][0].input).toBe 'Second line'
+
+      it 'resets buffer', ->
+        expect(manager.stderr.buffer).toBe 'Third'
+
+      describe 'On adding to the third line', ->
+        beforeEach ->
+          manager.stderr.in ' line'
+
+        it 'calls "raw"', ->
+          expect(mid_line.mostRecentCall.args[0]).toBe ' line'
+
+        it 'updates buffer', ->
+          expect(manager.stderr.buffer).toBe 'Third line'
+
+        describe 'On finishing the third line', ->
+          beforeEach ->
+            manager.stderr.in '\n'
+
+          it 'calls "new"', ->
+            expect(new_line.callCount).toBe 4
+
+          it 'calls "input"', ->
+            expect(end_line.callCount).toBe 3
+            expect(end_line.mostRecentCall.args[0].input).toBe 'Third line'
+
+  describe 'On stdout input', ->
     it 'calls the correct functions', ->
       manager.stdout.in 'Hello World\n'
       expect(output.stdout_in).toHaveBeenCalledWith input: 'Hello World', files: []
