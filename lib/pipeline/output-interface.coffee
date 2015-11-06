@@ -13,9 +13,6 @@ module.exports =
         @stderr.subscribeToCommands output, 'stderr_raw', 'raw'
         @stderr.subscribeToCommands output, 'stderr_in', 'input'
 
-        output.setInput? @stdin.write
-        @stdin.onWrite output.onInput if output.onInput?
-
         if @stdout.highlighting isnt 'nh'
           @stdout.subscribeToCommands output, 'stdout_setType', 'setType'
           if @stdout.profile? or @stdout.regex?
@@ -33,6 +30,8 @@ module.exports =
     initialize: (command) ->
       for output in @outputs
         output.newCommand?(command)
+        output.setInput? @stdin.write
+        @stdin.onWrite output.onInput if output.onInput?
 
     finish: (exitcode) ->
       @stdout.flush()

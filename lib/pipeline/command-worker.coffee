@@ -7,12 +7,15 @@ module.exports =
 
     constructor: (@command, @outputs) ->
       @manager = new InputOutputManager(@command, @outputs)
+      @killed = false
 
     run: ->
       new Promise((resolve, reject) =>
         if atom.inSpecMode()
           @process =
             exit: (exitcode) =>
+              return resolve(exitcode) if @killed
+              @killed = true
               @manager.finish exitcode
               @destroy()
               resolve(exitcode)
@@ -20,6 +23,11 @@ module.exports =
               @manager.error error
               @destroy()
               reject(error)
+            kill: =>
+              return resolve(null) if @killed
+              @manager.finish null
+              @destroy()
+              resolve(null)
           @manager.setInput
             write: ->
             end: ->
@@ -32,14 +40,22 @@ module.exports =
               cwd: @command.getWD()
               env: env
             exit: (exitcode) =>
+              return resolve(exitcode) if @killed
+              @killed = true
               @manager.finish exitcode
               @destroy()
               resolve(exitcode)
           )
           @process.process.stdout.setEncoding 'utf8'
           @process.process.stderr.setEncoding 'utf8'
-          @process.process.stdout.on 'data', @manager.stdout.in
-          @process.process.stderr.on 'data', @manager.stderr.in
+          @process.process.stdout.on 'data', (data) =>
+            return unless @process?
+            return if @process.killed
+            @manager.stdout.in(data)
+          @process.process.stderr.on 'data', (data) =>
+            return unless @process?
+            return if @process.killed
+            @manager.stderr.in(data)
           @manager.setInput(@process.process.stdin)
           @process.onWillThrowError ({error, handle}) =>
             @manager.error error
@@ -48,8 +64,12 @@ module.exports =
             reject(error)
       )
 
-    destroy: ->
+    kill: ->
+      @killed = true
       @process?.kill?()
+      @process = null
+
+    destroy: ->
+      @kill() unless @killed
       @manager?.destroy()
       @manager = null
-      @process = null

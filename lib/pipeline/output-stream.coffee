@@ -48,7 +48,7 @@ module.exports =
       @parse @buffer
       @buffer = ''
 
-    in: (data) =>
+    in: (data) ->
       @buffer += data
       lines = @buffer.split '\n'
       for line, index in lines

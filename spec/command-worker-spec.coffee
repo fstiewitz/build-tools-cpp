@@ -67,6 +67,7 @@ describe 'Command Worker', ->
 
     beforeEach ->
       worker.process.exit 0
+      waitsForPromise -> promise
 
     it 'calls exitCommand of all outputs', ->
       promise.then ->
@@ -75,3 +76,17 @@ describe 'Command Worker', ->
     it 'calls the finish callback', ->
       promise.then (finish) ->
         expect(finish).toBe 0
+
+  describe 'on stop', ->
+
+    beforeEach ->
+      worker.kill()
+      waitsForPromise -> promise
+
+    it 'does not call exitCommand', ->
+      promise.then ->
+        expect(output.exitCommand).not.toHaveBeenCalled()
+
+    it 'calls the finish callback', ->
+      promise.then (finish) ->
+        expect(finish).toBe null
