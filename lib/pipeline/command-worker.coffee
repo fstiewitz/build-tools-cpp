@@ -39,6 +39,8 @@ module.exports =
             options:
               cwd: @command.getWD()
               env: env
+            stdout: ->
+            stderr: ->
             exit: (exitcode) =>
               return resolve(exitcode) if @killed
               @killed = true
