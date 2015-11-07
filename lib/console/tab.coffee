@@ -13,11 +13,14 @@ module.exports =
 
     destroy: ->
       @emitter.dispose()
+      @input = null
 
     clear: ->
       @view.clear()
       @error = null
       @code = null
+
+    setInput: (@input) ->
 
     setRunning: ->
       @header.setIcon 'sync'
@@ -43,6 +46,7 @@ module.exports =
       @view.unlock()
 
     lock: ->
+      @input = null
       @view.lock()
 
     printLine: (line) ->

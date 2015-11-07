@@ -139,6 +139,9 @@ module.exports =
         @stdout_lines = []
         @stderr_lines = []
 
+      setInput: (input) ->
+        @tab.setInput input
+
       stdout_new: ->
         @stdout_lines.push(@tab.printLine '<div class="bold"></div>')
 

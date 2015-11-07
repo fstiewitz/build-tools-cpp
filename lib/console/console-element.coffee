@@ -1,4 +1,4 @@
-{$, View} = require 'atom-space-pen-views'
+{$, TextEditorView, View} = require 'atom-space-pen-views'
 
 module.exports =
   class ConsoleView extends View
@@ -13,6 +13,7 @@ module.exports =
             @span class: 'icon icon-three-bars'
             @ul class: 'tab-list', outlet: 'tabs'
           @div class: 'output-container', outlet: 'output'
+          @subview 'input', new TextEditorView(mini: true, placeholderText: 'Write to standard input')
 
     initialize: (@model) ->
       @close_view.on 'click', =>
@@ -24,6 +25,11 @@ module.exports =
       @model.onRemoveTab @removeTab
 
       @active = null
+
+      @input.on 'core:confirm', =>
+        t = @input.getModel().getText()
+        @input.getModel().setText('')
+        @active.input? "#{t}\n"
 
     startResize: (e) =>
       $(document).on 'mousemove', @resize

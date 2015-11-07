@@ -11,6 +11,9 @@ module.exports =
       @stdout = new OutputStream(@command, @command.stdout)
       @stderr = new OutputStream(@command, @command.stderr)
 
+      @stdin.onWrite (text) =>
+        @stdout.in text
+
       @interface = new OutputInterface(@outputs, @stdin, @stdout, @stderr)
       @interface.initialize(@command)
 
