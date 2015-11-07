@@ -58,9 +58,10 @@ module.exports =
 
     removeTab: (tab) =>
       if @active is tab
+        $(tab.title).remove()
         @focusTab @getNextTab()
-      tab.header.detach()
-      tab.view.detach()
+      tab.header.remove()
+      tab.view.remove()
 
     getNextTab: ->
       return if @tabs.children().length <= 1

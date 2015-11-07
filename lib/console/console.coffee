@@ -8,6 +8,7 @@ module.exports =
     constructor: ->
       @tabs = {}
       @emitter = new Emitter
+      @activeTab = null
 
     destroy: ->
       @emitter.dispose()
@@ -49,11 +50,12 @@ module.exports =
 
     removeTab: (tab) ->
       @emitter.emit 'remove', tab
-      tab.destroy()
+      @activeTab = null if tab is @activeTab
       if tab.command?
         delete @tabs[tab.command.project][tab.command.name]
       else
         delete @tabs.custom[tab.name]
+      tab.destroy()
 
     focusTab: (tab) ->
       @activeTab = tab

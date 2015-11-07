@@ -10,9 +10,17 @@ module.exports =
       @header = new TabItem(@command.project, @command.name, => @close())
       @view = new TabView
       @header.setHeader "#{@command.name} of #{@command.project}"
+      @focus = null
+      @console = null
 
     destroy: ->
       @emitter.dispose()
+      @focus = null
+      @console = null
+      @header = null
+      @view = null
+      @title = null
+      @command = null
 
     clear: ->
       @view.clear()
@@ -52,6 +60,7 @@ module.exports =
       @view.finishConsole()
 
     hasFocus: ->
+      return true unless @console?
       this is @console.activeTab
 
     getHeader: ->

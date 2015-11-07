@@ -235,9 +235,13 @@ module.exports =
           t = atom.config.get('build-tools.CloseOnSuccess')
           if t < 1
             consolepanel.hide()
+            @tab = null
+            @command = null
           else
             clearTimeout timeout
             timeout = setTimeout( =>
               consolepanel.hide() if @tab.hasFocus()
               timeout = null
+              @tab = null
+              @command = null
             , t * 1000)
