@@ -50,8 +50,8 @@ module.exports =
       @input = null
       @view.lock()
 
-    printLine: (line) ->
-      @view.printLine line
+    newLine: ->
+      @view.printLine '<div class="bold"><span class="fg0 bg0"></span></div>'
 
     finishConsole: ->
       @view.finishConsole()

@@ -69,7 +69,7 @@ module.exports =
       return data
 
     in: (data) ->
-      data = @removeAnsi data
+      data = @removeAnsi data unless @stream.highlighting is 'nh'
       return if data is ''
       @buffer += data
       lines = @buffer.split '\n'
