@@ -9,6 +9,9 @@ path = require 'path'
 
 CSON = require 'season'
 
+ColorRegex = /\x1b\[[0-9;]*m/g
+Escape = /\x1b/
+
 module.exports =
   class OutputStream
 
@@ -28,6 +31,7 @@ module.exports =
 
       @subscribers = new Emitter
       @buffer = ''
+      @endsWithAnsi = null
 
     destroy: ->
       @subscribers.dispose()
@@ -35,6 +39,7 @@ module.exports =
       @profile = null
       @regex = null
       @buffer = ''
+      @endsWithAnsi = null
       @default = {}
 
     subscribeToCommands: (object, callback, command) ->
@@ -48,7 +53,24 @@ module.exports =
       @parse @buffer
       @buffer = ''
 
+    removeAnsi: (data) ->
+      data = data.replace(ColorRegex, '')
+      if @endsWithAnsi?
+        _part = @endsWithAnsi + data
+        if ColorRegex.test(_part)
+          data = _part.replace(ColorRegex, '')
+          @endsWithAnsi = null
+        else
+          @endsWithAnsi = _part
+          data = ''
+      if (m = Escape.exec(data))?
+        @endsWithAnsi = data.substr(m.index)
+        data = data.substr(0, m.index)
+      return data
+
     in: (data) ->
+      data = @removeAnsi data
+      return if data is ''
       @buffer += data
       lines = @buffer.split '\n'
       for line, index in lines

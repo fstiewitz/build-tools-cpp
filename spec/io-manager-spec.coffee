@@ -78,7 +78,7 @@ describe 'Output Manager', ->
         manager.stdout.in 'This is a single line\n'
 
       it 'calls "new"', ->
-        expect(new_line).toHaveBeenCalled()
+        expect(new_line.callCount).toBe 2
 
       it 'calls "raw"', ->
         expect(mid_line).toHaveBeenCalledWith 'This is a single line'
@@ -129,6 +129,53 @@ describe 'Output Manager', ->
           it 'calls "input"', ->
             expect(end_line.callCount).toBe 3
             expect(end_line.mostRecentCall.args[0].input).toBe 'Third line'
+
+    describe 'When encountering ANSI-Sequences', ->
+      describe 'in one input string', ->
+        beforeEach ->
+          manager.stdout.in 'Hello\x1b[36mWorld\n'
+
+        it 'calls "new"', ->
+          expect(new_line.callCount).toBe 2
+
+        it 'calls "raw" without the escape sequence', ->
+          expect(mid_line.mostRecentCall.args[0]).toBe 'HelloWorld'
+
+        it 'calls "input"', ->
+          expect(end_line.mostRecentCall.args[0].input).toBe 'HelloWorld'
+
+      describe 'in split input', ->
+        beforeEach ->
+          manager.stdout.in 'Hello\x1b['
+
+        it 'calls "new"', ->
+          expect(new_line).toHaveBeenCalled()
+
+        it 'calls "raw"', ->
+          expect(mid_line.mostRecentCall.args[0]).toBe 'Hello'
+
+        describe 'second part', ->
+          beforeEach ->
+            manager.stdout.in '36'
+
+          it 'does not call "new"', ->
+            expect(new_line.callCount).toBe 1
+
+          it 'does not call "raw"', ->
+            expect(mid_line.callCount).toBe 1
+
+          describe 'third part', ->
+            beforeEach ->
+              manager.stdout.in 'mWorld\n'
+
+            it 'does not call "new"', ->
+              expect(new_line.callCount).toBe 2
+
+            it 'calls "raw"', ->
+              expect(mid_line.mostRecentCall.args[0]).toBe 'World'
+
+            it 'calls "input"', ->
+              expect(end_line.mostRecentCall.args[0].input).toBe 'HelloWorld'
 
   describe 'On stderr input', ->
     new_line = null
