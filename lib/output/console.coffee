@@ -80,19 +80,28 @@ module.exports =
               @div class: 'settings-name', 'Execute Queue in one tab'
               @div =>
                 @span class: 'inline-block text-subtle', 'Print output of all commands of the queue in one tab'
+          @div class: 'block checkbox', =>
+            @input id: 'stdin', type: 'checkbox'
+            @label =>
+              @div class: 'settings-name', 'Allow user input'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Allow user to interact with the spawned process'
 
       set: (command) ->
         if command?.output?.console?
           @find('#close_success').prop('checked', command.output.console.close_success)
           @find('#all_in_one').prop('checked', command.output.console.queue_in_buffer ? true)
+          @find('#stdin').prop('checked', command.output.console.stdin ? false)
         else
           @find('#close_success').prop('checked', if atom.config.get('build-tools.CloseOnSuccess') is -1 then false else true)
           @find('#all_in_one').prop('checked', true)
+          @find('#stdin').prop('checked', false)
 
       get: (command) ->
         command.output.console ?= {}
         command.output.console.close_success = @find('#close_success').prop('checked')
         command.output.console.queue_in_buffer = @find('#all_in_one').prop('checked')
+        command.output.console.stdin = @find('#stdin').prop('checked')
         return null
 
   info:
@@ -105,6 +114,7 @@ module.exports =
         keys.innerHTML = '''
         <div class="text-padded">Close on success:</div>
         <div class="text-padded">Execute queue in one tab:</div>
+        <div class="text-padded">User Input:</div>
         '''
         values = document.createElement 'div'
         value = document.createElement 'div'
@@ -114,6 +124,10 @@ module.exports =
         value = document.createElement 'div'
         value.classList.add 'text-padded'
         value.innerText = String(command.output.console.queue_in_buffer)
+        values.appendChild value
+        value = document.createElement 'div'
+        value.classList.add 'text-padded'
+        value.innerText = String(command.output.console.stdin)
         values.appendChild value
         @element.appendChild keys
         @element.appendChild values
@@ -140,7 +154,11 @@ module.exports =
         @stderr_lines = []
 
       setInput: (input) ->
-        @tab.setInput input
+        if @command.output.console.stdin
+          @tab.setInput input
+          consoleview.input_container.removeClass 'hidden'
+        else
+          consoleview.input_container.addClass 'hidden'
 
       stdout_new: ->
         @stdout_lines.push(@tab.printLine '<div class="bold"></div>')
@@ -234,6 +252,7 @@ module.exports =
 
       finish: (code) ->
         @tab.finishConsole()
+        consoleview.input_container.addClass 'hidden' if @tab.hasFocus()
         if @command.output['console'].close_success and code is 0
           t = atom.config.get('build-tools.CloseOnSuccess')
           if t < 1

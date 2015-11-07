@@ -13,7 +13,8 @@ module.exports =
             @span class: 'icon icon-three-bars'
             @ul class: 'tab-list', outlet: 'tabs'
           @div class: 'output-container', outlet: 'output'
-          @subview 'input', new TextEditorView(mini: true, placeholderText: 'Write to standard input')
+          @div class: 'input-container', outlet: 'input_container', =>
+            @subview 'input', new TextEditorView(mini: true, placeholderText: 'Write to standard input')
 
     initialize: (@model) ->
       @close_view.on 'click', =>
@@ -61,6 +62,7 @@ module.exports =
         @active.view.removeClass 'hidden'
       else
         @output.append @active.view
+      @input_container[if @active.input? then 'removeClass' else 'addClass'] 'hidden'
 
     removeTab: (tab) =>
       if @active is tab

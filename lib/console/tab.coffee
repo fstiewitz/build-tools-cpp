@@ -10,6 +10,7 @@ module.exports =
       @header = new TabItem(@command.project, @command.name, => @close())
       @view = new TabView
       @header.setHeader "#{@command.name} of #{@command.project}"
+      @input = null
 
     destroy: ->
       @emitter.dispose()
