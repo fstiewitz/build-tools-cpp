@@ -41,6 +41,7 @@ parseAnsi = (input, element) ->
     innerText = input.substr(lastIndex, (if (j = ansis[index + 1])? then j[1] - lastIndex else undefined))
     lastIndex = j[1] if j?
     lastColors = lastElement.className.split ' '
+    continue if innerText is ''
     for color in lastColors
       if color.startsWith 'fg'
         fg = color.substr(2)
@@ -51,6 +52,9 @@ parseAnsi = (input, element) ->
       className = 'fg0 bg0'
       if lastElement.className is className
         lastElement.innerText += innerText
+      else if lastElement.innerText is ''
+        lastElement.className = className
+        lastElement.innerText = innerText
       else
         next = document.createElement 'span'
         element.appendChild next
@@ -71,6 +75,9 @@ parseAnsi = (input, element) ->
             append = false
       if append
         lastElement.innerText += innerText
+      else if lastElement.innerText is ''
+        lastElement.className = className.join ' '
+        lastElement.innerText = innerText
       else
         next = document.createElement 'span'
         element.appendChild next
