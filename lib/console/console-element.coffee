@@ -27,10 +27,14 @@ module.exports =
 
       @active = null
 
-      @input.on 'core:confirm', =>
+    attached: ->
+      @disposable = atom.commands.add @input.element, 'core:confirm': =>
         t = @input.getModel().getText()
         @input.getModel().setText('')
         @active.input? "#{t}\n"
+
+    detached: ->
+      @disposable.dispose()
 
     startResize: (e) =>
       $(document).on 'mousemove', @resize
