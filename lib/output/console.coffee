@@ -11,9 +11,6 @@ CompositeDisposable = null
 
 AnsiParser = null
 
-ColorRegex = /\x1b\[([0-9;]*)m/g
-Escape = /\x1b/
-
 buildHTML = (message, status, filenames) ->
   $$ ->
     status = '' if not status?
