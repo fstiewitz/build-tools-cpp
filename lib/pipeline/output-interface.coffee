@@ -3,9 +3,14 @@ OutputStream = require './output-stream'
 module.exports =
   class OutputInterface
 
-    constructor: (@outputs, @stdout, @stderr) ->
+    constructor: (@outputs, @stdin, @stdout, @stderr) ->
       for output in @outputs
+        @stdout.subscribeToCommands output, 'stdout_new', 'new'
+        @stdout.subscribeToCommands output, 'stdout_raw', 'raw'
         @stdout.subscribeToCommands output, 'stdout_in', 'input'
+
+        @stderr.subscribeToCommands output, 'stderr_new', 'new'
+        @stderr.subscribeToCommands output, 'stderr_raw', 'raw'
         @stderr.subscribeToCommands output, 'stderr_in', 'input'
 
         if @stdout.highlighting isnt 'nh'
@@ -25,8 +30,12 @@ module.exports =
     initialize: (command) ->
       for output in @outputs
         output.newCommand?(command)
+        output.setInput? @stdin.write
+        @stdin.onWrite output.onInput if output.onInput?
 
     finish: (exitcode) ->
+      @stdout.flush()
+      @stderr.flush()
       for output in @outputs
         output.exitCommand?(exitcode)
 

@@ -16,6 +16,7 @@ describe 'Command Info Profile Pane', ->
       save_all: true
       stdout:
         highlighting: 'nh'
+        ansi_option: 'parse'
       stderr:
         highlighting: 'hc'
         profile: 'python'
@@ -29,5 +30,5 @@ describe 'Command Info Profile Pane', ->
     expect(view.element).toBeDefined()
 
   it 'has all values', ->
-    expect(view.element.children[1].children[0].innerText).toBe 'No highlighting'
+    expect(view.element.children[1].children[0].innerText).toBe 'No highlighting - Parse ANSI Color Codes'
     expect(view.element.children[1].children[1].innerText).toBe 'Python'

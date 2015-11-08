@@ -39,7 +39,7 @@ module.exports =
                 trace: match.trace
 
           for string in strings
-            output.in string
+            output.in string + '\n'
 
         it 'correctly sets warnings and errors', ->
           expect(matches.length).toBe expectations.length

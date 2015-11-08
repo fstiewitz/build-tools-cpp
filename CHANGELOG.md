@@ -1,3 +1,13 @@
+## 4.1.0 - Better I/O
+
+* Output modules now have access to stdin (for users: You can now interact with your spawned process)
+* Added options to remove or highlight ANSI Color Codes:
+  * ANSI Color Codes are hidden when highlighting is set to anything other than "No highlighting"
+  * ANSI Color Codes are displayed (not highlighted, you'll see the actual escape code) by default when "No highlighting" is enabled
+  * ANSI Color Codes include 8 text colors, 8 background colors, underline, italic and bold. Supporting ALL ANSI Codes is beyond the scope of this package.
+
+To use the new features you have to reconfigure your commands.
+
 ## 4.0.0 - Modules
 __Major changes for the user:__
 

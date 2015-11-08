@@ -9,11 +9,13 @@ timeout = null
 
 CompositeDisposable = null
 
+AnsiParser = null
+
 buildHTML = (message, status, filenames) ->
   $$ ->
     status = '' if not status?
     status = 'info' if status is 'note'
-    @div class: "bold text-#{status}", =>
+    @div class: "text-#{status}", =>
       if filenames? and filenames.length isnt 0
         prev = -1
         for {file, row, col, start, end} in filenames
@@ -36,6 +38,7 @@ module.exports =
     consoleview.hide = -> consolepanel.hide()
 
     {CompositeDisposable} = require 'atom'
+    AnsiParser = require './ansi-parser'
     @disposables = new CompositeDisposable
     @disposables.add atom.commands.add 'atom-workspace',
       'build-tools:toggle': ->
@@ -80,19 +83,28 @@ module.exports =
               @div class: 'settings-name', 'Execute Queue in one tab'
               @div =>
                 @span class: 'inline-block text-subtle', 'Print output of all commands of the queue in one tab'
+          @div class: 'block checkbox', =>
+            @input id: 'stdin', type: 'checkbox'
+            @label =>
+              @div class: 'settings-name', 'Allow user input'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Allow user to interact with the spawned process'
 
       set: (command) ->
         if command?.output?.console?
           @find('#close_success').prop('checked', command.output.console.close_success)
           @find('#all_in_one').prop('checked', command.output.console.queue_in_buffer ? true)
+          @find('#stdin').prop('checked', command.output.console.stdin ? false)
         else
           @find('#close_success').prop('checked', if atom.config.get('build-tools.CloseOnSuccess') is -1 then false else true)
           @find('#all_in_one').prop('checked', true)
+          @find('#stdin').prop('checked', false)
 
       get: (command) ->
         command.output.console ?= {}
         command.output.console.close_success = @find('#close_success').prop('checked')
         command.output.console.queue_in_buffer = @find('#all_in_one').prop('checked')
+        command.output.console.stdin = @find('#stdin').prop('checked')
         return null
 
   info:
@@ -105,6 +117,7 @@ module.exports =
         keys.innerHTML = '''
         <div class="text-padded">Close on success:</div>
         <div class="text-padded">Execute queue in one tab:</div>
+        <div class="text-padded">User Input:</div>
         '''
         values = document.createElement 'div'
         value = document.createElement 'div'
@@ -114,6 +127,10 @@ module.exports =
         value = document.createElement 'div'
         value.classList.add 'text-padded'
         value.innerText = String(command.output.console.queue_in_buffer)
+        values.appendChild value
+        value = document.createElement 'div'
+        value.classList.add 'text-padded'
+        value.innerText = String(command.output.console.stdin)
         values.appendChild value
         @element.appendChild keys
         @element.appendChild values
@@ -139,8 +156,26 @@ module.exports =
         @stdout_lines = []
         @stderr_lines = []
 
-      stdout_in: ({input, files}) ->
-        @stdout_lines.push(@tab.printLine(buildHTML(input, '', files)))
+      setInput: (input) ->
+        if @command.output.console.stdin
+          @tab.setInput input
+          consoleview.input_container.removeClass 'hidden'
+          consoleview.input.focus()
+        else
+          consoleview.input_container.addClass 'hidden'
+
+      stdout_new: ->
+        if @command.stdout.highlighting is 'nh' and @command.stdout.ansi_option is 'parse' and (last = @stdout_lines[@stdout_lines.length - 1])?
+          if last.innerText is ''
+            last.innerText = ' '
+            AnsiParser.copyAttributes(@stdout_lines, @stdout_lines.length - 1)
+        @stdout_lines.push(@tab.newLine())
+
+      stdout_raw: (input) ->
+        if @command.stdout.highlighting is 'nh' and @command.stdout.ansi_option is 'parse'
+          AnsiParser.parseAnsi(input, @stdout_lines, @stdout_lines.length - 1)
+        else
+          @stdout_lines[@stdout_lines.length - 1].innerText += input
 
       stdout_setType: (status) ->
         last = @stdout_lines[@stdout_lines.length - 1]
@@ -164,8 +199,18 @@ module.exports =
           element.prop('class', _new.prop('class'))
           element.html(_new.html())
 
-      stderr_in: ({input, files}) ->
-        @stderr_lines.push(@tab.printLine(buildHTML(input, '', files)))
+      stderr_new: ->
+        if @command.stderr.highlighting is 'nh' and @command.stderr.ansi_option is 'parse' and (last = @stderr_lines[@stderr_lines.length - 1])?
+          if last.innerText is ''
+            last.innerText = ' '
+            AnsiParser.copyAttributes(@stderr_lines, @stderr_lines.length - 1)
+        @stderr_lines.push(@tab.newLine())
+
+      stderr_raw: (input) ->
+        if @command.stderr.highlighting is 'nh' and @command.stderr.ansi_option is 'parse'
+          AnsiParser.parseAnsi(input, @stderr_lines)
+        else
+          @stderr_lines[@stderr_lines.length - 1].innerText += input
 
       stderr_setType: (status) ->
         last = @stderr_lines[@stderr_lines.length - 1]
@@ -205,19 +250,25 @@ module.exports =
           @tab.setCancelled()
           @tab.lock()
           @tab.finishConsole()
+          consoleview.hideInput() if @tab.hasFocus()
           return
         return unless @queue_in_buffer
         @finish(code)
 
       finish: (code) ->
         @tab.finishConsole()
+        consoleview.hideInput() if @tab.hasFocus()
         if @command.output['console'].close_success and code is 0
           t = atom.config.get('build-tools.CloseOnSuccess')
           if t < 1
             consolepanel.hide()
+            @tab = null
+            @command = null
           else
             clearTimeout timeout
             timeout = setTimeout( =>
               consolepanel.hide() if @tab.hasFocus()
               timeout = null
+              @tab = null
+              @command = null
             , t * 1000)

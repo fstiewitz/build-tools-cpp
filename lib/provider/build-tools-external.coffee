@@ -35,6 +35,10 @@ module.exports =
         @_save()
 
       destroy: ->
+        @projectPath = null
+        @config = null
+        @_save = null
+        return if @_save?
         @project?.destroy()
         @project = null
 
@@ -87,6 +91,9 @@ module.exports =
       initialize: (@project) ->
         @path.getModel().setText(@project.config.file ? '')
         @find('#overwrite_wd').prop('checked', @project.config.overwrite)
+
+      destroy: ->
+        @project = null
 
       attached: ->
         @on 'click', '#apply', =>

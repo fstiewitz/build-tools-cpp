@@ -9,6 +9,9 @@ path = require 'path'
 
 CSON = require 'season'
 
+ColorRegex = /\x1b\[[0-9;]*m/g
+Escape = /\x1b/
+
 module.exports =
   class OutputStream
 
@@ -27,12 +30,16 @@ module.exports =
         @default = CSON.parse(@stream.defaults) if @stream.defaults isnt ''
 
       @subscribers = new Emitter
+      @buffer = ''
+      @endsWithAnsi = null
 
     destroy: ->
       @subscribers.dispose()
       @subscribers = null
       @profile = null
       @regex = null
+      @buffer = ''
+      @endsWithAnsi = null
       @default = {}
 
     subscribeToCommands: (object, callback, command) ->
@@ -40,12 +47,48 @@ module.exports =
       return unless object[callback]?
       @subscribers.on command, (o) -> object[callback](o)
 
-    in: (message) ->
-      lines = message.split('\n')
+    flush: ->
+      return if @buffer is ''
+      @subscribers.emit 'input', input: @buffer, files: @getFiles(input: @buffer)
+      @parse @buffer
+      @buffer = ''
+
+    removeAnsi: (data) ->
+      data = data.replace(ColorRegex, '')
+      if @endsWithAnsi?
+        _part = @endsWithAnsi + data
+        if ColorRegex.test(_part)
+          data = _part.replace(ColorRegex, '')
+          @endsWithAnsi = null
+        else
+          @endsWithAnsi = _part
+          data = ''
+      if (m = Escape.exec(data))?
+        @endsWithAnsi = data.substr(m.index)
+        data = data.substr(0, m.index)
+      return data
+
+    in: (data) ->
+      data = @removeAnsi data if @stream.highlighting isnt 'nh' or @stream.ansi_option is 'remove'
+      return if data is ''
+      @buffer += data
+      lines = @buffer.split '\n'
       for line, index in lines
-        if line isnt '' or (line is '' and index isnt lines.length - 1)
-          @subscribers.emit 'input', input: line, files: @getFiles(input: line)
-          @parse line
+        if index isnt 0
+          @subscribers.emit 'new'
+          if line isnt ''
+            @subscribers.emit 'raw', line
+          if index isnt lines.length - 1
+            @subscribers.emit 'input', input: line, files: @getFiles(input: line)
+            @parse line
+        else
+          if line is (d = data.split('\n')[0])
+            @subscribers.emit 'new'
+          @subscribers.emit 'raw', d
+          if lines.length isnt 1
+            @subscribers.emit 'input', input: line, files: @getFiles(input: line)
+            @parse line
+      @buffer = lines.pop()
 
     parse: (line) ->
       if @stream.highlighting is 'ha'

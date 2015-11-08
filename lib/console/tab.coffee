@@ -10,14 +10,26 @@ module.exports =
       @header = new TabItem(@command.project, @command.name, => @close())
       @view = new TabView
       @header.setHeader "#{@command.name} of #{@command.project}"
+      @focus = null
+      @console = null
+      @input = null
 
     destroy: ->
       @emitter.dispose()
+      @input = null
+      @focus = null
+      @console = null
+      @header = null
+      @view = null
+      @title = null
+      @command = null
 
     clear: ->
       @view.clear()
       @error = null
       @code = null
+
+    setInput: (@input) ->
 
     setRunning: ->
       @header.setIcon 'sync'
@@ -43,15 +55,17 @@ module.exports =
       @view.unlock()
 
     lock: ->
+      @input = null
       @view.lock()
 
-    printLine: (line) ->
-      @view.printLine line
+    newLine: ->
+      @view.printLine '<div></div>'
 
     finishConsole: ->
       @view.finishConsole()
 
     hasFocus: ->
+      return true unless @console?
       this is @console.activeTab
 
     getHeader: ->

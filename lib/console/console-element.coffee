@@ -1,4 +1,4 @@
-{$, View} = require 'atom-space-pen-views'
+{$, TextEditorView, View} = require 'atom-space-pen-views'
 
 module.exports =
   class ConsoleView extends View
@@ -13,6 +13,8 @@ module.exports =
             @span class: 'icon icon-three-bars'
             @ul class: 'tab-list', outlet: 'tabs'
           @div class: 'output-container', outlet: 'output'
+          @div class: 'input-container', outlet: 'input_container', =>
+            @subview 'input', new TextEditorView(mini: true, placeholderText: 'Write to standard input')
 
     initialize: (@model) ->
       @close_view.on 'click', =>
@@ -24,6 +26,19 @@ module.exports =
       @model.onRemoveTab @removeTab
 
       @active = null
+
+    attached: ->
+      @disposable = atom.commands.add @input.element, 'core:confirm': =>
+        t = @input.getModel().getText()
+        @input.getModel().setText('')
+        @active.input? "#{t}\n"
+
+    detached: ->
+      @disposable.dispose()
+
+    hideInput: ->
+      @input_container.addClass 'hidden'
+      atom.views.getView(atom.workspace).focus()
 
     startResize: (e) =>
       $(document).on 'mousemove', @resize
@@ -55,12 +70,14 @@ module.exports =
         @active.view.removeClass 'hidden'
       else
         @output.append @active.view
+      @input_container[if @active.input? then 'removeClass' else 'addClass'] 'hidden'
 
     removeTab: (tab) =>
       if @active is tab
+        $(tab.title).remove()
         @focusTab @getNextTab()
-      tab.header.detach()
-      tab.view.detach()
+      tab.header.remove()
+      tab.view.remove()
 
     getNextTab: ->
       return if @tabs.children().length <= 1

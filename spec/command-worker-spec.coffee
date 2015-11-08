@@ -56,17 +56,16 @@ describe 'Command Worker', ->
       worker.process.error 'Test Error'
 
     it 'calls error of all outputs', ->
-      promise.catch (error) ->
-        expect(output.error).toHaveBeenCalledWith 'Test Error'
+      expect(output.error).toHaveBeenCalledWith 'Test Error'
 
-    it 'calls the error callback', ->
-      promise.catch (error) ->
-        expect(error).toBe 'Test Error'
+    it 'does not call exitCommand', ->
+      expect(output.exitCommand).not.toHaveBeenCalled()
 
   describe 'on finish', ->
 
     beforeEach ->
       worker.process.exit 0
+      waitsForPromise -> promise
 
     it 'calls exitCommand of all outputs', ->
       promise.then ->
@@ -75,3 +74,16 @@ describe 'Command Worker', ->
     it 'calls the finish callback', ->
       promise.then (finish) ->
         expect(finish).toBe 0
+
+  describe 'on stop', ->
+
+    beforeEach ->
+      worker.kill()
+      waitsForPromise -> promise
+
+    it 'does not call exitCommand', ->
+      expect(output.exitCommand).not.toHaveBeenCalled()
+
+    it 'calls the finish callback', ->
+      promise.then (finish) ->
+        expect(finish).toBe null

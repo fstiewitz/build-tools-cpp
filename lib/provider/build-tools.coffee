@@ -49,6 +49,14 @@ module.exports =
       save: ->
         @_save()
 
+      destroy: ->
+        @emitter.dispose() if @_save?
+        @_save = null
+        @commands = []
+        @config = null
+        @sourceFile = null
+        @path = null
+
       getCommandByIndex: (id) ->
         @commands[id]
 
@@ -137,16 +145,28 @@ module.exports =
 
       setCallbacks: (@hidePanes, @showPane) ->
 
+      destroy: ->
+        @disposable.dispose()
+        @project = null
+        @hidePanes = null
+        @showPane = null
+        @commandPane?.destroy()
+        @commandPane = null
+
       accept: (c) =>
         @project.addCommand c
 
       attached: ->
         @on 'click', '#add-command-button', (e) =>
+          @commandPane?.destroy()
           @commandPane = atom.views.getView(new Command)
           @commandPane.sourceFile = @project.sourceFile
           @commandPane.setCallbacks @accept, @hidePanes
           @showPane @commandPane
         @addCommands()
+
+      detached: ->
+        @off 'click', '#add-command-button'
 
       addCommands: ->
         @command_list.html('')

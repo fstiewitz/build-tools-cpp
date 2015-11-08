@@ -21,6 +21,7 @@ describe 'Command Edit Profile Pane', ->
       view.set {
         stdout:
           highlighting: 'nh'
+          ansi_option: 'parse'
         stderr:
           highlighting: 'hc'
           profile: 'python'
@@ -29,8 +30,12 @@ describe 'Command Edit Profile Pane', ->
     it 'sets the fields accordingly', ->
       expect(view.stdout_highlights.find('.selected')[0].id).toBe 'nh'
       expect(view.stderr_highlights.find('.selected')[0].id).toBe 'hc'
+      expect(view.stdout_ansi_div.hasClass('hidden')).toBe false
+      expect(view.stderr_ansi_div.hasClass('hidden')).toBe true
       expect(view.stdout_profile_div.hasClass('hidden')).toBe true
       expect(view.stderr_profile_div.hasClass('hidden')).toBe false
+      expect(view.stdout_regex_div.hasClass('hidden')).toBe true
+      expect(view.stderr_regex_div.hasClass('hidden')).toBe true
       expect(view.stderr_profile.children()[view.stderr_profile[0].selectedIndex].attributes.getNamedItem('value').nodeValue).toBe 'python'
 
   describe 'On set without a value', ->
@@ -41,6 +46,8 @@ describe 'Command Edit Profile Pane', ->
     it 'sets the fields to their default values', ->
       expect(view.stdout_highlights.find('.selected')[0].id).toBe 'nh'
       expect(view.stderr_highlights.find('.selected')[0].id).toBe 'nh'
+      expect(view.stdout_ansi.find('.selected')[0].id).toBe 'ignore'
+      expect(view.stderr_ansi.find('.selected')[0].id).toBe 'ignore'
       expect(view.stdout_profile_div.hasClass('hidden')).toBe true
       expect(view.stderr_profile_div.hasClass('hidden')).toBe true
 
@@ -50,8 +57,9 @@ describe 'Command Edit Profile Pane', ->
 
     beforeEach ->
       view.set()
-      view.stdout_highlights.find('#ha').click()
+      view.stdout_highlights.find('#nh').click()
       view.stderr_highlights.find('#hc').click()
+      view.stdout_ansi.find('#remove').click()
       r = view.get c
 
     it 'returns null', ->
@@ -60,8 +68,9 @@ describe 'Command Edit Profile Pane', ->
     it 'updates the command', ->
       expect(c).toEqual {
         stdout:
-          highlighting: 'ha'
+          highlighting: 'nh'
           profile: undefined
+          ansi_option: 'remove'
         stderr:
           highlighting: 'hc'
           profile: 'gcc_clang'

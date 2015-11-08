@@ -17,6 +17,11 @@ module.exports =
           @button id: 'ht', class: 'btn', 'Lines with error tags'
           @button id: 'hc', class: 'btn', 'Custom Profile'
           @button id: 'hr', class: 'btn', 'Custom RegExp'
+        @div class: 'block hidden', outlet: 'stdout_ansi_div', =>
+          @div id: 'stdout_ansi', class: 'btn-group btn-group-sm', outlet: 'stdout_ansi', =>
+            @button id: 'ignore', class: 'btn selected', 'Ignore ANSI Color Codes'
+            @button id: 'remove', class: 'btn', 'Remove ANSI Color Codes'
+            @button id: 'parse', class: 'btn', 'Parse ANSI Color Codes'
         @div class: 'block hidden', outlet: 'stdout_profile_div', =>
           @label =>
             @div class: 'settings-name', 'Profile'
@@ -59,6 +64,11 @@ module.exports =
           @button id: 'ht', class: 'btn', 'Lines with error tags'
           @button id: 'hc', class: 'btn', 'Custom Profile'
           @button id: 'hr', class: 'btn', 'Custom RegExp'
+        @div class: 'block hidden', outlet: 'stderr_ansi_div', =>
+          @div id: 'stderr_ansi', class: 'btn-group btn-group-sm', outlet: 'stderr_ansi', =>
+            @button id: 'ignore', class: 'btn selected', 'Ignore ANSI Color Codes'
+            @button id: 'remove', class: 'btn', 'Remove ANSI Color Codes'
+            @button id: 'parse', class: 'btn', 'Parse ANSI Color Codes'
         @div class: 'block hidden', outlet: 'stderr_profile_div', =>
           @label =>
             @div class: 'settings-name', 'Profile'
@@ -103,22 +113,36 @@ module.exports =
         if command.stderr.highlighting is 'hc'
           @stderr_profile_div.removeClass('hidden')
           @selectProfile @stderr_profile, command.stderr.profile
-        if command.stderr.highlighting is 'hr'
+        else if command.stderr.highlighting is 'hr'
           @stderr_regex_div.removeClass('hidden')
           @stderr_regex.getModel().setText(command.stderr.regex)
           @stderr_default.getModel().setText(command.stderr.defaults)
+        else if command.stderr.highlighting is 'nh'
+          @stderr_ansi_div.removeClass('hidden')
+          @stderr_ansi.find('.btn').removeClass('selected')
+          @stderr_ansi.find("\##{command.stderr.ansi_option ? 'ignore'}").addClass('selected')
         if command.stdout.highlighting is 'hr'
           @stdout_regex_div.removeClass('hidden')
           @stdout_regex.getModel().setText(command.stdout.regex)
           @stdout_default.getModel().setText(command.stdout.defaults)
-        if command.stdout.highlighting is 'hc'
+        else if command.stdout.highlighting is 'hc'
           @stdout_profile_div.removeClass('hidden')
           @selectProfile @stdout_profile, command.stdout.profile
+        else if command.stdout.highlighting is 'nh'
+          @stdout_ansi_div.removeClass('hidden')
+          @stdout_ansi.find('.btn').removeClass('selected')
+          @stdout_ansi.find("\##{command.stdout.ansi_option ? 'ignore'}").addClass('selected')
       else
         @stdout_highlights.find('.selected').removeClass('selected')
         @stderr_highlights.find('.selected').removeClass('selected')
         @stdout_highlights.find('#nh').addClass('selected')
         @stderr_highlights.find('#nh').addClass('selected')
+        @stdout_ansi_div.removeClass('hidden')
+        @stderr_ansi_div.removeClass('hidden')
+        @stdout_ansi.find('.selected').removeClass('selected')
+        @stderr_ansi.find('.selected').removeClass('selected')
+        @stdout_ansi.find('#ignore').addClass('selected')
+        @stderr_ansi.find('#ignore').addClass('selected')
         @stderr_profile_div.addClass('hidden')
         @stdout_profile_div.addClass('hidden')
         @stderr_regex_div.addClass('hidden')
@@ -129,17 +153,28 @@ module.exports =
         @stderr_default.getModel().setText('')
 
       @on 'click', '.btn-group .btn', ({currentTarget}) =>
-        $(currentTarget.parentNode).find('.selected').removeClass('selected')
-        currentTarget.classList.add 'selected'
-        if currentTarget.id is 'hc'
-          @["#{currentTarget.parentNode.id}_profile_div"].removeClass('hidden')
-          @["#{currentTarget.parentNode.id}_regex_div"].addClass('hidden')
-        else if currentTarget.id is 'hr'
-          @["#{currentTarget.parentNode.id}_profile_div"].addClass('hidden')
-          @["#{currentTarget.parentNode.id}_regex_div"].removeClass('hidden')
+        if (p_id = currentTarget.parentNode.id) is 'stdout' or p_id is 'stderr'
+          $(currentTarget.parentNode).find('.selected').removeClass('selected')
+          currentTarget.classList.add 'selected'
+          if currentTarget.id is 'hc'
+            @["#{currentTarget.parentNode.id}_ansi_div"].addClass('hidden')
+            @["#{currentTarget.parentNode.id}_profile_div"].removeClass('hidden')
+            @["#{currentTarget.parentNode.id}_regex_div"].addClass('hidden')
+          else if currentTarget.id is 'hr'
+            @["#{currentTarget.parentNode.id}_ansi_div"].addClass('hidden')
+            @["#{currentTarget.parentNode.id}_profile_div"].addClass('hidden')
+            @["#{currentTarget.parentNode.id}_regex_div"].removeClass('hidden')
+          else if currentTarget.id is 'nh'
+            @["#{currentTarget.parentNode.id}_ansi_div"].removeClass('hidden')
+            @["#{currentTarget.parentNode.id}_profile_div"].addClass('hidden')
+            @["#{currentTarget.parentNode.id}_regex_div"].addClass('hidden')
+          else
+            @["#{currentTarget.parentNode.id}_ansi_div"].addClass('hidden')
+            @["#{currentTarget.parentNode.id}_profile_div"].addClass('hidden')
+            @["#{currentTarget.parentNode.id}_regex_div"].addClass('hidden')
         else
-          @["#{currentTarget.parentNode.id}_profile_div"].addClass('hidden')
-          @["#{currentTarget.parentNode.id}_regex_div"].addClass('hidden')
+          $(currentTarget.parentNode).find('.selected').removeClass('selected')
+          currentTarget.classList.add 'selected'
 
     get: (command) ->
       command.stdout = {}
@@ -150,12 +185,16 @@ module.exports =
         return 'Regular expression must not be empty' if @stdout_regex.getModel().getText() is ''
         command.stdout.regex = @stdout_regex.getModel().getText()
         command.stdout.defaults = @stdout_default.getModel().getText()
+      else if command.stdout.highlighting is 'nh'
+        command.stdout.ansi_option = @stdout_ansi.find('.selected')[0].id
       command.stderr.highlighting = @stderr_highlights.find('.selected')[0].id
       command.stderr.profile = if command.stderr.highlighting is 'hc' then @stderr_profile.children()[@stderr_profile[0].selectedIndex].attributes.getNamedItem('value').nodeValue else undefined
       if command.stderr.highlighting is 'hr'
         return 'Regular expression must not be empty' if @stderr_regex.getModel().getText() is ''
         command.stderr.regex = @stderr_regex.getModel().getText()
         command.stderr.defaults = @stderr_default.getModel().getText()
+      else if command.stderr.highlighting is 'nh'
+        command.stderr.ansi_option = @stderr_ansi.find('.selected')[0].id
       return null
 
     populateProfiles: (select) ->

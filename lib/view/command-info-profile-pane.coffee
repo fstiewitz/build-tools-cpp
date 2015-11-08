@@ -3,6 +3,11 @@ highlight_translation =
   'ha': 'Highlight all'
   'ht': 'Highlight tags'
 
+ansi_translation =
+  'ignore': 'Ignore ANSI Color Codes'
+  'remove': 'Remove ANSI Color Codes'
+  'parse': 'Parse ANSI Color Codes'
+
 {profiles} = require '../profiles/profiles'
 
 module.exports =
@@ -24,6 +29,8 @@ module.exports =
           value.innerText = String(profiles[command[k].profile]?.profile_name)
         else if command[k].highlighting is 'hr'
           value.innerText = command[k].regex
+        else if command[k].highlighting is 'nh'
+          value.innerText = "No highlighting - #{ansi_translation[command[k].ansi_option ? 'ignore']}"
         else
           value.innerText = highlight_translation[command[k].highlighting]
         values.appendChild value
