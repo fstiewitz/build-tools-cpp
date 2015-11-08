@@ -9,6 +9,8 @@ timeout = null
 
 CompositeDisposable = null
 
+AnsiParser = null
+
 ColorRegex = /\x1b\[([0-9;]*)m/g
 Escape = /\x1b/
 
@@ -27,67 +29,6 @@ buildHTML = (message, status, filenames) ->
       else
         @span if message is '' then ' ' else message
 
-parseAnsi = (input, element) ->
-  lastElement = element.children[element.children.length - 1]
-  if (endsWithAnsi = $(lastElement).attr('endsWithAnsi'))?
-    input = endsWithAnsi + input
-  ansis = []
-  while (m = ColorRegex.exec(input))?
-    ansis.push [m[1], m.index]
-  lastIndex = 0
-  lastElement.innerText += input.substr(0, ansis[0][1]) if ansis.length isnt 0
-  for ansi, index in ansis
-    lastIndex = ansi[1] + 3 + ansi[0].length
-    innerText = input.substr(lastIndex, (if (j = ansis[index + 1])? then j[1] - lastIndex else undefined))
-    lastIndex = j[1] if j?
-    lastColors = lastElement.className.split ' '
-    continue if innerText is ''
-    for color in lastColors
-      if color.startsWith 'fg'
-        fg = color.substr(2)
-      else
-        bg = color.substr(2)
-    nextColors = ansi[0].split ';'
-    if ((nextColors.length is 1) and (nextColors[0] is '0')) or ((nextColors.length is 2) and (nextColors[0] is '39') and (nextColors[1] is '49'))
-      className = 'fg0 bg0'
-      if lastElement.className is className
-        lastElement.innerText += innerText
-      else if lastElement.innerText is ''
-        lastElement.className = className
-        lastElement.innerText = innerText
-      else
-        next = document.createElement 'span'
-        element.appendChild next
-        lastElement = next
-        next.innerText = innerText
-        next.className = className
-    else
-      append = true
-      className = []
-      for color in nextColors
-        if ((i = parseInt(color)) >= 30) and i <= 37
-          className.push "fg#{i-30}"
-          if lastElement.className.indexOf "fg#{i-30}" is -1
-            append = false
-        else if ((i = parseInt(color)) >= 40) and i <= 47
-          className.push "bg#{i-40}"
-          if lastElement.className.indexOf "bg#{i-40}" is -1
-            append = false
-      if append
-        lastElement.innerText += innerText
-      else if lastElement.innerText is ''
-        lastElement.className = className.join ' '
-        lastElement.innerText = innerText
-      else
-        next = document.createElement 'span'
-        element.appendChild next
-        lastElement = next
-        next.innerText = innerText
-        next.className = className.join ' '
-  return lastElement.innerText += input if ansis.length is 0
-  if (m = Escape.exec(s = input.substr(ansis.pop()[1] + 1)))?
-    $(lastElement).attr('endsWithAnsi', s.substr(m.index))
-
 module.exports =
 
   activate: ->
@@ -100,6 +41,7 @@ module.exports =
     consoleview.hide = -> consolepanel.hide()
 
     {CompositeDisposable} = require 'atom'
+    AnsiParser = require './ansi-parser'
     @disposables = new CompositeDisposable
     @disposables.add atom.commands.add 'atom-workspace',
       'build-tools:toggle': ->
@@ -230,9 +172,9 @@ module.exports =
 
       stdout_raw: (input) ->
         if @command.stdout.ansi_option is 'parse'
-          parseAnsi(input, @stdout_lines[@stdout_lines.length - 1])
+          AnsiParser.parseAnsi(input, @stdout_lines, @stdout_lines.length - 1)
         else
-          @stdout_lines[@stdout_lines.length - 1].children[0].innerText += input
+          @stdout_lines[@stdout_lines.length - 1].innerText += input
 
       stdout_setType: (status) ->
         last = @stdout_lines[@stdout_lines.length - 1]
@@ -261,9 +203,9 @@ module.exports =
 
       stderr_raw: (input) ->
         if @command.stderr.ansi_option is 'parse'
-          parseAnsi(input, @stderr_lines[@stderr_lines.length - 1])
+          AnsiParser.parseAnsi(input, @stderr_lines)
         else
-          @stderr_lines[@stderr_lines.length - 1].children[0].innerText += input
+          @stderr_lines[@stderr_lines.length - 1].innerText += input
 
       stderr_setType: (status) ->
         last = @stderr_lines[@stderr_lines.length - 1]

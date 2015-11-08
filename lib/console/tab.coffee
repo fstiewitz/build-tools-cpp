@@ -51,7 +51,7 @@ module.exports =
       @view.lock()
 
     newLine: ->
-      @view.printLine '<div class="bold"><span class="fg0 bg0"></span></div>'
+      @view.printLine '<div class="bold"></div>'
 
     finishConsole: ->
       @view.finishConsole()
