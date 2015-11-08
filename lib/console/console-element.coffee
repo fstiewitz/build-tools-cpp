@@ -36,6 +36,10 @@ module.exports =
     detached: ->
       @disposable.dispose()
 
+    hideInput: ->
+      @input_container.addClass 'hidden'
+      atom.views.getView(atom.workspace).focus()
+
     startResize: (e) =>
       $(document).on 'mousemove', @resize
       $(document).on 'mouseup', @endResize

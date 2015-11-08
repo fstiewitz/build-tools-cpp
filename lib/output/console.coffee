@@ -253,13 +253,14 @@ module.exports =
           @tab.setCancelled()
           @tab.lock()
           @tab.finishConsole()
+          consoleview.hideInput() if @tab.hasFocus()
           return
         return unless @queue_in_buffer
         @finish(code)
 
       finish: (code) ->
         @tab.finishConsole()
-        consoleview.input_container.addClass 'hidden' if @tab.hasFocus()
+        consoleview.hideInput() if @tab.hasFocus()
         if @command.output['console'].close_success and code is 0
           t = atom.config.get('build-tools.CloseOnSuccess')
           if t < 1
