@@ -23,15 +23,21 @@ module.exports =
     initialize: (@command) ->
       @blacklist = []
 
+    destroy: ->
+      @blacklist = null
+      @success_callback = null
+      @cancel_callback = null
+
     setCallbacks: (@success_callback, @cancel_callback) ->
 
     setBlacklist: (@blacklist) ->
 
     detached: ->
-      @disposables.dispose()
+      @removeEventHandlers()
       for item in @panes
         item.view?.destroy?()
       @panes = null
+      @panes_view.empty()
 
     attached: ->
       @panes = []
@@ -130,6 +136,12 @@ module.exports =
       e = @panes.splice(index + 1, 1)[0]
       @panes.splice(index, 0, e)
       $(@panes_view.children()[index]).before e.pane
+
+    removeEventHandlers: ->
+      @off 'click', '.checkbox label'
+      @off 'click', '.buttons .icon-x'
+      @off 'click', '.buttons .icon-check'
+      @disposables.dispose()
 
     addEventHandlers: ->
       @on 'click', '.checkbox label', (e) ->

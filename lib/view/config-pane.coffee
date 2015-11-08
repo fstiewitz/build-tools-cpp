@@ -19,6 +19,11 @@ module.exports =
 
     destroy: ->
       @model.destroy()
+      @model = null
+      @projectPath = null
+      @filePath = null
+      @hidePanes = null
+      @showPane = null
 
     attached: ->
       @disposables = new CompositeDisposable

@@ -28,6 +28,7 @@ module.exports =
     detached: ->
       @html('')
       @configPane.destroy()
+      @configPane = null
       @model = null
 
     hidePanes: =>
