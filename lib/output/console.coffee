@@ -18,7 +18,7 @@ buildHTML = (message, status, filenames) ->
   $$ ->
     status = '' if not status?
     status = 'info' if status is 'note'
-    @div class: "bold text-#{status}", =>
+    @div class: "text-#{status}", =>
       if filenames? and filenames.length isnt 0
         prev = -1
         for {file, row, col, start, end} in filenames
@@ -168,10 +168,14 @@ module.exports =
           consoleview.input_container.addClass 'hidden'
 
       stdout_new: ->
+        if @command.stdout.highlighting is 'nh' and @command.stdout.ansi_option is 'parse' and (last = @stdout_lines[@stdout_lines.length - 1])?
+          if last.innerText is ''
+            last.innerText = ' '
+            AnsiParser.copyAttributes(@stdout_lines, @stdout_lines.length - 1)
         @stdout_lines.push(@tab.newLine())
 
       stdout_raw: (input) ->
-        if @command.stdout.ansi_option is 'parse'
+        if @command.stdout.highlighting is 'nh' and @command.stdout.ansi_option is 'parse'
           AnsiParser.parseAnsi(input, @stdout_lines, @stdout_lines.length - 1)
         else
           @stdout_lines[@stdout_lines.length - 1].innerText += input
@@ -199,10 +203,14 @@ module.exports =
           element.html(_new.html())
 
       stderr_new: ->
+        if @command.stderr.highlighting is 'nh' and @command.stderr.ansi_option is 'parse' and (last = @stderr_lines[@stderr_lines.length - 1])?
+          if last.innerText is ''
+            last.innerText = ' '
+            AnsiParser.copyAttributes(@stderr_lines, @stderr_lines.length - 1)
         @stderr_lines.push(@tab.newLine())
 
       stderr_raw: (input) ->
-        if @command.stderr.ansi_option is 'parse'
+        if @command.stderr.highlighting is 'nh' and @command.stderr.ansi_option is 'parse'
           AnsiParser.parseAnsi(input, @stderr_lines)
         else
           @stderr_lines[@stderr_lines.length - 1].innerText += input
