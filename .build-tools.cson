@@ -4,16 +4,17 @@ providers: [
     config:
       commands: [
         {
-          project: "/opt/work/build-tools"
-          source: "/opt/work/build-tools/.build-tools.cson"
+          project: "/home/fabian/Projects/build-tools"
+          source: "/home/fabian/Projects/build-tools/.build-tools.cson"
           name: "Run package specs"
-          command: "apm test --no-color"
+          command: "apm test"
           wd: "."
           env: {}
           modifier:
             save_all: {}
           stdout:
             highlighting: "nh"
+            ansi_option: "parse"
           stderr:
             highlighting: "hc"
             profile: "apm_test"
@@ -21,11 +22,35 @@ providers: [
             console:
               close_success: true
               queue_in_buffer: false
+              stdin: false
             linter:
               no_trace: true
             file:
               path: "apm.log"
               queue_in_file: false
+          version: 1
+        }
+        {
+          project: "/home/fabian/Projects/build-tools"
+          source: "/home/fabian/Projects/build-tools/.build-tools.cson"
+          name: "Test"
+          command: "ls --color 1>&2"
+          wd: "."
+          env: {}
+          modifier:
+            shell:
+              command: "bash -c"
+          stdout:
+            highlighting: "nh"
+            ansi_option: "parse"
+          stderr:
+            highlighting: "nh"
+            ansi_option: "parse"
+          output:
+            console:
+              close_success: false
+              queue_in_buffer: false
+              stdin: false
           version: 1
         }
       ]
