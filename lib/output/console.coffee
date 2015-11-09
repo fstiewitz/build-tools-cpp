@@ -177,6 +177,9 @@ module.exports =
         else
           @stdout_lines[@stdout_lines.length - 1].innerText += input
 
+      stdout_in: ({input}) ->
+        @stdout_lines[@stdout_lines.length - 1].innerText = ' ' if input is ''
+
       stdout_setType: (status) ->
         last = @stdout_lines[@stdout_lines.length - 1]
         return unless last?
@@ -211,6 +214,9 @@ module.exports =
           AnsiParser.parseAnsi(input, @stderr_lines, @stderr_lines.length - 1)
         else
           @stderr_lines[@stderr_lines.length - 1].innerText += input
+
+      stderr_in: ({input}) ->
+        @stderr_lines[@stderr_lines.length - 1].innerText = ' ' if input is ''
 
       stderr_setType: (status) ->
         last = @stderr_lines[@stderr_lines.length - 1]
