@@ -12,7 +12,7 @@ module.exports =
           @div class: 'tabs', =>
             @span class: 'icon icon-three-bars'
             @ul class: 'tab-list', outlet: 'tabs'
-          @div class: 'output-container', outlet: 'output'
+          @div tabindex: '-1', class: 'output-container native-key-bindings', outlet: 'output'
           @div class: 'input-container', outlet: 'input_container', =>
             @subview 'input', new TextEditorView(mini: true, placeholderText: 'Write to standard input')
 
