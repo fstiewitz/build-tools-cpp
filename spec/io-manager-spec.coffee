@@ -24,7 +24,7 @@ describe 'Output Manager', ->
     output =
       newCommand: jasmine.createSpy('newCommand')
       exitCommand: jasmine.createSpy('exitCommand')
-      setInput: jasmine.createSpy('input').andCallFake (_input) -> input_cb = _input
+      setInput: jasmine.createSpy('input').andCallFake (_input) -> input_cb = _input.write
       onInput: jasmine.createSpy('oninput')
       stdout_in: jasmine.createSpy('stdout_in')
       stdout_setType: jasmine.createSpy('stdout_setType')
@@ -78,7 +78,7 @@ describe 'Output Manager', ->
         manager.stdout.in 'This is a single line\n'
 
       it 'calls "new"', ->
-        expect(new_line.callCount).toBe 2
+        expect(new_line.callCount).toBe 1
 
       it 'calls "raw"', ->
         expect(mid_line).toHaveBeenCalledWith 'This is a single line'
@@ -124,7 +124,7 @@ describe 'Output Manager', ->
             manager.stdout.in '\n'
 
           it 'calls "new"', ->
-            expect(new_line.callCount).toBe 4
+            expect(new_line.callCount).toBe 3
 
           it 'calls "input"', ->
             expect(end_line.callCount).toBe 3
@@ -136,7 +136,7 @@ describe 'Output Manager', ->
           manager.stdout.in 'Hello\x1b[36mWorld\n'
 
         it 'calls "new"', ->
-          expect(new_line.callCount).toBe 2
+          expect(new_line.callCount).toBe 1
 
         it 'calls "raw" without the escape sequence', ->
           expect(mid_line.mostRecentCall.args[0]).toBe 'HelloWorld'
@@ -169,7 +169,7 @@ describe 'Output Manager', ->
               manager.stdout.in 'mWorld\n'
 
             it 'does not call "new"', ->
-              expect(new_line.callCount).toBe 2
+              expect(new_line.callCount).toBe 1
 
             it 'calls "raw"', ->
               expect(mid_line.mostRecentCall.args[0]).toBe 'World'
@@ -238,7 +238,7 @@ describe 'Output Manager', ->
             manager.stderr.in '\n'
 
           it 'calls "new"', ->
-            expect(new_line.callCount).toBe 4
+            expect(new_line.callCount).toBe 3
 
           it 'calls "input"', ->
             expect(end_line.callCount).toBe 3

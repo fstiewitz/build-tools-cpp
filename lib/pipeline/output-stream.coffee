@@ -74,6 +74,7 @@ module.exports =
       @buffer += data
       lines = @buffer.split '\n'
       for line, index in lines
+        break if line is '' and index is lines.length - 1
         if index isnt 0
           @subscribers.emit 'new'
           if line isnt ''

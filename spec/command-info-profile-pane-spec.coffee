@@ -15,6 +15,7 @@ describe 'Command Info Profile Pane', ->
       wildcards: true
       save_all: true
       stdout:
+        pty: true
         highlighting: 'nh'
         ansi_option: 'parse'
       stderr:
@@ -31,4 +32,4 @@ describe 'Command Info Profile Pane', ->
 
   it 'has all values', ->
     expect(view.element.children[1].children[0].innerText).toBe 'No highlighting - Parse ANSI Color Codes'
-    expect(view.element.children[1].children[1].innerText).toBe 'Python'
+    expect(view.element.children[1].children[1].innerText).toBe 'Disabled (pty enabled)'

@@ -22,17 +22,34 @@ module.exports =
       <div class="text-padded">stderr highlighting:</div>
       '''
       values = document.createElement 'div'
-      for k in ['stdout', 'stderr']
+      if command.stdout.pty
         value = document.createElement 'div'
         value.classList.add 'text-padded'
-        if command[k].highlighting is 'hc'
-          value.innerText = String(profiles[command[k].profile]?.profile_name)
-        else if command[k].highlighting is 'hr'
-          value.innerText = command[k].regex
-        else if command[k].highlighting is 'nh'
-          value.innerText = "No highlighting - #{ansi_translation[command[k].ansi_option ? 'ignore']}"
+        if command['stdout'].highlighting is 'hc'
+          value.innerText = String(profiles[command['stdout'].profile]?.profile_name)
+        else if command['stdout'].highlighting is 'hr'
+          value.innerText = command['stdout'].regex
+        else if command['stdout'].highlighting is 'nh'
+          value.innerText = "No highlighting - #{ansi_translation[command['stdout'].ansi_option ? 'ignore']}"
         else
-          value.innerText = highlight_translation[command[k].highlighting]
+          value.innerText = highlight_translation[command['stdout'].highlighting]
         values.appendChild value
+        value = document.createElement 'div'
+        value.classList.add 'text-padded'
+        value.innerText = 'Disabled (pty enabled)'
+        values.appendChild value
+      else
+        for k in ['stdout', 'stderr']
+          value = document.createElement 'div'
+          value.classList.add 'text-padded'
+          if command[k].highlighting is 'hc'
+            value.innerText = String(profiles[command[k].profile]?.profile_name)
+          else if command[k].highlighting is 'hr'
+            value.innerText = command[k].regex
+          else if command[k].highlighting is 'nh'
+            value.innerText = "No highlighting - #{ansi_translation[command[k].ansi_option ? 'ignore']}"
+          else
+            value.innerText = highlight_translation[command[k].highlighting]
+          values.appendChild value
       @element.appendChild keys
       @element.appendChild values
