@@ -158,7 +158,7 @@ module.exports =
 
       setInput: (input) ->
         if @command.output.console.stdin
-          @tab.setInput input
+          @tab.setInput input.write
           consoleview.input_container.removeClass 'hidden'
           consoleview.input.focus()
         else

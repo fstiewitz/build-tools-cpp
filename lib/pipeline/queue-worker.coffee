@@ -22,6 +22,7 @@ module.exports =
 
     destroy: ->
       @emitter.dispose()
+      @queue = null
       @outputs = null
 
     run: ->

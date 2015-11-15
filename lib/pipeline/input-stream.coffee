@@ -7,6 +7,7 @@ module.exports =
       @writers = new Emitter
 
     setInput: (@input) ->
+      @writers.emit 'attach', @input
 
     destroy: ->
       @input?.end?()
@@ -16,6 +17,9 @@ module.exports =
 
     onWrite: (callback) ->
       @writers.on 'write', callback
+
+    onAttach: (callback) ->
+      @writers.on 'attach', callback
 
     write: (text) =>
       @input.write text, 'utf8', => @writers.emit 'write', text

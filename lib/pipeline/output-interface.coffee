@@ -30,7 +30,7 @@ module.exports =
     initialize: (command) ->
       for output in @outputs
         output.newCommand?(command)
-        output.setInput? @stdin.write
+        output.setInput? @stdin
         @stdin.onWrite output.onInput if output.onInput?
 
     finish: (exitcode) ->

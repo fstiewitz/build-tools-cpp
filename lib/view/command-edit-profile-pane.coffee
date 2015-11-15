@@ -186,7 +186,8 @@ module.exports =
         else
           $(currentTarget.parentNode).find('.selected').removeClass('selected')
           currentTarget.classList.add 'selected'
-      @on 'change', '#pty', =>
+
+      @find('#pty')[0].onchange = =>
         if @find('#pty').prop('checked')
           @stderr_div.addClass 'hidden'
         else
