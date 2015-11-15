@@ -20,6 +20,7 @@ describe 'Command Edit Profile Pane', ->
     beforeEach ->
       view.set {
         stdout:
+          pty: true
           highlighting: 'nh'
           ansi_option: 'parse'
         stderr:
@@ -28,6 +29,8 @@ describe 'Command Edit Profile Pane', ->
       }
 
     it 'sets the fields accordingly', ->
+      expect(view.stderr_div.hasClass('hidden')).toBe true
+      expect(view.find('#pty').prop('checked')).toBe true
       expect(view.stdout_highlights.find('.selected')[0].id).toBe 'nh'
       expect(view.stderr_highlights.find('.selected')[0].id).toBe 'hc'
       expect(view.stdout_ansi_div.hasClass('hidden')).toBe false
@@ -44,6 +47,8 @@ describe 'Command Edit Profile Pane', ->
       view.set()
 
     it 'sets the fields to their default values', ->
+      expect(view.stderr_div.hasClass('hidden')).toBe false
+      expect(view.find('#pty').prop('checked')).toBe false
       expect(view.stdout_highlights.find('.selected')[0].id).toBe 'nh'
       expect(view.stderr_highlights.find('.selected')[0].id).toBe 'nh'
       expect(view.stdout_ansi.find('.selected')[0].id).toBe 'ignore'
@@ -57,6 +62,7 @@ describe 'Command Edit Profile Pane', ->
 
     beforeEach ->
       view.set()
+      view.find('#pty').click()
       view.stdout_highlights.find('#nh').click()
       view.stderr_highlights.find('#hc').click()
       view.stdout_ansi.find('#remove').click()
@@ -68,6 +74,7 @@ describe 'Command Edit Profile Pane', ->
     it 'updates the command', ->
       expect(c).toEqual {
         stdout:
+          pty: true
           highlighting: 'nh'
           profile: undefined
           ansi_option: 'remove'
