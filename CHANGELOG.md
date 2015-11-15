@@ -1,3 +1,8 @@
+## 4.3.0 - pty.js
+
+* Added option to execute command through a pseudo terminal (using [pty.js](https://www.npmjs.com/package/pty.js)), which fixes buffering issues when using stdin.
+* Fixes display issues in console pane.
+
 ## 4.1.0 - Better I/O
 
 * Output modules now have access to stdin (for users: You can now interact with your spawned process)
