@@ -12,7 +12,7 @@ module.exports =
       @stderr = new OutputStream(@command, @command.stderr)
 
       @stdin.onWrite (text) =>
-        @stdout.in text
+        @stdout.in text unless @stdin.isPTY()
 
       @interface = new OutputInterface(@outputs, @stdin, @stdout, @stderr)
       @interface.initialize(@command)

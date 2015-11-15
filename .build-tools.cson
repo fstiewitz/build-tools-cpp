@@ -13,6 +13,9 @@ providers: [
           modifier:
             save_all: {}
           stdout:
+            pty: true
+            pty_rows: 25
+            pty_cols: 80
             highlighting: "nh"
             ansi_option: "parse"
           stderr:
@@ -34,13 +37,16 @@ providers: [
           project: "/home/fabian/Projects/build-tools"
           source: "/home/fabian/Projects/build-tools/.build-tools.cson"
           name: "Test"
-          command: "ls --color 1>&2"
+          command: "ls --color *"
           wd: "."
           env: {}
           modifier:
             shell:
               command: "bash -c"
           stdout:
+            pty: true
+            pty_rows: 25
+            pty_cols: 200
             highlighting: "nh"
             ansi_option: "parse"
           stderr:

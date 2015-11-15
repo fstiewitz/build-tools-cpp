@@ -21,5 +21,8 @@ module.exports =
     onAttach: (callback) ->
       @writers.on 'attach', callback
 
+    isPTY: ->
+      @input.socket?
+
     write: (text) =>
-      @input.write text, 'utf8', => @writers.emit 'write', text
+      (@input.socket ? @input).write text, 'utf8', => @writers.emit 'write', text
