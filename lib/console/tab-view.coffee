@@ -14,6 +14,9 @@ module.exports =
       @parent().scrollTop(@[0].scrollHeight) unless @hasClass('hidden')
       return @[0].children[@[0].children.length - 1]
 
+    scroll: ->
+      @parent().scrollTop(@[0].scrollHeight) unless @hasClass('hidden')
+
     lock: ->
       @lockoutput = true
 

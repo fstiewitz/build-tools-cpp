@@ -172,6 +172,7 @@ module.exports =
         @stdout_lines.push(@tab.newLine())
 
       stdout_raw: (input) ->
+        @tab.scroll()
         if @command.stdout.highlighting is 'nh' and @command.stdout.ansi_option is 'parse'
           AnsiParser.parseAnsi(input, @stdout_lines, @stdout_lines.length - 1)
         else
@@ -210,6 +211,7 @@ module.exports =
         @stderr_lines.push(@tab.newLine())
 
       stderr_raw: (input) ->
+        @tab.scroll()
         if @command.stderr.highlighting is 'nh' and @command.stderr.ansi_option is 'parse'
           AnsiParser.parseAnsi(input, @stderr_lines, @stderr_lines.length - 1)
         else

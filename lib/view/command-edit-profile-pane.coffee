@@ -12,6 +12,19 @@ module.exports =
             @div class: 'settings-name', 'Use pty.js'
             @div =>
               @span class: 'inline-block text-subtle', 'Spawn processes in a pseudo-terminal. Can fix buffering issues with commands that require a pty. Disables stderr (all data arrives in stdout).'
+        @div class: 'block hidden', outlet: 'pty', =>
+          @div class: 'block', =>
+            @label =>
+              @div class: 'settings-name', 'Number of Rows'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Dimensions of pseudo terminal (for pty.js)'
+            @subview 'pty_rows', new TextEditorView(mini: true, placeholderText: '25')
+          @div class: 'block', =>
+            @label =>
+              @div class: 'settings-name', 'Number of Columns'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Dimensions of pseudo terminal (for pty.js)'
+            @subview 'pty_cols', new TextEditorView(mini: true, placeholderText: '80')
         @div class: 'block', =>
           @label =>
             @div class: 'settings-name', 'Highlighting of stdout'
@@ -113,8 +126,18 @@ module.exports =
       @populateProfiles(@stderr_profile)
 
       if command?
-        @stderr_div[0].className = if command.stdout.pty then 'hidden' else ''
-        @find('#pty').prop('checked', command.stdout.pty ? false)
+        if command.stdout.pty
+          @stderr_div[0].className = 'hidden'
+          @pty[0].className = ''
+          @find('#pty').prop('checked', true)
+          @pty_rows.getModel().setText('' + command.stdout.pty_rows)
+          @pty_cols.getModel().setText('' + command.stdout.pty_cols)
+        else
+          @stderr_div[0].className = ''
+          @pty[0].className = 'hidden'
+          @find('#pty').prop('checked', false)
+          @pty_rows.getModel().setText('')
+          @pty_cols.getModel().setText('')
         @stdout_highlights.find('.selected').removeClass('selected')
         @stderr_highlights.find('.selected').removeClass('selected')
         @stdout_highlights.find("\##{command.stdout.highlighting}").addClass('selected')
@@ -143,6 +166,9 @@ module.exports =
           @stdout_ansi.find("\##{command.stdout.ansi_option ? 'ignore'}").addClass('selected')
       else
         @find('#pty').prop('checked', false)
+        @pty.addClass('hidden')
+        @pty_rows.getModel().setText('')
+        @pty_cols.getModel().setText('')
         @stderr_div.removeClass('hidden')
         @stdout_highlights.find('.selected').removeClass('selected')
         @stderr_highlights.find('.selected').removeClass('selected')
@@ -190,14 +216,26 @@ module.exports =
       @find('#pty')[0].onchange = =>
         if @find('#pty').prop('checked')
           @stderr_div.addClass 'hidden'
+          @pty.removeClass 'hidden'
         else
           @stderr_div.removeClass 'hidden'
+          @pty.addClass 'hidden'
 
 
     get: (command) ->
       command.stdout = {}
       command.stderr = {}
       command.stdout.pty = @find('#pty').prop('checked')
+      if command.stdout.pty
+        r = @pty_rows.getModel().getText()
+        c = @pty_cols.getModel().getText()
+        r = '25' if r is ''
+        c = '80' if c is ''
+        r = parseInt(r)
+        c = parseInt(c)
+        return 'Row or Column count not numeric' if isNaN(r) or isNaN(c)
+        command.stdout.pty_rows = r
+        command.stdout.pty_cols = c
       command.stdout.highlighting = @stdout_highlights.find('.selected')[0].id
       command.stdout.profile = if command.stdout.highlighting is 'hc' then @stdout_profile.children()[@stdout_profile[0].selectedIndex].attributes.getNamedItem('value').nodeValue else undefined
       if command.stdout.highlighting is 'hr'

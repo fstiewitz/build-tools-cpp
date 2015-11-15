@@ -75,6 +75,8 @@ describe 'Command Edit Profile Pane', ->
       expect(c).toEqual {
         stdout:
           pty: true
+          pty_rows: 25
+          pty_cols: 80
           highlighting: 'nh'
           profile: undefined
           ansi_option: 'remove'

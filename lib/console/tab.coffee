@@ -61,6 +61,9 @@ module.exports =
     newLine: ->
       @view.printLine '<div></div>'
 
+    scroll: ->
+      @view.scroll()
+
     finishConsole: ->
       @view.finishConsole()
 

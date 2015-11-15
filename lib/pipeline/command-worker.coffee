@@ -39,8 +39,8 @@ module.exports =
             pty = require 'pty.js'
             @process = pty.spawn( command, args, {
               name: 'xterm-color'
-              cols: 80
-              rows: 30
+              cols: @command.stdout.pty_cols
+              rows: @command.stderr.pty_rows
               cwd: @command.getWD()
               env: env
             }
