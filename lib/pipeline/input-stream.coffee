@@ -9,7 +9,7 @@ module.exports =
     setInput: (@input) ->
 
     destroy: ->
-      @input?.end()
+      @input?.end?()
       @writers.dispose()
       @input = null
       @writers = null
