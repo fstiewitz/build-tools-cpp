@@ -43,9 +43,9 @@ module.exports =
       @panes = []
 
       @buildPane(new MainPane, 'General', 'icon-gear') unless 'general' in @blacklist
-      @initializeModifierModules()
+      @initializeModifierModules() unless 'modifiers' in @blacklist
       @buildPane(new ProfilePane, 'Highlighting', 'icon-plug') unless 'highlighting' in @blacklist
-      @initializeOutputModules()
+      @initializeOutputModules() unless 'outputs' in @blacklist
 
       @addEventHandlers()
       @initializePanes()
