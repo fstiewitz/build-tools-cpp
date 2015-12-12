@@ -74,9 +74,13 @@ module.exports =
     ModifierModules ?= require './modifier/modifier'
     ModifierModules.addModule key, mod
 
-  consumeProfileModule: ({key, profile}) ->
+  consumeProfileModuleV1: ({key, profile}) ->
     ProfileModules ?= require './profiles/profiles'
     ProfileModules.addProfile key, profile
+
+  consumeProfileModuleV2: ({key, profile}) ->
+    ProfileModules ?= require './profiles/profiles'
+    ProfileModules.addProfile key, profile, 2
 
   consumeProviderModule: ({key, mod}) ->
     ProviderModules ?= require './provider/provider'

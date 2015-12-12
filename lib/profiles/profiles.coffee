@@ -8,9 +8,17 @@ module.exports =
     python: require './python'
     modelsim: require './modelsim'
 
-  addProfile: (key, profile) ->
+  versions:
+    gcc_clang: 1
+    apm_test: 1
+    java: 1
+    python: 1
+    modelsim: 1
+
+  addProfile: (key, profile, version = 1) ->
     return if @profiles[key]? and not @isCoreName(key)
     @profiles[key] = profile
+    @versions[key] = version
     new Disposable(=>
       @removeProfile key
     )
