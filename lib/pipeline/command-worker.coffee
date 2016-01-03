@@ -36,7 +36,7 @@ module.exports =
         else
           {command, args, env} = @command
           if @command.stdout.pty
-            pty = require 'pty.js'
+            pty = require 'ptyw.js'
             @process = pty.spawn( command, args, {
               name: 'xterm-color'
               cols: @command.stdout.pty_cols
