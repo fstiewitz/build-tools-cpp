@@ -1,6 +1,6 @@
 build-tools
 ===============
-[![Build Status](https://travis-ci.org/deprint/build-tools-cpp.svg)](https://travis-ci.org/deprint/build-tools-cpp) [![Dependency Status](https://david-dm.org/deprint/build-tools-cpp.svg)](https://david-dm.org/deprint/build-tools-cpp) [![apm](https://img.shields.io/apm/dm/build-tools.svg)](https://github.com/deprint/build-tools-cpp) [![apm](https://img.shields.io/apm/v/build-tools.svg)](https://github.com/deprint/build-tools-cpp)
+[![Travis](https://img.shields.io/travis/deprint/build-tools-cpp.svg?style=flat-square)](https://travis-ci.org/deprint/build-tools-cpp) [![AppVeyor](https://img.shields.io/appveyor/ci/deprint/build-tools-cpp.svg?style=flat-square)](https://ci.appveyor.com/project/deprint/build-tools-cpp) [![Dependency Status](https://david-dm.org/deprint/build-tools-cpp.svg?style=flat-square)](https://david-dm.org/deprint/build-tools-cpp) [![apm](https://img.shields.io/apm/dm/build-tools.svg?style=flat-square)](https://github.com/deprint/build-tools-cpp) [![apm](https://img.shields.io/apm/v/build-tools.svg?style=flat-square)](https://github.com/deprint/build-tools-cpp)
 
 ### Build your projects in atom
 ![Error highlighting](https://cloud.githubusercontent.com/assets/7817714/10537808/91cbf92c-73f4-11e5-9f0d-15348000c31f.png)
