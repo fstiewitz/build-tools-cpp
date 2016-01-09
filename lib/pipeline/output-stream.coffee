@@ -10,7 +10,8 @@ path = require 'path'
 CSON = require 'season'
 
 ColorRegex = /\x1b\[[0-9;]*m/g
-Escape = /\x1b/
+ColorRegexStart = /^\x1b\[[0-9;]/
+ColorRegexEnd = /\x1b\[?[0-9;]*$/
 
 module.exports =
   class OutputStream
@@ -57,13 +58,16 @@ module.exports =
       data = data.replace(ColorRegex, '')
       if @endsWithAnsi?
         _part = @endsWithAnsi + data
-        if ColorRegex.test(_part)
+        if ColorRegexStart.test(_part)
           data = _part.replace(ColorRegex, '')
           @endsWithAnsi = null
-        else
+        else if ColorRegexEnd.test(_part)
           @endsWithAnsi = _part
           data = ''
-      if (m = Escape.exec(data))?
+        else
+          data = _part
+          @endsWithAnsi = null
+      if (m = ColorRegexEnd.exec(data))?
         @endsWithAnsi = data.substr(m.index)
         data = data.substr(0, m.index)
       return data
