@@ -9,9 +9,9 @@ path = require 'path'
 
 CSON = require 'season'
 
-ColorRegex = /\x1b\[[0-9;]*m/g
-ColorRegexStart = /^\x1b\[[0-9;]/
-ColorRegexEnd = /\x1b\[?[0-9;]*$/
+Ansi = /\x1b\[(\d[ABCDEFGJKST]|\d;\d[Hf]|[45]i|6n|[su]|\?25[lh]|[0-9;]*m)/g
+AnsiStart = /^\x1b\[(\d[ABCDEFGJKST]|\d;\d[Hf]|[45]i|6n|[su]|\?25[lh]|[0-9;]*m)/
+AnsiEnd = /\x1b\[?(\d?|\d?;?\d?|[45]?|6?|\??2?5?|[0-9;]*)$/
 
 module.exports =
   class OutputStream
@@ -55,19 +55,16 @@ module.exports =
       @buffer = ''
 
     removeAnsi: (data) ->
-      data = data.replace(ColorRegex, '')
+      data = data.replace(Ansi, '')
       if @endsWithAnsi?
         _part = @endsWithAnsi + data
-        if ColorRegexStart.test(_part)
-          data = _part.replace(ColorRegex, '')
+        if AnsiStart.test(_part)
+          data = _part.replace(Ansi, '')
           @endsWithAnsi = null
-        else if ColorRegexEnd.test(_part)
+        else
           @endsWithAnsi = _part
           data = ''
-        else
-          data = _part
-          @endsWithAnsi = null
-      if (m = ColorRegexEnd.exec(data))?
+      if (m = AnsiEnd.exec(data))?
         @endsWithAnsi = data.substr(m.index)
         data = data.substr(0, m.index)
       return data
