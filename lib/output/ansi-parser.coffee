@@ -1,5 +1,5 @@
 ColorRegex = /\x1b\[([0-9;]*)m/g
-Escape = /\x1b/
+ColorRegexEnd = /\x1b\[?[0-9;]*$/
 
 module.exports =
 
@@ -22,6 +22,8 @@ module.exports =
       else if i is 49
         styles[1] = 0
       else if i in [1, 3, 4]
+        styles[2] = i
+      else if i >= 21 and i <= 24
         styles[2] = i
       else if i is 0
         styles = [0, 0, 0]
@@ -84,7 +86,7 @@ module.exports =
       element.appendChild e
       e.className = className
       if index is delims.length - 1 and innerText isnt ''
-        if (m = Escape.exec(innerText))?
+        if (m = ColorRegexEnd.exec(innerText))?
           left = innerText.substr(0, m.index)
           right = innerText.substr(m.index)
           e.setAttribute('endsWithAnsi', right)
