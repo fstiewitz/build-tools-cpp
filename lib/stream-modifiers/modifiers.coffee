@@ -9,7 +9,7 @@ module.exports =
     all: require './all'
     regex: require './regex'
     profile: require './profile'
-    remascii: require './remascii'
+    remansi: require './remansi'
 
   addModule: (key, mod) ->
     return if @modules[key]? and not @isCoreName(key)
@@ -29,7 +29,7 @@ module.exports =
     @modules.all = require './all'
     @modules.regex = require './regex'
     @modules.profile = require './profile'
-    @modules.remascii = require './remascii'
+    @modules.remansi = require './remansi'
     Command = null
     Project = null
     Input = null
@@ -55,4 +55,4 @@ module.exports =
     return true
 
   isCoreName: (key) ->
-    key in ['all', 'regex', 'profile', 'remascii']
+    key in ['all', 'regex', 'profile', 'remansi']

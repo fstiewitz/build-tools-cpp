@@ -12,7 +12,8 @@ module.exports =
         @modify = this['modify' + Profiles.versions[@config.profile]]
 
       modify1: ({temp}) ->
-        return @profile.in temp.input
+        @profile.in temp.input
+        return 1
 
       modify2: ({temp, perm}) ->
         return @profile.in temp, perm
