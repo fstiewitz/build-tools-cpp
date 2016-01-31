@@ -31,25 +31,23 @@ module.exports =
       filenames = []
       for mod in @pipeline
         continue unless mod.getFiles?
-        for _match in mod.getFiles(match, @perm)
+        for _match in mod.getFiles(temp: match, perm: @perm)
           filenames.push _match if fs.isFileSync _match.file
       return filenames
 
-    finishLine: ->
-      if @td.input isnt @_input or (files = @getFiles(@td)).length isnt 0
-        @print @td, files
-      else if @td.type?
-        @setType @td
-      if @td.file?
-        @lint @td
+    finishLine: (td, input) ->
+      if td.input isnt input or (files = @getFiles(td)).length isnt 0
+        @print td, files
+      else if td.type?
+        @setType td
+      if td.file?
+        @lint td
 
-    in: (@_input) ->
-      @td = input: _input
+    in: (_input) ->
+      td = input: _input
       for mod in @pipeline
-        continue if mod.modify(temp: @td, perm: @perm) is null
-        @finishLine()
-        return
-      @finishLine()
+        return if mod.modify(temp: td, perm: @perm) isnt null
+      @finishLine(td, _input)
 
     setType: (match) =>
       @subscribers.emit 'setType', match.highlighting ? match.type
@@ -72,7 +70,7 @@ module.exports =
         ]
       }
 
-    replacePrevious: (new_lines) ->
+    replacePrevious: (new_lines) =>
       items = []
       for line in new_lines
         items.push

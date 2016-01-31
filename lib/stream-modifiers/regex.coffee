@@ -1,8 +1,20 @@
+XRegExp = null
+CSON = null
+
 module.exports =
+
+  activate: ->
+    XRegExp = require('xregexp').XRegExp
+    CSON = require('season')
+
+  deactivate: ->
+    XRegExp = null
+    CSON = null
+
   modifier:
     class RegexModifier
 
-      constructor: ({@config, @output}) ->
+      constructor: (@config, @command, @output) ->
         @regex = new XRegExp(@config.regex, 'xni')
         @default = {}
         @default = CSON.parse(@config.defaults) if @config.defaults isnt ''
