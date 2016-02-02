@@ -25,10 +25,10 @@ build-tools
 6. Execute your command through one of the key bindings.
 
 ## Keys
-* `ctrl+l ctrl+u/i/o` for executing the 1st/2nd/3rd command of a project
+* `ctrl+l ctrl+o/i/u` for executing the 1st/2nd/3rd command of a project
 * `ctrl+l ctrl+l` to list all commands of a project
 * `ctrl+l ctrl+s` to show console output
-* `ctrl+l u/i/o` lets you view and change the command before executing it
+* `ctrl+l o/i/u` lets you view and change the command before executing it
 
 ## Service API
 `build-tools` allows other packages to:

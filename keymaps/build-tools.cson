@@ -1,8 +1,8 @@
 'atom-workspace':
-  'ctrl-l ctrl-u': 'build-tools:third-command'
-  'ctrl-l ctrl-i': 'build-tools:second-command'
   'ctrl-l ctrl-o': 'build-tools:first-command'
-  'ctrl-l u': 'build-tools:third-command-ask'
-  'ctrl-l i': 'build-tools:second-command-ask'
+  'ctrl-l ctrl-i': 'build-tools:second-command'
+  'ctrl-l ctrl-u': 'build-tools:third-command'
   'ctrl-l o': 'build-tools:first-command-ask'
+  'ctrl-l i': 'build-tools:second-command-ask'
+  'ctrl-l u': 'build-tools:third-command-ask'
   'ctrl-l ctrl-l': 'build-tools:commands'
