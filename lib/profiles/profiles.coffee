@@ -25,15 +25,21 @@ module.exports =
 
   removeProfile: (key) ->
     delete @profiles[key]
+    delete @versions[key]
 
   reset: ->
     for k in Object.keys(@profiles)
-      @removeProfile k unless k in ['gcc_clang', 'apm_test', 'java', 'python', 'modelsim']
+      @removeProfile k
     @profiles.gcc_clang = require './gcc_clang'
     @profiles.apm_test = require './apm_test'
     @profiles.java = require './javac'
     @profiles.python = require './python'
     @profiles.modelsim = require './modelsim'
+    @versions.gcc_clang = 1
+    @versions.apm_test = 1
+    @versions.java = 1
+    @versions.python = 1
+    @versions.modelsim = 1
 
   isCoreName: (key) ->
     key in ['gcc_clang', 'apm_test', 'java', 'python', 'modelsim']

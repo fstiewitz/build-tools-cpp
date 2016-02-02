@@ -9,10 +9,11 @@ module.exports =
         @profile = new Profiles.profiles[@config.profile]?(@output)
         if not @profile?
           atom.notifications?.addError "Could not find highlighting profile: #{@config.profile}"
-          @modify = -> null
           return
         @profile.clear?()
         @modify = this['modify' + Profiles.versions[@config.profile]]
+
+      modify: -> null
 
       modify1: ({temp}) ->
         @profile.in temp.input
@@ -22,4 +23,7 @@ module.exports =
         return @profile.in temp, perm
 
       getFiles: ({temp, perm}) ->
-        return @profile.files temp.input.input
+        if @profile?
+          return @profile.files temp.input
+        else
+          return []

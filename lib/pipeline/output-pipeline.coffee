@@ -1,8 +1,9 @@
+XRegExp = require('xregexp').XRegExp
 Modifiers = require '../stream-modifiers/modifiers'
 
 {Emitter} = require 'atom'
 
-fs = require 'fs'
+fs = require 'fs-plus'
 path = require 'path'
 
 module.exports =
@@ -19,11 +20,14 @@ module.exports =
       @subscribers.dispose()
       @subscribers = null
 
+    subscribeToCommands: (object, callback, command) ->
+      @subscribers.on command, (o) -> object[callback](o)
+
     buildPipeline: (blueprint) ->
       @pipeline = []
       for {name, config} in blueprint
         if (c = Modifiers.modules[name])?
-          @pipeline.push new c(config, @settings, this)
+          @pipeline.push new c.modifier(config, @settings, this) if c.modifier.prototype.modify?
         else
           atom.notifications?.addError "Could not find stream modifier: #{name}"
 

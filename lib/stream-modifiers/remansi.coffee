@@ -12,19 +12,17 @@ module.exports =
       destroy: ->
         @endsWithAnsi = null
 
-      modify: ({temp}) ->
-        line = temp.input
-        line = line.replace(Ansi, '')
+      modify_raw: (input) ->
+        input = input.replace(Ansi, '')
         if @endsWithAnsi?
-          _part = @endsWithAnsi + line
+          _part = @endsWithAnsi + input
           if AnsiStart.test(_part)
-            line = _part.replace(Ansi, '')
+            input = _part.replace(Ansi, '')
             @endsWithAnsi = null
           else
             @endsWithAnsi = _part
-            line = ''
-        if (m = AnsiEnd.exec(line))?
-          @endsWithAnsi = line.substr(m.index)
-          line = line.substr(0, m.index)
-        temp.input = line
-        return null
+            input = ''
+        if (m = AnsiEnd.exec(input))?
+          @endsWithAnsi = input.substr(m.index)
+          input = input.substr(0, m.index)
+        return input

@@ -11,6 +11,7 @@ module.exports =
       @stdout ?= highlighting: 'nh'
       @stderr ?= highlighting: 'nh'
       @version ?= 1
+      @migrateToV2() if @version is 1
 
     getSpawnInfo: ->
       @original = @command
@@ -47,6 +48,33 @@ module.exports =
         cmd_list.shift()
       (args[i] = a.slice(1, -1) for a, i in args when /[\"\']/.test(a[0]) and /[\"\']/.test(a[a.length - 1]))
       return args
+
+    migrateToV2: ->
+      @migrateStreamV2 @stdout
+      @migrateStreamV2 @stderr
+      @version = 2
+
+    migrateStreamV2: (str) ->
+      str.pipeline = []
+      if str.highlighting is 'nh'
+        if str.ansi_option is 'remove'
+          str.pipeline.push name: 'remansi'
+      else if str.highlighting is 'ha'
+        str.pipeline.push name: 'all'
+      else if str.highlighting is 'hc'
+        str.pipeline.push name: 'profile', config: {profile: str.profile}
+      else if str.highlighting is 'hr'
+        str.pipeline.push {
+          name: 'regex'
+          config:
+            regex: str.regex
+            defaults: str.defaults
+        }
+      delete str.highlighting
+      delete str.profile
+      delete str.ansi_option
+      delete str.regex
+      delete str.defaults
 
     getQueue: ->
       new Queue(this)

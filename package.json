@@ -54,6 +54,11 @@
         "^1.0.0": "consumeProviderModule"
       }
     },
+    "build-tools.stream-modifier": {
+      "versions": {
+        "^1.0.0": "consumeStreamModifier"
+      }
+    },
     "build-tools.output": {
       "versions": {
         "^1.0.0": "consumeOutputModule"
