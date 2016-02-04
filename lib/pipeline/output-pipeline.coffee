@@ -11,7 +11,12 @@ module.exports =
 
     constructor: (@settings, @stream) ->
       @subscribers = new Emitter
-      @buildPipeline(@stream.pipeline)
+      @pipeline = []
+      for {name, config} in @stream.pipeline
+        if (c = Modifiers.modules[name])?
+          @pipeline.push new c.modifier(config, @settings, this) if c.modifier.prototype.modify?
+        else
+          atom.notifications?.addError "Could not find raw stream modifier: #{name}"
       @perm = cwd: '.'
 
     destroy: ->
@@ -22,14 +27,6 @@ module.exports =
 
     subscribeToCommands: (object, callback, command) ->
       @subscribers.on command, (o) -> object[callback](o)
-
-    buildPipeline: (blueprint) ->
-      @pipeline = []
-      for {name, config} in blueprint
-        if (c = Modifiers.modules[name])?
-          @pipeline.push new c.modifier(config, @settings, this) if c.modifier.prototype.modify?
-        else
-          atom.notifications?.addError "Could not find stream modifier: #{name}"
 
     getFiles: (match) ->
       filenames = []
