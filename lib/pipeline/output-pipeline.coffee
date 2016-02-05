@@ -16,7 +16,7 @@ module.exports =
         if (c = Modifiers.modules[name])?
           @pipeline.push new c.modifier(config, @settings, this) if c.modifier.prototype.modify?
         else
-          atom.notifications?.addError "Could not find raw stream modifier: #{name}"
+          atom.notifications?.addError "Could not find stream modifier: #{name}"
       @perm = cwd: '.'
 
     destroy: ->

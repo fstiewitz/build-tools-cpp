@@ -2,7 +2,6 @@ Modifier = require '../lib/stream-modifiers/remansi'
 
 fdescribe 'Stream Modifier - Remove ANSI', ->
   mod = null
-  temp = null
   ret = null
 
   beforeEach ->
@@ -11,65 +10,47 @@ fdescribe 'Stream Modifier - Remove ANSI', ->
   describe 'On single line with escape code at the beginning and end', ->
 
     beforeEach ->
-      temp = input: '\x1b[32mHello \x1b[35;41mbeautiful\x1b[33m world!\x1b[0m'
-      ret = mod.modify temp: temp
+      ret = mod.modify_raw '\x1b[32mHello \x1b[35;41mbeautiful\x1b[33m world!\x1b[0m'
 
-    it 'removes the ANSI codes', ->
-      expect(temp.input).toBe 'Hello beautiful world!'
-
-    it 'returns null', ->
-      expect(ret).toBe null
+    it 'returns the new line', ->
+      expect(ret).toBe 'Hello beautiful world!'
 
   describe 'On multi line', ->
 
     beforeEach ->
-      temp = input: '\x1b[32mHello\x1b[41m'
-      ret = mod.modify temp: temp
+      ret = mod.modify_raw '\x1b[32mHello\x1b[41m'
 
-    it 'removes the ANSI codes', ->
-      expect(temp.input).toBe 'Hello'
-
-    it 'returns null', ->
-      expect(ret).toBe null
+    it 'returns the new line', ->
+      expect(ret).toBe 'Hello'
 
     describe 'On second line', ->
 
       beforeEach ->
-        temp = input: 'World\x1b['
-        ret = mod.modify temp: temp
+        ret = mod.modify_raw 'World\x1b['
 
-      it 'removes the ANSI codes', ->
-        expect(temp.input).toBe 'World'
-
-      it 'returns null', ->
-        expect(ret).toBe null
+      it 'returns the new line', ->
+        expect(ret).toBe 'World'
 
       describe 'On third line', ->
 
         beforeEach ->
-          temp = input: '01;33m!\x1b[0m'
-          ret = mod.modify temp: temp
+          ret = mod.modify_raw '01;33m!\x1b[0m'
 
-        it 'removes the ANSI codes', ->
-          expect(temp.input).toBe '!'
-
-        it 'returns null', ->
-          expect(ret).toBe null
+        it 'returns the new line', ->
+          expect(ret).toBe '!'
 
   describe 'On multi line with unsupported code', ->
 
     beforeEach ->
-      temp = input: '\x1b[32mHello\x1b[24m\x1b[0K'
-      ret = mod.modify temp: temp
+      ret = mod.modify_raw '\x1b[32mHello\x1b[24m\x1b[0K'
 
-    it 'removes the ANSI codes', ->
-      expect(temp.input).toBe 'Hello'
+    it 'returns the new line', ->
+      expect(ret).toBe 'Hello'
 
     describe 'On second line', ->
 
       beforeEach ->
-        temp = input: 'World\x1b['
-        ret = mod.modify temp: temp
+        ret = mod.modify_raw 'World\x1b['
 
-      it 'removes the ANSI codes', ->
-        expect(temp.input).toBe 'World'
+      it 'returns the new line', ->
+        expect(ret).toBe 'World'
