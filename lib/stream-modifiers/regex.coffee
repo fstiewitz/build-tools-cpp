@@ -17,7 +17,7 @@ module.exports =
       constructor: (@config, @command, @output) ->
         @regex = new XRegExp(@config.regex, 'xni')
         @default = {}
-        @default = CSON.parse(@config.defaults) if @config.defaults isnt ''
+        @default = CSON.parse(@config.defaults) if @config.defaults? and @config.defaults isnt ''
 
       modify: ({temp, perm}) ->
         if (m = @regex.xexec temp.input)?

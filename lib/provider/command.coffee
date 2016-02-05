@@ -70,6 +70,12 @@ module.exports =
             regex: str.regex
             defaults: str.defaults
         }
+      else if str.highlighting is 'ht'
+        str.pipeline.push {
+          name: 'regex'
+          config:
+            regex: '(?<type> error|warning):'
+        }
       delete str.highlighting
       delete str.profile
       delete str.ansi_option
