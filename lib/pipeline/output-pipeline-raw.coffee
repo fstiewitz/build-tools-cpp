@@ -7,6 +7,7 @@ module.exports =
       @pipeline = []
       for {name, config} in @stream.pipeline
         if (c = Modifiers.modules[name])?
+          Modifiers.activate name
           @pipeline.push new c.modifier(config, @settings) if c.modifier.prototype.modify_raw?
         else
           atom.notifications?.addError "Could not find raw stream modifier: #{name}"

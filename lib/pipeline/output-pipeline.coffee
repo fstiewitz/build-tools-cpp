@@ -14,6 +14,7 @@ module.exports =
       @pipeline = []
       for {name, config} in @stream.pipeline
         if (c = Modifiers.modules[name])?
+          Modifiers.activate name
           @pipeline.push new c.modifier(config, @settings, this) if c.modifier.prototype.modify?
         else
           atom.notifications?.addError "Could not find stream modifier: #{name}"

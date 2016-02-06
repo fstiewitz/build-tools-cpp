@@ -3,6 +3,13 @@ AnsiStart = /^\x1b\[(\d[ABCDEFGJKST]|\d;\d[Hf]|[45]i|6n|[su]|\?25[lh]|[0-9;]*m)/
 AnsiEnd = /\x1b\[?(\d?|\d?;?\d?|[45]?|6?|\??2?5?|[0-9;]*)$/
 
 module.exports =
+
+  edit:
+    class AllSaver
+      get: (command, stream) ->
+        stream.pipeline.push name: 'remansi'
+        return null
+
   modifier:
     class RemoveANSIModifier
 

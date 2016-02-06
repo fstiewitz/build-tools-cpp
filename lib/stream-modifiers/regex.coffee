@@ -1,5 +1,6 @@
 XRegExp = null
 CSON = null
+{$, $$, TextEditorView, View} = require 'atom-space-pen-views'
 
 module.exports =
 
@@ -10,6 +11,55 @@ module.exports =
   deactivate: ->
     XRegExp = null
     CSON = null
+
+  edit:
+    class RegexEditPane extends View
+
+      @content: ->
+        @div class: 'panel-body padded', =>
+          @div class: 'block', =>
+            @label =>
+              @div class: 'settings-name', 'Regular Expression'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Enter XRegExp string. The XRegExp object will use '
+                @span class: 'inline-block highlight', 'xni'
+                @span class: 'inline-block text-subtle', ' flags. Refer to the internet (including this package\'s wiki) for details.'
+            @subview 'regex', new TextEditorView(mini: true)
+          @div class: 'block', =>
+            @label =>
+              @div class: 'settings-name', 'Hardcoded values'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Enter CSON string with default properties. To highlight an error you need at least a '
+                @span class: 'inline-block highlight', 'type'
+                @span class: 'inline-block text-subtle', ' field. Linter messages require at least '
+                @span class: 'inline-block highlight', 'type'
+                @span class: 'inline-block text-subtle', ', '
+                @span class: 'inline-block highlight', 'file'
+                @span class: 'inline-block text-subtle', ', '
+                @span class: 'inline-block highlight', 'row'
+                @span class: 'inline-block text-subtle', ' and '
+                @span class: 'inline-block highlight', 'message'
+                @span class: 'inline-block text-subtle', ' fields.'
+            @subview 'default', new TextEditorView(mini: true)
+
+      set: (command, stream, config) ->
+        if stream?
+          @regex.getModel().setText(config.regex)
+          @default.getModel().setText(config.defaults)
+        else
+          @regex.getModel().setText('')
+          @default.getModel().setText('')
+
+      get: (command, stream) ->
+        return 'Regular expression must not be empty' if @regex.getModel().getText() is ''
+        stream.pipeline.push {
+          name: 'regex'
+          config:
+            regex: @regex.getModel().getText()
+            defaults: @default.getModel().getText()
+        }
+        return null
+
 
   modifier:
     class RegexModifier

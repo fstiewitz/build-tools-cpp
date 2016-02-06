@@ -1,7 +1,51 @@
+{$, $$, TextEditorView, View} = require 'atom-space-pen-views'
 Profiles = require '../profiles/profiles'
 XRegExp = require('xregexp').XRegExp
 
 module.exports =
+
+  edit:
+    class ProfileEditPane extends View
+
+      @content: ->
+        @div class: 'panel-body padded', =>
+          @div class: 'block hidden', =>
+            @label =>
+              @div class: 'settings-name', 'Profile'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Select Highlighting Profile'
+            @select class: 'form-control', outlet: 'profile'
+
+      set: (command, stream, config) ->
+        @populateProfiles()
+        if config?
+          @selectProfile config.profile
+
+      get: (command, stream) ->
+        stream.pipeline.push {
+          name: 'profile'
+          config:
+            profile: @profile.children()[@profile[0].selectedIndex].attributes.getNamedItem('value').nodeValue
+        }
+        return null
+
+      populateProfiles: ->
+        createitem = (key, profile) ->
+          $$ ->
+            @option value: key, profile
+        @profile.empty()
+        gcc_index = 0
+        for key, id in Object.keys Profiles.profiles
+          @profile.append createitem(key, Profiles.profiles[key].profile_name)
+          gcc_index = id if key is 'gcc_clang'
+        @profile[0].selectedIndex = gcc_index
+
+      selectProfile: (profile) ->
+        for option, id in @profile.children()
+          if option.attributes.getNamedItem('value').nodeValue is profile
+            @profile[0].selectedIndex = id
+            break
+
   modifier:
     class ProfileModifier
 
