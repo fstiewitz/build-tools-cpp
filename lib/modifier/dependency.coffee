@@ -17,8 +17,8 @@ resolveDependencies = (command, q, projects) ->
     throw new Error('No source parameter') unless command.source?
     projects[command.project] ?= {}
     unless projects[command.project][command.source]?
-      project = projects[command.project][command.source] = new Project(command.project, command.source)
-    resolveDependency(command.modifier.dependency, q, projects, project, resolve, reject)
+      projects[command.project][command.source] = new Project(command.project, command.source)
+    resolveDependency(command.modifier.dependency, q, projects, projects[command.project][command.source], resolve, reject)
   )
 
 resolveDependency = ({list, abort}, q, projects, project, resolve, reject) ->
