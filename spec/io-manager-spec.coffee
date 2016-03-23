@@ -7,11 +7,22 @@ command =
     command: ''
     wd: '.'
     stdout:
-      highlighting: 'ha'
+      pipeline: [
+        {
+          name: 'all'
+        }
+        {
+          name: 'remansi'
+        }
+      ]
     stderr:
-      highlighting: 'hc'
-      profile: 'modelsim'
-    version: 1
+      pipeline: [
+        {
+          name: 'profile'
+          config: {profile: 'modelsim'}
+        }
+      ]
+    version: 2
 
 describe 'Output Manager', ->
   manager = null
@@ -28,6 +39,7 @@ describe 'Output Manager', ->
       onInput: jasmine.createSpy('oninput')
       stdout_in: jasmine.createSpy('stdout_in')
       stdout_setType: jasmine.createSpy('stdout_setType')
+      stdout_print: jasmine.createSpy('stdout_print')
       stderr_in: jasmine.createSpy('stderr_in')
       stderr_setType: jasmine.createSpy('stderr_setType')
       stderr_print: jasmine.createSpy('stderr_setType')
@@ -248,6 +260,7 @@ describe 'Output Manager', ->
     it 'calls the correct functions', ->
       manager.stdout.in 'Hello World\n'
       expect(output.stdout_in).toHaveBeenCalledWith input: 'Hello World', files: []
+      expect(output.stdout_print).not.toHaveBeenCalled()
       expect(output.stdout_setType).toHaveBeenCalledWith('warning')
 
   describe 'On stderr input', ->

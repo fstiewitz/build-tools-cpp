@@ -82,7 +82,7 @@ testProfileV2 =
         return 1
       return null
 
-fdescribe 'Stream Modifier - Highlighting Profile', ->
+describe 'Stream Modifier - Highlighting Profile', ->
   mod = null
   config = profile: 'test'
   disp1 = null

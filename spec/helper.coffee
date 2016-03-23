@@ -2,32 +2,32 @@ Output = require '../lib/pipeline/output-stream'
 
 module.exports =
   profile: (name, command, stream, strings, expectations, files) ->
-    describe command[stream].profile, ->
+    describe command[stream].pipeline[0].config.profile, ->
       output = null
 
       beforeEach ->
         output = new Output(command, command[stream])
         expect(output).toBeDefined()
-        expect(output.profile).toBeDefined()
+        expect(output.wholepipeline.pipeline.length).toBe 1
 
       it 'has a name', ->
-        expect(output.profile.constructor.profile_name).toBe name
+        expect(output.wholepipeline.pipeline[0].profile.constructor.profile_name).toBe name
 
       it 'has scopes', ->
-        expect(output.profile.scopes).toBeDefined()
+        expect(output.wholepipeline.pipeline[0].profile.scopes).toBeDefined()
 
       it 'has a `in` function', ->
-        expect(output.profile.in).toBeDefined()
+        expect(output.wholepipeline.pipeline[0].profile.in).toBeDefined()
 
       it 'has a `files` function', ->
-        expect(output.profile.files).toBeDefined()
+        expect(output.wholepipeline.pipeline[0].profile.files).toBeDefined()
 
       describe 'on ::in', ->
         matches = []
 
         beforeEach ->
-          spyOn(output, 'absolutePath').andCallFake (path) -> path
-          spyOn(output.profile.output, 'lint').andCallFake (match) ->
+          spyOn(output.wholepipeline, 'absolutePath').andCallFake (path) -> path
+          spyOn(output.wholepipeline.pipeline[0].profile.output, 'lint').andCallFake (match) ->
             if match? and match.file? and match.row? and match.type? and match.message?
               matches.push
                 file: match.file
@@ -55,7 +55,7 @@ module.exports =
 
         beforeEach ->
           for string in strings
-            matches.push output.profile.files string
+            matches.push output.wholepipeline.pipeline[0].profile.files string
 
         it 'correctly returns file descriptors', ->
           expect(matches.length).toBe files.length

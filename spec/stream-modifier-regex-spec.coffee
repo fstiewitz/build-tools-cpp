@@ -1,6 +1,6 @@
 Modifier = require '../lib/stream-modifiers/regex'
 
-fdescribe 'Stream Modifiers - Regular Expression', ->
+describe 'Stream Modifiers - Regular Expression', ->
   mod = null
   config = null
   output = null

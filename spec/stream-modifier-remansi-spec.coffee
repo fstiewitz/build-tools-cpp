@@ -1,6 +1,6 @@
 Modifier = require '../lib/stream-modifiers/remansi'
 
-fdescribe 'Stream Modifier - Remove ANSI', ->
+describe 'Stream Modifier - Remove ANSI', ->
   mod = null
   ret = null
 

@@ -1,6 +1,6 @@
 Modifier = new (require '../lib/stream-modifiers/all').modifier
 
-fdescribe 'Stream Modifier - All', ->
+describe 'Stream Modifier - All', ->
   describe 'on modify', ->
     t = null
     r = undefined

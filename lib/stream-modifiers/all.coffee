@@ -9,5 +9,5 @@ module.exports =
   modifier:
     class AllModifier
       modify: ({temp}) ->
-        temp.type = 'warning' if temp.type is ''
+        temp.type = 'warning' unless temp.type? and temp.type isnt ''
         return null
