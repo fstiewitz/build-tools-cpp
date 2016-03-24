@@ -35,7 +35,9 @@ module.exports =
       for mod in @pipeline
         continue unless mod.getFiles?
         for _match in mod.getFiles(temp: match, perm: @perm)
-          filenames.push _match if fs.isFileSync _match.file
+          if _match.file and (fp = @absolutePath _match.file)?
+            _match.file = fp
+            filenames.push _match
       return filenames
 
     finishLine: (td, input) ->
