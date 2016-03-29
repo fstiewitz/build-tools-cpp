@@ -1,5 +1,7 @@
 module.exports =
 
+  name: 'Highlight All'
+
   edit:
     class AllSaver
       get: (command, stream) ->

@@ -4,6 +4,8 @@ XRegExp = require('xregexp').XRegExp
 
 module.exports =
 
+  name: 'Highlighting Profile'
+
   edit:
     class ProfileEditPane extends View
 

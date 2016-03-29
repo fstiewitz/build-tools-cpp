@@ -4,6 +4,8 @@ AnsiEnd = /\x1b\[?(\d?|\d?;?\d?|[45]?|6?|\??2?5?|[0-9;]*)$/
 
 module.exports =
 
+  name: 'Remove ANSI Codes'
+
   edit:
     class AllSaver
       get: (command, stream) ->

@@ -4,6 +4,8 @@ CSON = null
 
 module.exports =
 
+  name: 'Regular Expression'
+
   activate: ->
     XRegExp = require('xregexp').XRegExp
     CSON = require('season')
