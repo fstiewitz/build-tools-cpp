@@ -67,27 +67,30 @@ module.exports =
 
     loadModifierModules: (pipeline) ->
       for {name, config} in pipeline
-        @addModifier name
+        @addModifier name, config
 
-    addModifier: (name, config) ->
+    addModifier: (name, _config) ->
       return unless Modifiers.activate(name) is true
       mod = Modifiers.modules[name]
       return if mod.private
-      @buildPane(new mod.edit,
+      {view, config} = @buildPane(new mod.edit,
         mod.name,
         'icon-paintcan',
         name,
         mod.description,
-        config
+        _config
       )
+      @initializePane view, config
 
     initializePanes: ->
-      for {view, config} in @panes
-        if @command.oldname?
-          command = @command
-        else
-          command = null
-        view?.set? command, config, @sourceFile
+      @initializePane view, config for {view, config} in @panes
+
+    initializePane: (view, config) ->
+      if @command.oldname?
+        command = @command
+      else
+        command = null
+      view?.set? command, config, @sourceFile
 
     buildPane: (view, name, icon, key, desc = '', config) ->
       item = $$ ->
@@ -116,8 +119,7 @@ module.exports =
       item.on 'click', '.panel-heading .align .icon-x', (event) =>
         for pane, index in @panes
           if pane.key is key
-            @panes.splice(index, 1)
-            pane.pane.remove()
+            @removeModifier index
             event.stopPropagation()
             break
       @panes_view.append item
@@ -125,7 +127,7 @@ module.exports =
       return pane: item, view: view, config: config
 
     moveModifierUp: (index) ->
-      return false if (index is 1) or (index > Object.keys(Modifiers.modules).length)
+      return false if (index is 0) or (index > Object.keys(Modifiers.modules).length)
       e = @panes.splice(index, 1)[0]
       @panes.splice(index - 1, 0, e)
       $(@panes_view.children()[index - 1]).before e.pane
@@ -135,6 +137,11 @@ module.exports =
       e = @panes.splice(index + 1, 1)[0]
       @panes.splice(index, 0, e)
       $(@panes_view.children()[index]).before e.pane
+
+    removeModifier: (index) ->
+      return false if index > @panes.length
+      [{pane}] = @panes.splice(index, 1)
+      pane.remove()
 
     addEventHandlers: ->
       @on 'click', '#add-modifier', (event) -> atom.contextMenu.showForEvent(event)
