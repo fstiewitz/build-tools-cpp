@@ -29,10 +29,10 @@ describe 'Stream Pipe Pane', ->
     it 'sets up the context menu', ->
       expect(atom.contextMenu.add).toHaveBeenCalledWith
         '.stdout #add-modifier': [
-          {label: 'Highlight All', command: 'build-tools:add-stdout-all'}
-          {label: 'Highlighting Profile', command: 'build-tools:add-stdout-profile'}
-          {label: 'Regular Expression', command: 'build-tools:add-stdout-regex'}
-          {label: 'Remove ANSI Codes', command: 'build-tools:add-stdout-remansi'}
+          {label: 'Highlight All', command: 'build-tools:add-all'}
+          {label: 'Highlighting Profile', command: 'build-tools:add-profile'}
+          {label: 'Regular Expression', command: 'build-tools:add-regex'}
+          {label: 'Remove ANSI Codes', command: 'build-tools:add-remansi'}
         ]
 
     it 'loads no views', ->

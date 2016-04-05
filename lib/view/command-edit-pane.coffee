@@ -97,11 +97,13 @@ module.exports =
       return pane: item, view: view
 
     initializeModifierModules: ->
+      @modifier_count = 0
       for key in Object.keys(@command.modifier ? {})
         continue if key in @blacklist
         continue unless Modifiers.activate(key) is true
         mod = Modifiers.modules[key]
         continue if mod.private
+        @modifier_count = @modifier_count + 1
         @buildPane(new mod.edit, "Modifier: #{mod.name}", 'icon-pencil', key, mod.description, @command.modifier?[key]?, true)
 
       if Object.keys(@command.modifier ? {}).length is 0
@@ -126,13 +128,13 @@ module.exports =
         @buildPane(new mod.edit, "Output: #{mod.name}", 'icon-terminal', key, mod.description, @command.output?[key]?)
 
     moveModifierUp: (index) ->
-      return false if (index is 1) or (index > Object.keys(Modifiers.modules).length)
+      return false if (index is 1) or (index > @modifier_count)
       e = @panes.splice(index, 1)[0]
       @panes.splice(index - 1, 0, e)
       $(@panes_view.children()[index - 1]).before e.pane
 
     moveModifierDown: (index) ->
-      return false if (index >= Object.keys(Modifiers.modules).length)
+      return false if (index >= @modifier_count)
       e = @panes.splice(index + 1, 1)[0]
       @panes.splice(index, 0, e)
       $(@panes_view.children()[index]).before e.pane

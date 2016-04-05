@@ -53,7 +53,7 @@ describe 'Command Worker', ->
   describe 'on error', ->
 
     beforeEach ->
-      worker.process.error 'Test Error'
+      worker.environment.process.error 'Test Error'
 
     it 'calls error of all outputs', ->
       expect(output.error).toHaveBeenCalledWith 'Test Error'
@@ -64,7 +64,7 @@ describe 'Command Worker', ->
   describe 'on finish', ->
 
     beforeEach ->
-      worker.process.exit 0
+      worker.environment.process.exit 0
       waitsForPromise -> promise
 
     it 'calls exitCommand of all outputs', ->

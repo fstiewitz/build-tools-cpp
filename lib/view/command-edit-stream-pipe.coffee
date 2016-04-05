@@ -55,10 +55,10 @@ module.exports =
       context = []
       for key in Object.keys(Modifiers.modules).sort()
         name = Modifiers.modules[key].name
-        @disposables.add atom.commands.add ".stream-modifier .#{stream}", "build-tools:add-#{stream}-#{key}", ((k) =>
+        @disposables.add atom.commands.add this[0], "build-tools:add-#{key}", ((k) =>
           => @addModifier k
         )(key)
-        context.push label: name, command: "build-tools:add-#{stream}-#{key}"
+        context.push label: name, command: "build-tools:add-#{key}"
 
       contextMenu = {}
       contextMenu[".#{stream} #add-modifier"] = context

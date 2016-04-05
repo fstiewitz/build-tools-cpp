@@ -50,11 +50,24 @@ module.exports =
       return args
 
     migrateToV2: ->
+      if @stdout.pty is true
+        @environment =
+          name: 'ptyw'
+          config:
+            rows: @stdout.pty_rows
+            cols: @stdout.pty_cols
+        delete @stdout.pty
+        delete @stdout.pty_rows
+        delete @stdout.pty_cols
+      else
+        @environment =
+          name: 'child_process'
       @migrateStreamV2 @stdout
       @migrateStreamV2 @stderr
       @version = 2
 
     migrateStreamV2: (str) ->
+      return if str.pipeline?
       str.pipeline = []
       if str.highlighting is 'nh'
         if str.ansi_option is 'remove'
