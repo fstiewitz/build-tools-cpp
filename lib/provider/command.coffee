@@ -3,7 +3,7 @@ Queue = require '../pipeline/queue'
 
 module.exports =
   class Command
-    constructor: ({@project, @source, @name, @command, @wd, @env, @modifier, @stdout, @stderr, @output, @version} = {}) ->
+    constructor: ({@project, @source, @name, @command, @wd, @env, @modifier, @environment, @stdout, @stderr, @output, @version} = {}) ->
       @env ?= {}
       @wd ?= '.'
       @modifier ?= {}

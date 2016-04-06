@@ -8,7 +8,7 @@ Outputs = require '../output/output'
 Command = require '../provider/command'
 
 MainPane = require './command-edit-main-pane'
-ProfilePane = require './command-edit-profile-pane'
+HighlightingPane = require './command-edit-highlighting-pane'
 
 module.exports =
   class CommandPane extends View
@@ -32,6 +32,8 @@ module.exports =
 
     setBlacklist: (@blacklist) ->
 
+    setSource: (@sourceFile) ->
+
     detached: ->
       @removeEventHandlers()
       for item in @panes
@@ -44,7 +46,7 @@ module.exports =
 
       @buildPane(new MainPane, 'General', 'icon-gear') unless 'general' in @blacklist
       @initializeModifierModules() unless 'modifiers' in @blacklist
-      @buildPane(new ProfilePane, 'Highlighting', 'icon-plug') unless 'highlighting' in @blacklist
+      @buildPane(new HighlightingPane, 'Highlighting', 'icon-plug') unless 'highlighting' in @blacklist
       @initializeOutputModules() unless 'outputs' in @blacklist
 
       @addEventHandlers()

@@ -11,20 +11,20 @@ module.exports =
 
       @content: ->
         @div class: 'panel-body padded', =>
-          @div class: 'block hidden', =>
+          @div class: 'block', =>
             @label =>
               @div class: 'settings-name', 'Profile'
               @div =>
                 @span class: 'inline-block text-subtle', 'Select Highlighting Profile'
             @select class: 'form-control', outlet: 'profile'
 
-      set: (command, stream, config) ->
+      set: (command, config) ->
         @populateProfiles()
         if config?
           @selectProfile config.profile
 
       get: (command, stream) ->
-        stream.pipeline.push {
+        command[stream].pipeline.push {
           name: 'profile'
           config:
             profile: @profile.children()[@profile[0].selectedIndex].attributes.getNamedItem('value').nodeValue

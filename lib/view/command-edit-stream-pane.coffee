@@ -5,22 +5,10 @@
 Modifiers = require '../stream-modifiers/modifiers'
 
 module.exports =
-  class StreamPipePane extends View
+  class StreamPane extends View
 
     @content: ->
       @div class: 'stream-modifier panel-body padded', =>
-        @div class: 'block', =>
-          @label =>
-            @div class: 'settings-name', 'Output Streams'
-          @select class: 'form-control', outlet: 'streams', =>
-            @option value: 'none', 'Disable all streams'
-            @option value: 'no-stdout', 'No stdout'
-            @option value: 'no-stderr', 'No stderr'
-            @option value: 'stderr-in-stdout', 'Redirect stderr in stdout'
-            @option value: 'stdout-in-stderr', 'Redirect stdout in stderr'
-            @option value: 'both', 'Display all streams'
-            @option value: 'pty-stdout', 'Use pty.js + redirect stderr in stdout'
-            @option value: 'pty-stderr', 'Use pty.js + redirect stdout in stderr'
         @div class: 'block', =>
           @div class: 'panel-heading', =>
             @span class: 'inline-block panel-text icon icon-eye', outlet: 'heading'
@@ -38,11 +26,10 @@ module.exports =
       @panes = null
       @panes_view.empty()
 
-    set: (@command, stream) ->
+    set: (@command, @stream, @sourceFile) ->
       @loadAddCommands(stream)
-      @loadModifierModules(command[stream].pipeline)
+      @loadModifierModules(@command[stream].pipeline) if @command?
       @addEventHandlers()
-      @initializePanes()
 
     get: (command, stream) ->
       for {view} in @panes
@@ -69,40 +56,34 @@ module.exports =
       for {name, config} in pipeline
         @addModifier name, config
 
-    addModifier: (name, _config) ->
+    addModifier: (name, config) ->
       return unless Modifiers.activate(name) is true
       mod = Modifiers.modules[name]
       return if mod.private
-      {view, config} = @buildPane(new mod.edit,
+      {view} = @buildPane(new mod.edit,
         mod.name,
         'icon-paintcan',
         name,
         mod.description,
-        _config
+        config
       )
       @initializePane view, config
 
-    initializePanes: ->
-      @initializePane view, config for {view, config} in @panes
-
     initializePane: (view, config) ->
-      if @command.oldname?
-        command = @command
-      else
-        command = null
-      view?.set? command, config, @sourceFile
+      view?.set? @command, config, @stream, @sourceFile
 
     buildPane: (view, name, icon, key, desc = '', config) ->
       item = $$ ->
-        @div class: 'panel-heading top module', =>
-          @div class: 'align', =>
-            @div class: "settings-name icon #{icon}", name
-            @div =>
-              @span class: 'inline-block text-subtle', desc
-          @div class: 'align', =>
-            @div class: 'icon-triangle-up'
-            @div class: 'icon-triangle-down'
-            @div class: 'icon-x'
+        @div class: 'inset-panel', =>
+          @div class: 'panel-heading top module', =>
+            @div class: 'align', =>
+              @div class: "settings-name icon #{icon}", name
+              @div =>
+                @span class: 'inline-block text-subtle', desc
+            @div class: 'align', =>
+              @div class: 'icon-triangle-up'
+              @div class: 'icon-triangle-down'
+              @div class: 'icon-x'
       item.append view.element if view.element?
       item.on 'click', '.panel-heading .align .icon-triangle-up', (event) =>
         for pane, index in @panes

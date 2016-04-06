@@ -1,4 +1,4 @@
-Pane = require '../lib/view/command-edit-stream-pipe'
+Pane = require '../lib/view/command-edit-stream-pane'
 Command = require '../lib/provider/command'
 Modifiers = require '../lib/stream-modifiers/modifiers'
 
@@ -126,7 +126,7 @@ describe 'Stream Pipe Pane', ->
       disp.dispose()
 
     it 'adds one modifier', ->
-      expect(mod.set).toHaveBeenCalledWith command, command.stdout.pipeline[0].config, undefined
+      expect(mod.set).toHaveBeenCalledWith command, command.stdout.pipeline[0].config, 'stdout', undefined
 
     it 'adds the view', ->
       expect(view.panes[0].key).toBe 'testmodule'

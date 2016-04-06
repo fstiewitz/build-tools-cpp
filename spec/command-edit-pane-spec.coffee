@@ -12,7 +12,6 @@ describe 'Command Edit Pane', ->
     cancel = jasmine.createSpy('cancel')
     command =
       project: atom.project.getPaths()[0]
-      oldname: 'Test 1'
       name: 'Test 1'
       command: 'echo test'
       wd: '.'
@@ -26,6 +25,8 @@ describe 'Command Edit Pane', ->
       output:
         console:
           close_success: true
+    command = new Command(command)
+    command.oldname = 'Test 1'
     view = new CommandEditPane(command)
     view.setCallbacks accept, cancel
     jasmine.attachToDOM(view.element)
@@ -33,13 +34,13 @@ describe 'Command Edit Pane', ->
   it 'has a pane', ->
     expect(view.element).toBeDefined()
 
-  it 'has 5 edit panes', ->
-    expect(view.find('.inset-panel').length).toBe 11
+  it 'has 12 edit panes', ->
+    expect(view.find('.inset-panel').length).toBe 12
 
   it 'has the correct values', ->
     expect(view.panes[0].view.command_name.getModel().getText()).toBe 'Test 1'
     expect(view.panes[1].pane.find('#save_all').prop('checked')).toBe true
-    expect(view.panes[6].view.stderr_profile[0].selectedIndex).toBe 3
+    expect(view.panes[6].view._stderr.panes[0].view.profile[0].selectedIndex).toBe 3
     expect(view.panes[7].view.find('#close_success').prop('checked')).toBe true
 
   describe 'On accept', ->
@@ -56,9 +57,14 @@ describe 'Command Edit Pane', ->
       expect(res.project).toBe atom.project.getPaths()[0]
       expect(res.command).toBe 'echo test'
       expect(res.modifier.save_all).toBeUndefined()
-      expect(res.stdout.highlighting).toBe 'nh'
-      expect(res.stderr.highlighting).toBe 'hc'
-      expect(res.stderr.profile).toBe 'python'
+      expect(res.stdout.pipeline).toEqual []
+      expect(res.stderr.pipeline).toEqual [
+        {
+          name: 'profile'
+          config:
+            profile: 'python'
+        }
+      ]
       expect(res.output.console.close_success).toBe true
       expect(res.output.linter).toBeUndefined()
 
@@ -99,5 +105,5 @@ describe 'Command Edit Pane', ->
       jasmine.attachToDOM(view.element)
 
     it 'shows all views minus the blacklisted ones', ->
-      expect(view.find('.inset-panel').length).toBe 9
+      expect(view.find('.inset-panel').length).toBe 10
       expect(view.panes[0].view.command_name).toBeUndefined()

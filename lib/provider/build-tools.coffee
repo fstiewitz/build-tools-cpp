@@ -160,7 +160,7 @@ module.exports =
         @on 'click', '#add-command-button', (e) =>
           @commandPane?.destroy()
           @commandPane = atom.views.getView(new Command)
-          @commandPane.sourceFile = @project.sourceFile
+          @commandPane.setSource @project.sourceFile
           @commandPane.setCallbacks @accept, @hidePanes
           @showPane @commandPane
         @addCommands()
