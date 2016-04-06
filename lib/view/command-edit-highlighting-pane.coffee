@@ -5,34 +5,35 @@ module.exports =
   class HighlightingPane extends View
 
     @content: ->
-      @div class: 'panel-body padded', =>
-        @div class: 'block', =>
-          @label =>
-            @div class: 'settings-name', 'Output Streams'
-          @select class: 'form-control', outlet: 'streams', =>
-            @option value: 'none', 'Disable all streams'
-            @option value: 'no-stdout', 'No stdout'
-            @option value: 'no-stderr', 'No stderr'
-            @option value: 'stderr-in-stdout', 'Redirect stderr in stdout'
-            @option value: 'stdout-in-stderr', 'Redirect stdout in stderr'
-            @option value: 'both', 'Display all streams'
-            @option value: 'pty-stdout', 'Use pty.js + redirect stderr in stdout'
-            @option value: 'pty-stderr', 'Use pty.js + redirect stdout in stderr'
-        @div class: 'block hidden', outlet: 'pty', =>
+      @div class: 'panel-body', =>
+        @div class: 'padded', =>
           @div class: 'block', =>
             @label =>
-              @div class: 'settings-name', 'Number of Rows'
-              @div =>
-                @span class: 'inline-block text-subtle', 'Dimensions of pseudo terminal (for pty.js)'
-            @subview 'pty_rows', new TextEditorView(mini: true, placeholderText: '25')
-          @div class: 'block', =>
-            @label =>
-              @div class: 'settings-name', 'Number of Columns'
-              @div =>
-                @span class: 'inline-block text-subtle', 'Dimensions of pseudo terminal (for pty.js)'
-            @subview 'pty_cols', new TextEditorView(mini: true, placeholderText: '80')
-        @div class: 'block', outlet: 'stdout'
-        @div class: 'block', outlet: 'stderr'
+              @div class: 'settings-name', 'Output Streams'
+            @select class: 'form-control', outlet: 'streams', =>
+              @option value: 'none', 'Disable all streams'
+              @option value: 'no-stdout', 'No stdout'
+              @option value: 'no-stderr', 'No stderr'
+              @option value: 'stderr-in-stdout', 'Redirect stderr in stdout'
+              @option value: 'stdout-in-stderr', 'Redirect stdout in stderr'
+              @option value: 'both', 'Display all streams'
+              @option value: 'pty-stdout', 'Use pty.js + redirect stderr in stdout'
+              @option value: 'pty-stderr', 'Use pty.js + redirect stdout in stderr'
+          @div class: 'block hidden', outlet: 'pty', =>
+            @div class: 'block', =>
+              @label =>
+                @div class: 'settings-name', 'Number of Rows'
+                @div =>
+                  @span class: 'inline-block text-subtle', 'Dimensions of pseudo terminal (for pty.js)'
+              @subview 'pty_rows', new TextEditorView(mini: true, placeholderText: '25')
+            @div class: 'block', =>
+              @label =>
+                @div class: 'settings-name', 'Number of Columns'
+                @div =>
+                  @span class: 'inline-block text-subtle', 'Dimensions of pseudo terminal (for pty.js)'
+              @subview 'pty_cols', new TextEditorView(mini: true, placeholderText: '80')
+        @div class: 'stream', outlet: 'stdout'
+        @div class: 'stream', outlet: 'stderr'
 
     attached: ->
       @_stdout = new StreamPane

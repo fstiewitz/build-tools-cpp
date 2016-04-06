@@ -54,7 +54,7 @@ module.exports =
 
       get: (command, stream) ->
         return 'Regular expression must not be empty' if @regex.getModel().getText() is ''
-        stream.pipeline.push {
+        command[stream].pipeline.push {
           name: 'regex'
           config:
             regex: @regex.getModel().getText()

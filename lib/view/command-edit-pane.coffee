@@ -46,7 +46,7 @@ module.exports =
 
       @buildPane(new MainPane, 'General', 'icon-gear') unless 'general' in @blacklist
       @initializeModifierModules() unless 'modifiers' in @blacklist
-      @buildPane(new HighlightingPane, 'Highlighting', 'icon-plug') unless 'highlighting' in @blacklist
+      @buildPane(new HighlightingPane, 'Highlighting', 'icon-eye') unless 'highlighting' in @blacklist
       @initializeOutputModules() unless 'outputs' in @blacklist
 
       @addEventHandlers()

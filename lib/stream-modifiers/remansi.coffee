@@ -9,7 +9,7 @@ module.exports =
   edit:
     class AllSaver
       get: (command, stream) ->
-        stream.pipeline.push name: 'remansi'
+        command[stream].pipeline.push name: 'remansi'
         return null
 
   modifier:

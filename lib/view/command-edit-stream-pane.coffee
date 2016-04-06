@@ -4,14 +4,18 @@
 
 Modifiers = require '../stream-modifiers/modifiers'
 
+nice =
+  stdout: 'Standard Output Stream (stdout)'
+  stderr: 'Standard Error Stream (stderr)'
+
 module.exports =
   class StreamPane extends View
 
     @content: ->
-      @div class: 'stream-modifier panel-body padded', =>
+      @div class: 'stream-modifier panel-body', =>
         @div class: 'block', =>
           @div class: 'panel-heading', =>
-            @span class: 'inline-block panel-text icon icon-eye', outlet: 'heading'
+            @span class: 'inline-block panel-text icon icon-plug', outlet: 'heading'
             @span id: 'add-modifier', class: 'inline-block btn btn-sm icon icon-plus', 'Add Modifier'
           @div class: 'panel-body padded', outlet: 'panes_view'
 
@@ -27,6 +31,7 @@ module.exports =
       @panes_view.empty()
 
     set: (@command, @stream, @sourceFile) ->
+      @heading.text(nice[@stream])
       @loadAddCommands(stream)
       @loadModifierModules(@command[stream].pipeline) if @command?
       @addEventHandlers()
@@ -62,7 +67,7 @@ module.exports =
       return if mod.private
       {view} = @buildPane(new mod.edit,
         mod.name,
-        'icon-paintcan',
+        'icon-eye',
         name,
         mod.description,
         config
