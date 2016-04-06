@@ -14,10 +14,16 @@ module.exports =
           env: env
         }
         )
-        @process.on 'data', (data) =>
-          return unless @process?
-          return if @process._emittedClose
-          manager.stdout.in(data)
+        if @config.stdoe is 'pty-stdout'
+          @process.on 'data', (data) =>
+            return unless @process?
+            return if @process._emittedClose
+            manager.stdout.in(data)
+        else
+          @process.on 'data', (data) =>
+            return unless @process?
+            return if @process._emittedClose
+            manager.stderr.in(data)
         @process.on 'exit', (exitcode) =>
           return unless exitcode?
           return @resolve(exitcode) if @killed

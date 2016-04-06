@@ -59,18 +59,41 @@ module.exports =
     set: (command, sourceFile) ->
       @_stdout.set command, 'stdout', sourceFile
       @_stderr.set command, 'stderr', sourceFile
+      return unless command?
+      for option, id in @streams.children()
+        if option.attributes.getNamedItem('value').nodeValue is command.environment.config.stdoe
+          @streams[0].selectedIndex = id
+          break
+      if command.environment.config.stdoe.startsWith 'pty'
+        @pty.removeClass 'hidden'
 
     get: (command) ->
       value = @streams.children()[@streams[0].selectedIndex].attributes.getNamedItem('value').nodeValue
       if value.startsWith 'pty'
+        r = 0
+        c = 0
+        if @pty_cols.getModel().getText() is ''
+          c = 80
+        else
+          c = parseInt(@pty_cols.getModel().getText())
+          if Number.isNaN(c)
+            return "cols: #{@pty_cols.getModel().getText()} is not a number"
+        if @pty_rows.getModel().getText() is ''
+          r = 25
+        else
+          r = parseInt(@pty_rows.getModel().getText())
+          if Number.isNaN(r)
+            return "rows: #{@pty_rows.getModel().getText()} is not a number"
         command.environment =
           name: 'ptyw'
           config:
-            into: value.substr(4)
+            stdoe: value
+            rows: r
+            cols: c
       else
         command.environment =
           name: 'child_process'
           config:
-            stdio: value
+            stdoe: value
       @_stdout.get command, 'stdout'
       @_stderr.get command, 'stderr'

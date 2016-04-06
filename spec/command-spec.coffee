@@ -37,4 +37,4 @@ describe 'Command', ->
   it 'automatically migrates to v2', ->
     expect(command.stdout.pipeline).toEqual []
     expect(command.stderr.pipeline).toEqual []
-    expect(command.environment).toEqual name: 'child_process'
+    expect(command.environment).toEqual name: 'child_process', config: stdoe: 'both'

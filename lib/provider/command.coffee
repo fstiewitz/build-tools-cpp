@@ -62,6 +62,8 @@ module.exports =
       else
         @environment =
           name: 'child_process'
+          config:
+            stdoe: 'both'
       @migrateStreamV2 @stdout
       @migrateStreamV2 @stderr
       @version = 2
