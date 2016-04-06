@@ -119,6 +119,7 @@ module.exports =
         continue unless Modifiers.activate(key) is true
         mod = Modifiers.modules[key]
         continue if mod.private
+        @modifier_count = @modifier_count + 1
         @buildPane(new mod.edit, "Modifier: #{mod.name}", 'icon-pencil', key, mod.description, @command.modifier?[key]?, true)
 
     initializeOutputModules: ->
