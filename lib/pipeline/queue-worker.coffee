@@ -53,8 +53,7 @@ module.exports =
     stop: ->
       return if @finished
       return @finished = true unless @currentWorker?
-      @currentWorker.kill()
-      @finishedQueue -2
+      @currentWorker.kill().then => @finishedQueue -2
 
     finishedQueue: (code) ->
       @finished = true
@@ -69,6 +68,7 @@ module.exports =
     finishedCommand: (exitcode) ->
       @emitter.emit 'finishedCommand', exitcode
       if exitcode isnt null and exitcode isnt 0
+        return if exitcode >= 128
         @finishedQueue exitcode
 
     errorCommand: (error) ->

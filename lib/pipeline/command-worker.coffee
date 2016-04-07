@@ -22,8 +22,14 @@ module.exports =
     kill: ->
       if @environment is null or @environment.isKilled()
         console.log 'Kill on finished process'
-        return
-      @environment.sigterm() unless @environment.isKilled()
+        return Promise.resolve()
+      new Promise((resolve) =>
+        @environment.getPromise().then resolve, resolve
+        @environment.sigterm() unless @environment.isKilled()
+        setTimeout(
+          => @environment.sigkill() unless @environment.isKilled()
+        , 3000)
+      )
 
     destroy: ->
       @environment.sigkill() unless @environment.isKilled()

@@ -1,5 +1,7 @@
 {BufferedProcess} = require 'atom'
 
+pstree = null
+
 module.exports =
   class ChildProcess
     constructor: (@command, manager, @config) ->
@@ -16,7 +18,7 @@ module.exports =
               manager.error error
               @reject(error)
             kill: =>
-              return resolve(null) if @killed
+              @killed = true
               manager.finish null
               @resolve(null)
         )
@@ -76,15 +78,31 @@ module.exports =
       @killed
 
     sigterm: ->
-      @process?.kill()
-      @process = null
+      @sendSignal 'SIGINT'
 
     sigkill: ->
-      @process?.kill('SIGKILL')
-      @process = null
+      @sendSignal 'SIGKILL'
+
+    sendSignal: (signal) ->
+      if process.platform is 'win32'
+        @process?.kill(signal)
+      else
+        (pstree ? pstree = require 'ps-tree') @process.process.pid, (e, c) =>
+          return if e?
+          for child in c
+            try
+              process.kill child.PID, signal
+            catch e
+              console.log e
+          try
+            @process.process.kill signal
+            @process.killed = true
+          catch e
+            console.log e
 
     destroy: ->
       @killed = true
       @promise = null
+      @process = null
       @reject = (e) -> console.log "Received reject for finished process: #{e}"
       @resolve = (e) -> console.log "Received resolve for finished process: #{e}"
