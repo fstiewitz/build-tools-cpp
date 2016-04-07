@@ -33,7 +33,7 @@ module.exports =
               cwd: @command.getWD()
               env: env
           )
-          @process.process.on 'exit', (exitcode, signal) =>
+          @process.process.on 'close', (exitcode, signal) =>
             @killed = true
             manager.finish({exitcode, signal})
             @resolve({exitcode, signal})

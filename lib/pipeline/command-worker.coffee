@@ -33,6 +33,7 @@ module.exports =
 
     destroy: ->
       @environment.sigkill() unless @environment.isKilled() or atom.inSpecMode()
+      @environment.destroy()
       @manager?.destroy()
       @manager = null
       @environment = null

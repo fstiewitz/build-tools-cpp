@@ -66,6 +66,7 @@ module.exports =
       @finished
 
     finishedCommand: (status) ->
+      @currentWorker.destroy()
       @emitter.emit 'finishedCommand', status
       if status.exitcode isnt null and status.exitcode isnt 0
         return if status.exitcode >= 128

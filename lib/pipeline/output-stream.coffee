@@ -9,6 +9,7 @@ module.exports =
     constructor: (@settings, @stream) ->
       @subscribers = new Emitter
       @buffer = ''
+      @flushed = false
       @wholepipeline = new Pipeline(@settings, @stream)
       @rawpipeline = new RawPipeline(@settings, @stream)
 
@@ -30,12 +31,14 @@ module.exports =
         @wholepipeline.subscribeToCommands object, callback, command
 
     flush: ->
+      @flushed = true
       return if @buffer is ''
       @subscribers.emit 'input', input: @buffer, files: @wholepipeline.getFiles(input: @buffer)
       @wholepipeline.in @rawpipeline.in(@buffer)
       @buffer = ''
 
     in: (data) ->
+      return if @flushed
       data = @rawpipeline.in data
       return if data is ''
       @buffer += data
