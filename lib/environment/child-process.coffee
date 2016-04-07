@@ -29,21 +29,19 @@ module.exports =
             options:
               cwd: @command.getWD()
               env: env
-            stdout: ->
-            stderr: ->
-            exit: (exitcode) =>
-              return @resolve(exitcode) if @killed
-              @killed = true
-              manager.finish(exitcode)
-              @resolve(exitcode)
           )
+          @process.process.on 'exit', (exitcode, signal) =>
+            console.log "#{exitcode},#{signal}"
+            @killed = true
+            manager.finish(exitcode)
+            @resolve(exitcode)
           if @config.stdoe isnt 'none'
             @process.process.stdout?.setEncoding 'utf8'
             @process.process.stderr?.setEncoding 'utf8'
             setupStream = (stream, into) ->
               stream.on 'data', (data) =>
                 return unless @process?
-                return if @process.killed
+                return if @killed
                 into.in data
             if @config.stdoe is 'stderr-in-stdout'
               setupStream(@process.process.stdout, manager.stdout)
@@ -78,12 +76,10 @@ module.exports =
       @killed
 
     sigterm: ->
-      @killed = true
       @process?.kill()
       @process = null
 
     sigkill: ->
-      @killed = true
       @process?.kill('SIGKILL')
       @process = null
 

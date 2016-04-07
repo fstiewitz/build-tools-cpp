@@ -51,13 +51,6 @@ module.exports =
       @code = -2
       @getHeader()
 
-    unlock: ->
-      @view.unlock()
-
-    lock: ->
-      @input = null
-      @view.lock()
-
     newLine: ->
       @view.printLine '<div></div>'
 

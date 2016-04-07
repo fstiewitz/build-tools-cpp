@@ -150,7 +150,6 @@ module.exports =
           @tab = consolemodel.getTab @command
           @tab.clear()
           clearTimeout timeout
-        @tab.unlock()
         @tab.setRunning()
         @tab.focus()
         @stdout_lines = []
@@ -244,19 +243,16 @@ module.exports =
 
       error: (message) ->
         @tab.setError(message)
-        @tab.lock()
         @tab.finishConsole()
 
       exitCommand: (code) ->
         @tab.setFinished(code)
-        @tab.lock()
         return if @queue_in_buffer
         @finish(code)
 
       exitQueue: (code) ->
         if code is -2
           @tab.setCancelled()
-          @tab.lock()
           @tab.finishConsole()
           consoleview.hideInput() if @tab.hasFocus()
           return
