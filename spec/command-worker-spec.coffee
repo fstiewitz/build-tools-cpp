@@ -82,7 +82,7 @@ describe 'Command Worker', ->
       waitsForPromise -> promise
 
     it 'does not call exitCommand', ->
-      expect(output.exitCommand).not.toHaveBeenCalled()
+      expect(output.exitCommand).toHaveBeenCalledWith null
 
     it 'calls the finish callback', ->
       promise.then (finish) ->

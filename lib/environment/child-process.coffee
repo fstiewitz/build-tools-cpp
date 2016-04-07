@@ -22,6 +22,7 @@ module.exports =
               manager.finish null
               @resolve(null)
         )
+        @sigterm = -> @process.kill()
       else
         @promise = new Promise((@resolve, @reject) =>
           {command, args, env} = @command
