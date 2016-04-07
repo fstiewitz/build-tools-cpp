@@ -64,7 +64,7 @@ module.exports =
         if option.attributes.getNamedItem('value').nodeValue is command.environment.config.stdoe
           @streams[0].selectedIndex = id
           break
-      if command.environment.config.stdoe.startsWith 'pty'
+      if command.environment?.config.stdoe?.startsWith 'pty'
         @pty.removeClass 'hidden'
 
     get: (command) ->
