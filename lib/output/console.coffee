@@ -245,10 +245,10 @@ module.exports =
         @tab.setError(message)
         @tab.finishConsole()
 
-      exitCommand: (code) ->
-        @tab.setFinished(code)
+      exitCommand: (status) ->
+        @tab.setFinished(status)
         return if @queue_in_buffer
-        @finish(code)
+        @finish(status)
 
       exitQueue: (code) ->
         if code is -2
@@ -259,10 +259,10 @@ module.exports =
         return unless @queue_in_buffer
         @finish(code)
 
-      finish: (code) ->
+      finish: (status) ->
         @tab.finishConsole()
         consoleview.hideInput() if @tab.hasFocus()
-        if @command.output['console'].close_success and code is 0
+        if @command.output['console'].close_success and status.exitcode is 0
           t = atom.config.get('build-tools.CloseOnSuccess')
           if t < 1
             consolepanel.hide()

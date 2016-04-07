@@ -34,10 +34,9 @@ module.exports =
               env: env
           )
           @process.process.on 'exit', (exitcode, signal) =>
-            console.log "#{exitcode},#{signal}"
             @killed = true
-            manager.finish(exitcode)
-            @resolve(exitcode)
+            manager.finish({exitcode, signal})
+            @resolve({exitcode, signal})
           if @config.stdoe isnt 'none'
             @process.process.stdout?.setEncoding 'utf8'
             @process.process.stderr?.setEncoding 'utf8'

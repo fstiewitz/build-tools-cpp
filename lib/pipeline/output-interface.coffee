@@ -29,11 +29,11 @@ module.exports =
         output.setInput? @stdin
         @stdin.onWrite output.onInput if output.onInput?
 
-    finish: (exitcode) ->
+    finish: (status) ->
       @stdout.flush()
       @stderr.flush()
       for output in @outputs
-        output.exitCommand?(exitcode)
+        output.exitCommand?(status)
 
     error: (error) ->
       for output in @outputs

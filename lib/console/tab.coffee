@@ -28,6 +28,7 @@ module.exports =
       @view.clear()
       @error = null
       @code = null
+      @signal = null
 
     setInput: (@input) ->
 
@@ -39,7 +40,9 @@ module.exports =
       @code = -1
       @getHeader()
 
-    setFinished: (@code) ->
+    setFinished: (status) ->
+      @code = status.exitcode
+      @signal = status.signal
       if @code is 0
         @header.setIcon 'check'
       else
@@ -48,7 +51,8 @@ module.exports =
 
     setCancelled: ->
       @header.setIcon 'x'
-      @code = -2
+      @code ?= -2
+      @signal ?= 'SIGINT'
       @getHeader()
 
     newLine: ->
@@ -72,7 +76,9 @@ module.exports =
         s = document.createElement 'span'
         @title.innerText += ': '
         s.className = 'error'
-        if @code > 0
+        if @signal isnt null
+          s.innerText = 'received ' + @signal
+        else if @code > 0
           s.innerText = 'finished with exit code ' + @code
         else if @code is -1
           s.innerText = 'received ' + @error
