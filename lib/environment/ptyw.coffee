@@ -24,12 +24,19 @@ module.exports =
             return unless @process?
             return if @process._emittedClose
             manager.stderr.in(data)
-        @process.on 'exit', (exitcode) =>
-          return unless exitcode?
-          return @resolve(exitcode) if @killed
+        @process.on 'exit', (exitcode, signal) =>
+          return unless exitcode? and signal?
+          if signal isnt 0
+            exitcode = null
+            signal = 128 + signal
+          else if exitcode >= 128
+            signal = exitcode
+            exitcode = null
+          else
+            signal = null
           @killed = true
-          manager.finish exitcode
-          @resolve(exitcode)
+          manager.finish({exitcode, signal})
+          @resolve({exitcode, signal})
         manager.setInput(@process)
       )
       @promise.then(
@@ -46,17 +53,14 @@ module.exports =
       @killed
 
     sigterm: ->
-      @killed = true
-      @process?.kill()
-      @process = null
+      @process?.write '\x03', 'utf8'
 
     sigkill: ->
-      @killed = true
       @process?.kill('SIGKILL')
-      @process = null
 
     destroy: ->
       @killed = true
       @promise = null
+      @process = null
       @reject = (e) -> console.log "Received reject for finished process: #{e}"
       @resolve = (e) -> console.log "Received resolve for finished process: #{e}"

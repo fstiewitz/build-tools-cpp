@@ -70,7 +70,7 @@ module.exports =
       @emitter.emit 'finishedCommand', status
       if status.exitcode isnt null and status.exitcode isnt 0
         return if status.exitcode >= 128
-        @finishedQueue exitcode
+        @finishedQueue status.exitcode
 
     errorCommand: (error) ->
       @emitter.emit 'errorCommand', error

@@ -27,7 +27,9 @@ module.exports =
         @environment.getPromise().then resolve, resolve
         @environment.sigterm() unless @environment.isKilled()
         setTimeout(
-          => @environment.sigkill() unless @environment.isKilled()
+          =>
+            return unless @environment?
+            @environment.sigkill() unless @environment.isKilled()
         , 3000)
       )
 

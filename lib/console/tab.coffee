@@ -52,7 +52,6 @@ module.exports =
     setCancelled: ->
       @header.setIcon 'x'
       @code ?= -2
-      @signal ?= 'SIGINT'
       @getHeader()
 
     newLine: ->
