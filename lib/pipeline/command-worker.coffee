@@ -15,7 +15,7 @@ module.exports =
       unless Environment.activate(@command.environment?.name)
         @manager.error "Could not find environment module #{@command.environment?.name}"
         return Promise.reject("Could not find environment module #{@command.environment?.name}")
-      mod = Environment.modules[@command.environment.name]
+      mod = Environment.modules[@command.environment.name].mod
       @environment = new mod(@command, @manager, @command.environment.config)
       return @environment.getPromise()
 

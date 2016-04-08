@@ -2,9 +2,10 @@
 
 Outputs = require '../output/output'
 Modifiers = require '../modifier/modifier'
+Environment = require '../environment/environment'
 
 MainPane = require './command-info-main-pane'
-ProfilePane = require './command-info-profile-pane'
+StreamInfoPane = require './command-info-stream-pane'
 
 module.exports =
   class InfoPane extends View
@@ -27,7 +28,8 @@ module.exports =
       @name.text(@command.name)
       @info.append @buildPane(MainPane, 'General')
       @initializeModifierModules()
-      @info.append @buildPane(ProfilePane, 'Highlighting')
+      @initializeEnvironmentModule()
+      @initializeHighlightingPanes()
       @initializeOutputModules()
       @addEventHandlers()
 
@@ -48,21 +50,36 @@ module.exports =
           currentTarget.classList.remove 'icon-triangle-down'
           currentTarget.parentNode.parentNode.parentNode.children[1].classList.add 'hidden'
 
-    buildPane: (Element, name) ->
+    buildPane: (Element, name, config) ->
+      headerclass = 'panel-heading'
+      bodyclass = 'panel-body padded'
       if name?
         element = $$ ->
           @div class: 'inset-panel', =>
-            @div class: 'panel-heading', name
+            @div class: headerclass, name
             if Element?
-              @div class: 'panel-body padded'
+              @div class: bodyclass
       else
         element = $$ ->
           @div class: 'inset-panel', =>
-            @div class: 'panel-body padded'
+            @div class: bodyclass
       if Element?
-        @panes.push new Element(@command)
+        @panes.push new Element(@command, config)
         element.find('.panel-body').append @panes[@panes.length - 1].element
       @info.append element
+
+    initializeHighlightingPanes: ->
+      @initializeStreamModules(@command.stdout, 'Standard Output')
+      @initializeStreamModules(@command.stderr, 'Standard Error')
+
+    initializeStreamModules: (stream, name) ->
+      @buildPane(StreamInfoPane, name, stream) if stream.pipeline.length isnt 0
+
+    initializeEnvironmentModule: ->
+      key = @command.environment.name
+      return unless Environment.activate(key) is true
+      return if Environment.modules[key].private
+      @buildPane Environment.modules[key].info, 'Environment: ' + Environment.modules[key].name
 
     initializeOutputModules: ->
       for key in Object.keys(@command.output ? {})

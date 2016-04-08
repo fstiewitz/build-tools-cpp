@@ -14,6 +14,35 @@ module.exports =
     XRegExp = null
     CSON = null
 
+  info:
+    class RegexInfoPane
+      constructor: (command, config) ->
+        @element = document.createElement 'div'
+        @element.classList.add 'module'
+        keys = document.createElement 'div'
+        values = document.createElement 'div'
+
+        key = document.createElement 'div'
+        key.classList.add 'text-padded'
+        key.innerText = 'Regular Expression:'
+        value = document.createElement 'div'
+        value.classList.add 'text-padded'
+        value.innerText = config.regex
+        keys.appendChild key
+        values.appendChild value
+
+        key = document.createElement 'div'
+        key.classList.add 'text-padded'
+        key.innerText = 'Default Values:'
+        value = document.createElement 'div'
+        value.classList.add 'text-padded'
+        value.innerText = config.defaults
+        keys.appendChild key
+        values.appendChild value
+
+        @element.appendChild keys
+        @element.appendChild values
+
   edit:
     class RegexEditPane extends View
 

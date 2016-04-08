@@ -2,107 +2,132 @@
 
 pstree = null
 
+translate =
+  'none': 'Disable all output streams'
+  'no-stdout': 'Disable stdout'
+  'no-stderr': 'Disable stderr'
+  'stderr-in-stdout': 'Redirect stderr in stdout'
+  'stdout-in-stderr': 'Redirect stdout in stderr'
+  'both': 'Display all output streams'
+
 module.exports =
-  class ChildProcess
-    constructor: (@command, manager, @config) ->
-      @killed = false
-      if atom.inSpecMode()
-        @promise = new Promise((@resolve, @reject) =>
-          @process =
-            exit: (exitcode) =>
-              return @resolve(exitcode) if @killed
-              @killed = true
-              manager.finish exitcode
-              @resolve(exitcode)
-            error: (error) =>
-              manager.error error
-              @reject(error)
-            kill: =>
-              @killed = true
-              manager.finish null
-              @resolve(null)
-        )
-        @sigterm = -> @process.kill()
-      else
-        @promise = new Promise((@resolve, @reject) =>
-          {command, args, env} = @command
-          @process = new BufferedProcess(
-            command: command
-            args: args
-            options:
-              cwd: @command.getWD()
-              env: env
+  name: 'Child Process'
+
+  info:
+    class CPInfoPane
+      constructor: (command) ->
+        @element = document.createElement 'div'
+        @element.classList.add 'module'
+        key = document.createElement 'div'
+        key.classList.add 'text-padded'
+        key.innerText = 'Output Streams:'
+        value = document.createElement 'div'
+        value.classList.add 'text-padded'
+        value.innerText = translate[command.environment.config.stdoe]
+        @element.appendChild key
+        @element.appendChild value
+
+  mod:
+    class ChildProcess
+      constructor: (@command, manager, @config) ->
+        @killed = false
+        if atom.inSpecMode()
+          @promise = new Promise((@resolve, @reject) =>
+            @process =
+              exit: (exitcode) =>
+                return @resolve(exitcode) if @killed
+                @killed = true
+                manager.finish exitcode
+                @resolve(exitcode)
+              error: (error) =>
+                manager.error error
+                @reject(error)
+              kill: =>
+                @killed = true
+                manager.finish null
+                @resolve(null)
           )
-          @process.process.on 'close', (exitcode, signal) =>
-            @killed = true
-            manager.finish({exitcode, signal})
-            @resolve({exitcode, signal})
-          if @config.stdoe isnt 'none'
-            @process.process.stdout?.setEncoding 'utf8'
-            @process.process.stderr?.setEncoding 'utf8'
-            setupStream = (stream, into) ->
-              stream.on 'data', (data) =>
-                return unless @process?
-                return if @killed
-                into.in data
-            if @config.stdoe is 'stderr-in-stdout'
-              setupStream(@process.process.stdout, manager.stdout)
-              setupStream(@process.process.stderr, manager.stdout)
-            else if @config.stdoe is 'stdout-in-stderr'
-              setupStream(@process.process.stdout, manager.stderr)
-              setupStream(@process.process.stderr, manager.stderr)
-            else if @config.stdoe is 'no-stdout'
-              setupStream(@process.process.stderr, manager.stderr)
-            else if @config.stdoe is 'no-stderr'
-              setupStream(@process.process.stdout, manager.stdout)
-            else if @config.stdoe is 'both'
-              setupStream(@process.process.stdout, manager.stdout)
-              setupStream(@process.process.stderr, manager.stderr)
-          manager.setInput(@process.process.stdin)
-          @process.onWillThrowError ({error, handle}) ->
-            manager.error(error)
-            handle()
-            @reject(error)
+          @sigterm = -> @process.kill()
+        else
+          @promise = new Promise((@resolve, @reject) =>
+            {command, args, env} = @command
+            @process = new BufferedProcess(
+              command: command
+              args: args
+              options:
+                cwd: @command.getWD()
+                env: env
+            )
+            @process.process.on 'close', (exitcode, signal) =>
+              @killed = true
+              manager.finish({exitcode, signal})
+              @resolve({exitcode, signal})
+            if @config.stdoe isnt 'none'
+              @process.process.stdout?.setEncoding 'utf8'
+              @process.process.stderr?.setEncoding 'utf8'
+              setupStream = (stream, into) ->
+                stream.on 'data', (data) =>
+                  return unless @process?
+                  return if @killed
+                  into.in data
+              if @config.stdoe is 'stderr-in-stdout'
+                setupStream(@process.process.stdout, manager.stdout)
+                setupStream(@process.process.stderr, manager.stdout)
+              else if @config.stdoe is 'stdout-in-stderr'
+                setupStream(@process.process.stdout, manager.stderr)
+                setupStream(@process.process.stderr, manager.stderr)
+              else if @config.stdoe is 'no-stdout'
+                setupStream(@process.process.stderr, manager.stderr)
+              else if @config.stdoe is 'no-stderr'
+                setupStream(@process.process.stdout, manager.stdout)
+              else if @config.stdoe is 'both'
+                setupStream(@process.process.stdout, manager.stdout)
+                setupStream(@process.process.stderr, manager.stderr)
+            manager.setInput(@process.process.stdin)
+            @process.onWillThrowError ({error, handle}) ->
+              manager.error(error)
+              handle()
+              @reject(error)
+          )
+        @promise.then(
+          =>
+            @destroy()
+          =>
+            @destroy()
         )
-      @promise.then(
-        =>
-          @destroy()
-        =>
-          @destroy()
-      )
 
-    getPromise: ->
-      @promise
+      getPromise: ->
+        @promise
 
-    isKilled: ->
-      @killed
+      isKilled: ->
+        @killed
 
-    sigterm: ->
-      @sendSignal 'SIGINT'
+      sigterm: ->
+        @sendSignal 'SIGINT'
 
-    sigkill: ->
-      @sendSignal 'SIGKILL'
+      sigkill: ->
+        @sendSignal 'SIGKILL'
 
-    sendSignal: (signal) ->
-      if process.platform is 'win32'
-        @process?.kill(signal)
-      else
-        (pstree ? pstree = require 'ps-tree') @process.process.pid, (e, c) =>
-          return if e?
-          for child in c
+      sendSignal: (signal) ->
+        if process.platform is 'win32'
+          @process?.kill(signal)
+        else
+          (pstree ? pstree = require 'ps-tree') @process.process.pid, (e, c) =>
+            return if e?
+            for child in c
+              try
+                process.kill child.PID, signal
+              catch e
+                console.log e
             try
-              process.kill child.PID, signal
+              @process.process.kill signal
+              @process.killed = true
             catch e
               console.log e
-          try
-            @process.process.kill signal
-            @process.killed = true
-          catch e
-            console.log e
 
-    destroy: ->
-      @killed = true
-      @promise = null
-      @process = null
-      @reject = (e) -> console.log "Received reject for finished process: #{e}"
-      @resolve = (e) -> console.log "Received resolve for finished process: #{e}"
+      destroy: ->
+        @killed = true
+        @promise = null
+        @process = null
+        @reject = (e) -> console.log "Received reject for finished process: #{e}"
+        @resolve = (e) -> console.log "Received resolve for finished process: #{e}"

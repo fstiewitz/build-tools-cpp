@@ -6,6 +6,20 @@ module.exports =
 
   name: 'Highlighting Profile'
 
+  info:
+    class ProfileInfoPane
+      constructor: (command, config) ->
+        @element = document.createElement 'div'
+        @element.classList.add 'module'
+        key = document.createElement 'div'
+        key.classList.add 'text-padded'
+        key.innerText = 'Profile:'
+        value = document.createElement 'div'
+        value.classList.add 'text-padded'
+        value.innerText = Profiles.profiles[config.profile]?.profile_name
+        @element.appendChild key
+        @element.appendChild value
+
   edit:
     class ProfileEditPane extends View
 
