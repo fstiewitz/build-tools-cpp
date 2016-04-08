@@ -47,7 +47,7 @@ module.exports =
             resolve(status)
         ), (e) =>
           @errorCommand e
-          resolve(-1)
+          resolve(exitcode: -1, status: null)
       ), reject
 
     stop: ->

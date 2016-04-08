@@ -49,12 +49,14 @@ module.exports =
           if @config.stdoe is 'pty-stdout'
             @process.on 'data', (data) =>
               return unless @process?
-              return if @process._emittedClose
+              return if @killed
+              data = data.replace /\r/g, ''
               manager.stdout.in(data)
           else
             @process.on 'data', (data) =>
               return unless @process?
-              return if @process._emittedClose
+              return if @killed
+              data = data.replace /\r/g, ''
               manager.stderr.in(data)
           @process.on 'exit', (exitcode, signal) =>
             return unless exitcode? and signal?
