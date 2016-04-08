@@ -10,6 +10,8 @@ module.exports =
           @div class: 'block', =>
             @label =>
               @div class: 'settings-name', 'Output Streams'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Configure standard output/error stream'
             @select class: 'form-control', outlet: 'streams', =>
               @option value: 'none', 'Disable all streams'
               @option value: 'no-stdout', 'No stdout'
@@ -59,12 +61,17 @@ module.exports =
     set: (command, sourceFile) ->
       @_stdout.set command, 'stdout', sourceFile
       @_stderr.set command, 'stderr', sourceFile
-      return unless command?
+      if command?
+        @setStreamOption command.environment.config.stdoe
+      else
+        @setStreamOption 'both'
+
+    setStreamOption: (stdoe) ->
       for option, id in @streams.children()
-        if option.attributes.getNamedItem('value').nodeValue is command.environment.config.stdoe
+        if option.attributes.getNamedItem('value').nodeValue is stdoe
           @streams[0].selectedIndex = id
           break
-      if command.environment?.config.stdoe?.startsWith 'pty'
+      if stdoe.startsWith 'pty'
         @pty.removeClass 'hidden'
 
     get: (command) ->
