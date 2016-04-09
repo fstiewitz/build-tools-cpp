@@ -12,52 +12,33 @@ providers: [
           env: {}
           modifier:
             save_all: {}
+          environment:
+            name: "child_process"
+            config:
+              stdoe: "both"
           stdout:
-            pty: true
-            pty_rows: 25
-            pty_cols: 80
-            highlighting: "nh"
-            ansi_option: "parse"
+            pipeline: []
           stderr:
-            highlighting: "hc"
-            profile: "apm_test"
+            pipeline: [
+              {
+                name: "profile"
+                config:
+                  profile: "apm_test"
+              }
+            ]
           output:
             console:
               close_success: true
               queue_in_buffer: false
+              colors: true
               stdin: false
             linter:
               no_trace: true
+              immediate: false
             file:
               path: "apm.log"
               queue_in_file: false
-          version: 1
-        }
-        {
-          project: "/home/fabian/Projects/build-tools"
-          source: "/home/fabian/Projects/build-tools/.build-tools.cson"
-          name: "Test"
-          command: "ls --color *"
-          wd: "."
-          env: {}
-          modifier:
-            shell:
-              command: "bash -c"
-          stdout:
-            pty: true
-            pty_rows: 25
-            pty_cols: 200
-            highlighting: "nh"
-            ansi_option: "parse"
-          stderr:
-            highlighting: "nh"
-            ansi_option: "parse"
-          output:
-            console:
-              close_success: false
-              queue_in_buffer: false
-              stdin: false
-          version: 1
+          version: 2
         }
       ]
   }
