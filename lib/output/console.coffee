@@ -276,7 +276,7 @@ module.exports =
       finish: (status) ->
         @tab.finishConsole()
         consoleview.hideInput() if @tab.hasFocus()
-        if @command.output['console'].close_success and status.exitcode is 0
+        if @command.output['console'].close_success and status is 0
           t = atom.config.get('build-tools.CloseOnSuccess')
           if t < 1
             consolepanel.hide()
