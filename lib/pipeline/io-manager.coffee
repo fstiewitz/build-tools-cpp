@@ -25,8 +25,8 @@ module.exports =
       @stdout.destroy()
       @stderr.destroy()
 
-    finish: (exitcode) ->
-      @interface.finish(exitcode)
+    finish: (status) ->
+      @interface.finish(status)
 
     error: (error) ->
       @interface.error error

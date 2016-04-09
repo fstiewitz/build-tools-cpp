@@ -39,22 +39,21 @@ module.exports =
       modifier.run().then (=>
         outputs = (@outputs[key] for key in Object.keys(c.output) when @outputs[key]?)
         @currentWorker = new CommandWorker(c, outputs)
-        @currentWorker.run().then ((exitcode) =>
-          @finishedCommand(exitcode)
-          if exitcode is 0
+        @currentWorker.run().then ((status) =>
+          @finishedCommand(status)
+          if status.exitcode is 0
             @_run resolve, reject
           else
-            resolve(exitcode)
+            resolve(status)
         ), (e) =>
           @errorCommand e
-          resolve(-1)
+          resolve(exitcode: -1, status: null)
       ), reject
 
     stop: ->
       return if @finished
       return @finished = true unless @currentWorker?
-      @currentWorker.kill()
-      @finishedQueue -2
+      @currentWorker.kill().then => @finishedQueue -2
 
     finishedQueue: (code) ->
       @finished = true
@@ -66,10 +65,12 @@ module.exports =
     hasFinished: ->
       @finished
 
-    finishedCommand: (exitcode) ->
-      @emitter.emit 'finishedCommand', exitcode
-      if exitcode isnt null and exitcode isnt 0
-        @finishedQueue exitcode
+    finishedCommand: (status) ->
+      @currentWorker.destroy()
+      @emitter.emit 'finishedCommand', status
+      if status.exitcode isnt null and status.exitcode isnt 0
+        return if status.exitcode >= 128
+        @finishedQueue status.exitcode
 
     errorCommand: (error) ->
       @emitter.emit 'errorCommand', error

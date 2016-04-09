@@ -8,7 +8,7 @@ Outputs = require '../output/output'
 Command = require '../provider/command'
 
 MainPane = require './command-edit-main-pane'
-ProfilePane = require './command-edit-profile-pane'
+HighlightingPane = require './command-edit-highlighting-pane'
 
 module.exports =
   class CommandPane extends View
@@ -32,6 +32,8 @@ module.exports =
 
     setBlacklist: (@blacklist) ->
 
+    setSource: (@sourceFile) ->
+
     detached: ->
       @removeEventHandlers()
       for item in @panes
@@ -43,9 +45,9 @@ module.exports =
       @panes = []
 
       @buildPane(new MainPane, 'General', 'icon-gear') unless 'general' in @blacklist
-      @initializeModifierModules()
-      @buildPane(new ProfilePane, 'Highlighting', 'icon-plug') unless 'highlighting' in @blacklist
-      @initializeOutputModules()
+      @initializeModifierModules() unless 'modifiers' in @blacklist
+      @buildPane(new HighlightingPane, 'Highlighting', 'icon-eye') unless 'highlighting' in @blacklist
+      @initializeOutputModules() unless 'outputs' in @blacklist
 
       @addEventHandlers()
       @initializePanes()
@@ -97,11 +99,13 @@ module.exports =
       return pane: item, view: view
 
     initializeModifierModules: ->
+      @modifier_count = 0
       for key in Object.keys(@command.modifier ? {})
         continue if key in @blacklist
         continue unless Modifiers.activate(key) is true
         mod = Modifiers.modules[key]
         continue if mod.private
+        @modifier_count = @modifier_count + 1
         @buildPane(new mod.edit, "Modifier: #{mod.name}", 'icon-pencil', key, mod.description, @command.modifier?[key]?, true)
 
       if Object.keys(@command.modifier ? {}).length is 0
@@ -115,6 +119,7 @@ module.exports =
         continue unless Modifiers.activate(key) is true
         mod = Modifiers.modules[key]
         continue if mod.private
+        @modifier_count = @modifier_count + 1
         @buildPane(new mod.edit, "Modifier: #{mod.name}", 'icon-pencil', key, mod.description, @command.modifier?[key]?, true)
 
     initializeOutputModules: ->
@@ -126,13 +131,13 @@ module.exports =
         @buildPane(new mod.edit, "Output: #{mod.name}", 'icon-terminal', key, mod.description, @command.output?[key]?)
 
     moveModifierUp: (index) ->
-      return false if (index is 1) or (index > Object.keys(Modifiers.modules).length)
+      return false if (index is 1) or (index > @modifier_count)
       e = @panes.splice(index, 1)[0]
       @panes.splice(index - 1, 0, e)
       $(@panes_view.children()[index - 1]).before e.pane
 
     moveModifierDown: (index) ->
-      return false if (index >= Object.keys(Modifiers.modules).length)
+      return false if (index >= @modifier_count)
       e = @panes.splice(index + 1, 1)[0]
       @panes.splice(index, 0, e)
       $(@panes_view.children()[index]).before e.pane

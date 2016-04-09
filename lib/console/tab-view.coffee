@@ -5,23 +5,13 @@ module.exports =
     @content: ->
       @div class: 'output'
 
-    initialize: ->
-      @lockoutput = false
-
     printLine: (line) ->
-      return null if @lockoutput
       @append(line)
       @parent().scrollTop(@[0].scrollHeight) unless @hasClass('hidden')
       return @[0].children[@[0].children.length - 1]
 
     scroll: ->
       @parent().scrollTop(@[0].scrollHeight) unless @hasClass('hidden')
-
-    lock: ->
-      @lockoutput = true
-
-    unlock: ->
-      @lockoutput = false
 
     clear: ->
       @empty()

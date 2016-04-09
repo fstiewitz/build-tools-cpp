@@ -84,6 +84,12 @@ module.exports =
               @div =>
                 @span class: 'inline-block text-subtle', 'Print output of all commands of the queue in one tab'
           @div class: 'block checkbox', =>
+            @input id: 'colors', type: 'checkbox'
+            @label =>
+              @div class: 'settings-name', 'Use ANSI Color Codes'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Highlight console output using ANSI Color Codes'
+          @div class: 'block checkbox', =>
             @input id: 'stdin', type: 'checkbox'
             @label =>
               @div class: 'settings-name', 'Allow user input'
@@ -94,16 +100,19 @@ module.exports =
         if command?.output?.console?
           @find('#close_success').prop('checked', command.output.console.close_success)
           @find('#all_in_one').prop('checked', command.output.console.queue_in_buffer ? true)
+          @find('#colors').prop('checked', command.output.console.colors ? false)
           @find('#stdin').prop('checked', command.output.console.stdin ? false)
         else
           @find('#close_success').prop('checked', if atom.config.get('build-tools.CloseOnSuccess') is -1 then false else true)
           @find('#all_in_one').prop('checked', true)
+          @find('#colors').prop('checked', false)
           @find('#stdin').prop('checked', false)
 
       get: (command) ->
         command.output.console ?= {}
         command.output.console.close_success = @find('#close_success').prop('checked')
         command.output.console.queue_in_buffer = @find('#all_in_one').prop('checked')
+        command.output.console.colors = @find('#colors').prop('checked')
         command.output.console.stdin = @find('#stdin').prop('checked')
         return null
 
@@ -117,6 +126,7 @@ module.exports =
         keys.innerHTML = '''
         <div class="text-padded">Close on success:</div>
         <div class="text-padded">Execute queue in one tab:</div>
+        <div class="text-padded">ANSI Colors:</div>
         <div class="text-padded">User Input:</div>
         '''
         values = document.createElement 'div'
@@ -127,6 +137,10 @@ module.exports =
         value = document.createElement 'div'
         value.classList.add 'text-padded'
         value.innerText = String(command.output.console.queue_in_buffer)
+        values.appendChild value
+        value = document.createElement 'div'
+        value.classList.add 'text-padded'
+        value.innerText = String(command.output.console.colors)
         values.appendChild value
         value = document.createElement 'div'
         value.classList.add 'text-padded'
@@ -150,7 +164,6 @@ module.exports =
           @tab = consolemodel.getTab @command
           @tab.clear()
           clearTimeout timeout
-        @tab.unlock()
         @tab.setRunning()
         @tab.focus()
         @stdout_lines = []
@@ -165,14 +178,14 @@ module.exports =
           consoleview.input_container.addClass 'hidden'
 
       stdout_new: ->
-        if @command.stdout.highlighting is 'nh' and @command.stdout.ansi_option is 'parse' and (last = @stdout_lines[@stdout_lines.length - 1])?
+        if @command.output.console.colors and (last = @stdout_lines[@stdout_lines.length - 1])?
           if last.innerText is ''
             last.innerText = ' '
             AnsiParser.copyAttributes(@stdout_lines, @stdout_lines.length - 1)
         @stdout_lines.push(@tab.newLine())
 
       stdout_raw: (input) ->
-        if @command.stdout.highlighting is 'nh' and @command.stdout.ansi_option is 'parse'
+        if @command.output.console.colors
           AnsiParser.parseAnsi(input, @stdout_lines, @stdout_lines.length - 1)
         else
           @stdout_lines[@stdout_lines.length - 1].innerText += input
@@ -204,14 +217,14 @@ module.exports =
           element.html(_new.html())
 
       stderr_new: ->
-        if @command.stderr.highlighting is 'nh' and @command.stderr.ansi_option is 'parse' and (last = @stderr_lines[@stderr_lines.length - 1])?
+        if @command.output.console.colors and (last = @stderr_lines[@stderr_lines.length - 1])?
           if last.innerText is ''
             last.innerText = ' '
             AnsiParser.copyAttributes(@stderr_lines, @stderr_lines.length - 1)
         @stderr_lines.push(@tab.newLine())
 
       stderr_raw: (input) ->
-        if @command.stderr.highlighting is 'nh' and @command.stderr.ansi_option is 'parse'
+        if @command.output.console.colors
           AnsiParser.parseAnsi(input, @stderr_lines, @stderr_lines.length - 1)
         else
           @stderr_lines[@stderr_lines.length - 1].innerText += input
@@ -244,29 +257,26 @@ module.exports =
 
       error: (message) ->
         @tab.setError(message)
-        @tab.lock()
         @tab.finishConsole()
 
-      exitCommand: (code) ->
-        @tab.setFinished(code)
-        @tab.lock()
+      exitCommand: (status) ->
+        @tab.setFinished(status)
         return if @queue_in_buffer
-        @finish(code)
+        @finish(status)
 
       exitQueue: (code) ->
         if code is -2
           @tab.setCancelled()
-          @tab.lock()
           @tab.finishConsole()
           consoleview.hideInput() if @tab.hasFocus()
           return
         return unless @queue_in_buffer
         @finish(code)
 
-      finish: (code) ->
+      finish: (status) ->
         @tab.finishConsole()
         consoleview.hideInput() if @tab.hasFocus()
-        if @command.output['console'].close_success and code is 0
+        if @command.output['console'].close_success and status is 0
           t = atom.config.get('build-tools.CloseOnSuccess')
           if t < 1
             consolepanel.hide()

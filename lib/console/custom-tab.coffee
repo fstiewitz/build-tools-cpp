@@ -26,12 +26,6 @@ module.exports =
       @title ?= document.createElement 'span'
       @title.innerText = header
 
-    unlock: ->
-      @view.unlock()
-
-    lock: ->
-      @view.lock()
-
     printLine: (line) ->
       @view.printLine line
 

@@ -5,13 +5,11 @@
   "description": "Build your projects in atom",
   "repository": "https://github.com/deprint/build-tools-cpp",
   "license": "MIT",
-  "scripts": {
-    "lint": "coffeelint lib"
-  },
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
+    "ps-tree": "^1.0.0",
     "ptyw.js": "^0.3.0",
     "atom-space-pen-views": "^2.0.0",
     "fs-plus": "^2.0.4",
@@ -21,7 +19,6 @@
   "keywords": [
     "build",
     "compile",
-    "tools",
     "projects"
   ],
   "providedServices": {
@@ -49,12 +46,18 @@
     },
     "build-tools.profile": {
       "versions": {
-        "^1.0.0": "consumeProfileModule"
+        "1.0.0": "consumeProfileModuleV1",
+        "^1.1.0": "consumeProfileModuleV2"
       }
     },
     "build-tools.provider": {
       "versions": {
         "^1.0.0": "consumeProviderModule"
+      }
+    },
+    "build-tools.stream-modifier": {
+      "versions": {
+        "^1.0.0": "consumeStreamModifier"
       }
     },
     "build-tools.output": {

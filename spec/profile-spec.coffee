@@ -2,8 +2,13 @@
 
 profile 'GCC/Clang', {
   stderr:
-    profile: 'gcc_clang'
-    highlighting: 'hc'
+    pipeline: [
+      {
+        name: 'profile'
+        config:
+          profile: 'gcc_clang'
+      }
+    ]
 }, 'stderr',
 [
   'In file included from test/src/def.h:32:0, ',
@@ -39,8 +44,13 @@ profile 'GCC/Clang', {
 
 profile 'apm test', {
   stderr:
-    profile: 'apm_test'
-    highlighting: 'hc'
+    pipeline: [
+      {
+        name: 'profile'
+        config:
+          profile: 'apm_test'
+      }
+    ]
 }, 'stderr',
 [
   '.................................................FF...............................................'
@@ -100,8 +110,13 @@ profile 'apm test', {
 
 profile 'Java', {
   stderr:
-    profile: 'java'
-    highlighting: 'hc'
+    pipeline: [
+      {
+        name: 'profile'
+        config:
+          profile: 'java'
+      }
+    ]
 }, 'stderr',
 [
   'Buildfile: /home/fabian/Projects/testing/java/build.xml'
@@ -152,8 +167,13 @@ profile 'Java', {
 
 profile 'Python', {
   stderr:
-    profile: 'python'
-    highlighting: 'hc'
+    pipeline: [
+      {
+        name: 'profile'
+        config:
+          profile: 'python'
+      }
+    ]
 }, 'stderr',
 [
   'Traceback (most recent call last): '
@@ -191,8 +211,13 @@ profile 'Python', {
 
 profile 'Modelsim', {
   stderr:
-    profile: 'modelsim'
-    highlighting: 'hc'
+    pipeline: [
+      {
+        name: 'profile'
+        config:
+          profile: 'modelsim'
+      }
+    ]
 }, 'stderr',
 [
   'vcom -work work /home/chris/coding/vhdl_test/test.vhd'

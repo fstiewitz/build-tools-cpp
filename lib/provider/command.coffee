@@ -3,7 +3,7 @@ Queue = require '../pipeline/queue'
 
 module.exports =
   class Command
-    constructor: ({@project, @source, @name, @command, @wd, @env, @modifier, @stdout, @stderr, @output, @version} = {}) ->
+    constructor: ({@project, @source, @name, @command, @wd, @env, @modifier, @environment, @stdout, @stderr, @output, @version} = {}) ->
       @env ?= {}
       @wd ?= '.'
       @modifier ?= {}
@@ -11,6 +11,7 @@ module.exports =
       @stdout ?= highlighting: 'nh'
       @stderr ?= highlighting: 'nh'
       @version ?= 1
+      @migrateToV2() if @version is 1
 
     getSpawnInfo: ->
       @original = @command
@@ -47,6 +48,54 @@ module.exports =
         cmd_list.shift()
       (args[i] = a.slice(1, -1) for a, i in args when /[\"\']/.test(a[0]) and /[\"\']/.test(a[a.length - 1]))
       return args
+
+    migrateToV2: ->
+      if @stdout.pty is true
+        @environment =
+          name: 'ptyw'
+          config:
+            rows: @stdout.pty_rows
+            cols: @stdout.pty_cols
+        delete @stdout.pty
+        delete @stdout.pty_rows
+        delete @stdout.pty_cols
+      else
+        @environment =
+          name: 'child_process'
+          config:
+            stdoe: 'both'
+      @migrateStreamV2 @stdout
+      @migrateStreamV2 @stderr
+      @version = 2
+
+    migrateStreamV2: (str) ->
+      return if str.pipeline?
+      str.pipeline = []
+      if str.highlighting is 'nh'
+        if str.ansi_option is 'remove'
+          str.pipeline.push name: 'remansi'
+      else if str.highlighting is 'ha'
+        str.pipeline.push name: 'all'
+      else if str.highlighting is 'hc'
+        str.pipeline.push name: 'profile', config: {profile: str.profile}
+      else if str.highlighting is 'hr'
+        str.pipeline.push {
+          name: 'regex'
+          config:
+            regex: str.regex
+            defaults: str.defaults
+        }
+      else if str.highlighting is 'ht'
+        str.pipeline.push {
+          name: 'regex'
+          config:
+            regex: '(?<type> error|warning):'
+        }
+      delete str.highlighting
+      delete str.profile
+      delete str.ansi_option
+      delete str.regex
+      delete str.defaults
 
     getQueue: ->
       new Queue(this)

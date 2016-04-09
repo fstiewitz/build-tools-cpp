@@ -54,7 +54,7 @@ describe 'Console - Tab', ->
     beforeEach ->
       spy = jasmine.createSpy 'close'
       tab.emitter.on 'close', spy
-      tab.setFinished 0
+      tab.setFinished exitcode: 0, signal: null
 
     it 'sets the tab header to "error"', ->
       expect(tab.header.icon[0].classList.contains 'icon-check').toBe true

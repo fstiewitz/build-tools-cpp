@@ -87,7 +87,7 @@ describe 'Profile Service', ->
   [disp] = []
 
   beforeEach ->
-    disp = main.consumeProfileModule key: 'test', profile: testProfile
+    disp = main.consumeProfileModuleV1 key: 'test', profile: testProfile
 
   afterEach ->
     Profiles.reset()
