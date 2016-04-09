@@ -35,6 +35,7 @@ build-tools
 * add their own highlighting profiles
 * execute their own commands
 * provide their own commands
+* provide their own output streams
 * modify command parameters
 * get the command's output
 * modify the command's output
