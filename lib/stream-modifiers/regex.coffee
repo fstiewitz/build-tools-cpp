@@ -73,8 +73,8 @@ module.exports =
                 @span class: 'inline-block text-subtle', ' fields.'
             @subview 'default', new TextEditorView(mini: true)
 
-      set: (command, stream, config) ->
-        if stream?
+      set: (command, config) ->
+        if command?
           @regex.getModel().setText(config.regex)
           @default.getModel().setText(config.defaults)
         else
