@@ -1,3 +1,20 @@
+## 4.4.0 - Stream Modifiers
+
+* New service: `stream-modifier`.
+* New modules: __Highlight All__, __Remove ANSI Codes__, __Highlighting Profiles__ and __Custom Regular Expressions__.
+* Your commands will automatically migrate to the new format.
+* Users can configure multiple stream modifiers per output stream.
+* Stream modifiers add support for recursive build systems (with relative file paths).
+* Added options related to output stream mapping:
+  * Disable both output streams
+  * Disable standard output stream
+  * Disable standard error stream
+  * Redirect standard output into standard error
+  * Redirect standard error into standard output
+  * Enable both output streams
+  * Both redirect settings for `pty.js`
+* `SIGKILL` processes if they don't react to `SIGINT`.
+
 ## 4.3.0 - pty.js
 
 * Added option to execute command through a pseudo terminal (using [pty.js](https://www.npmjs.com/package/pty.js)), which fixes buffering issues when using stdin.

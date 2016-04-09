@@ -37,10 +37,10 @@ build-tools
 * provide their own commands
 * modify command parameters
 * get the command's output
+* modify the command's output
 * display their own content through `build-tools` tabbed console pane
 
 Refer to the [wiki](https://github.com/deprint/build-tools-cpp/wiki) for details.
-
 
 ## Contributing
 * Let me know if you encounter any bugs.
