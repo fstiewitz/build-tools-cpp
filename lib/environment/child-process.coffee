@@ -50,10 +50,13 @@ module.exports =
               @option value: 'both', 'Display all streams'
 
       set: (command, sourceFile) ->
-        for option, id in @streams.children()
-          if option.attributes.getNamedItem('value').nodeValue is stdoe
-            @streams[0].selectedIndex = id
-            break
+        if command?
+          for option, id in @streams.children()
+            if option.attributes.getNamedItem('value').nodeValue is command.environment.config.stdoe
+              @streams[0].selectedIndex = id
+              break
+        else
+          @streams[0].selectedIndex = 5
 
       get: (command) ->
         value = @streams.children()[@streams[0].selectedIndex].attributes.getNamedItem('value').nodeValue
@@ -61,6 +64,7 @@ module.exports =
           name: 'child_process'
           config:
             stdoe: value
+        return null
 
   mod:
     class ChildProcess

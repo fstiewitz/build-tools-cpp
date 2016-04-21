@@ -38,69 +38,70 @@ module.exports =
     class PtyEditPane extends View
 
       @content: ->
-        @content: ->
-          @div class: 'panel-body', =>
-            @div class: 'block', =>
-              @label =>
-                @div class: 'settings-name', 'Output Streams'
-                @div =>
-                  @span class: 'inline-block text-subtle', 'Configure standard output/error stream'
-              @select class: 'form-control', outlet: 'streams', =>
-                @option value: 'pty-stdout', 'Use pty.js + redirect stderr in stdout'
-                @option value: 'pty-stderr', 'Use pty.js + redirect stdout in stderr'
+        @div class: 'panel-body', =>
+          @div class: 'block', =>
+            @label =>
+              @div class: 'settings-name', 'Output Streams'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Configure standard output/error stream'
+            @select class: 'form-control', outlet: 'streams', =>
+              @option value: 'pty-stdout', 'Use pty.js + redirect stderr in stdout'
+              @option value: 'pty-stderr', 'Use pty.js + redirect stdout in stderr'
 
-            @div class: 'block', =>
-              @label =>
-                @div class: 'settings-name', 'Number of Rows'
-                @div =>
-                  @span class: 'inline-block text-subtle', 'Dimensions of pseudo terminal (for pty.js)'
-              @subview 'pty_rows', new TextEditorView(mini: true, placeholderText: '25')
+          @div class: 'block', =>
+            @label =>
+              @div class: 'settings-name', 'Number of Rows'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Dimensions of pseudo terminal (for pty.js)'
+            @subview 'pty_rows', new TextEditorView(mini: true, placeholderText: '25')
 
-            @div class: 'block', =>
-              @label =>
-                @div class: 'settings-name', 'Number of Columns'
-                @div =>
-                  @span class: 'inline-block text-subtle', 'Dimensions of pseudo terminal (for pty.js)'
-              @subview 'pty_cols', new TextEditorView(mini: true, placeholderText: '80')
+          @div class: 'block', =>
+            @label =>
+              @div class: 'settings-name', 'Number of Columns'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Dimensions of pseudo terminal (for pty.js)'
+            @subview 'pty_cols', new TextEditorView(mini: true, placeholderText: '80')
 
-        set: (command, sourceFile) ->
-          if command?
-            for option, id in @streams.children()
-              if option.attributes.getNamedItem('value').nodeValue is stdoe
-                @streams[0].selectedIndex = id
-                break
-            @pty_rows.getModel().setText(command.environment.config.rows)
-            @pty_cols.getModel().setText(command.environment.config.cols)
-          else
-            @streams[0].selectedIndex = 0
-            @pty_rows.getModel().setText('')
-            @pty_cols.getModel().setText('')
+      set: (command, sourceFile) ->
+        if command?
+          for option, id in @streams.children()
+            if option.attributes.getNamedItem('value').nodeValue is command.environment.config.stdoe
+              @streams[0].selectedIndex = id
+              break
+          @pty_rows.getModel().setText('' + command.environment.config.rows)
+          @pty_cols.getModel().setText('' + command.environment.config.cols)
+        else
+          @streams[0].selectedIndex = 0
+          @pty_rows.getModel().setText('')
+          @pty_cols.getModel().setText('')
 
 
-        get: (command) ->
-          value = @streams.children()[@streams[0].selectedIndex].attributes.getNamedItem('value').nodeValue
+      get: (command) ->
+        value = @streams.children()[@streams[0].selectedIndex].attributes.getNamedItem('value').nodeValue
 
-          r = 0
-          c = 0
-          if @pty_cols.getModel().getText() is ''
-            c = 80
-          else
-            c = parseInt(@pty_cols.getModel().getText())
-            if Number.isNaN(c)
-              return "cols: #{@pty_cols.getModel().getText()} is not a number"
-          if @pty_rows.getModel().getText() is ''
-            r = 25
-          else
-            r = parseInt(@pty_rows.getModel().getText())
-            if Number.isNaN(r)
-              return "rows: #{@pty_rows.getModel().getText()} is not a number"
+        r = 0
+        c = 0
+        if @pty_cols.getModel().getText() is ''
+          c = 80
+        else
+          c = parseInt(@pty_cols.getModel().getText())
+          if Number.isNaN(c)
+            return "cols: #{@pty_cols.getModel().getText()} is not a number"
+        if @pty_rows.getModel().getText() is ''
+          r = 25
+        else
+          r = parseInt(@pty_rows.getModel().getText())
+          if Number.isNaN(r)
+            return "rows: #{@pty_rows.getModel().getText()} is not a number"
 
-          command.environment =
-            name: 'ptyw'
-            config:
-              stdoe: value
-              rows: r
-              cols: c
+        command.environment =
+          name: 'ptyw'
+          config:
+            stdoe: value
+            rows: r
+            cols: c
+
+        return null
 
   mod:
     class Ptyw
