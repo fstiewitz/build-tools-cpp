@@ -50,7 +50,7 @@ module.exports =
               @option value: 'both', 'Display all streams'
 
       set: (command, sourceFile) ->
-        if command?
+        if command?.environment.name is 'child_process'
           for option, id in @streams.children()
             if option.attributes.getNamedItem('value').nodeValue is command.environment.config.stdoe
               @streams[0].selectedIndex = id

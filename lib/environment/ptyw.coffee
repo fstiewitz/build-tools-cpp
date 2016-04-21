@@ -63,7 +63,7 @@ module.exports =
             @subview 'pty_cols', new TextEditorView(mini: true, placeholderText: '80')
 
       set: (command, sourceFile) ->
-        if command?
+        if command?.environment.name is 'ptyw'
           for option, id in @streams.children()
             if option.attributes.getNamedItem('value').nodeValue is command.environment.config.stdoe
               @streams[0].selectedIndex = id
