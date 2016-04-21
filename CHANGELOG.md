@@ -1,3 +1,10 @@
+## 4.5.0 - Environment Modules
+
+* New service: `environment`
+* Removed module: __Spawn in Pseudo-Terminal__ (moved to [build-tools-pty](https://atom.io/packages/build-tools-pty))
+* Users can select one `Environment Module` from the config screen (Default: `Child Process`).
+* Moving `ptyw.js` to a separate package should resolve most windows-related issues.
+
 ## 4.4.0 - Stream Modifiers
 
 * New service: `stream-modifier`.

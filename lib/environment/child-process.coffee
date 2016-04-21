@@ -1,5 +1,7 @@
 {BufferedProcess} = require 'atom'
 
+{View} = require 'atom-space-pen-views'
+
 fs = require 'fs'
 
 pstree = null
@@ -28,6 +30,41 @@ module.exports =
         value.innerText = translate[command.environment.config.stdoe]
         @element.appendChild key
         @element.appendChild value
+
+  edit:
+    class CPEditPane extends View
+
+      @content: ->
+        @div class: 'panel-body', =>
+          @div class: 'block', =>
+            @label =>
+              @div class: 'settings-name', 'Output Streams'
+              @div =>
+                @span class: 'inline-block text-subtle', 'Configure standard output/error stream'
+            @select class: 'form-control', outlet: 'streams', =>
+              @option value: 'none', 'Disable all streams'
+              @option value: 'no-stdout', 'No stdout'
+              @option value: 'no-stderr', 'No stderr'
+              @option value: 'stderr-in-stdout', 'Redirect stderr in stdout'
+              @option value: 'stdout-in-stderr', 'Redirect stdout in stderr'
+              @option value: 'both', 'Display all streams'
+
+      set: (command, sourceFile) ->
+        if command?.environment.name is 'child_process'
+          for option, id in @streams.children()
+            if option.attributes.getNamedItem('value').nodeValue is command.environment.config.stdoe
+              @streams[0].selectedIndex = id
+              break
+        else
+          @streams[0].selectedIndex = 5
+
+      get: (command) ->
+        value = @streams.children()[@streams[0].selectedIndex].attributes.getNamedItem('value').nodeValue
+        command.environment =
+          name: 'child_process'
+          config:
+            stdoe: value
+        return null
 
   mod:
     class ChildProcess

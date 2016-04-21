@@ -3,7 +3,7 @@ Command = require './provider/command'
 Project = require './provider/project'
 
 LinterList = null
-[ProfileModules, OutputModules, ModifierModules, ProviderModules, StreamModifierModules] = []
+[ProfileModules, OutputModules, ModifierModules, ProviderModules, StreamModifierModules, EnvironmentModules] = []
 
 {CompositeDisposable} = require 'atom'
 
@@ -44,10 +44,12 @@ module.exports =
     (ProviderModules ? require './provider/provider').reset()
     (StreamModifierModules ? require './stream-modifiers/modifiers').reset()
     (OutputModules ? require './output/output').reset()
+    (EnvironmentModules ? require './environment/environment').reset()
     Input.deactivate()
     ModifierModules = null
     ProviderModules = null
     StreamModifierModules = null
+    EnvironmentModules = null
     OutputModules = null
     CommandEditPane = null
     SettingsView = null
@@ -66,8 +68,9 @@ module.exports =
     ProfileModules ?= require './profiles/profiles'
     ProviderModules ?= require './provider/provider'
     StreamModifierModules ?= require './stream-modifiers/modifiers'
+    EnvironmentModules ?= require './environment/environment'
     OutputModules ?= require './output/output'
-    {Input, ModifierModules, ProfileModules, ProviderModules, StreamModifierModules, OutputModules}
+    {Input, ModifierModules, ProfileModules, ProviderModules, StreamModifierModules, OutputModules, EnvironmentModules}
 
   provideConsole: ->
     (OutputModules ?= require './output/output').activate 'console'
@@ -88,6 +91,10 @@ module.exports =
   consumeProviderModule: ({key, mod}) ->
     ProviderModules ?= require './provider/provider'
     ProviderModules.addModule key, mod
+
+  consumeEnvironmentModule: ({key, mod}) ->
+    EnvironmentModules ?= require './environment/environment'
+    EnvironmentModules.addModule key, mod
 
   consumeStreamModifier: ({key, mod}) ->
     StreamModifierModules ?= require './stream-modifiers/modifiers'

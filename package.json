@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "ps-tree": "^1.0.0",
-    "ptyw.js": "^0.3.0",
     "atom-space-pen-views": "^2.0.0",
     "fs-plus": "^2.0.4",
     "season": "^5.2.0",
@@ -53,6 +52,11 @@
     "build-tools.provider": {
       "versions": {
         "^1.0.0": "consumeProviderModule"
+      }
+    },
+    "build-tools.environment": {
+      "versions": {
+        "^1.0.0": "consumeEnvironmentModule"
       }
     },
     "build-tools.stream-modifier": {

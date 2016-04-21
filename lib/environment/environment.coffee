@@ -7,7 +7,6 @@ Input = null
 module.exports =
   modules:
     child_process: require './child-process'
-    ptyw: require './ptyw'
 
   addModule: (key, mod) ->
     return if @modules[key]? and not @isCoreName(key)
@@ -25,7 +24,6 @@ module.exports =
       @deactivate k
       @removeModule k
     @modules.child_process = require './child-process'
-    @modules.ptyw = require './ptyw'
     Command = null
     Project = null
     Input = null
@@ -52,4 +50,4 @@ module.exports =
     return true
 
   isCoreName: (key) ->
-    key in ['child_process', 'ptyw']
+    key is 'child_process'
