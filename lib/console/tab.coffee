@@ -7,6 +7,7 @@ module.exports =
   class Tab
     constructor: (@command) ->
       @emitter = new Emitter
+      @destroyed = false
       @header = new TabItem(@command.project, @command.name, => @close())
       @view = new TabView
       @header.setHeader "#{@command.name} of #{@command.project}"
@@ -15,6 +16,7 @@ module.exports =
       @input = null
 
     destroy: ->
+      @destroyed = true
       @emitter.dispose()
       @input = null
       @focus = null
@@ -25,6 +27,7 @@ module.exports =
       @command = null
 
     clear: ->
+      return if @destroyed
       @view.clear()
       @error = null
       @code = null
@@ -33,14 +36,17 @@ module.exports =
     setInput: (@input) ->
 
     setRunning: ->
+      return if @destroyed
       @header.setIcon 'sync'
 
     setError: (@error) ->
+      return if @destroyed
       @header.setIcon 'x'
       @code = -1
       @getHeader()
 
     setFinished: (status) ->
+      return if @destroyed
       @code = status.exitcode
       @signal = status.signal
       if @code is 0
@@ -50,17 +56,21 @@ module.exports =
         @getHeader()
 
     setCancelled: ->
+      return if @destroyed
       @header.setIcon 'x'
       @code ?= -2
       @getHeader()
 
     newLine: ->
+      return if @destroyed
       @view.printLine '<div></div>'
 
     scroll: ->
+      return if @destroyed
       @view.scroll()
 
     finishConsole: ->
+      return if @destroyed
       @view.finishConsole()
 
     hasFocus: ->
@@ -68,6 +78,7 @@ module.exports =
       this is @console.activeTab
 
     getHeader: ->
+      return if @destroyed
       @title ?= document.createElement 'span'
       @title.innerText = "#{@command.name} of #{@command.project}"
       return @title unless @code?

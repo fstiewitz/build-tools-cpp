@@ -178,6 +178,7 @@ module.exports =
           consoleview.input_container.addClass 'hidden'
 
       stdout_new: ->
+        return if @tab.destroyed
         if @command.output.console.colors and (last = @stdout_lines[@stdout_lines.length - 1])?
           if last.innerText is ''
             last.innerText = ' '
@@ -185,6 +186,7 @@ module.exports =
         @stdout_lines.push(@tab.newLine())
 
       stdout_raw: (input) ->
+        return if @tab.destroyed
         if @command.output.console.colors
           AnsiParser.parseAnsi(input, @stdout_lines, @stdout_lines.length - 1)
         else
@@ -192,9 +194,11 @@ module.exports =
         @tab.scroll()
 
       stdout_in: ({input}) ->
+        return if @tab.destroyed
         @stdout_lines[@stdout_lines.length - 1].innerText = ' ' if input is ''
 
       stdout_setType: (status) ->
+        return if @tab.destroyed
         last = @stdout_lines[@stdout_lines.length - 1]
         return unless last?
         status = '' if not status?
@@ -202,6 +206,7 @@ module.exports =
         $(last).prop('class', "bold text-#{status}")
 
       stdout_print: ({input, files}) ->
+        return if @tab.destroyed
         return unless @stdout_lines[@stdout_lines.length - 1]?
         _new = buildHTML(input.input, (input.highlighting ? input.type), files)
         element = $(@stdout_lines[@stdout_lines.length - 1])
@@ -209,6 +214,7 @@ module.exports =
         element.html(_new.html())
 
       stdout_replacePrevious: (lines) ->
+        return if @tab.destroyed
         return unless @stdout_lines[@stdout_lines.length - lines.length - 1]?
         for {input, files}, index in lines
           _new = buildHTML(input.input, (input.highlighting ? input.type), files)
@@ -217,6 +223,7 @@ module.exports =
           element.html(_new.html())
 
       stderr_new: ->
+        return if @tab.destroyed
         if @command.output.console.colors and (last = @stderr_lines[@stderr_lines.length - 1])?
           if last.innerText is ''
             last.innerText = ' '
@@ -224,6 +231,7 @@ module.exports =
         @stderr_lines.push(@tab.newLine())
 
       stderr_raw: (input) ->
+        return if @tab.destroyed
         if @command.output.console.colors
           AnsiParser.parseAnsi(input, @stderr_lines, @stderr_lines.length - 1)
         else
@@ -231,9 +239,11 @@ module.exports =
         @tab.scroll()
 
       stderr_in: ({input}) ->
+        return if @tab.destroyed
         @stderr_lines[@stderr_lines.length - 1].innerText = ' ' if input is ''
 
       stderr_setType: (status) ->
+        return if @tab.destroyed
         last = @stderr_lines[@stderr_lines.length - 1]
         return unless last?
         status = '' if not status?
@@ -241,6 +251,7 @@ module.exports =
         $(last).prop('class', "bold text-#{status}")
 
       stderr_print: ({input, files}) ->
+        return if @tab.destroyed
         return unless @stderr_lines[@stderr_lines.length - 1]?
         _new = buildHTML(input.input, (input.highlighting ? input.type), files)
         element = $(@stderr_lines[@stderr_lines.length - 1])
@@ -248,6 +259,7 @@ module.exports =
         element.html(_new.html())
 
       stderr_replacePrevious: (lines) ->
+        return if @tab.destroyed
         return unless @stderr_lines[@stderr_lines.length - lines.length - 1]?
         for {input, files}, index in lines
           _new = buildHTML(input.input, (input.highlighting ? input.type), files)
