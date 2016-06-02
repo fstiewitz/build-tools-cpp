@@ -46,7 +46,8 @@
     "build-tools.profile": {
       "versions": {
         "1.0.0": "consumeProfileModuleV1",
-        "^1.1.0": "consumeProfileModuleV2"
+        "1.1.0": "consumeProfileModuleV2",
+        "^1.2.0": "consumeProfileModuleV3"
       }
     },
     "build-tools.provider": {

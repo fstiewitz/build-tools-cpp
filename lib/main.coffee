@@ -88,6 +88,12 @@ module.exports =
     ProfileModules ?= require './profiles/profiles'
     ProfileModules.addProfile key, profile, 2
 
+  consumeProfileModuleV3: (profiles) ->
+    ProfileModules ?= require './profiles/profiles'
+    disp = new CompositeDisposable
+    disp.add(ProfileModules.addProfile(key, profile, 2)) for key, profile of profiles
+    disp
+
   consumeProviderModule: ({key, mod}) ->
     ProviderModules ?= require './provider/provider'
     ProviderModules.addModule key, mod
