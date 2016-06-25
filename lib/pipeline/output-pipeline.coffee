@@ -35,9 +35,15 @@ module.exports =
       for mod in @pipeline
         continue unless mod.getFiles?
         for _match in mod.getFiles(temp: match, perm: @perm)
-          if _match.file and (fp = @absolutePath _match.file)?
-            _match.file = fp
-            filenames.push _match
+          if _match.file
+            exists = false
+            for existing in filenames
+              if _match.start is existing.start
+                exists = true
+            break if exists
+            if (fp = @absolutePath _match.file)?
+              _match.file = fp
+              filenames.push _match
       return filenames
 
     finishLine: (td, input) ->
