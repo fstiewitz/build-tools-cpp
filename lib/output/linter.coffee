@@ -14,14 +14,14 @@ module.exports =
     class LinterPane extends View
       @content: ->
         @div class: 'panel-body padded', =>
-          @div class: 'block checkbox', =>
-            @input id: 'no_trace', type: 'checkbox'
+          @div class: 'block input-label align', =>
+            @input class: 'input-checkbox', id: 'no_trace', type: 'checkbox'
             @label =>
               @div class: 'settings-name', 'Disable Trace'
               @div =>
                 @span class: 'inline-block text-subtle', 'Do not send stack traces to Linter'
-          @div class: 'block checkbox', =>
-            @input id: 'immediate', type: 'checkbox'
+          @div class: 'block input-label align', =>
+            @input class: 'input-checkbox', id: 'immediate', type: 'checkbox'
             @label =>
               @div class: 'settings-name', 'Trigger immediately'
               @div =>

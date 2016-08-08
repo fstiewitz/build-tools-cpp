@@ -19,14 +19,14 @@ module.exports =
 
       @content: ->
         @div class: 'panel-body padded', =>
-          @div class: 'block checkbox', =>
-            @input id: 'recycle_buffer', type: 'checkbox'
+          @div class: 'block input-label align', =>
+            @input class: 'input-checkbox', id: 'recycle_buffer', type: 'checkbox'
             @label =>
               @div class: 'settings-name', 'Recycle editor tab'
               @div =>
                 @span class: 'inline-block text-subtle', 'Re-use the same buffer'
-          @div class: 'block checkbox', =>
-            @input id: 'all_in_one', type: 'checkbox'
+          @div class: 'block input-label align', =>
+            @input class: 'input-checkbox', id: 'all_in_one', type: 'checkbox'
             @label =>
               @div class: 'settings-name', 'Execute Queue in one buffer'
               @div =>

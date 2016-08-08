@@ -59,8 +59,8 @@ module.exports =
           c += ' module' if key?
           @div class: c, =>
             if key?
-              @div class: 'checkbox align', =>
-                @input id: key, type: 'checkbox'
+              @div class: 'input-label align', =>
+                @input class: 'input-toggle', id: key, type: 'checkbox'
                 @label =>
                   @div class: "settings-name icon #{icon}", name
                   @div =>

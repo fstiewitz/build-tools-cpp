@@ -79,8 +79,8 @@ module.exports =
                 @div =>
                   @span class: 'inline-block text-subtle', 'Path to .build-tools.cson file'
               @subview 'path', new TextEditorView(mini: true)
-            @div class: 'block checkbox', =>
-              @input id: 'overwrite_wd', type: 'checkbox'
+            @div class: 'block input-label align', =>
+              @input class: 'input-checkbox', id: 'overwrite_wd', type: 'checkbox'
               @label =>
                 @div class: 'settings-name', 'Overwrite working directory'
                 @div =>

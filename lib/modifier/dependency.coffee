@@ -53,8 +53,8 @@ module.exports =
             @div class: 'config-icons', =>
               @div id: 'add', class: 'icon-plus'
               @div id: 'cancel', class: 'icon-x hidden'
-          @div class: 'block checkbox', =>
-            @input id: 'abort', type: 'checkbox'
+          @div class: 'block input-label align', =>
+            @input class: 'input-checkbox', id: 'abort', type: 'checkbox'
             @label =>
               @div class: 'settings-name', 'Abort when command not found'
               @div =>

@@ -6,7 +6,7 @@
   "repository": "https://github.com/deprint/build-tools-cpp",
   "license": "MIT",
   "engines": {
-    "atom": ">=1.0.0 <2.0.0"
+    "atom": ">=1.10.0-beta0 <2.0.0"
   },
   "dependencies": {
     "ps-tree": "^1.0.0",

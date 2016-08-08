@@ -28,8 +28,8 @@ module.exports =
               @div =>
                 @span class: 'inline-block text-subtle', 'File path (absolute or relative)'
             @subview 'file_path', new TextEditorView(mini: true, placeholderText: 'Default: output.log')
-          @div class: 'block checkbox', =>
-            @input id: 'all_in_one', type: 'checkbox'
+          @div class: 'block input-label align', =>
+            @input class: 'input-checkbox', id: 'all_in_one', type: 'checkbox'
             @label =>
               @div class: 'settings-name', 'Log output to one file per queue'
               @div =>

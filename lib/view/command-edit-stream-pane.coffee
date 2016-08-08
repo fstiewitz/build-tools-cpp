@@ -80,7 +80,7 @@ module.exports =
     buildPane: (view, name, icon, key, desc = '', config) ->
       item = $$ ->
         @div class: 'inset-panel', =>
-          @div class: 'panel-heading top module', =>
+          @div class: 'panel-heading top module-small', =>
             @div class: 'align', =>
               @div class: "settings-name icon #{icon}", name
               @div =>

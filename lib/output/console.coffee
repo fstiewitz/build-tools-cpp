@@ -71,26 +71,26 @@ module.exports =
 
       @content: ->
         @div class: 'panel-body padded', =>
-          @div class: 'block checkbox', =>
-            @input id: 'close_success', type: 'checkbox'
+          @div class: 'block input-label align', =>
+            @input class: 'input-checkbox', id: 'close_success', type: 'checkbox'
             @label =>
               @div class: 'settings-name', 'Close on success'
               @div =>
                 @span class: 'inline-block text-subtle', 'Close console on success. Uses config value in package settings if enabled'
-          @div class: 'block checkbox', =>
-            @input id: 'all_in_one', type: 'checkbox'
+          @div class: 'block input-label align', =>
+            @input class: 'input-checkbox', id: 'all_in_one', type: 'checkbox'
             @label =>
               @div class: 'settings-name', 'Execute Queue in one tab'
               @div =>
                 @span class: 'inline-block text-subtle', 'Print output of all commands of the queue in one tab'
-          @div class: 'block checkbox', =>
-            @input id: 'colors', type: 'checkbox'
+          @div class: 'block input-label align', =>
+            @input class: 'input-checkbox', id: 'colors', type: 'checkbox'
             @label =>
               @div class: 'settings-name', 'Use ANSI Color Codes'
               @div =>
                 @span class: 'inline-block text-subtle', 'Highlight console output using ANSI Color Codes'
-          @div class: 'block checkbox', =>
-            @input id: 'stdin', type: 'checkbox'
+          @div class: 'block input-label align', =>
+            @input class: 'input-checkbox', id: 'stdin', type: 'checkbox'
             @label =>
               @div class: 'settings-name', 'Allow user input'
               @div =>
