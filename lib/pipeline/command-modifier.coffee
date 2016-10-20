@@ -4,7 +4,7 @@ CommandWorker = require './command-worker'
 module.exports =
   class CommandModifier
     constructor: (@command) ->
-      @keys = Object.keys(command.modifier ? {})
+      @keys = Object.keys(@command.modifier ? {})
       @preSplitKeys = @keys.filter (key) ->
         Modifiers.modules[key]?.preSplit?
       @postSplitKeys = @keys.filter (key) ->

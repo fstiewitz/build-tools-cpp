@@ -32,8 +32,8 @@ module.exports =
 
     set: (@command, @stream, @sourceFile) ->
       @heading.text(nice[@stream])
-      @loadAddCommands(stream)
-      @loadModifierModules(@command[stream].pipeline) if @command?
+      @loadAddCommands(@stream)
+      @loadModifierModules(@command[@stream].pipeline) if @command?
       @addEventHandlers()
 
     get: (command, stream) ->
