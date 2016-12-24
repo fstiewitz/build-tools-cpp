@@ -1,7 +1,7 @@
 {
   "name": "build-tools",
   "main": "./lib/main",
-  "version": "4.5.4",
+  "version": "4.5.5",
   "description": "Build your projects in atom",
   "repository": "https://github.com/deprint/build-tools-cpp",
   "license": "MIT",
