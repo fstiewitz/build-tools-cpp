@@ -80,7 +80,7 @@ module.exports =
         if @command.output.linter.no_trace
           message.trace = null
         ll.messages.push message
-        exitQueue(0) if @command.output.linter.immediate
+        @exitQueue(0) if @command.output.linter.immediate
 
       stderr_linter: (message) ->
         return ll.messages.push message if atom.inSpecMode()
@@ -89,7 +89,7 @@ module.exports =
         if @command.output.linter.no_trace
           message.trace = null
         ll.messages.push message
-        exitQueue(0) if @command.output.linter.immediate
+        @exitQueue(0) if @command.output.linter.immediate
 
       exitQueue: (code) ->
         atom.commands.dispatch(atom.views.getView(atom.workspace), 'linter:lint')
