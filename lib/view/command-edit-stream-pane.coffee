@@ -113,13 +113,13 @@ module.exports =
       return pane: item, view: view, config: config
 
     moveModifierUp: (index) ->
-      return false if (index is 0) or (index > Object.keys(Modifiers.modules).length)
+      return false if (index is 0) or (index >= @panes.length)
       e = @panes.splice(index, 1)[0]
       @panes.splice(index - 1, 0, e)
       $(@panes_view.children()[index - 1]).before e.pane
 
     moveModifierDown: (index) ->
-      return false if (index >= Object.keys(Modifiers.modules).length)
+      return false if (index >= @panes.length - 1)
       e = @panes.splice(index + 1, 1)[0]
       @panes.splice(index, 0, e)
       $(@panes_view.children()[index]).before e.pane
