@@ -16,7 +16,7 @@ module.exports =
     modelsim: 1
 
   addProfile: (key, profile, version = 1) ->
-    return if @profiles[key]? and not @isCoreName(key)
+    return new Disposable(->) if @profiles[key]? and not @isCoreName(key)
     @profiles[key] = profile
     @versions[key] = version
     new Disposable(=>
