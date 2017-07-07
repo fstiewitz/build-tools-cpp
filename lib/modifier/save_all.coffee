@@ -11,6 +11,8 @@ module.exports =
         return null
 
   in: ->
+    p = []
     for editor in atom.workspace.getTextEditors()
-      editor.save() if editor.isModified() and editor.getPath()?
-    return
+      if editor.isModified() and editor.getPath()?
+        p.push editor.save()
+    return Promise.all(p)
