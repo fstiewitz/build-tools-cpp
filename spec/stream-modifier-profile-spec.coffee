@@ -1,6 +1,6 @@
 Modifier = require '../lib/stream-modifiers/profile'
 Profiles = require '../lib/profiles/profiles'
-XRegExp = require('xregexp').XRegExp
+XRegExp = require('xregexp')
 
 testProfileV1 =
   class TestProfile

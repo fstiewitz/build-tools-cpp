@@ -1,4 +1,4 @@
-XRegExp = require('xregexp').XRegExp
+XRegExp = require('xregexp')
 Modifiers = require '../stream-modifiers/modifiers'
 
 {Emitter} = require 'atom'
@@ -114,7 +114,9 @@ module.exports =
 
     createRegex: (content, extensions) ->
       content = content.replace(/\(\?extensions\)/g, extensions)
-      new XRegExp(content, 'xni')
+      obj = new XRegExp(content, 'xni')
+      obj.xexec = (str, pos, sticky) -> XRegExp.exec(str, this, pos, sticky)
+      obj
 
     lint: (match) =>
       if match? and match.file? and match.row? and match.type? and match.message?
