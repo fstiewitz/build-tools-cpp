@@ -38,6 +38,7 @@ module.exports =
 
     in: (line) ->
       if (m = @regex.xexec line)? #Start of error message
+        m.linterName = 'javac'
         @status = m.type
         @laststatus = @status
         @output.print m

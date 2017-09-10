@@ -1,6 +1,5 @@
 {$, $$, TextEditorView, View} = require 'atom-space-pen-views'
 Profiles = require '../profiles/profiles'
-XRegExp = require('xregexp').XRegExp
 
 module.exports =
 

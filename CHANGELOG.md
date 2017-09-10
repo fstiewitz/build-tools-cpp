@@ -1,3 +1,7 @@
+## 4.5.11 - Indie Linter V2
+
+* Use Indie Linter V2 API (if available)
+
 ## 4.5.0 - Environment Modules
 
 * New service: `environment`

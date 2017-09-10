@@ -7,7 +7,7 @@ module.exports =
   name: 'Regular Expression'
 
   activate: ->
-    XRegExp = require('xregexp').XRegExp
+    XRegExp = require('xregexp')
     CSON = require('season')
 
   deactivate: ->
@@ -97,6 +97,7 @@ module.exports =
 
       constructor: (@config, @command, @output) ->
         @regex = new XRegExp(@config.regex, 'xni')
+        @regex.xexec = (str, pos, sticky) -> XRegExp.exec(str, this, pos, sticky)
         @default = {}
         @default = CSON.parse(@config.defaults) if @config.defaults? and @config.defaults isnt ''
 

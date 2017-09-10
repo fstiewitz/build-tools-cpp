@@ -55,13 +55,23 @@ module.exports =
     SettingsView = null
 
   provideLinter: ->
-    name: 'build-tools'
+    name: 'build-tools-legacy'
     grammarScopes: ['*']
     scope: 'project'
     lintOnFly: false
     lint: ->
       LinterList ?= require './linter-list'
+      return [] if LinterList.v1disabled
       LinterList.messages
+
+  consumeLinter: (registerIndie) ->
+    LinterList ?= require './linter-list'
+    LinterList.linter = registerIndie name: 'build-tools'
+    LinterList.v1disabled = true
+    @subscriptions.add LinterList.linter
+    @subscriptions.add LinterList.linter.onDidDestroy ->
+      LinterList.v1disabled = false
+      LinterList.linter = null
 
   provideInput: ->
     ModifierModules ?= require './modifier/modifier'

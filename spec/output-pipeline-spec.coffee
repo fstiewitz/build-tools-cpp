@@ -131,6 +131,7 @@ describe 'Output Pipeline', ->
         expect(callbacks.linter.mostRecentCall.args[0]).toEqual
           type: 'warning'
           text: 'hello'
+          linterName: undefined
           filePath: path.join(atom.project.getPaths()[0], 'test.vhd')
           range: [[9, 0], [9, 9999]]
           trace: undefined

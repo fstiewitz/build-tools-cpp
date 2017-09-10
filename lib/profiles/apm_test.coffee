@@ -58,6 +58,7 @@ module.exports =
 
     in: (line) ->
       if (m = @regex_at.xexec line)? #Traceback
+        m.linterName = 'apm test'
         if @lastMatch?
           if @firstAt and not @lastMatch.file?
             m.type = 'error'
@@ -77,6 +78,7 @@ module.exports =
         else
           @output.print m
       else if (m = @regex_error_nofile.xexec line)? #Error message
+        m.linterName = 'apm test'
         @output.lint @lastMatch #Lint last message
         if (n = @regex_error_file.xexec line, @regex_error_file)? #Has file coordinates
           m = n

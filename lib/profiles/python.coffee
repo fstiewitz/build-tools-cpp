@@ -33,6 +33,7 @@ module.exports =
 
     in: (line) ->
       if (m = @regex_file.xexec line)? #File in Traceback
+        m.linterName = 'python'
         m.type = 'trace'
         @prebuffer.push m
         @traceback = true
