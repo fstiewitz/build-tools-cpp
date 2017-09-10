@@ -125,6 +125,7 @@ module.exports =
         @pushLinterMessage
           type: match.type
           text: match.message
+          linterName: match.linterName
           filePath: @absolutePath match.file
           range: [
             [row - 1, 0]

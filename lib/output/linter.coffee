@@ -69,6 +69,7 @@ module.exports =
 
       newQueue: (@queue) ->
         ll.messages = []
+        ll.linter?.clearMessages()
         coordinates = {}
 
       newCommand: (@command) ->
@@ -92,4 +93,4 @@ module.exports =
         @exitQueue(0) if @command.output.linter.immediate
 
       exitQueue: (code) ->
-        atom.commands.dispatch(atom.views.getView(atom.workspace), 'linter:lint')
+        ll.update()

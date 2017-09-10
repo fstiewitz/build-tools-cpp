@@ -38,6 +38,11 @@
     }
   },
   "consumedServices": {
+    "linter-indie": {
+      "versions": {
+        "2.0.0": "consumeLinter"
+      }
+    },
     "build-tools.modifier": {
       "versions": {
         "^1.0.0": "consumeModifierModule"
