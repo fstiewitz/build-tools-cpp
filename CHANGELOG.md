@@ -1,3 +1,7 @@
+## 4.5.12 - Regex Fix
+
+* Fix exception error in regex stream modifier
+
 ## 4.5.11 - Indie Linter V2
 
 * Use Indie Linter V2 API (if available)
