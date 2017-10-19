@@ -74,7 +74,7 @@ module.exports =
             @subview 'default', new TextEditorView(mini: true)
 
       set: (command, config) ->
-        if command?
+        if command? and config?
           @regex.getModel().setText(config.regex)
           @default.getModel().setText(config.defaults)
         else

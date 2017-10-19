@@ -124,11 +124,13 @@ module.exports =
         col = 10000
         row = parseInt(match.row)
         col = parseInt(match.col) if match.col?
+        filePath = @absolutePath match.file
+        return unless filePath?
         @pushLinterMessage
           type: match.type
           text: match.message
           linterName: match.linterName
-          filePath: @absolutePath match.file
+          filePath: filePath
           range: [
             [row - 1, 0]
             [row - 1, col - 1]
