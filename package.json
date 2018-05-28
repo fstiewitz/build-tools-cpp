@@ -3,7 +3,7 @@
   "main": "./lib/main",
   "version": "4.5.12",
   "description": "Build your projects in atom",
-  "repository": "https://github.com/deprint/build-tools-cpp",
+  "repository": "https://github.com/fstiewitz/build-tools-cpp",
   "license": "MIT",
   "engines": {
     "atom": ">=1.13.0-beta0 <2.0.0"

@@ -62,7 +62,7 @@ __Major changes for package developers: This update introduces 5 services that p
 * __... highlight the output of commands (Profile modules)__
 * __... get the output of commands (Output modules)__
 
-__Refer to the [wiki](https://github.com/deprint/build-tools-cpp/wiki) for details.__
+__Refer to the [wiki](https://github.com/fstiewitz/build-tools-cpp/wiki) for details.__
 
 * Allow parallel execution of commands
 * Dependency settings are now stored per-command
@@ -78,7 +78,7 @@ __Refer to the [wiki](https://github.com/deprint/build-tools-cpp/wiki) for detai
 ## 3.7.1 - Fix outdated jquery calls
 
 ## 3.7.0 - Service API: Profiles
-* This update introduces a service interface for other packages to add their own [highlighting profiles](https://github.com/deprint/build-tools-cpp/wiki/Service-API:-Profiles)
+* This update introduces a service interface for other packages to add their own [highlighting profiles](https://github.com/fstiewitz/build-tools-cpp/wiki/Service-API:-Profiles)
 
 ## 3.6.0 - UI for local configuration files
 * Added UI for local configuration files
