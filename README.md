@@ -1,6 +1,6 @@
 build-tools
 ===============
-[![Travis](https://img.shields.io/travis/fstiewitz/build-tools-cpp.svg?style=flat-square)](https://travis-ci.org/fstiewitz/build-tools-cpp) [![AppVeyor](https://img.shields.io/appveyor/ci/fstiewitz/build-tools-cpp.svg?style=flat-square)](https://ci.appveyor.com/project/fstiewitz/build-tools-cpp) [![Dependency Status](https://david-dm.org/fstiewitz/build-tools-cpp.svg?style=flat-square)](https://david-dm.org/fstiewitz/build-tools-cpp) [![apm](https://img.shields.io/apm/dm/build-tools.svg?style=flat-square)](https://github.com/fstiewitz/build-tools-cpp) [![apm](https://img.shields.io/apm/v/build-tools.svg?style=flat-square)](https://github.com/fstiewitz/build-tools-cpp)
+[![Travis](https://img.shields.io/travis/fstiewitz/build-tools-cpp.svg?style=flat-square)](https://travis-ci.org/fstiewitz/build-tools-cpp) [![Dependency Status](https://david-dm.org/fstiewitz/build-tools-cpp.svg?style=flat-square)](https://david-dm.org/fstiewitz/build-tools-cpp) [![apm](https://img.shields.io/apm/dm/build-tools.svg?style=flat-square)](https://github.com/fstiewitz/build-tools-cpp) [![apm](https://img.shields.io/apm/v/build-tools.svg?style=flat-square)](https://github.com/fstiewitz/build-tools-cpp)
 
 ### Build your projects in atom
 ![Error highlighting](https://cloud.githubusercontent.com/assets/7817714/10537808/91cbf92c-73f4-11e5-9f0d-15348000c31f.png)
