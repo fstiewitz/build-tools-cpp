@@ -70,37 +70,4 @@
     height: @component-icon-size;
     content: "\f026";
   }
-
-  .content {
-    display: none;
-  }
-
-  &:hover {
-    color: @text-color-selected;
-    cursor: pointer;
-    z-index: 1000;
-    background-color: @overlay-background-color;
-    color: @text-color;
-
-    .content {
-      display: block;
-      position: relative;
-      float: left;
-      padding: 5px 5px 5px 5px;
-
-      .bold {
-        font-weight: bold;
-        padding: 0 0 0 2px;
-      }
-
-      .info {
-        display: flex;
-        font-family: monospace;
-
-        .col {
-          padding: 0 2px 0 2px;
-        }
-      }
-    }
-  }
 }
