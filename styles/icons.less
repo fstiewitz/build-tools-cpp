@@ -1,104 +1,115 @@
 @import 'ui-variables';
 
-.icon-link-external {
-  &:hover {
-    color: @text-color-selected;
-    cursor: pointer;
+.console {
+  .icon-x {
+    &:hover {
+      color: @text-color-selected;
+      cursor: pointer;
+    }
   }
 }
 
-.icon-x {
-  &:hover {
-    color: @text-color-selected;
-    cursor: pointer;
-  }
-}
-
-.icon-triangle-right {
-  &:hover {
-    color: @text-color-selected;
-    cursor: pointer;
-  }
-}
-
-.icon-triangle-up {
-  &:hover {
-    color: @text-color-selected;
-    cursor: pointer;
-  }
-}
-
-.icon-triangle-down {
-  &:hover {
-    color: @text-color-selected;
-    cursor: pointer;
-  }
-}
-
-.icon-pencil {
-  &:hover {
-    color: @text-color-selected;
-    cursor: pointer;
-  }
-}
-
-.icon-plus {
-  &:hover {
-    color: @text-color-selected;
-    cursor: pointer;
-  }
-}
-
-.icon-terminal {
-  &:hover {
-    color: @text-color-selected;
-    cursor: pointer;
-  }
-}
-
-.icon-info {
-  &:before {
-    font-family: 'Octicons Regular';
-    font-weight: normal;
-    font-style: normal;
-    display: inline-block;
-    line-height: 1;
-    -webkit-font-smoothing: antialiased;
-    text-decoration: none;
-    font-size: 12px;
-    width: @component-icon-size;
-    height: @component-icon-size;
-    content: "\f026";
+.build-settings {
+  .icon-link-external {
+    &:hover {
+      color: @text-color-selected;
+      cursor: pointer;
+    }
   }
 
-  .content {
-    display: none;
+  .icon-x {
+    &:hover {
+      color: @text-color-selected;
+      cursor: pointer;
+    }
   }
 
-  &:hover {
-    color: @text-color-selected;
-    cursor: pointer;
-    z-index: 1000;
-    background-color: @overlay-background-color;
-    color: @text-color;
+  .icon-triangle-right {
+    &:hover {
+      color: @text-color-selected;
+      cursor: pointer;
+    }
+  }
+
+  .icon-triangle-up {
+    &:hover {
+      color: @text-color-selected;
+      cursor: pointer;
+    }
+  }
+
+  .icon-triangle-down {
+    &:hover {
+      color: @text-color-selected;
+      cursor: pointer;
+    }
+  }
+
+  .icon-pencil {
+    &:hover {
+      color: @text-color-selected;
+      cursor: pointer;
+    }
+  }
+
+  .icon-plus {
+    &:hover {
+      color: @text-color-selected;
+      cursor: pointer;
+    }
+  }
+
+  .icon-terminal {
+    &:hover {
+      color: @text-color-selected;
+      cursor: pointer;
+    }
+  }
+
+  .icon-info {
+    &:before {
+      font-family: 'Octicons Regular';
+      font-weight: normal;
+      font-style: normal;
+      display: inline-block;
+      line-height: 1;
+      -webkit-font-smoothing: antialiased;
+      text-decoration: none;
+      font-size: 12px;
+      width: @component-icon-size;
+      height: @component-icon-size;
+      content: "\f026";
+    }
 
     .content {
-      display: block;
-      position: relative;
-      float: left;
-      padding: 5px 5px 5px 5px;
+      display: none;
+    }
 
-      .bold {
-        font-weight: bold;
-        padding: 0 0 0 2px;
-      }
+    &:hover {
+      color: @text-color-selected;
+      cursor: pointer;
+      z-index: 1000;
+      background-color: @overlay-background-color;
+      color: @text-color;
 
-      .info {
-        display: flex;
-        font-family: monospace;
+      .content {
+        display: block;
+        position: relative;
+        float: left;
+        padding: 5px 5px 5px 5px;
 
-        .col {
-          padding: 0 2px 0 2px;
+        .bold {
+          font-weight: bold;
+          padding: 0 0 0 2px;
+        }
+
+        .info {
+          display: flex;
+          font-family: monospace;
+
+          .col {
+            padding: 0 2px 0 2px;
+          }
         }
       }
     }
