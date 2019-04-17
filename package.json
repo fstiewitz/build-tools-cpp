@@ -1,7 +1,7 @@
 {
   "name": "build-tools",
   "main": "./lib/main",
-  "version": "4.5.12",
+  "version": "4.5.13",
   "description": "Build your projects in atom",
   "repository": "https://github.com/fstiewitz/build-tools-cpp",
   "license": "MIT",
