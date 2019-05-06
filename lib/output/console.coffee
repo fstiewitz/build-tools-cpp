@@ -46,7 +46,6 @@ module.exports =
           consolepanel.hide()
         else
           consolepanel.show()
-    @disposables.add atom.keymaps.add 'build-tools:console', 'atom-workspace': 'ctrl-l ctrl-s': 'build-tools:toggle'
 
   deactivate: ->
     consolepanel.destroy()

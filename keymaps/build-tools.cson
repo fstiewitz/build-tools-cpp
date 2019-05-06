@@ -1,4 +1,5 @@
 'atom-workspace':
+  'ctrl-l ctrl-s': 'build-tools:toggle'
   'ctrl-l ctrl-o': 'build-tools:first-command'
   'ctrl-l ctrl-i': 'build-tools:second-command'
   'ctrl-l ctrl-u': 'build-tools:third-command'
